@@ -1,7 +1,6 @@
 import Status500Image from '@/assets/reception-desk.jpg'
 import { Box, Container, Grid, Typography, Link, styled } from '@mui/material'
-import { LoginForm } from '@/components/LoginForm'
-import { OAuthForm } from '@/components'
+import { OAuthForm, RegisterForm } from '@/components'
 
 const GridWrapper = styled(Grid)(({ theme }) => ({
   background: theme.colors.gradients.black1
@@ -26,7 +25,7 @@ const TypographySecondary = styled(Typography)(({ theme }) => ({
 }))
 
 
-export default function Login() {
+export default function Register() {
   return <>
     <MainContent>
       <Grid
@@ -67,13 +66,13 @@ export default function Login() {
                 Welcome to Rangoon! 👋
               </TypographyPrimary>
               <TypographySecondary variant='h4' fontWeight="normal" sx={{ mb: 4 }}>
-                Please sign-in to your account and start the adventure
+                Please sign-up to your account and start the adventure
               </TypographySecondary>
 
-              <LoginForm />
+              <RegisterForm />
 
               <TypographySecondary variant='h4' fontWeight="normal" sx={{ my: 2 }}>
-                Need an account? <Link href="/auth/register">Create an account</Link>
+                Already have an account? <Link href="/auth/login">Login</Link>
               </TypographySecondary>
 
               <OAuthForm />

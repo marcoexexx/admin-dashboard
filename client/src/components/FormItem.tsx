@@ -4,16 +4,17 @@ import { useFormContext } from "react-hook-form";
 interface FormItemProps {
   field: string
   display: string
+  type: string
 }
 
 export function FormItem(props: FormItemProps) {
-  const { field, display } = props
+  const { field, display, type } = props
   const { formState: {errors}, register } = useFormContext()
 
   return (
-    <FormControl error={!!errors.password}>
+    <FormControl error={!!errors[field]}>
       <InputLabel sx={{ color: "white" }}>{display}</InputLabel>
-      <OutlinedInput {...register(field)} />
+      <OutlinedInput type={type} {...register(field)} sx={{ color: "white" }} />
       {errors[field]
         // @ts-ignore
         ? <FormHelperText>{errors[field]?.message}</FormHelperText>

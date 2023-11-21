@@ -21,11 +21,6 @@ interface ThemeActions {
   type: "TOGGLE_THEME",
 }
 
-interface ToastActions {
-  type: "SET_TOAST",
-  payload: Store["toast"]
-}
-
 interface ToastCloseActions {
   type: "CLOSE_TOAST",
 }
@@ -43,7 +38,6 @@ interface ToastOpenActions {
 
 type Action =
   | ThemeActions
-  | ToastActions
   | ToastOpenActions
   | ToastCloseActions
   | UserActions
@@ -69,10 +63,6 @@ const stateReducer = (state: Store, action: Action): Store => {
       const theme = state.theme === "light" ? "dark" : "light"
       localStorage.setItem("theme", theme)
       return { ...state, theme }
-    }
-
-    case "SET_TOAST": {
-      return { ...state, toast: action.payload }
     }
 
     case "OPEN_TOAST": {

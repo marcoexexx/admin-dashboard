@@ -1,4 +1,4 @@
-import { LoginUserInput } from "@/components";
+import { LoginUserInput, RegisterUserInput } from "@/components";
 import axios from "axios";
 
 const BASE_URL = "http://localhost:8000/api/v1";
@@ -48,10 +48,10 @@ export async function logoutUserFn() {
 }
 
 
-// export async function registerUserFn(user: RegisterUserInput) {
-//   const res = await authApi.post<UserResponse>("auth/register", user)
-//   return res.data
-// }
+export async function registerUserFn(user: RegisterUserInput) {
+  const res = await authApi.post<UserResponse>("auth/register", user)
+  return res.data
+}
 
 
 export async function loginUserFn(user: LoginUserInput) {
