@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  Drift
+  Pending
+  Published
+}
+
+enum Role {
+  Admin
+  Employee
+  User
+}
+
+enum AuthProvider {
+  Local
+  Google
+  Facebook
+}
+
+model User {
+  id        String       @id @default(uuid())
+  name      String
+  email     String       @unique
+  password  String
+  role      Role         @default(User)
+  image     String       @default("default_pp.png")
+  verified  Boolean      @default(false)
+  provider  AuthProvider @default(Local)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  favorites Favorites[]
+
+  @@index([email])
+}
+
+model Favorites {
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  userId    String
+  productId String
+
+  @@id([userId, productId])
+}
+
+model Brand {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  products  Tag[]
+}
+
+model Tag {
+  product    Product  @relation(fields: [productId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+  productId  String
+  categoryId String
+
+  @@id([categoryId, productId])
+}
+
+enum InstockStatus {
+  InStock
+  OutOfStock
+  AskForStock
+}
+
+enum ProductType {
+  Switch
+  Accessory
+  Router
+  Wifi
+}
+
+enum PriceUnit {
+  MMK
+  USD
+  THB
+  KRW
+}
+
+model Product {
+  id            String        @id @default(uuid())
+  brand         Brand         @relation(fields: [brandId], references: [id])
+  brandId       String
+  title         String
+  price         Int
+  images        String[]
+  specification String
+  overview      String
+  features      String
+  warranty      String
+  categories    Tag[]
+  colors        String
+  instockStatus InstockStatus @default(AskForStock)
+  description   String
+  type          ProductType
+  dealerPrice   Int
+  marketPrice   Int
+  discount      Int
+  status        Status
+  priceUnit     PriceUnit
+  salesCategory String[]
+  likedUsers    Favorites[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

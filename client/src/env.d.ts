@@ -1,4 +1,7 @@
 interface ImportMetaEnv {
-  FACEBOOK_APP_ID: string,
-  FACEBOOK_PAGE_ID: string,
+  VITE_FACEBOOK_APP_ID: string,
+  VITE__FACEBOOK_PAGE_ID: string,
+  VITE_GOOGLE_OAUTH_CLIENT_ID: string,
+  VITE_GOOGLE_OAUTH_CLIENT_SECRET: string,
+  VITE_GOOGLE_OAUTH_REDIRECT: string
 }

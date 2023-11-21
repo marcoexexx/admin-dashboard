@@ -1,8 +1,7 @@
 import { Button, ButtonProps, styled } from "@mui/material"
 import { forwardRef } from "react"
 
-const MuiButtonWrapper = styled(Button)(({theme}) => ({
-  background: theme.colors.primary.light
+const MuiButtonWrapper = styled(Button)(() => ({
 }))
 
 

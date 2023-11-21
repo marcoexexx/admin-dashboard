@@ -1,20 +1,86 @@
-import { object, string, z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import Status500Image from '@/assets/reception-desk.jpg'
+import { Box, Container, Grid, Typography, Link, styled } from '@mui/material'
+import { LoginForm } from '@/components/LoginForm'
+import { OAuthForm } from '@/components'
 
-const loginUserSchema = object({
-  email: string().email(),
-  password: string()  // TODO: validation
-})
+const GridWrapper = styled(Grid)(({ theme }) => ({
+  background: theme.colors.gradients.black1
+}))
 
-export type LoginUserInput = z.infer<typeof loginUserSchema>
+const MainContent = styled(Box)(() => ({
+  height: "100%",
+  display: "flex",
+  flex: 1,
+  overflow: "auto",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center"
+}))
+
+const TypographyPrimary = styled(Typography)(({ theme }) => ({
+  color: theme.colors.alpha.white[100]
+}))
+
+const TypographySecondary = styled(Typography)(({ theme }) => ({
+  color: theme.colors.alpha.white[70]
+}))
+
 
 export default function Login() {
-  const { handleSubmit, register } = useForm<LoginUserInput>({
-    resolver: zodResolver(loginUserSchema)
-  })
+  return <>
+    <MainContent>
+      <Grid
+        container
+        sx={{ height: '100%' }}
+        alignItems="stretch"
+        spacing={0}
+      >
+        <Grid
+          xs={12}
+          md={6}
+          alignItems="center"
+          display="flex"
+          justifyContent="center"
+          item
+        >
+          <Container maxWidth="sm">
+            <Box textAlign="center">
+              <img
+                alt="500"
+                height={360}
+                src={Status500Image}
+              />
+            </Box>
+          </Container>
+        </Grid>
+        <GridWrapper
+          xs={12}
+          md={6}
+          alignItems="center"
+          display="flex"
+          justifyContent="center"
+          item
+        >
+          <Container maxWidth="sm">
+            <Box textAlign="center">
+              <TypographyPrimary variant="h1" sx={{ my: 2 }}>
+                Welcome to Rangoon! 👋
+              </TypographyPrimary>
+              <TypographySecondary variant='h4' fontWeight="normal" sx={{ mb: 4 }}>
+                Please sign-in to your account and start the adventure
+              </TypographySecondary>
 
-  return (
-    <div>login.page</div>
-  )
+              <LoginForm />
+
+              <TypographySecondary variant='h4' fontWeight="normal" sx={{ my: 2 }}>
+                New on our platform? <Link href="/auth/register">Create an account</Link>
+              </TypographySecondary>
+
+              <OAuthForm />
+            </Box>
+          </Container>
+        </GridWrapper>
+      </Grid>
+    </MainContent>
+  </>
 }
