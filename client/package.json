@@ -24,6 +24,7 @@
     "axios": "^1.6.2",
     "dayjs": "^1.11.10",
     "localforage": "^1.10.0",
+    "lodash": "^4.17.21",
     "match-sorter": "^6.3.1",
     "react": "^18.2.0",
     "react-cookie": "^6.1.1",
@@ -35,6 +36,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.202",
     "@types/node": "^20.9.2",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",

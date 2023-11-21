@@ -2,11 +2,11 @@ import { registerUserFn } from "@/services/authApi"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button, Stack } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
+import { SubmitHandler, useForm } from "react-hook-form"
 import { object, string, z } from "zod"
-import { FormItem } from "."
 import { useStore } from "@/hooks"
 import { useLocation, useNavigate } from "react-router-dom"
+import { MuiTextFiled } from "./ui"
 
 const registerUserSchema = object({
   name: string({ required_error: "Username is required" })
@@ -50,7 +50,7 @@ export function RegisterForm() {
     }
   })
 
-  const methods = useForm<RegisterUserInput>({
+  const { handleSubmit, register, formState: { errors } } = useForm<RegisterUserInput>({
     resolver: zodResolver(registerUserSchema)
   })
 
@@ -59,16 +59,14 @@ export function RegisterForm() {
   }
 
   return (
-    <FormProvider {...methods}>
-      <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={methods.handleSubmit(onSubmit)}>
-        <FormItem type="text" field="name" display="Name" />
-        <FormItem type="email" field="email" display="Email" />
-        <FormItem type="password" field="password" display="Password" />
-        <FormItem type="password" field="passwordConfirm" display="Password Confirm" />
+    <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={handleSubmit(onSubmit)}>
+      <MuiTextFiled {...register("name")} label="Username" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
+      <MuiTextFiled {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
+      <MuiTextFiled {...register("password")} label="Password" error={!!errors.password} helperText={!!errors.password ? errors.password.message : ""} />
+      <MuiTextFiled {...register("passwordConfirm")} label="Password confirm" error={!!errors.passwordConfirm} helperText={!!errors.passwordConfirm ? errors.passwordConfirm.message : ""} />
 
-        <Button variant="contained" fullWidth type="submit">Sign Up</Button>
-      </Stack>
-    </FormProvider>
+      <Button variant="contained" fullWidth type="submit">Sign Up</Button>
+    </Stack>
   )
 }
 

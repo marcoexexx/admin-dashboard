@@ -1,5 +1,5 @@
 import Status500Image from '@/assets/reception-desk.jpg'
-import { Box, Container, Grid, Typography, Link, styled } from '@mui/material'
+import { Box, Container, Grid, Typography, Link, styled, Hidden } from '@mui/material'
 import { LoginForm } from '@/components/LoginForm'
 import { OAuthForm } from '@/components'
 
@@ -35,24 +35,26 @@ export default function Login() {
         alignItems="stretch"
         spacing={0}
       >
-        <Grid
-          xs={12}
-          md={6}
-          alignItems="center"
-          display="flex"
-          justifyContent="center"
-          item
-        >
-          <Container maxWidth="sm">
-            <Box textAlign="center">
-              <img
-                alt="500"
-                height={360}
-                src={Status500Image}
-              />
-            </Box>
-          </Container>
-        </Grid>
+        <Hidden mdDown>
+          <Grid
+            xs={12}
+            md={6}
+            alignItems="center"
+            display="flex"
+            justifyContent="center"
+            item
+          >
+            <Container maxWidth="sm">
+              <Box textAlign="center">
+                <img
+                  alt="500"
+                  height={360}
+                  src={Status500Image}
+                />
+              </Box>
+            </Container>
+          </Grid>
+        </Hidden>
         <GridWrapper
           xs={12}
           md={6}

@@ -1,4 +1,5 @@
 import { createContext, useReducer } from "react"
+import { i18n, Local } from "@/i18n"
 
 type Store = {
   theme:
@@ -14,7 +15,7 @@ type Store = {
       | "info"
   },
   user?: IUser
-  // local: i18n.local
+  local: Local
 }
 
 interface ThemeActions {
@@ -35,12 +36,18 @@ interface ToastOpenActions {
   payload: Omit<Store["toast"], "status">
 }
 
+interface LocalActions {
+  type: "SET_LOCAL",
+  payload: Store["local"] | Local
+}
+
 
 type Action =
   | ThemeActions
   | ToastOpenActions
   | ToastCloseActions
   | UserActions
+  | LocalActions
 
 type Dispatch = (action: Action) => void
 
@@ -54,7 +61,8 @@ const initialState: Store = {
   toast: {
     status: false,
     severity: "info"
-  }
+  },
+  local: i18n.local
 }
 
 const stateReducer = (state: Store, action: Action): Store => {
@@ -75,6 +83,10 @@ const stateReducer = (state: Store, action: Action): Store => {
 
     case "SET_USER": {
       return { ...state, user: action.payload }
+    }
+
+    case "SET_LOCAL": {
+      return { ...state, local: action.payload }
     }
 
     default: {

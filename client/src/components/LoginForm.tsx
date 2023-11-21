@@ -2,13 +2,14 @@ import { loginUserFn } from "@/services/authApi"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button, Stack } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
 import { object, string, z } from "zod"
-import { FormItem } from "."
 import { useStore } from "@/hooks"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useCookies } from "react-cookie"
 import { useEffect } from "react"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { MuiTextFiled } from "./ui"
+
 
 const loginUserSchema = object({
   email: string({ required_error: "Email is required" }).email({ message: "Invalid email." }),
@@ -48,7 +49,7 @@ export function LoginForm() {
     }
   })
 
-  const methods = useForm<LoginUserInput>({
+  const { handleSubmit, register, formState: {errors} } = useForm<LoginUserInput>({
     resolver: zodResolver(loginUserSchema)
   })
 
@@ -57,13 +58,11 @@ export function LoginForm() {
   }
 
   return (
-    <FormProvider {...methods}>
-      <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={methods.handleSubmit(onSubmit)}>
-        <FormItem type="email" field="email" display="Email" />
-        <FormItem type="password" field="password" display="Password" />
+    <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={handleSubmit(onSubmit)}>
+      <MuiTextFiled {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
+      <MuiTextFiled {...register("password")} label="Password" error={!!errors.password} helperText={!!errors.password ? errors.password.message : ""} />
 
-        <Button variant="contained" fullWidth type="submit">Login</Button>
-      </Stack>
-    </FormProvider>
+      <Button variant="contained" fullWidth type="submit">Login</Button>
+    </Stack>
   )
 }
