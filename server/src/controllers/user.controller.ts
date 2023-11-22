@@ -3,7 +3,7 @@ import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { UserFilterPagination } from "../schemas/user.schema";
+import { ChangeUserRoleInput, GetUserInput, UserFilterPagination } from "../schemas/user.schema";
 import { db } from "../utils/db";
 
 export async function getMeHandler(
@@ -31,8 +31,7 @@ export async function getUsersHandler(
 ) {
   try {
     const { filter, pagination } = convertNumericStrings(req.query)
-    const { id, name, email } = filter ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { id: undefined, name: undefined, price: undefined, count: undefined }
+    const { id, name, email } = filter
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
       { page: 1, pageSize: 10 }
 
@@ -48,6 +47,38 @@ export async function getUsersHandler(
       take: pageSize
     })
     res.status(200).json(HttpListResponse(users))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+// must use after, onlyAdmin middleware
+export async function changeUserRoleHandler(
+  req: Request<GetUserInput, {}, ChangeUserRoleInput>,
+  res: Response,
+  next: NextFunction
+) {
+  const { userId } = req.params
+  const { role } = req.body
+
+  try {
+    const userExist = await db.user.findUnique({ where: {
+      id: userId
+    }});
+
+    if (!userExist) return next(new AppError(404, "User not found"))
+
+    const updatedUser = await db.user.update({ 
+      where: {
+        id: userExist.id
+      },
+      data: {
+        role
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ user: updatedUser }))
   } catch (err) {
     next(err)
   }

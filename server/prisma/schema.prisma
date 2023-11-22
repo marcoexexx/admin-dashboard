@@ -63,6 +63,7 @@ model Brand {
 
 model Category {
   id        String   @id @default(uuid())
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   products  Tag[]
@@ -107,7 +108,7 @@ model Product {
   specification String
   overview      String
   features      String
-  warranty      String
+  warranty      Int // By years
   categories    Tag[]
   colors        String
   instockStatus InstockStatus @default(AskForStock)
@@ -120,7 +121,18 @@ model Product {
   priceUnit     PriceUnit
   salesCategory String[]
   likedUsers    Favorites[]
+  quantity      Int
+  reviews    Review[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  comment   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

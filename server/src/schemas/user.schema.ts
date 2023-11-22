@@ -1,37 +1,23 @@
 import { object, string, z } from "zod";
-import { FilterStringy, Pagination } from "./types";
+import { Pagination } from "./types";
+
 
 export type Role = 
   | "Admin"
   | "User"
   | "Employee";
 
-export interface IUser {
-  id: string,
-  firstName: string,
-  lastName: string,
-  username: string,
-  email: string,
-  password: string,
-  role: Role,
-  createdAt: Date,
-  updatedAt: Date,
-  // favorites?: IProduct[]
-}
-
-type UserFilter = {
-  id?: string,
-  firstName?: FilterStringy,
-  lastName?: FilterStringy,
-  username?: FilterStringy,
-  email?: FilterStringy,
-  role?: FilterStringy,
-  // favorites?: ProductFilterPagination
-}
 
 export type UserFilterPagination = {
-  filter?: UserFilter,
+  filter?: any,
   pagination?: Pagination
+}
+
+
+const params = {
+  params: object({
+    userId: string({ required_error: "User ID is required" })
+  })
 }
 
 export const createUserSchema = object({
@@ -59,6 +45,19 @@ export const loginUserSchema = object({
   })
 })
 
+export const getUserSchema = object({
+  ...params
+})
+
+export const changeUserRoleSchema = object({
+  ...params,
+  body: object({
+    role: z.enum(["Admin", "User", "Employee"], { required_error: "User role is required" })
+  })
+})
+
 
 export type CreateUserInput = z.infer<typeof createUserSchema>["body"]
 export type LoginUserInput = z.infer<typeof loginUserSchema>["body"]
+export type GetUserInput = z.infer<typeof getUserSchema>["params"]
+export type ChangeUserRoleInput = z.infer<typeof changeUserRoleSchema>["body"]

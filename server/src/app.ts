@@ -22,6 +22,7 @@ import redisClient from './utils/connectRedis'
 import authRouter from './routers/auth.route'
 import meRouter from './routers/me.route'
 import userRouter from './routers/user.route'
+import productRouter from './routers/product.route'
 
 import helmet from 'helmet';
 import { rateLimitMiddleware } from './middleware/rateLimit';
@@ -78,6 +79,7 @@ app.get("/healthcheck", async (_: Request, res: Response, next: NextFunction) =>
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/me", meRouter)
 app.use("/api/v1/users", userRouter)
+app.use("/api/v1/products", productRouter)
 
 
 // Unhandled Route
