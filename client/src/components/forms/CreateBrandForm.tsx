@@ -1,58 +1,58 @@
 import { Box, Grid, TextField } from "@mui/material";
-import { MuiButton } from "./ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
 import { useMutation } from "@tanstack/react-query";
+import { createBrandFn } from "@/services/brandsApi";
 import { useStore } from "@/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
-import { createSalesCategoryFn } from "@/services/salesCategoryApi";
-import { queryClient } from ".";
+import { queryClient } from "@/components";
+import { MuiButton } from "@/components/ui";
 
-const createSalesCategorySchema = object({
-  name: string({ required_error: "Sales category name is required" })
+const createBrandSchema = object({
+  name: string({ required_error: "Brand name is required" })
     .min(1).max(128)
 })
 
-export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>
+export type CreateBrandInput = z.infer<typeof createBrandSchema>
 
-export function CreateSalesCategoryForm() {
+export function CreateBrandForm() {
   const { dispatch } = useStore()
   const navigate = useNavigate()
   const location = useLocation()
   // TODO: Debug
-  const from = ((location.state as any)?.from.pathname as string) || "/sales-categories"
+  const from = ((location.state as any)?.from.pathname as string) || "/brands"
 
   const {
-    mutate: createSalesCategory,
+    mutate: createBrand,
   } = useMutation({
-    mutationFn: createSalesCategoryFn,
+    mutationFn: createBrandFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new sales category.",
+        message: "Success created a new brand.",
         severity: "success"
       } })
       navigate(from)
       queryClient.invalidateQueries({
-        queryKey: ["sales-categories"]
+        queryKey: ["brands"]
       })
     },
     onError: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed created a new sales category.",
+        message: "failed created a new brand.",
         severity: "error"
       } })
     },
   })
 
-  const methods = useForm<CreateSalesCategoryInput>({
-    resolver: zodResolver(createSalesCategorySchema)
+  const methods = useForm<CreateBrandInput>({
+    resolver: zodResolver(createBrandSchema)
   })
 
   const { handleSubmit, register, formState: { errors } } = methods
 
-  const onSubmit: SubmitHandler<CreateSalesCategoryInput> = (value) => {
-    createSalesCategory(value)
+  const onSubmit: SubmitHandler<CreateBrandInput> = (value) => {
+    createBrand(value)
   }
 
   return (
@@ -71,6 +71,4 @@ export function CreateSalesCategoryForm() {
     </FormProvider>
   )
 }
-
-
 

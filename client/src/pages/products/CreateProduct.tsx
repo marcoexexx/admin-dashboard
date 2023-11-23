@@ -1,4 +1,5 @@
-import { CreateProductForm, PageTitle, UploadProductImage } from "@/components";
+import { PageTitle, UploadProductImage } from "@/components";
+import { CreateProductForm } from "@/components/forms";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'

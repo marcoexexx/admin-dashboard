@@ -1,58 +1,58 @@
 import { Box, Grid, TextField } from "@mui/material";
-import { MuiButton } from "./ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
-import { createCategoryFn } from "@/services/categoryApi";
-import { queryClient } from ".";
+import { createSalesCategoryFn } from "@/services/salesCategoryApi";
+import { queryClient } from "@/components";
+import { MuiButton } from "@/components/ui";
 
-const createCategorySchema = object({
-  name: string({ required_error: "Category name is required" })
+const createSalesCategorySchema = object({
+  name: string({ required_error: "Sales category name is required" })
     .min(1).max(128)
 })
 
-export type CreateCategoryInput = z.infer<typeof createCategorySchema>
+export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>
 
-export function CreateCategoryForm() {
+export function CreateSalesCategoryForm() {
   const { dispatch } = useStore()
   const navigate = useNavigate()
   const location = useLocation()
   // TODO: Debug
-  const from = ((location.state as any)?.from.pathname as string) || "/categories"
+  const from = ((location.state as any)?.from.pathname as string) || "/sales-categories"
 
   const {
-    mutate: createCategory,
+    mutate: createSalesCategory,
   } = useMutation({
-    mutationFn: createCategoryFn,
+    mutationFn: createSalesCategoryFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new category.",
+        message: "Success created a new sales category.",
         severity: "success"
       } })
       navigate(from)
       queryClient.invalidateQueries({
-        queryKey: ["categories"]
+        queryKey: ["sales-categories"]
       })
     },
     onError: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed created a new category.",
+        message: "failed created a new sales category.",
         severity: "error"
       } })
     },
   })
 
-  const methods = useForm<CreateCategoryInput>({
-    resolver: zodResolver(createCategorySchema)
+  const methods = useForm<CreateSalesCategoryInput>({
+    resolver: zodResolver(createSalesCategorySchema)
   })
 
   const { handleSubmit, register, formState: { errors } } = methods
 
-  const onSubmit: SubmitHandler<CreateCategoryInput> = (value) => {
-    createCategory(value)
+  const onSubmit: SubmitHandler<CreateSalesCategoryInput> = (value) => {
+    createSalesCategory(value)
   }
 
   return (
@@ -71,5 +71,6 @@ export function CreateCategoryForm() {
     </FormProvider>
   )
 }
+
 
 

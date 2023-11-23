@@ -1,5 +1,4 @@
 import { Box, Grid, MenuItem, TextField } from "@mui/material";
-import { MuiButton } from "./ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, string, z } from "zod";
@@ -8,7 +7,8 @@ import { useMutation } from "@tanstack/react-query";
 import { createProductFn } from "@/services/productsApi";
 import { useStore } from "@/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
-import { queryClient } from ".";
+import { queryClient } from "@/components";
+import { MuiButton } from "@/components/ui";
 
 const multilineRows = 8
 

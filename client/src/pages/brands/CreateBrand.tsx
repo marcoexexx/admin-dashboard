@@ -1,4 +1,5 @@
-import { CreateBrandForm, PageTitle } from "@/components";
+import { PageTitle } from "@/components";
+import { CreateBrandForm } from "@/components/forms";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
