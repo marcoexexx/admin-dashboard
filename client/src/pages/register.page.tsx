@@ -1,4 +1,3 @@
-import Status500Image from '@/assets/reception-desk.jpg'
 import { Box, Container, Grid, Typography, Link, styled } from '@mui/material'
 import { OAuthForm, RegisterForm } from '@/components'
 
@@ -45,9 +44,9 @@ export default function Register() {
           <Container maxWidth="sm">
             <Box textAlign="center">
               <img
-                alt="500"
+                alt="register"
                 height={360}
-                src={Status500Image}
+                src="/public/static/reception-desk.jpg"
               />
             </Box>
           </Container>

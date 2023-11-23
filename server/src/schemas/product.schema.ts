@@ -24,7 +24,6 @@ export const createProductSchema = object({
       .min(2).max(128),
     title: string({ required_error: "Brand is required" })
       .min(2).max(128),
-    images: string().array().default([]),
     specification: string({ required_error: "Brand is required" })
       .min(2).max(1024),
     overview: string({ required_error: "Brand is required" })
@@ -42,7 +41,6 @@ export const createProductSchema = object({
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
     discount: number().min(0),
-    status: z.enum(["Drift", "Pending", "Published"]).default("Drift"),
     priceUnit: z.enum(["MMK", "USD", "THB", "KRW"]),
     salesCategory: string().array(),
     quantity: number().min(0),

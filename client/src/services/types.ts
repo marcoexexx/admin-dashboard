@@ -24,6 +24,62 @@ interface IUser {
 }
 
 
+interface IProduct {
+  id: string;
+  brandId: string;
+  title: string;
+  price: number;
+  images: string[]; // Assuming it's an array of image URLs
+  specification: string;
+  overview: string;
+  features: string;
+  warranty: number;
+  colors: string;
+  instockStatus: string;
+  description: string;
+  type: string;
+  dealerPrice: number;
+  marketPrice: number;
+  discount: number;
+  status: string;
+  priceUnit: string;
+  quantity: number;
+  createdAt: string; // Assuming it's a string representation of a date
+  updatedAt: string; // Assuming it's a string representation of a date
+}
+
+
+interface IBrand {
+  id: string,
+  name: string
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+interface ISalesCategory {
+  id: string,
+  name: string
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+interface ICategory {
+  id: string,
+  name: string
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+interface ISalesCategory {
+  id: string,
+  name: string
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
 interface ISettings {
   theme: 
     | "light" 
@@ -33,6 +89,8 @@ interface ISettings {
     | "en"
 }
 
+
+type Status = "all" | "draft" | "pending" | "published"
 
 type HttpResponse = {
   status: number,
@@ -58,6 +116,19 @@ type PermissionsResponse = {
 }
 
 
+type QueryOptionArgs = {
+  queryKey: any
+  signal: AbortSignal,
+  meta: Record<string, unknown> | undefined
+}
+
+
 type LoginResponse = Omit<HttpResponse, "message"> & {accessToken: string};
 
 type UserResponse = Omit<HttpResponse, "message"> & {user: IUser};
+
+type CategoryResponse = Omit<HttpResponse, "message"> & ICategory;
+
+type SalesCategoryResponse = Omit<HttpResponse, "message"> & ISalesCategory;
+
+type ProductResponse = Omit<HttpResponse, "message"> & IProduct;

@@ -9,7 +9,7 @@ function App() {
   return (
     <Providers>
       <RouterProvider router={routes} />
-      <CustomChat pageId={getConfig("facebookPageId")} />
+      {import.meta.env.PROD && <CustomChat pageId={getConfig("facebookPageId")} />}
       <ToastProvider />
     </Providers>
   )

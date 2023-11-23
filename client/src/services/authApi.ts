@@ -1,7 +1,8 @@
 import { LoginUserInput, RegisterUserInput } from "@/components";
+import getConfig from "@/libs/getConfig";
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8000/api/v1";
+const BASE_URL = getConfig("backendEndpoint")
 
 export const authApi = axios.create({
   baseURL: BASE_URL,

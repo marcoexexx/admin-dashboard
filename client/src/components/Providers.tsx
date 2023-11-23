@@ -5,6 +5,7 @@ import { StylesProvider } from '@mui/styles'
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import getConfig from '@/libs/getConfig'
 import { AuthProvider } from '.';
 
@@ -12,7 +13,8 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      staleTime: 1000 * 5
+
+      staleTime: 1000 * 60 * 60
     }
   }
 })
@@ -36,6 +38,8 @@ export function Providers(props: ProvidersProps) {
                   {children}
                 </ThemeWrapper>
               </AuthProvider>
+
+              <ReactQueryDevtools />
             </QueryClientProvider>
           </StoreProvider>
         </LocalizationProvider>

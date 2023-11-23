@@ -5,8 +5,6 @@ import { CreateProductInput, GetProductInput, ProductFilterPagination, UploadIma
 import logging from '../middleware/logging/logging';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { productPermission } from '../utils/auth/permissions';
-import mapValues from 'lodash/mapValues';
 import { convertNumericStrings } from '../utils/convertNumber';
 
 
@@ -24,7 +22,6 @@ export async function getProductsHandler(
       brandId,
       title,
       price,
-      images,
       specification,
       overview,
       features,
@@ -41,7 +38,7 @@ export async function getProductsHandler(
       priceUnit,
       salesCategory,
       likedUsers,
-    } = filter
+    } = filter || { status: undefined }
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
       { page: 1, pageSize: 10 }
 
@@ -54,7 +51,6 @@ export async function getProductsHandler(
         brandId,
         title,
         price,
-        images,
         specification,
         overview,
         features,
@@ -121,7 +117,6 @@ export async function createProductHandler(
       price,
       brandId,
       title,
-      images,
       specification,
       overview,
       features,
@@ -133,9 +128,9 @@ export async function createProductHandler(
       dealerPrice,
       marketPrice,
       discount,
-      status,
       priceUnit,
       salesCategory,
+      categories,
       quantity,
     } = req.body;
     const new_product = await db.product.create({
@@ -143,7 +138,6 @@ export async function createProductHandler(
         price,
         brandId,
         title,
-        images,
         specification,
         overview,
         features,
@@ -155,9 +149,22 @@ export async function createProductHandler(
         dealerPrice,
         marketPrice,
         discount,
-        status,
+        status: "Draft",
         priceUnit,
-        salesCategory,
+        categories: {
+          create: categories.map(id => ({
+            category: {
+              connect: { id }
+            }
+          }))
+        },
+        salesCategory: {
+          create: salesCategory.map(id => ({
+            salesCategory: {
+              connect: { id }
+            }
+          }))
+        },
         quantity,
       }
     })
@@ -201,45 +208,6 @@ export async function deleteProductHandler(
     logging.error(msg)
     if (err?.code === "23505") next(new AppError(409, "data already exists"))
     next(new AppError(500, msg))
-  }
-}
-
-
-export async function deleteAllTestedProductsHandler(
-  _: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    await db.product.deleteMany({
-      where: {
-        title: {
-          startsWith: "TEST_"
-        }
-      }
-    })
-
-    res.status(200).json(HttpResponse(200, "Success delete"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    if (err?.code === "23505") next(new AppError(409, "data already exists"))
-    next(new AppError(500, msg))
-  }
-}
-
-
-export async function permissionsProductHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const permissions = mapValues(productPermission, (value) => value())
-
-    res.status(200).json(HttpDataResponse({ permissions, label: "product" }))
-  } catch (err) {
-    next(err)
   }
 }
 

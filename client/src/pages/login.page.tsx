@@ -1,4 +1,3 @@
-import Status500Image from '@/assets/reception-desk.jpg'
 import { Box, Container, Grid, Typography, Link, styled, Hidden } from '@mui/material'
 import { LoginForm } from '@/components/LoginForm'
 import { OAuthForm } from '@/components'
@@ -49,7 +48,7 @@ export default function Login() {
                 <img
                   alt="500"
                   height={360}
-                  src={Status500Image}
+                  src="/static/reception-desk.jpg"
                 />
               </Box>
             </Container>

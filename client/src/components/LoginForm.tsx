@@ -1,6 +1,6 @@
 import { loginUserFn } from "@/services/authApi"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Stack } from "@mui/material"
+import { Button, Stack, TextField, styled } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { object, string, z } from "zod"
 import { useStore } from "@/hooks"
@@ -8,7 +8,28 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { useCookies } from "react-cookie"
 import { useEffect } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
-import { MuiTextFiled } from "./ui"
+
+const MuiTextFieldWrapper = styled(TextField)(({theme}) => ({
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: theme.colors.alpha.white[70],
+    },
+    '&:hover fieldset': {
+      borderColor: theme.colors.alpha.white[70],
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: theme.colors.alpha.white[100],
+    },
+  },
+
+  '& .MuiInputLabel-root': {
+    color: theme.colors.alpha.white[70],
+  },
+
+  '& .MuiInputBase-input': {
+    color: theme.colors.alpha.white[100],
+  }
+}))
 
 
 const loginUserSchema = object({
@@ -26,7 +47,7 @@ export function LoginForm() {
   const navigate = useNavigate()
   const location = useLocation()
   // TODO: Debug
-  const from = ((location.state as any)?.from.pathname as string) || "/home"
+  const from = ((location.state as any)?.from.pathname as string) || "/dashboard"
 
   useEffect(() => {
     if (cookies.logged_in) navigate("/home")
@@ -59,8 +80,8 @@ export function LoginForm() {
 
   return (
     <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={handleSubmit(onSubmit)}>
-      <MuiTextFiled {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
-      <MuiTextFiled {...register("password")} label="Password" error={!!errors.password} helperText={!!errors.password ? errors.password.message : ""} />
+      <MuiTextFieldWrapper {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
+      <MuiTextFieldWrapper {...register("password")} label="Password" error={!!errors.password} helperText={!!errors.password ? errors.password.message : ""} />
 
       <Button variant="contained" fullWidth type="submit">Login</Button>
     </Stack>

@@ -11,7 +11,7 @@ datasource db {
 }
 
 enum Status {
-  Drift
+  Draft
   Pending
   Published
 }
@@ -62,14 +62,31 @@ model Brand {
 }
 
 model Category {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  products  Tag[]
+  id        String            @id @default(uuid())
+  name      String            @unique
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  products  ProductCategory[]
 }
 
-model Tag {
+model SalesCategory {
+  id        String                 @id @default(uuid())
+  name      String                 @unique
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  products  ProductSalesCategory[]
+}
+
+model ProductSalesCategory {
+  product         Product       @relation(fields: [productId], references: [id])
+  salesCategory   SalesCategory @relation(fields: [salesCategoryId], references: [id])
+  productId       String
+  salesCategoryId String
+
+  @@id([salesCategoryId, productId])
+}
+
+model ProductCategory {
   product    Product  @relation(fields: [productId], references: [id])
   category   Category @relation(fields: [categoryId], references: [id])
   productId  String
@@ -99,8 +116,8 @@ enum PriceUnit {
 }
 
 model Product {
-  id            String        @id @default(uuid())
-  brand         Brand         @relation(fields: [brandId], references: [id])
+  id            String                 @id @default(uuid())
+  brand         Brand                  @relation(fields: [brandId], references: [id])
   brandId       String
   title         String
   price         Int
@@ -109,9 +126,9 @@ model Product {
   overview      String
   features      String
   warranty      Int // By years
-  categories    Tag[]
+  categories    ProductCategory[]
   colors        String
-  instockStatus InstockStatus @default(AskForStock)
+  instockStatus InstockStatus          @default(AskForStock)
   description   String
   type          ProductType
   dealerPrice   Int
@@ -119,10 +136,10 @@ model Product {
   discount      Int
   status        Status
   priceUnit     PriceUnit
-  salesCategory String[]
   likedUsers    Favorites[]
   quantity      Int
-  reviews    Review[]
+  reviews       Review[]
+  salesCategory ProductSalesCategory[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

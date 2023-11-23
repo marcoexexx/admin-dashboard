@@ -18,9 +18,7 @@ export function permissionUser(
         // @ts-ignore  for mocha testing
         const user = req.user
 
-        if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
-
-        const isAllowed = roleBasedAccess.isAuthenticated(perm, user.role, action)
+        const isAllowed = roleBasedAccess.isAuthenticated(perm, user?.role || "*", action)
 
         if (!isAllowed) return next(new AppError(403, "You do not have permission to access this resource."))
 

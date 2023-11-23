@@ -1,2 +1,2 @@
 export * from './MuiButton'
-export * from './MuiTextField'
+export * from './MuiLabel'

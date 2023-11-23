@@ -1,12 +1,34 @@
 import { registerUserFn } from "@/services/authApi"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Stack } from "@mui/material"
+import { Button, Stack, TextField, styled } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { object, string, z } from "zod"
 import { useStore } from "@/hooks"
 import { useLocation, useNavigate } from "react-router-dom"
-import { MuiTextFiled } from "./ui"
+
+const MuiTextFieldWrapper = styled(TextField)(({theme}) => ({
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: theme.colors.alpha.white[70],
+    },
+    '&:hover fieldset': {
+      borderColor: theme.colors.alpha.white[70],
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: theme.colors.alpha.white[100],
+    },
+  },
+
+  '& .MuiInputLabel-root': {
+    color: theme.colors.alpha.white[70],
+  },
+
+  '& .MuiInputBase-input': {
+    color: theme.colors.alpha.white[100],
+  }
+}))
+
 
 const registerUserSchema = object({
   name: string({ required_error: "Username is required" })
@@ -60,10 +82,10 @@ export function RegisterForm() {
 
   return (
     <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={handleSubmit(onSubmit)}>
-      <MuiTextFiled {...register("name")} label="Username" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
-      <MuiTextFiled {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
-      <MuiTextFiled {...register("password")} label="Password" error={!!errors.password} helperText={!!errors.password ? errors.password.message : ""} />
-      <MuiTextFiled {...register("passwordConfirm")} label="Password confirm" error={!!errors.passwordConfirm} helperText={!!errors.passwordConfirm ? errors.passwordConfirm.message : ""} />
+      <MuiTextFieldWrapper {...register("name")} label="Username" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
+      <MuiTextFieldWrapper {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
+      <MuiTextFieldWrapper {...register("password")} label="Password" error={!!errors.password} helperText={!!errors.password ? errors.password.message : ""} />
+      <MuiTextFieldWrapper {...register("passwordConfirm")} label="Password confirm" error={!!errors.passwordConfirm} helperText={!!errors.passwordConfirm ? errors.passwordConfirm.message : ""} />
 
       <Button variant="contained" fullWidth type="submit">Sign Up</Button>
     </Stack>

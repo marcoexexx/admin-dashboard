@@ -15,7 +15,18 @@ type Store = {
       | "info"
   },
   user?: IUser
+  slidebar: boolean
   local: Local
+  productFilter?: Partial<IProduct>
+}
+
+interface ProductActions {
+  type: "SET_PRODUCT_FILTER",
+  payload: Partial<Record<keyof IProduct, any>>
+}
+
+interface SlidebarActions {
+  type: "TOGGLE_SLIDEBAR",
 }
 
 interface ThemeActions {
@@ -48,6 +59,8 @@ type Action =
   | ToastCloseActions
   | UserActions
   | LocalActions
+  | SlidebarActions
+  | ProductActions
 
 type Dispatch = (action: Action) => void
 
@@ -62,7 +75,8 @@ const initialState: Store = {
     status: false,
     severity: "info"
   },
-  local: i18n.local
+  local: i18n.local,
+  slidebar: false
 }
 
 const stateReducer = (state: Store, action: Action): Store => {
@@ -86,7 +100,19 @@ const stateReducer = (state: Store, action: Action): Store => {
     }
 
     case "SET_LOCAL": {
+      i18n.load(action.payload)
       return { ...state, local: action.payload }
+    }
+
+    case "TOGGLE_SLIDEBAR": {
+      return { ...state, slidebar: !state.slidebar }
+    }
+
+    case "SET_PRODUCT_FILTER": {
+      return { 
+        ...state,
+        productFilter: action.payload
+      }
     }
 
     default: {
