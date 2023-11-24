@@ -1,31 +1,11 @@
-import { Box, Card, CardHeader, Checkbox, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
-import { BulkActions } from "."
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { MuiLabel } from "./ui"
-import { useStore } from "@/hooks";
-import { capitalize } from "lodash";
+import { MuiLabel } from "@/components/ui";
+import { BulkActions } from "@/components";
+import { ProductsActions } from ".";
 
-
-const statusOptions = [
-  {
-    id: "all",
-    name: "All",
-  },
-  {
-    id: "draft",
-    name: "Draft",
-  },
-  {
-    id: "pending",
-    name: "Pending",
-  },
-  {
-    id: "published",
-    name: "Published",
-  },
-]
 
 const getStatusLabel = (status: Omit<Status, "all">): JSX.Element => {
   const map = {
@@ -79,7 +59,7 @@ const columnHeader = columnData.concat([
   {
     id: "actions",
     align: "right",
-    name: "Status"
+    name: "Actions"
   }
 ])
 
@@ -92,32 +72,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
   const { products } = props
 
   const theme = useTheme()
-  const { dispatch } = useStore()
-  const [filter, setFilter] = useState({
-    page: 0,
-    limit: 5,
-    status: "all" as Status
-  })
-
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
   const selectedBulkActions = selectedRows.length > 0
-
-  const handleStatusChange = (evt: SelectChangeEvent): void => {
-    const { value } = evt.target
-    let status: Status = "all"
-    if (evt.target.value !== "all") status = value as Status
-
-    setFilter(prev => ({ ...prev, status }))
-
-    if (status === "all") dispatch({ type: "SET_PRODUCT_FILTER", payload: {} })
-
-    if (status !== "all") dispatch({ type: "SET_PRODUCT_FILTER", payload: {
-      status: {
-        equals: capitalize(status)
-      }
-    } })
-  }
 
   const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = evt.target
@@ -142,30 +99,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
         <BulkActions />
       </Box>}
 
-      {!selectedBulkActions && (
-        <CardHeader
-          action={
-            <Box width={150}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={filter.status || "all"}
-                  onChange={handleStatusChange}
-                  label="Status"
-                  autoWidth
-                >
-                  {statusOptions.map(statusOption => (
-                    <MenuItem key={statusOption.id} value={statusOption.id}>
-                      {statusOption.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          }
-          title="Products Table"
-        />
-      )}
+      <CardContent>
+        <ProductsActions />
+      </CardContent>
 
       <Divider />
 

@@ -47,7 +47,7 @@ export function LoginForm() {
   const navigate = useNavigate()
   const location = useLocation()
   // TODO: Debug
-  const from = ((location.state as any)?.from.pathname as string) || "/dashboard"
+  const from = location.pathname || "/dashboard"
 
   useEffect(() => {
     if (cookies.logged_in) navigate("/home")

@@ -1,4 +1,10 @@
 import { object, string, z } from "zod";
+import { Pagination } from "./types";
+
+export type BrandFilterPagination = {
+  filter?: any,
+  pagination?: Pagination,
+}
 
 const params = {
   params: object({

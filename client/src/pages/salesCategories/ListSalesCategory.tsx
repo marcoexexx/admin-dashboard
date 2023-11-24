@@ -1,16 +1,7 @@
-import { PageTitle, queryClient } from "@/components"
+import { PageTitle } from "@/components"
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { Link } from 'react-router-dom'
 import { Button, Container, Grid, Typography } from "@mui/material"
-import { getSalesCategoriesFn } from "@/services/salesCategoryApi";
-
-export async function salesCategoryLoader() {
-  return await queryClient.fetchQuery({
-    queryKey: ["sales-categories"],
-    queryFn: args => getSalesCategoriesFn(args, { filter: {} }),
-  })
-}
-
 
 export default function ListSalesCategory() {
   return (

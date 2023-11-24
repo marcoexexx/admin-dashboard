@@ -1,7 +1,8 @@
-import { PageTitle, ProductsList } from "@/components"
+import { PageTitle } from "@/components"
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { Link } from 'react-router-dom'
 import { Button, Container, Grid, Typography } from "@mui/material"
+import { ProductsList } from "@/components/content/products";
 
 export default function ListProduct() {
   return (

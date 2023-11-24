@@ -52,8 +52,7 @@ export function RegisterForm() {
   const { dispatch } = useStore()
   const navigate = useNavigate()
   const location = useLocation()
-  // TODO: Debug
-  const from = ((location.state as any)?.from.pathname as string) || "/auth/login"
+  const from = location.pathname || "/auth/login"
 
   const { mutate } = useMutation({
     mutationFn: registerUserFn,

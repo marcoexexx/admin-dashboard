@@ -50,8 +50,7 @@ export function CreateProductForm() {
   const { dispatch } = useStore()
   const navigate = useNavigate()
   const location = useLocation()
-  // TODO: Debug
-  const from = ((location.state as any)?.from.pathname as string) || "/products"
+  const from = location.pathname || "/products"
 
   const {
     mutate: createProduct

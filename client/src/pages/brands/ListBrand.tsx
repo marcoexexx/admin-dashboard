@@ -1,18 +1,8 @@
-import { PageTitle, queryClient } from "@/components"
+import { PageTitle } from "@/components"
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { Link } from 'react-router-dom'
 import { Button, Container, Grid, Typography } from "@mui/material"
-import { getBrandsFn } from "@/services/brandsApi";
-
-export async function brandsLoader() {
-  return await queryClient.fetchQuery({
-    queryKey: ["brands"],
-    queryFn: (arg) => getBrandsFn(arg, { filter: {} }),
-
-    staleTime: 1000 * 60 * 60
-  })
-}
-
+import { BrandsList } from "@/components/content/brands";
 
 export default function ListBrand() {
   return (
@@ -42,7 +32,7 @@ export default function ListBrand() {
       <Container maxWidth="lg">
         <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
           <Grid item xs={12}>
-            {/* <BrandsList /> */}
+            <BrandsList />
           </Grid>
         </Grid>
       </Container>

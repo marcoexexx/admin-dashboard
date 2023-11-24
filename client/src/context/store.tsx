@@ -26,12 +26,26 @@ type Store = {
   user?: IUser
   slidebar: boolean
   local: Local
-  productFilter?: Partial<IProduct>
+  productFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number
+  },
+  brandFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number
+  }
 }
 
-interface ProductActions {
+interface ProductFilterActions {
   type: "SET_PRODUCT_FILTER",
-  payload: Partial<Record<keyof IProduct, any>>
+  payload: Store["productFilter"]
+}
+
+interface BrandFilterActions {
+  type: "SET_BRAND_FILTER",
+  payload: Store["brandFilter"]
 }
 
 interface ModalFormOpenActions {
@@ -83,7 +97,8 @@ type Action =
   | UserActions
   | LocalActions
   | SlidebarActions
-  | ProductActions
+  | ProductFilterActions
+  | BrandFilterActions
   | ModalFormOpenActions
   | ModalFormCloseActions
   | AllModalFormCloseActions
@@ -106,7 +121,15 @@ const initialState: Store = {
   modalForm: {
     field: "*",
     state: false
-  }
+  },
+  productFilter: {
+    page: 0,
+    limit: 10
+  },
+  brandFilter: {
+    page: 0,
+    limit: 10
+  },
 }
 
 const stateReducer = (state: Store, action: Action): Store => {
@@ -148,6 +171,10 @@ const stateReducer = (state: Store, action: Action): Store => {
 
     case "CLOSE_ALL_MODAL_FORM": {
       return { ...state, modalForm: { state: false, field: "*" } }
+    }
+
+    case "SET_BRAND_FILTER": {
+      return { ...state, brandFilter: action.payload }
     }
 
     case "SET_PRODUCT_FILTER": {

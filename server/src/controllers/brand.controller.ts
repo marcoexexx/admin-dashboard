@@ -3,17 +3,34 @@ import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CreateBrandInput, GetBrandInput } from "../schemas/brand.schema";
+import { BrandFilterPagination, CreateBrandInput, GetBrandInput } from "../schemas/brand.schema";
+import { convertNumericStrings } from "../utils/convertNumber";
 
 
 export async function getBrandsHandler(
-  _: Request,
+  req: Request<{}, {}, {}, BrandFilterPagination>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    // TODO: filter
-    const brands = await db.brand.findMany()
+    const { filter = {}, pagination } = convertNumericStrings(req.query)
+    const {
+      id,
+      name
+    } = filter || { status: undefined }
+    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
+      { page: 1, pageSize: 10 }
+
+    const offset = (page - 1) * pageSize
+
+    const brands = await db.brand.findMany({
+      where: {
+        id,
+        name
+      },
+      skip: offset,
+      take: pageSize,
+    })
 
     res.status(200).json(HttpListResponse(brands))
   } catch (err: any) {

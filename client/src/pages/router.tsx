@@ -3,9 +3,6 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import Loader from "./loader";
 import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
-import { brandsLoader } from "@/pages/brands/ListBrand";
-import { categoriesLoader } from "@/pages/categories/ListCategory";
-import { salesCategoryLoader } from "@/pages/salesCategories/ListSalesCategory";
 
 const HomePage = Loader(lazy(() => import("@/pages/home.page")))
 
@@ -60,7 +57,6 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                loader: brandsLoader,
                 Component: ListBrandPage
               },
               {
@@ -82,7 +78,6 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                loader: salesCategoryLoader,
                 Component: ListSalesCategoryPage
               },
               {
@@ -104,7 +99,6 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                loader: categoriesLoader,
                 Component: ListCategoryPage
               },
               {

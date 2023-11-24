@@ -1,4 +1,4 @@
-import { CreateBrandInput } from "@/components";
+import { CreateBrandInput } from "@/components/forms";
 import { authApi } from "./authApi";
 
 // TODO
