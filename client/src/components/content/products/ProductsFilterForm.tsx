@@ -27,7 +27,7 @@ const filterProductsSchema = object({
   // instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]).optional(),
   description: string()
     .min(0).max(1024).optional(),
-  status: z.enum(["draft", "pending", "published"]).optional()
+  status: z.enum(["draft", "pending", "published"]).optional(),
   // type: z.enum(["Switch", "Accessory", "Router", "Wifi"]).optional(),
   // dealerPrice: number().min(0).optional(),
   // marketPrice: number().min(0).optional(),
@@ -35,6 +35,7 @@ const filterProductsSchema = object({
   // priceUnit: z.enum(["MMK", "USD", "THB", "KRW"]).optional(),
   // // salesCategory: string().array(),
   // quantity: number().min(0),
+  mode: z.enum(["default", "insensitive"]).default("default").optional(),
 }) 
 
 export type FilterProductsInput = z.infer<typeof filterProductsSchema>
@@ -53,7 +54,8 @@ export function ProductdsFilterForm() {
       title,
       description,
       minPrice,
-      maxPrice
+      maxPrice,
+      mode
     } = value
     setFilterQuery(prev => ({ ...prev, ...value }))
     dispatch({ type: "SET_PRODUCT_FILTER", payload: {
@@ -68,7 +70,8 @@ export function ProductdsFilterForm() {
           gte: maxPrice,
           lte: minPrice,
         }
-      }
+      },
+      mode
     } })
   }
 
@@ -95,6 +98,10 @@ export function ProductdsFilterForm() {
     <Grid item xs={6} md={3}>
       <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
         <TextField fullWidth type="number" defaultValue={filterQuery.get("maxPrice")} {...register("maxPrice", { setValueAs: value => value === "" ? undefined : parseInt(value, 10) })} label="Maximum price" error={!!errors.maxPrice} helperText={!!errors.maxPrice ? errors.maxPrice.message : ""} />
+
+        {/* TEST */}
+        <TextField fullWidth defaultValue={filterQuery.get("mode")} {...register("mode")} label="Mode" error={!!errors.mode} helperText={!!errors.mode ? errors.mode.message : ""} />
+        {/* /TEST */}
       </Box>
     </Grid>
 

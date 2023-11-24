@@ -29,12 +29,14 @@ type Store = {
   productFilter?: {
     fields?: any,
     page?: number,
-    limit?: number
+    limit?: number,
+    mode?: "insensitive" | "default"
   },
   brandFilter?: {
     fields?: any,
     page?: number,
-    limit?: number
+    limit?: number,
+    mode?: "insensitive" | "default"
   }
 }
 
@@ -124,11 +126,13 @@ const initialState: Store = {
   },
   productFilter: {
     page: 0,
-    limit: 10
+    limit: 10,
+    mode: "default"
   },
   brandFilter: {
     page: 0,
-    limit: 10
+    limit: 10,
+    mode: "default"
   },
 }
 

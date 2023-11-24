@@ -2,7 +2,7 @@ import { useStore } from "@/hooks"
 import { Box, Divider, IconButton, Stack, Tooltip, alpha, lighten, styled } from "@mui/material"
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 import CloseTwoToneIcon from '@mui/icons-material/CloseTwoTone';
-import { HeaderMenu } from "@/components";
+import { HeaderMenu, HeaderUserBox } from "@/components";
 
 const MainContent = styled(Box)(({theme}) => ({
   height: theme.colors.layout.header.height,
@@ -49,7 +49,7 @@ export function Header() {
 
       <Box display="flex" alignItems="center">
         {/* <HeaderButtons /> */}
-        {/* <HeaderUserbox /> */}
+        <HeaderUserBox />
         <Box component="span" sx={{ ml: 2, display: { lg: "none", xs: "inline-block" } }}>
           <Tooltip arrow title="Toggle Menu">
             <IconButton color="primary" onClick={onClickToggleSlidebarHandler}>

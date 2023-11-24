@@ -1,4 +1,4 @@
-import { CreateProductInput } from "@/components";
+import { CreateProductInput } from "@/components/forms";
 import { authApi } from "./authApi";
 
 // TODO: fix filter type
