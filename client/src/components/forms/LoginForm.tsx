@@ -46,7 +46,6 @@ export function LoginForm() {
   const [cookies] = useCookies(["logged_in"])
   const navigate = useNavigate()
   const location = useLocation()
-  // TODO: Debug
   const from = location.pathname || "/dashboard"
 
   useEffect(() => {

@@ -1,5 +1,6 @@
-import { Box, Container, Grid, Typography, Link, styled } from '@mui/material'
-import { OAuthForm, RegisterForm } from '@/components'
+import { OAuthForm, RegisterForm } from '@/components/forms'
+import { Box, Container, Grid, Typography, styled } from '@mui/material'
+import { Link } from 'react-router-dom'
 
 const GridWrapper = styled(Grid)(({ theme }) => ({
   background: theme.colors.gradients.black1
@@ -71,7 +72,7 @@ export default function Register() {
               <RegisterForm />
 
               <TypographySecondary variant='h4' fontWeight="normal" sx={{ my: 2 }}>
-                Already have an account? <Link href="/auth/login">Login</Link>
+                Already have an account? <Link to="/auth/login">Login</Link>
               </TypographySecondary>
 
               <OAuthForm />

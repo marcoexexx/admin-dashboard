@@ -1,6 +1,6 @@
-import { Box, Container, Grid, Typography, Link, styled, Hidden } from '@mui/material'
-import { LoginForm } from '@/components/LoginForm'
-import { OAuthForm } from '@/components'
+import { LoginForm, OAuthForm } from '@/components/forms'
+import { Box, Container, Grid, Typography, styled, Hidden } from '@mui/material'
+import { Link } from 'react-router-dom'
 
 const GridWrapper = styled(Grid)(({ theme }) => ({
   background: theme.colors.gradients.black1
@@ -74,7 +74,7 @@ export default function Login() {
               <LoginForm />
 
               <TypographySecondary variant='h4' fontWeight="normal" sx={{ my: 2 }}>
-                Need an account? <Link href="/auth/register">Create an account</Link>
+                Need an account? <Link to="/auth/register">Create an account</Link>
               </TypographySecondary>
 
               <OAuthForm />
