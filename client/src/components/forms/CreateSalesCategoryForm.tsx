@@ -21,7 +21,7 @@ export function CreateSalesCategoryForm() {
   const navigate = useNavigate()
   const location = useLocation()
   // TODO: Debug
-  const from = ((location.state as any)?.from.pathname as string) || "/sales-categories"
+  const from = location.pathname || "/sales-categories"
 
   const {
     mutate: createSalesCategory,
@@ -53,6 +53,7 @@ export function CreateSalesCategoryForm() {
 
   const onSubmit: SubmitHandler<CreateSalesCategoryInput> = (value) => {
     createSalesCategory(value)
+    dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
   }
 
   return (

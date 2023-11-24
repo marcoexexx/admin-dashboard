@@ -21,7 +21,7 @@ export function CreateBrandForm() {
   const navigate = useNavigate()
   const location = useLocation()
   // TODO: Debug
-  const from = ((location.state as any)?.from.pathname as string) || "/brands"
+  const from = location.pathname || "/brands"
 
   const {
     mutate: createBrand,
@@ -53,12 +53,13 @@ export function CreateBrandForm() {
 
   const onSubmit: SubmitHandler<CreateBrandInput> = (value) => {
     createBrand(value)
+    dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
   }
 
   return (
     <FormProvider {...methods}>
       <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
-        <Grid item md={6} xs={12}>
+        <Grid item xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
             <TextField fullWidth {...register("name")} label="Name" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
           </Box>

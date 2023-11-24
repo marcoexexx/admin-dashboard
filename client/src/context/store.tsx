@@ -14,6 +14,15 @@ type Store = {
       | "warning"
       | "info"
   },
+  modalForm: {
+    field:
+      | "*"
+      | "brands"
+      | "products"
+      | "categories"
+      | "sales-categories"
+    state: boolean
+  },
   user?: IUser
   slidebar: boolean
   local: Local
@@ -23,6 +32,20 @@ type Store = {
 interface ProductActions {
   type: "SET_PRODUCT_FILTER",
   payload: Partial<Record<keyof IProduct, any>>
+}
+
+interface ModalFormOpenActions {
+  type: "OPEN_MODAL_FORM",
+  payload: Store["modalForm"]["field"]
+}
+
+interface ModalFormCloseActions {
+  type: "CLOSE_MODAL_FORM",
+  payload: Store["modalForm"]["field"]
+}
+
+interface AllModalFormCloseActions {
+  type: "CLOSE_ALL_MODAL_FORM",
 }
 
 interface SlidebarActions {
@@ -61,6 +84,9 @@ type Action =
   | LocalActions
   | SlidebarActions
   | ProductActions
+  | ModalFormOpenActions
+  | ModalFormCloseActions
+  | AllModalFormCloseActions
 
 type Dispatch = (action: Action) => void
 
@@ -76,7 +102,11 @@ const initialState: Store = {
     severity: "info"
   },
   local: i18n.local,
-  slidebar: false
+  slidebar: false,
+  modalForm: {
+    field: "*",
+    state: false
+  }
 }
 
 const stateReducer = (state: Store, action: Action): Store => {
@@ -106,6 +136,18 @@ const stateReducer = (state: Store, action: Action): Store => {
 
     case "TOGGLE_SLIDEBAR": {
       return { ...state, slidebar: !state.slidebar }
+    }
+
+    case "OPEN_MODAL_FORM": {
+      return { ...state, modalForm: { state: true, field: action.payload } }
+    }
+
+    case "CLOSE_MODAL_FORM": {
+      return { ...state, modalForm: { state: false, field: action.payload } }
+    }
+
+    case "CLOSE_ALL_MODAL_FORM": {
+      return { ...state, modalForm: { state: false, field: "*" } }
     }
 
     case "SET_PRODUCT_FILTER": {

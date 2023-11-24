@@ -21,7 +21,7 @@ export function CreateCategoryForm() {
   const navigate = useNavigate()
   const location = useLocation()
   // TODO: Debug
-  const from = ((location.state as any)?.from.pathname as string) || "/categories"
+  const from = location.pathname || "/categories"
 
   const {
     mutate: createCategory,
@@ -53,12 +53,13 @@ export function CreateCategoryForm() {
 
   const onSubmit: SubmitHandler<CreateCategoryInput> = (value) => {
     createCategory(value)
+    dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
   }
 
   return (
     <FormProvider {...methods}>
       <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
-        <Grid item md={6} xs={12}>
+        <Grid item xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
             <TextField fullWidth {...register("name")} label="Name" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
           </Box>
