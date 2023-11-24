@@ -2,7 +2,7 @@ import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, string, z } from "zod";
-import { BrandInputField, CatgoryMultiInputField, SalesCategoryMultiInputField } from "@/components/InputFields";
+import { BrandInputField, CatgoryMultiInputField, SalesCategoryMultiInputField } from "@/components/input-fields";
 import { useMutation } from "@tanstack/react-query";
 import { createProductFn } from "@/services/productsApi";
 import { useStore } from "@/hooks";
