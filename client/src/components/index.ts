@@ -1,4 +1,5 @@
 export * from './Providers'
+export * from './Logo'
 export * from './SuspenseLoader'
 export * from './ErrorBoundary'
 export * from './ToastProvider'

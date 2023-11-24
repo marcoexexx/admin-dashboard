@@ -45,7 +45,9 @@ export function SlidebarLayout() {
           ml: theme.colors.layout.sidebar.width
         }
       }}>
-        <Outlet />
+        <Box display="block">
+          <Outlet />
+        </Box>
       </InnerBoxWrapper>
     </MainContent>
   )
