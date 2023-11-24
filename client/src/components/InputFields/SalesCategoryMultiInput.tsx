@@ -108,7 +108,7 @@ export function SalesCategoryMultiInputField() {
       )}
     />
 
-    <FormModal field='sales-categories' title='Create new brand' onClose={handleOnCloseModalForm}>
+    <FormModal field='sales-categories' title='Create new sales category' onClose={handleOnCloseModalForm}>
       <CreateSalesCategoryForm />
     </FormModal>
   </>

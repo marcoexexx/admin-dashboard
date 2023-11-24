@@ -3,6 +3,7 @@ import { useStore } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { getMeFn } from '@/services/authApi';
+import { SuspenseLoader } from '.';
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -25,7 +26,7 @@ export function AuthProvider(props: AuthProviderProps) {
   }, [query.isSuccess])
 
   // TODO: loading
-  if (query.isLoading) return <h1>FullLoadin</h1>
+  if (query.isLoading) return <SuspenseLoader />
 
   return children
 }

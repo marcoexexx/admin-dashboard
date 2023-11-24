@@ -59,7 +59,7 @@ export function CreateSalesCategoryForm() {
   return (
     <FormProvider {...methods}>
       <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
-        <Grid item md={6} xs={12}>
+        <Grid item xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
             <TextField fullWidth {...register("name")} label="Name" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
           </Box>
