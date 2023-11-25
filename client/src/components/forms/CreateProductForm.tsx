@@ -11,8 +11,6 @@ import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { EditorInputField } from "../input-fields/EditorInputField";
 
-const multilineRows = 8
-
 const productTypes = ["Switch", "Accessory", "Router", "Wifi"]
 const instockStatus = ["InStock", "OutOfStock", "AskForStock"]
 const priceUnit = ["MMK", "USD", "THB", "KRW"]
@@ -120,15 +118,6 @@ export function CreateProductForm() {
 
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            {/* <TextField  */}
-            {/*   fullWidth  */}
-            {/*   multiline */}
-            {/*   rows={multilineRows} */}
-            {/*   {...register("specification")}  */}
-            {/*   label="Specification"  */}
-            {/*   error={!!errors.specification}  */}
-            {/*   helperText={!!errors.specification ? errors.specification.message : ""}  */}
-            {/* /> */}
             <EditorInputField field="specification" />
             <CatgoryMultiInputField />
           </Box>
@@ -136,15 +125,7 @@ export function CreateProductForm() {
 
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField 
-              fullWidth 
-              multiline
-              rows={multilineRows}
-              {...register("overview")} 
-              label="Overview" 
-              error={!!errors.overview} 
-              helperText={!!errors.overview ? errors.overview.message : ""} 
-            />
+            <EditorInputField field="overview" />
             <TextField fullWidth {...register("marketPrice", { valueAsNumber: true })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
           </Box>
         </Grid>
@@ -152,15 +133,7 @@ export function CreateProductForm() {
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
             <TextField fullWidth {...register("colors")} label="Color" error={!!errors.colors} helperText={!!errors.colors ? errors.colors.message : ""} />
-            <TextField 
-              multiline
-              rows={multilineRows}
-              fullWidth 
-              {...register("description")} 
-              label="Description" 
-              error={!!errors.description} 
-              helperText={!!errors.description ? errors.description.message : ""} 
-            />
+            <EditorInputField field="description" />
           </Box>
         </Grid>
 
@@ -181,15 +154,7 @@ export function CreateProductForm() {
                 </MenuItem>
               ))}
             </TextField>
-            <TextField 
-              fullWidth 
-              multiline
-              rows={multilineRows}
-              {...register("features")} 
-              label="Features" 
-              error={!!errors.features} 
-              helperText={!!errors.features ? errors.features.message : ""} 
-            />
+            <EditorInputField field="features" />
           </Box>
         </Grid>
 

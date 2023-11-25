@@ -29,7 +29,6 @@ export function SalesCategoryMultiInputField() {
 
   const handleSalesCateogyChange = (_: React.SyntheticEvent, value: Pick<ISalesCategory, "id" | "name">[] | null) => {
     if (value) {
-      console.log(value)
       setSelectedCategories(value)
       setValue("salesCategory", value.map(v => v.id))
     }

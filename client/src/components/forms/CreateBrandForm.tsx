@@ -5,9 +5,10 @@ import { object, string, z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { createBrandFn } from "@/services/brandsApi";
 import { useStore } from "@/hooks";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
+import { useEffect } from "react";
 
 const createBrandSchema = object({
   name: string({ required_error: "Brand name is required" })
@@ -20,8 +21,7 @@ export function CreateBrandForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const location = useLocation()
-  const from = location.pathname || "/brands"
+  const from = "/brands"
 
   const {
     mutate: createBrand,
@@ -32,7 +32,8 @@ export function CreateBrandForm() {
         message: "Success created a new brand.",
         severity: "success"
       } })
-      if (modalForm.field !== "brands") navigate(from)
+      if (modalForm.field === "*") navigate(from)
+      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
         queryKey: ["brands"]
       })
@@ -49,11 +50,14 @@ export function CreateBrandForm() {
     resolver: zodResolver(createBrandSchema)
   })
 
-  const { handleSubmit, register, formState: { errors } } = methods
+  const { handleSubmit, register, formState: { errors }, setFocus } = methods
+
+  useEffect(() => {
+    setFocus("name")
+  }, [setFocus])
 
   const onSubmit: SubmitHandler<CreateBrandInput> = (value) => {
     createBrand(value)
-    dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
   }
 
   return (

@@ -56,6 +56,10 @@ const routes = createBrowserRouter([
             path: "brands",
             children: [
               {
+                path: "",
+                element: <Navigate to="/brands/list" />
+              },
+              {
                 path: "list",
                 Component: ListBrandPage
               },
@@ -76,6 +80,10 @@ const routes = createBrowserRouter([
           {
             path: "sales-categories",
             children: [
+              {
+                path: "",
+                element: <Navigate to="/sales-categories/list" />
+              },
               {
                 path: "list",
                 Component: ListSalesCategoryPage
@@ -98,6 +106,10 @@ const routes = createBrowserRouter([
             path: "categories",
             children: [
               {
+                path: "",
+                element: <Navigate to="/categories/list" />
+              },
+              {
                 path: "list",
                 Component: ListCategoryPage
               },
@@ -118,6 +130,10 @@ const routes = createBrowserRouter([
           {
             path: "products",
             children: [
+              {
+                path: "",
+                element: <Navigate to="/products/list" />
+              },
               {
                 path: "list",
                 Component: ListProductPage
