@@ -17,8 +17,9 @@
     "@mui/icons-material": "^5.14.18",
     "@mui/lab": "5.0.0-alpha.153",
     "@mui/material": "^5.14.18",
+    "@mui/styled-engine-sc": "6.0.0-alpha.6",
     "@mui/styles": "^5.14.18",
-    "@mui/x-date-pickers": "^6.18.1",
+    "@mui/x-date-pickers": "^6.18.2",
     "@tanstack/react-query": "^5.8.4",
     "@tanstack/react-query-devtools": "^5.8.4",
     "axios": "^1.6.2",
@@ -30,10 +31,11 @@
     "react": "^18.2.0",
     "react-cookie": "^6.1.1",
     "react-dom": "^18.2.0",
-    "react-facebook": "^9.0.12",
     "react-hook-form": "^7.48.2",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^6.19.0",
     "sort-by": "^1.2.0",
+    "styled-components": "^6.1.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {

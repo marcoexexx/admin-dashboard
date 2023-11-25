@@ -24,7 +24,7 @@ router.route("")
   )
 
 
-router.route("/detail")
+router.route("/detail/:brandId")
   .get(
     permissionUser("read", brandPermission),
     validate(getBrandSchema),

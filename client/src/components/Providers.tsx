@@ -28,22 +28,20 @@ export function Providers(props: ProvidersProps) {
   const { children } = props
 
   return (
-    <FacebookProvider appId={getConfig("facebookAppId")} chatSupport>
-      <StylesProvider injectFirst>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <StoreProvider>
-            <QueryClientProvider client={queryClient}>
-              <AuthProvider>
-                <ThemeWrapper>
-                  {children}
-                </ThemeWrapper>
-              </AuthProvider>
+    <StylesProvider injectFirst>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <ThemeWrapper>
+                {children}
+              </ThemeWrapper>
+            </AuthProvider>
 
-              <ReactQueryDevtools />
-            </QueryClientProvider>
-          </StoreProvider>
-        </LocalizationProvider>
-      </StylesProvider>
-    </FacebookProvider>
+            <ReactQueryDevtools />
+          </QueryClientProvider>
+        </StoreProvider>
+      </LocalizationProvider>
+    </StylesProvider>
   )
 }

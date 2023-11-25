@@ -64,8 +64,16 @@ interface AllModalFormCloseActions {
   type: "CLOSE_ALL_MODAL_FORM",
 }
 
-interface SlidebarActions {
+interface SlidebarToggleActions {
   type: "TOGGLE_SLIDEBAR",
+}
+
+interface SlidebarOpenActions {
+  type: "OPEN_SLIDEBAR",
+}
+
+interface SlidebarCloseActions {
+  type: "CLOSE_SLIDEBAR",
 }
 
 interface ThemeActions {
@@ -98,7 +106,9 @@ type Action =
   | ToastCloseActions
   | UserActions
   | LocalActions
-  | SlidebarActions
+  | SlidebarOpenActions
+  | SlidebarToggleActions
+  | SlidebarCloseActions
   | ProductFilterActions
   | BrandFilterActions
   | ModalFormOpenActions
@@ -161,8 +171,16 @@ const stateReducer = (state: Store, action: Action): Store => {
       return { ...state, local: action.payload }
     }
 
+    case "OPEN_SLIDEBAR": {
+      return { ...state, slidebar: true }
+    }
+
     case "TOGGLE_SLIDEBAR": {
       return { ...state, slidebar: !state.slidebar }
+    }
+
+    case "CLOSE_SLIDEBAR": {
+      return { ...state, slidebar: false }
     }
 
     case "OPEN_MODAL_FORM": {

@@ -5,6 +5,7 @@ import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { BrandFilterPagination, CreateBrandInput, GetBrandInput } from "../schemas/brand.schema";
 import { convertNumericStrings } from "../utils/convertNumber";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 
 export async function getBrandsHandler(
@@ -80,6 +81,9 @@ export async function createBrandHandler(
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
+
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Brand already exists"))
+
     next(new AppError(500, msg))
   }
 }

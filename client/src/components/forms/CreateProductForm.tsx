@@ -9,8 +9,7 @@ import { useStore } from "@/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
-
-const multilineRows = 8
+import { EditorInputField } from "../input-fields/EditorInputField";
 
 const productTypes = ["Switch", "Accessory", "Router", "Wifi"]
 const instockStatus = ["InStock", "OutOfStock", "AskForStock"]
@@ -48,6 +47,7 @@ export type CreateProductInput = z.infer<typeof createProductSchema>
 
 export function CreateProductForm() {
   const { dispatch } = useStore()
+
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.pathname || "/products"
@@ -118,30 +118,14 @@ export function CreateProductForm() {
 
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField 
-              fullWidth 
-              multiline
-              rows={multilineRows}
-              {...register("specification")} 
-              label="Specification" 
-              error={!!errors.specification} 
-              helperText={!!errors.specification ? errors.specification.message : ""} 
-            />
+            <EditorInputField field="specification" />
             <CatgoryMultiInputField />
           </Box>
         </Grid>
 
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField 
-              fullWidth 
-              multiline
-              rows={multilineRows}
-              {...register("overview")} 
-              label="Overview" 
-              error={!!errors.overview} 
-              helperText={!!errors.overview ? errors.overview.message : ""} 
-            />
+            <EditorInputField field="overview" />
             <TextField fullWidth {...register("marketPrice", { valueAsNumber: true })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
           </Box>
         </Grid>
@@ -149,15 +133,7 @@ export function CreateProductForm() {
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
             <TextField fullWidth {...register("colors")} label="Color" error={!!errors.colors} helperText={!!errors.colors ? errors.colors.message : ""} />
-            <TextField 
-              multiline
-              rows={multilineRows}
-              fullWidth 
-              {...register("description")} 
-              label="Description" 
-              error={!!errors.description} 
-              helperText={!!errors.description ? errors.description.message : ""} 
-            />
+            <EditorInputField field="description" />
           </Box>
         </Grid>
 
@@ -178,15 +154,7 @@ export function CreateProductForm() {
                 </MenuItem>
               ))}
             </TextField>
-            <TextField 
-              fullWidth 
-              multiline
-              rows={multilineRows}
-              {...register("features")} 
-              label="Features" 
-              error={!!errors.features} 
-              helperText={!!errors.features ? errors.features.message : ""} 
-            />
+            <EditorInputField field="features" />
           </Box>
         </Grid>
 

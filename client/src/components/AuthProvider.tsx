@@ -25,7 +25,6 @@ export function AuthProvider(props: AuthProviderProps) {
     dispatch({ type: "SET_USER", payload: query.data })
   }, [query.isSuccess])
 
-  // TODO: loading
   if (query.isLoading) return <SuspenseLoader />
 
   return children
