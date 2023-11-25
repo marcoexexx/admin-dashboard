@@ -9,6 +9,7 @@ import { useStore } from "@/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
+import { EditorInputField } from "../input-fields/EditorInputField";
 
 const multilineRows = 8
 
@@ -48,6 +49,7 @@ export type CreateProductInput = z.infer<typeof createProductSchema>
 
 export function CreateProductForm() {
   const { dispatch } = useStore()
+
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.pathname || "/products"
@@ -118,15 +120,16 @@ export function CreateProductForm() {
 
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField 
-              fullWidth 
-              multiline
-              rows={multilineRows}
-              {...register("specification")} 
-              label="Specification" 
-              error={!!errors.specification} 
-              helperText={!!errors.specification ? errors.specification.message : ""} 
-            />
+            {/* <TextField  */}
+            {/*   fullWidth  */}
+            {/*   multiline */}
+            {/*   rows={multilineRows} */}
+            {/*   {...register("specification")}  */}
+            {/*   label="Specification"  */}
+            {/*   error={!!errors.specification}  */}
+            {/*   helperText={!!errors.specification ? errors.specification.message : ""}  */}
+            {/* /> */}
+            <EditorInputField field="specification" />
             <CatgoryMultiInputField />
           </Box>
         </Grid>

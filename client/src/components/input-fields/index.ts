@@ -1,3 +1,4 @@
 export * from './BrandInputField'
 export * from './CategoryMultiInputField'
-export * from './SalesCategoryMultiInput'
+export * from './SalesCategoryMultiInputField'
+export * from './EditorInputField'

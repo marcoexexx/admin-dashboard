@@ -18,9 +18,9 @@ export type CreateCategoryInput = z.infer<typeof createCategorySchema>
 
 export function CreateCategoryForm() {
   const { dispatch } = useStore()
+
   const navigate = useNavigate()
   const location = useLocation()
-  // TODO: Debug
   const from = location.pathname || "/categories"
 
   const {

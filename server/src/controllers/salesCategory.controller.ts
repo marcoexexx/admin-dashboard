@@ -4,6 +4,7 @@ import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CreateSalesCategoryInput, GetSalesCategoryInput } from "../schemas/salesCategory.schema";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 
 export async function getSalesCategoriesHandler(
@@ -63,6 +64,9 @@ export async function createSalesCategoryHandler(
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
+
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Sales category already exists"))
+
     next(new AppError(500, msg))
   }
 }

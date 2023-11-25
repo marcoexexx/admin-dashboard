@@ -1,7 +1,7 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, Typography } from "@mui/material";
+import { BrandsFilterForm } from ".";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { BrandsFilterForm } from ".";
 
 export function BrandsActions() {
   return (

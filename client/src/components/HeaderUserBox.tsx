@@ -1,15 +1,14 @@
 import { useStore } from "@/hooks"
-import { Avatar, Box, Button, Divider, Hidden, List, ListItemButton, ListItemText, Popover, Typography, lighten, styled } from "@mui/material"
+import { Avatar, Box, Button, Divider, Hidden, List, ListItemButton, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
 import { useRef, useState } from "react"
-import { Navigate } from "react-router-dom"
 import { NavLink as Link } from 'react-router-dom'
 import { MuiButton } from "./ui"
 import InboxTwoToneIcon from '@mui/icons-material/InboxTwoTone'
 import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone'
 import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone'
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone'
-import { useMutation } from "@tanstack/react-query"
-import { logoutUserFn } from "@/services/authApi"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { getMeFn, logoutUserFn } from "@/services/authApi"
 import { queryClient } from "."
 
 const UserBoxButton = styled(Button)(({theme}) => ({
@@ -39,7 +38,13 @@ const UserBoxDescription = styled(Typography)(({theme}) => ({
 
 
 export function HeaderUserBox() {
-  const { state: {user}, dispatch } = useStore()
+  const { dispatch } = useStore()
+
+  const { data: user, isLoading, isError, error } = useQuery({
+    queryKey: ["authUser"],
+    queryFn: getMeFn,
+    select: data => data.user
+  })
 
   const { mutate: logout } = useMutation({
     mutationFn: logoutUserFn,
@@ -66,7 +71,18 @@ export function HeaderUserBox() {
 
   const handleClose = () => setIsOpen(false)
 
-  if (!user) return <Navigate to="/auth/login" />
+
+  if (isError) return <>
+    <UserBoxButton color="error">
+      <UserBoxLabel>Failed: {error.message}</UserBoxLabel>
+    </UserBoxButton>
+  </>
+
+  if (isLoading || !user) return <>
+    <UserBoxButton color="secondary">
+      <Skeleton variant="rounded" width={200} height={60} />
+    </UserBoxButton>
+  </>
 
   return (
     <>

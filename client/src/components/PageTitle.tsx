@@ -1,4 +1,5 @@
 import { Box, Container, styled } from "@mui/material"
+import { PageBreadcrumbs } from "@/components"
 
 const MainContent = styled(Box)(({theme}) => ({
   padding: theme.spacing(4)
@@ -15,6 +16,8 @@ export function PageTitle(props: PageTitleProps) {
   return (
     <MainContent className="MuiPageTitle-wrapper">
       <Container maxWidth="lg">
+        <PageBreadcrumbs />
+
         {children}
       </Container>
     </MainContent>

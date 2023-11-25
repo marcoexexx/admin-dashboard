@@ -17,10 +17,10 @@ const createBrandSchema = object({
 export type CreateBrandInput = z.infer<typeof createBrandSchema>
 
 export function CreateBrandForm() {
-  const { dispatch } = useStore()
+  const { state: {modalForm}, dispatch } = useStore()
+
   const navigate = useNavigate()
   const location = useLocation()
-  // TODO: Debug
   const from = location.pathname || "/brands"
 
   const {
@@ -32,14 +32,14 @@ export function CreateBrandForm() {
         message: "Success created a new brand.",
         severity: "success"
       } })
-      navigate(from)
+      if (modalForm.field !== "brands") navigate(from)
       queryClient.invalidateQueries({
         queryKey: ["brands"]
       })
     },
-    onError: () => {
+    onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed created a new brand.",
+        message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
     },
@@ -61,7 +61,13 @@ export function CreateBrandForm() {
       <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
         <Grid item xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField fullWidth {...register("name")} label="Name" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
+            <TextField 
+              fullWidth 
+              {...register("name")} 
+              label="Name" 
+              error={!!errors.name} 
+              helperText={!!errors.name ? errors.name.message : ""} 
+            />
           </Box>
         </Grid>
 

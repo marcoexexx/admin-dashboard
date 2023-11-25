@@ -1,10 +1,11 @@
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { Box, Card, CardContent, CardHeader, Checkbox, Divider, IconButton, Popover, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
 import { BulkActions } from "@/components";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { BrandsActions } from ".";
+import { DeleteBrandForm } from "@/components/forms";
 
 
 const columnData: TableColumnHeader<IBrand>[] = [
@@ -23,7 +24,6 @@ const columnHeader = columnData.concat([
   }
 ])
 
-
 interface ProductsListTableProps {
   brands: IBrand[]
 }
@@ -33,6 +33,14 @@ export function BrandsListTable(props: ProductsListTableProps) {
 
   const theme = useTheme()
   const [selectedRows, setSellectedRows] = useState<string[]>([])
+  const [deletePopover, setDeletePopover] = useState<{
+    anchorEl: HTMLButtonElement | null,
+    brandId: string | undefined
+  }>({
+    anchorEl: null,
+    brandId: undefined
+  })
+  const isOpenDeletePopover = Boolean(deletePopover.anchorEl)
 
   const selectedBulkActions = selectedRows.length > 0
 
@@ -47,6 +55,20 @@ export function BrandsListTable(props: ProductsListTableProps) {
   const handleSelectOne = (id: string) => (_: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedRows.includes(id)) setSellectedRows(prev => ([ ...prev, id ]))
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
+  }
+
+  const handlePopoverClose = () => {
+    setDeletePopover({
+      anchorEl: null,
+      brandId: undefined
+    })
+  }
+
+  const handleClickDeleteAction = (brandId: string) => (evt: React.MouseEvent<HTMLButtonElement>) => {
+    setDeletePopover({
+      anchorEl: evt.currentTarget,
+      brandId
+    })
   }
 
   const selectedAllRows = selectedRows.length === brands.length
@@ -113,7 +135,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
                 </TableCell>)}
 
                 <TableCell align="right">
-                  <Tooltip title="Edit Order" arrow>
+                  <Tooltip title="Edit Product" arrow>
                     <IconButton
                       sx={{
                         '&:hover': {
@@ -127,7 +149,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
                       <EditTwoToneIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Edit Order" arrow>
+                  <Tooltip title="Delete Product" arrow>
                     <IconButton
                       sx={{
                         '&:hover': {
@@ -135,6 +157,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
                         },
                         color: theme.palette.error.main
                       }}
+                      onClick={handleClickDeleteAction(row.id)}
                       color="inherit"
                       size="small"
                     >
@@ -147,6 +170,29 @@ export function BrandsListTable(props: ProductsListTableProps) {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Popover
+        id={isOpenDeletePopover ? "delete-popover" : undefined}
+        open={isOpenDeletePopover}
+        anchorEl={deletePopover.anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "left"
+        }}
+      >
+        <Card>
+          <CardHeader
+            title="Delete brand"
+            subheader={
+              <Typography>Are you sure want to delte this</Typography>
+            }
+          />
+          <CardContent>
+            {deletePopover.brandId ? <DeleteBrandForm brandId={deletePopover.brandId} /> : null}
+          </CardContent>
+        </Card>
+      </Popover>
     </Card>
   )
 }

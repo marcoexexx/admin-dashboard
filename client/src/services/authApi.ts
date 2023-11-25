@@ -1,4 +1,4 @@
-import { LoginUserInput, RegisterUserInput } from "@/components";
+import { LoginUserInput, RegisterUserInput } from "@/components/forms";
 import getConfig from "@/libs/getConfig";
 import axios from "axios";
 

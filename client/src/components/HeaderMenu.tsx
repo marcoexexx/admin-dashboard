@@ -64,7 +64,7 @@ export function HeaderMenu() {
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
             component={NavLink}
-            to="/products"
+            to="/products/list"
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Products" />
           </ListItem>
@@ -72,7 +72,7 @@ export function HeaderMenu() {
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
             component={NavLink}
-            to="/brands"
+            to="/brands/list"
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Brands" />
           </ListItem>
@@ -80,7 +80,7 @@ export function HeaderMenu() {
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
             component={NavLink}
-            to="/categories"
+            to="/categories/list"
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Categories" />
           </ListItem>
@@ -88,7 +88,7 @@ export function HeaderMenu() {
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
             component={NavLink}
-            to="/sales-categories"
+            to="/sales-categories/list"
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Sales Categories" />
           </ListItem>
