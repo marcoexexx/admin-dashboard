@@ -12,7 +12,7 @@ const router = Router()
 
 
 // /products?filter[name][contains]=test&filter[name][mode]=insensitive
-router.route("/")
+router.route("")
   .get(
     permissionUser("read", productPermission),
     getProductsHandler
