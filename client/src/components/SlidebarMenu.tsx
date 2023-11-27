@@ -4,6 +4,7 @@ import { NavLink as Link } from 'react-router-dom'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -153,6 +154,7 @@ type ExpandMenu = {
     | "categories"
     | "brands"
     | "sales-categories"
+    | "exchange"
   state: boolean
 }
 
@@ -252,6 +254,59 @@ export function SlidebarMenu() {
         >
           <SubMenuWrapper>
             <List component="div">
+              {/* Exchange Menues */}
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  onClick={handleToggleExpandMenu("exchange")}
+                  startIcon={<AttachMoneyIcon />}
+                  endIcon={getStateCurrentExpandMenu("exchange")
+                    ? <ExpandLessIcon />
+                    : <ExpandMoreIcon />
+                  }
+                >
+                  Exchange
+                </Button>
+              </ListItem>
+
+              <Collapse in={getStateCurrentExpandMenu("exchange")}>
+                <List component="div" disablePadding>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      onClick={handleCloseSlidebar}
+                      component={Link}
+                      to="/exchange/list"
+                    >
+                      <DotWrapper />
+                      List
+                    </Button>
+                  </ListItem>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={Link}
+                      onClick={handleCloseSlidebar}
+                      to="/exchange/create"
+                    >
+                      <DotWrapper />
+                      Create
+                    </Button>
+                  </ListItem>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={Link}
+                      onClick={handleCloseSlidebar}
+                      to="/exchange/view"
+                    >
+                      <DotWrapper />
+                      View
+                    </Button>
+                  </ListItem>
+                </List>
+              </Collapse>
+
               {/* Products Menues */}
               <ListItem component="div">
                 <Button
@@ -357,6 +412,7 @@ export function SlidebarMenu() {
                   </ListItem>
                 </List>
               </Collapse>
+
             </List>
           </SubMenuWrapper>
         </List>

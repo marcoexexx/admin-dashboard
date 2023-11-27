@@ -1,10 +1,10 @@
 import { MuiButton } from "@/components/ui";
 import { useStore } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Grid, TextField } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
-import { number, object, string, z } from "zod";
+import { boolean, number, object, string, z } from "zod";
 
 
 const filterProductsSchema = object({
@@ -35,7 +35,7 @@ const filterProductsSchema = object({
   // priceUnit: z.enum(["MMK", "USD", "THB", "KRW"]).optional(),
   // // salesCategory: string().array(),
   // quantity: number().min(0),
-  mode: z.enum(["default", "insensitive"]).default("default").optional(),
+  insensitive: boolean().default(false)
 }) 
 
 export type FilterProductsInput = z.infer<typeof filterProductsSchema>
@@ -55,15 +55,17 @@ export function ProductdsFilterForm() {
       description,
       minPrice,
       maxPrice,
-      mode
+      insensitive
     } = value
     setFilterQuery(prev => ({ ...prev, ...value }))
     dispatch({ type: "SET_PRODUCT_FILTER", payload: {
       fields: {
         title: {
-          contains: title || undefined
+          contains: title || undefined,
+          mode: insensitive ? "insensitive" : "default",
         },
         description: {
+          mode: insensitive ? "insensitive" : "default",
           contains: description || undefined
         },
         price: {
@@ -71,7 +73,6 @@ export function ProductdsFilterForm() {
           lte: minPrice,
         }
       },
-      mode
     } })
   }
 
@@ -98,10 +99,16 @@ export function ProductdsFilterForm() {
     <Grid item xs={6} md={3}>
       <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
         <TextField fullWidth type="number" defaultValue={filterQuery.get("maxPrice")} {...register("maxPrice", { setValueAs: value => value === "" ? undefined : parseInt(value, 10) })} label="Maximum price" error={!!errors.maxPrice} helperText={!!errors.maxPrice ? errors.maxPrice.message : ""} />
+      </Box>
+    </Grid>
 
-        {/* TEST */}
-        <TextField fullWidth defaultValue={filterQuery.get("mode")} {...register("mode")} label="Mode" error={!!errors.mode} helperText={!!errors.mode ? errors.mode.message : ""} />
-        {/* /TEST */}
+    <Grid item xs={12}>
+      <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+        <FormControlLabel 
+          {...register("insensitive")}
+          label="Insensitive"
+          control={<Checkbox defaultChecked={filterQuery.get("insensitive") === "true"} />}
+        />
       </Box>
     </Grid>
 

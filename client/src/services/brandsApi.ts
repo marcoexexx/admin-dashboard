@@ -1,7 +1,7 @@
 import { CreateBrandInput, DeleteBrandInput } from "@/components/forms";
 import { authApi } from "./authApi";
 
-// TODO
+
 export async function getBrandsFn(opt: QueryOptionArgs, { filter }: { filter: any }) {
   const { data } = await authApi.get<HttpListResponse<IBrand>>("/brands", {
     ...opt,
