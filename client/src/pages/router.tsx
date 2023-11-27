@@ -182,6 +182,11 @@ const routes = createBrowserRouter([
           {
             path: "unauthorized",
             Component: StatusUnauthorizedPage
+          },
+
+          {
+            path: "500",
+            Component: ErrorBoundary
           }
         ]
       },
