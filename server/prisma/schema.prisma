@@ -28,6 +28,14 @@ enum AuthProvider {
   Facebook
 }
 
+model Exchange {
+  id        String   @id @default(uuid())
+  usd       Float
+  mmk       Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
   id        String       @id @default(uuid())
   name      String
@@ -111,8 +119,6 @@ enum ProductType {
 enum PriceUnit {
   MMK
   USD
-  THB
-  KRW
 }
 
 model Product {
