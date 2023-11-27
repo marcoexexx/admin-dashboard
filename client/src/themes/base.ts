@@ -1,5 +1,6 @@
 import { Theme } from "@mui/material"
-import { ThemeColors, lightTheme } from "./light.theme"
+import { ThemeColors } from "./lightSchema"
+import lightTheme from "./lightSchema/light.theme"
 
 declare module "@mui/material/styles" {
   interface Theme {
