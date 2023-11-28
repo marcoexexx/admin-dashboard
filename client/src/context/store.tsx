@@ -30,7 +30,24 @@ type Store = {
     fields?: any,
     page?: number,
     limit?: number,
-    mode?: "insensitive" | "default"
+    mode?: "insensitive" | "default",
+    include?: {
+      likedUsers?: boolean,
+      brand?: boolean,
+      categories?: {
+        include?: {
+          category?: boolean,
+          product?: boolean,
+        }
+      },
+      salesCategory?: {
+        include?: {
+          salesCategory?: boolean,
+          product?: boolean,
+        }
+      },
+      reviews?: boolean
+    }
   },
   brandFilter?: {
     fields?: any,
@@ -137,7 +154,20 @@ const initialState: Store = {
   productFilter: {
     page: 0,
     limit: 10,
-    mode: "default"
+    mode: "default",
+    include: {
+      brand: true,
+      categories: {
+        include: {
+          category: true
+        }
+      },
+      salesCategory: {
+        include: {
+          salesCategory: true
+        }
+      },
+    }
   },
   brandFilter: {
     page: 0,
@@ -202,7 +232,10 @@ const stateReducer = (state: Store, action: Action): Store => {
     case "SET_PRODUCT_FILTER": {
       return { 
         ...state,
-        productFilter: action.payload
+        productFilter: {
+          ...state.productFilter,
+          ...action.payload
+        }
       }
     }
 

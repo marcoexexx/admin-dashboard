@@ -22,6 +22,7 @@ import redisClient from './utils/connectRedis'
 import authRouter from './routers/auth.route'
 import meRouter from './routers/me.route'
 import permissionRouter from './routers/permission.route'
+import exchangeRouter from './routers/exchange.route'
 import userRouter from './routers/user.route'
 import productRouter from './routers/product.route'
 import brandRouter from './routers/brand.route'
@@ -83,6 +84,7 @@ app.get("/healthcheck", async (_: Request, res: Response, next: NextFunction) =>
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/me", meRouter)
 app.use("/api/v1/permissions", permissionRouter)
+app.use("/api/v1/exchanges", exchangeRouter)
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/products", productRouter)
 app.use("/api/v1/brands", brandRouter)

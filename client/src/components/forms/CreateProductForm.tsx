@@ -1,4 +1,4 @@
-import { Box, Grid, MenuItem, TextField } from "@mui/material";
+import { Box, Grid, InputAdornment, MenuItem, OutlinedInput, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, string, z } from "zod";
@@ -6,14 +6,14 @@ import { BrandInputField, CatgoryMultiInputField, SalesCategoryMultiInputField }
 import { useMutation } from "@tanstack/react-query";
 import { createProductFn } from "@/services/productsApi";
 import { useStore } from "@/hooks";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { EditorInputField } from "../input-fields/EditorInputField";
 
 const productTypes = ["Switch", "Accessory", "Router", "Wifi"]
 const instockStatus = ["InStock", "OutOfStock", "AskForStock"]
-const priceUnit = ["MMK", "USD", "THB", "KRW"]
+const priceUnit = ["MMK", "USD"]
 
 const createProductSchema = object({
   price: number({ required_error: "Price is required "}),
@@ -22,23 +22,24 @@ const createProductSchema = object({
   title: string({ required_error: "Brand is required" })
     .min(2).max(128),
   specification: string({ required_error: "Brand is required" })
-    .min(2).max(1024),
+    .min(2).max(5000),
   overview: string({ required_error: "Brand is required" })
-    .min(2).max(1024),
+    .min(2).max(5000),
   features: string({ required_error: "Features is required" })
-    .min(2).max(1024),
+    .min(2).max(5000),
   warranty: number({ required_error: "Price is required "}),
   categories: string().array().default([]),
   colors: string({ required_error: "Brand is required" })
     .min(2).max(128),
   instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]).default("AskForStock"),
   description: string({ required_error: "Brand is required" })
-    .min(2).max(1024),
+    .min(2).max(5000),
   type: z.enum(["Switch", "Accessory", "Router", "Wifi"]),
   dealerPrice: number().min(0),
+  // images: z.any(),
   marketPrice: number().min(0),
   discount: number().min(0),
-  priceUnit: z.enum(["MMK", "USD", "THB", "KRW"]),
+  priceUnit: z.enum(["MMK", "USD"]),
   salesCategory: string().array(),
   quantity: number().min(0),
 })
@@ -46,11 +47,10 @@ const createProductSchema = object({
 export type CreateProductInput = z.infer<typeof createProductSchema>
 
 export function CreateProductForm() {
-  const { dispatch } = useStore()
+  const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const location = useLocation()
-  const from = location.pathname || "/products"
+  const from = "/products"
 
   const {
     mutate: createProduct
@@ -61,7 +61,8 @@ export function CreateProductForm() {
         message: "Success created a new product.",
         severity: "success"
       } })
-      navigate(from)
+      if (modalForm.field === "*") navigate(from)
+      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
         queryKey: ["products"]
       })
@@ -78,10 +79,25 @@ export function CreateProductForm() {
     resolver: zodResolver(createProductSchema)
   })
 
+
+  // useEffect(() => {
+
+  // }, [methods.watch("priceUnit")])
+
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<CreateProductInput> = (value) => {
     createProduct(value)
+  }
+
+  const handleOnCalculate = (_: React.MouseEvent<HTMLButtonElement>) => {
+    const unit = methods.getValues("priceUnit")
+    if (unit === "USD")  {
+      const price = methods.getValues("price")
+      const fatchedUsd = 2098.91
+      methods.setValue("price", price * fatchedUsd)
+    }
+
   }
 
   return (
@@ -90,7 +106,24 @@ export function CreateProductForm() {
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
             <TextField fullWidth {...register("title")} label="Title" error={!!errors.title} helperText={!!errors.title ? errors.title.message : ""} />
-            <TextField fullWidth {...register("price", { valueAsNumber: true })} type="number" label="Price" error={!!errors.price} helperText={!!errors.price ? errors.price.message : ""} />
+            <OutlinedInput 
+              fullWidth 
+              {...register("price", { valueAsNumber: true })} 
+              type="number" 
+              placeholder="Price" 
+              error={!!errors.price} 
+              // helperText={!!errors.price 
+              //   ? errors.price.message 
+              //   : "1 dolla ~ 2098.91 kyat"
+              // } 
+              endAdornment={
+                <InputAdornment position="end">
+                  <MuiButton onClick={handleOnCalculate} variant="outlined" size="small">
+                    Calculate
+                  </MuiButton>
+                </InputAdornment>
+              }
+            />
           </Box>
         </Grid>
 
@@ -118,14 +151,14 @@ export function CreateProductForm() {
 
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <EditorInputField field="specification" />
+            <EditorInputField fieldName="specification" />
             <CatgoryMultiInputField />
           </Box>
         </Grid>
 
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <EditorInputField field="overview" />
+            <EditorInputField fieldName="overview" />
             <TextField fullWidth {...register("marketPrice", { valueAsNumber: true })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
           </Box>
         </Grid>
@@ -133,7 +166,7 @@ export function CreateProductForm() {
         <Grid item md={6} xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
             <TextField fullWidth {...register("colors")} label="Color" error={!!errors.colors} helperText={!!errors.colors ? errors.colors.message : ""} />
-            <EditorInputField field="description" />
+            <EditorInputField fieldName="description" />
           </Box>
         </Grid>
 
@@ -154,7 +187,7 @@ export function CreateProductForm() {
                 </MenuItem>
               ))}
             </TextField>
-            <EditorInputField field="features" />
+            <EditorInputField fieldName="features" />
           </Box>
         </Grid>
 
@@ -197,6 +230,10 @@ export function CreateProductForm() {
             <TextField fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
           </Box>
         </Grid>
+
+        {/* <Grid item xs={6}> */}
+        {/*   <UploadProductImage /> */}
+        {/* </Grid> */}
 
         <Grid item xs={12}>
           <MuiButton variant="contained" type="submit">Create</MuiButton>

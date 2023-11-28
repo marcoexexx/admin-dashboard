@@ -14,8 +14,8 @@ const filterProductsSchema = object({
   //   .min(0).max(128).optional(),
   title: string()
     .min(0).max(128).optional(),
-  // specification: string()
-  //   .min(0).max(1024).optional(),
+  specification: string()
+    .min(0).max(1024).optional(),
   // overview: string()
   //   .min(0).max(1024).optional(),
   // features: string()
@@ -46,7 +46,7 @@ export function ProductdsFilterForm() {
   const [filterQuery, setFilterQuery] = useSearchParams()
 
   const { handleSubmit, register, formState: { errors } } = useForm<FilterProductsInput>({
-    resolver: zodResolver(filterProductsSchema)
+    resolver: zodResolver(filterProductsSchema),
   })
 
   const onSubmit: SubmitHandler<FilterProductsInput> = (value) => {
@@ -55,7 +55,8 @@ export function ProductdsFilterForm() {
       description,
       minPrice,
       maxPrice,
-      insensitive
+      insensitive,
+      specification
     } = value
     setFilterQuery(prev => ({ ...prev, ...value }))
     dispatch({ type: "SET_PRODUCT_FILTER", payload: {
@@ -67,6 +68,10 @@ export function ProductdsFilterForm() {
         description: {
           mode: insensitive ? "insensitive" : "default",
           contains: description || undefined
+        },
+        specification: {
+          mode: insensitive ? "insensitive" : "default",
+          contains: specification || undefined
         },
         price: {
           gte: maxPrice,
@@ -99,6 +104,12 @@ export function ProductdsFilterForm() {
     <Grid item xs={6} md={3}>
       <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
         <TextField fullWidth type="number" defaultValue={filterQuery.get("maxPrice")} {...register("maxPrice", { setValueAs: value => value === "" ? undefined : parseInt(value, 10) })} label="Maximum price" error={!!errors.maxPrice} helperText={!!errors.maxPrice ? errors.maxPrice.message : ""} />
+      </Box>
+    </Grid>
+
+    <Grid item xs={12} md={6}>
+      <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+        <TextField fullWidth defaultValue={filterQuery.get("specification")} {...register("specification")} label="Specification" error={!!errors.specification} helperText={!!errors.specification ? errors.specification.message : ""} />
       </Box>
     </Grid>
 

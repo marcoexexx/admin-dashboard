@@ -56,7 +56,7 @@ export async function getBrandHandler(
       }
     })
 
-    res.status(200).json(HttpDataResponse(brand))
+    res.status(200).json(HttpDataResponse({ brand }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

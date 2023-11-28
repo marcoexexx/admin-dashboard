@@ -39,6 +39,21 @@ const columnData: TableColumnHeader<IProduct>[] = [
     name: "Price"
   },
   {
+    id: "brand",
+    align: "right",
+    name: "Brand"
+  },
+  {
+    id: "categories",
+    align: "right",
+    name: "Categories"
+  },
+  {
+    id: "salesCategory",
+    align: "right",
+    name: "Sales Categories"
+  },
+  {
     id: "instockStatus",
     align: "right",
     name: "InstockStatus"
@@ -87,6 +102,10 @@ export function ProductsListTable(props: ProductsListTableProps) {
   const handleSelectOne = (id: string) => (_: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedRows.includes(id)) setSellectedRows(prev => ([ ...prev, id ]))
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
+  }
+
+  const handleUpdateProduct = (product: IProduct) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    console.log(product)
   }
 
   const selectedAllRows = selectedRows.length === products.length
@@ -151,23 +170,37 @@ export function ProductsListTable(props: ProductsListTableProps) {
                   />
                 </TableCell>
 
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {row[col.id as keyof typeof row]}
-                  </Typography>
-                </TableCell>)}
+                {columnData.map(col => {
+                  const key = col.id as keyof typeof row
+
+                  const getRow = (key: keyof typeof row) => {
+                    if (key === "categories") return row.categories.map(i => i.category.name).join(", ")
+                    if (key === "salesCategory") return row.salesCategory.map(i => i.salesCategory.name).join(", ")
+                    if (key === "brand") return row.brand.name || "empty"
+                    return row[key]
+                  }
+
+                  return (
+                    <TableCell align={col.align} key={col.id}>
+                      <Typography
+                        variant="body1"
+                        fontWeight="normal"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {getRow(key)}
+                      </Typography>
+                    </TableCell>
+                  )
+                })}
                 <TableCell align="right">
                   {getStatusLabel(row.status.toLowerCase())}
                 </TableCell>
                 <TableCell align="right">
                   <Tooltip title="Edit Order" arrow>
                     <IconButton
+                      onClick={handleUpdateProduct(row)}
                       sx={{
                         '&:hover': {
                           background: theme.colors.primary.lighter

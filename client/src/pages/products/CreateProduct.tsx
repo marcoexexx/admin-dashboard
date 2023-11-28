@@ -28,23 +28,20 @@ export default function CreateProduct() {
       </PageTitle>
 
       <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <UploadProductImage />
-              </CardContent>
-            </Card>
-          </Grid>
+        {/* <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}> */}
+        {/*   <Grid item xs={12} md={4}> */}
+        {/*     <Card> */}
+        {/*       <CardContent> */}
+        {/*         <UploadProductImage /> */}
+        {/*       </CardContent> */}
+        {/*     </Card> */}
+        {/*   </Grid> */}
 
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <CreateProductForm />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+        <Card>
+          <CardContent>
+            <CreateProductForm />
+          </CardContent>
+        </Card>
       </Container>
     </>
   )

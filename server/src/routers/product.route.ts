@@ -6,12 +6,12 @@ import { permissionUser } from "../middleware/permissionUser";
 import { createProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, uploadImagesProductHandler } from "../controllers/product.controller";
 import { createProductSchema, getProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
 import { productPermission } from "../utils/auth/permissions";
+import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
+
 
 const router = Router()
 
 
-
-// /products?filter[name][contains]=test&filter[name][mode]=insensitive
 router.route("")
   .get(
     permissionUser("read", productPermission),
@@ -45,8 +45,8 @@ router.route("/upload/:productId")
     deserializeUser, 
     requiredUser, 
     permissionUser("update", productPermission),
-    // uploadProductImage,
-    // resizeProductImages,
+    uploadProductImage,
+    resizeProductImages,
     validate(getProductSchema),
     validate(uploadImagesProductSchema),
     uploadImagesProductHandler

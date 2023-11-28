@@ -27,6 +27,17 @@ interface IUser {
 interface IProduct {
   id: string;
   brandId: string;
+  brand: IBrand,
+  categories: {
+    productId: string,
+    categoryId: string,
+    category: ICategory
+  }[],
+  salesCategory: {
+    productId: string,
+    salesCategoryId: string,
+    salesCategory: ISalesCategory
+  }[],
   title: string;
   price: number;
   images: string[]; // Assuming it's an array of image URLs

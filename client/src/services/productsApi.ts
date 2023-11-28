@@ -2,11 +2,12 @@ import { CreateProductInput } from "@/components/forms";
 import { authApi } from "./authApi";
 
 // TODO: fix filter type
-export async function getProductsFn(opt: QueryOptionArgs, { filter }: { filter: any }) {
+export async function getProductsFn(opt: QueryOptionArgs, { filter, include }: { filter: any, include: any }) {
   const { data } = await authApi.get<HttpListResponse<IProduct>>("/products", {
     ...opt,
     params: {
-      filter
+      filter,
+      include
     }
   })
   return data

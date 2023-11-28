@@ -12,6 +12,7 @@ export function ProductsList() {
     queryKey: ["products", { filter: state.productFilter } ],
     queryFn: args => getProductsFn(args, { 
       filter: state.productFilter?.fields,
+      include: state.productFilter?.include
     }),
     select: data => data.results
   })

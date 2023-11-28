@@ -6,16 +6,17 @@ import logging from '../middleware/logging/logging';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { convertNumericStrings } from '../utils/convertNumber';
+import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 
 
 export async function getProductsHandler(
-  // TODO: pagination & filter  with relationship
   req: Request<{}, {}, {}, ProductFilterPagination>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination } = convertNumericStrings(req.query)
+    const { filter = {}, pagination, include: includes } = convertNumericStrings(req.query)
+    const include = convertStringToBoolean(includes)
     const {
       id,
       brand,
@@ -70,6 +71,8 @@ export async function getProductsHandler(
       },
       skip: offset,
       take: pageSize,
+      // @ts-ignore
+      include
     })
 
     res.status(200).json(HttpListResponse(products))
