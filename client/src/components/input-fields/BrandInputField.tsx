@@ -23,7 +23,13 @@ export function BrandInputField() {
     error
   } = useQuery({
     queryKey: ["brands"],
-    queryFn: args => getBrandsFn(args, { filter: {} }),
+    queryFn: args => getBrandsFn(args, {
+      filter: {},
+      pagination: {
+        page: 1,
+        pageSize: 100 * 1000
+      }
+    }),
     select: data => data.results
   })
 

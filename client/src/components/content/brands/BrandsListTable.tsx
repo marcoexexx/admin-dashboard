@@ -1,13 +1,14 @@
-import { Box, Card, CardContent, CardHeader, Checkbox, Divider, IconButton, Popover, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
 import { BulkActions } from "@/components";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { BrandsActions } from ".";
-import { CreateBrandInput, DeleteBrandForm } from "@/components/forms";
+import { CreateBrandInput, FormModal } from "@/components/forms";
 import { exportToExcelBrands } from "@/libs/exportToExcel";
 import { useStore } from "@/hooks";
+import { MuiButton } from "@/components/ui";
 
 
 const columnData: TableColumnHeader<IBrand>[] = [
@@ -29,24 +30,19 @@ const columnHeader = columnData.concat([
 interface ProductsListTableProps {
   brands: IBrand[]
   count: number
+  onDelete: (id: string) => void
   onCreateManyBrands: (data: CreateBrandInput[]) => void
 }
 
 export function BrandsListTable(props: ProductsListTableProps) {
-  const { brands, count, onCreateManyBrands } = props
+  const { brands, count, onCreateManyBrands, onDelete } = props
+
+  const [deleteId, setDeleteId] = useState("")
 
   const theme = useTheme()
   const { state: {brandFilter}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
-  const [deletePopover, setDeletePopover] = useState<{
-    anchorEl: HTMLButtonElement | null,
-    brandId: string | undefined
-  }>({
-    anchorEl: null,
-    brandId: undefined
-  })
-  const isOpenDeletePopover = Boolean(deletePopover.anchorEl)
 
   const selectedBulkActions = selectedRows.length > 0
 
@@ -63,17 +59,11 @@ export function BrandsListTable(props: ProductsListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handlePopoverClose = () => {
-    setDeletePopover({
-      anchorEl: null,
-      brandId: undefined
-    })
-  }
-
-  const handleClickDeleteAction = (brandId: string) => (evt: React.MouseEvent<HTMLButtonElement>) => {
-    setDeletePopover({
-      anchorEl: evt.currentTarget,
-      brandId
+  const handleClickDeleteAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    setDeleteId(brandId)
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: "delete-brand"
     })
   }
 
@@ -103,6 +93,12 @@ export function BrandsListTable(props: ProductsListTableProps) {
     })
   }
 
+  const handleCloseDeleteModal = () => {
+    dispatch({
+      type: "CLOSE_ALL_MODAL_FORM"
+    })
+  }
+
   const selectedAllRows = selectedRows.length === brands.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < brands.length
@@ -110,7 +106,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
-        <BulkActions />
+        <BulkActions selectedRows={selectedRows} />
       </Box>}
 
       <Divider />
@@ -217,28 +213,21 @@ export function BrandsListTable(props: ProductsListTableProps) {
         />
       </Box>
 
-      <Popover
-        id={isOpenDeletePopover ? "delete-popover" : undefined}
-        open={isOpenDeletePopover}
-        anchorEl={deletePopover.anchorEl}
-        onClose={handlePopoverClose}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "left"
-        }}
+      <FormModal
+        field="delete-brand"
+        title="Delete brand"
+        onClose={handleCloseDeleteModal}
       >
-        <Card>
-          <CardHeader
-            title="Delete brand"
-            subheader={
-              <Typography>Are you sure want to delte this</Typography>
-            }
-          />
-          <CardContent>
-            {deletePopover.brandId ? <DeleteBrandForm brandId={deletePopover.brandId} /> : null}
-          </CardContent>
-        </Card>
-      </Popover>
+        <Box display="flex" flexDirection="column" gap={1}>
+          <Box>
+            <Typography>Are you sure want to delete</Typography>
+          </Box>
+          <Box display="flex" flexDirection="row" gap={1}>
+            <MuiButton variant="contained" color="error" onClick={() => onDelete(deleteId)}>Delete</MuiButton>
+            <MuiButton variant="outlined" onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}>Cancel</MuiButton>
+          </Box>
+        </Box>
+      </FormModal>
     </Card>
   )
 }

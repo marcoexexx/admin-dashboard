@@ -164,7 +164,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
 
                 <TableCell align="left">
                   <img 
-                    src={row.images[0] || "/public/samsung.jpg"} 
+                    src={row.images[0] || "/public/default.jpg"} 
                     alt={row.title} 
                     height={100}
                   />

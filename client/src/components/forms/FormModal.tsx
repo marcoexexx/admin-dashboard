@@ -7,6 +7,9 @@ interface FormModalProps {
     | "brands"
     | "categories"
     | "sales-categories"
+
+    | "delete-brand"
+    | "delete-brand-multi"
   title: string
   description?: string
   onClose: () => void

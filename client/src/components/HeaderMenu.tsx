@@ -1,6 +1,6 @@
 import { Box, List, ListItem, ListItemText, Menu, MenuItem, styled } from "@mui/material"
 import { useRef, useState } from "react"
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
 
 const ListWrapper = styled(Box)(({theme}) => ({
@@ -53,6 +53,8 @@ export function HeaderMenu() {
   const ref = useRef<any>(null)
   const [isOpen, setIsOpen] = useState(false)
 
+  const navigate = useNavigate()
+
   const onClickOpen = () => setIsOpen(true)
 
   const onClickClose = () => setIsOpen(false)
@@ -62,33 +64,33 @@ export function HeaderMenu() {
       <ListWrapper sx={{ display: { xs: "none", md: "block" } }}>
         <List disablePadding component={Box} display="flex">
           <ListItem
+            sx={{ cursor: "pointer" }}
             classes={{ root: "MuiListItem-indicators" }}
-            component={NavLink}
-            to="/products/list"
+            onClick={() => navigate("/products/list")}
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Products" />
           </ListItem>
 
           <ListItem
+            sx={{ cursor: "pointer" }}
             classes={{ root: "MuiListItem-indicators" }}
-            component={NavLink}
-            to="/brands/list"
+            onClick={() => navigate("/brands/list")}
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Brands" />
           </ListItem>
 
           <ListItem
+            sx={{ cursor: "pointer" }}
             classes={{ root: "MuiListItem-indicators" }}
-            component={NavLink}
-            to="/categories/list"
+            onClick={() => navigate("/categories/list")}
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Categories" />
           </ListItem>
 
           <ListItem
+            sx={{ cursor: "pointer" }}
             classes={{ root: "MuiListItem-indicators" }}
-            component={NavLink}
-            to="/sales-categories/list"
+            onClick={() => navigate("/sales-categories/list")}
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Sales Categories" />
           </ListItem>

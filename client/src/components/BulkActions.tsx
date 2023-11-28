@@ -1,14 +1,103 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography, styled } from "@mui/material";
 
-// TODO: component
-export function BulkActions() {
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import { useMutation } from "@tanstack/react-query";
+import { deleteMultiBrandsFn } from "@/services/brandsApi";
+import { useStore } from "@/hooks";
+import { queryClient } from ".";
+import { FormModal } from "./forms";
+import { MuiButton } from "./ui";
+
+
+const ButtonError = styled(Button)(({theme}) => ({
+  background: theme.colors.error.main,
+  color: theme.palette.error.contrastText,
+
+  "&:hover": {
+    background: theme.colors.error.dark
+  }
+}))
+
+
+interface BulkActionsProps {
+  selectedRows: string[]
+}
+
+export function BulkActions(props: BulkActionsProps) {
+  const { selectedRows } = props
+
+  const { dispatch } = useStore()
+
+  const {
+    mutate: deleteBrand
+  } = useMutation({
+    mutationFn: deleteMultiBrandsFn,
+    onError(err: any) {
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: `failed: ${err.response.data.message}`,
+        severity: "error"
+      } })
+    },
+    onSuccess() {
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: "Success delete a brand.",
+        severity: "success"
+      } })
+      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
+      queryClient.invalidateQueries({
+        queryKey: ["brands"]
+      })
+    }
+  })
+
+  const handleOnDeleteBrands = () => {
+    deleteBrand(selectedRows)
+  }
+
+  const handleCloseDeleteModal = () => {
+    dispatch({
+      type: "CLOSE_ALL_MODAL_FORM"
+    })
+  }
+
+  const handleClickDeleteAction = () => {
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: "delete-brand-multi"
+    })
+  }
+
   return (
     <Box display="flex" alignItems="center" justifyContent="space-between">
       <Box display="flex" alignItems="center">
         <Typography variant="h5" color="text.secondary">
           Bulk actions:
         </Typography>
+        <ButtonError
+          sx={{ ml: 1 }}
+          startIcon={<DeleteTwoToneIcon />}
+          variant="contained"
+          onClick={handleClickDeleteAction}
+        >
+          Delete
+        </ButtonError>
       </Box>
+
+      <FormModal
+        field="delete-brand-multi"
+        title="Delete brand"
+        onClose={handleCloseDeleteModal}
+      >
+        <Box display="flex" flexDirection="column" gap={1}>
+          <Box>
+            <Typography>Are you sure want to delete</Typography>
+          </Box>
+          <Box display="flex" flexDirection="row" gap={1}>
+            <MuiButton variant="contained" color="error" onClick={handleOnDeleteBrands}>Delete</MuiButton>
+            <MuiButton variant="outlined" onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}>Cancel</MuiButton>
+          </Box>
+        </Box>
+      </FormModal>
     </Box>
   )
 }

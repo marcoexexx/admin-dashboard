@@ -26,6 +26,12 @@ export async function createMultiBrandsFn(brand: CreateBrandInput[]) {
 }
 
 
+export async function deleteMultiBrandsFn(brandIds: DeleteBrandInput["brandId"][]) {
+  await Promise.all(brandIds.map(id => authApi.delete<HttpResponse>(`/brands/detail/${id}`)))
+  return null
+}
+
+
 export async function deleteBrandFn(brandId: DeleteBrandInput["brandId"]) {
   const { data } = await authApi.delete<HttpResponse>(`/brands/detail/${brandId}`)
   return data

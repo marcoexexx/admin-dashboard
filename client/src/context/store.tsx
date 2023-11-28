@@ -21,6 +21,8 @@ type Store = {
       | "products"
       | "categories"
       | "sales-categories"
+      | "delete-brand"
+      | "delete-brand-multi"
     state: boolean
   },
   user?: IUser
