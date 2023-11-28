@@ -10,8 +10,8 @@ export function HttpResponse<E extends unknown>(status: number, message: string,
   return { status, message, error }
 }
 
-export function HttpListResponse<T>(results: Array<T>) {
-  return { status: 200, results, count: results.length, error: undefined }
+export function HttpListResponse<T>(results: Array<T>, count = results.length) {
+  return { status: 200, results, count, error: undefined }
 }
 
 export function HttpDataResponse<T>(result: T) {

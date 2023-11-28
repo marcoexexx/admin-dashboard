@@ -10,7 +10,7 @@ export type ProductFilterPagination = {
     brand?: boolean,
     categories?: boolean,
     salesCategory?: boolean,
-    reviews?: boolean
+    reviews?: boolean,
   }
 }
 

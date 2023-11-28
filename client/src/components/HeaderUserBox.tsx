@@ -1,5 +1,5 @@
 import { useStore } from "@/hooks"
-import { Avatar, Box, Button, Divider, Hidden, List, ListItemButton, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
+import { Avatar, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
 import { useRef, useState } from "react"
 import { NavLink as Link } from 'react-router-dom'
 import { MuiButton } from "./ui"
@@ -127,21 +127,24 @@ export function HeaderUserBox() {
 
         <List sx={{ p: 1 }} component="nav">
           <ListItemButton to="#/management/profile/details" component={Link}>
-            <AccountBoxTwoToneIcon fontSize="small" />
+            <ListItemIcon>
+              <AccountBoxTwoToneIcon fontSize="small" />
+            </ListItemIcon>
             <ListItemText primary="My Profile" />
           </ListItemButton>
 
           <ListItemButton to="#" component={Link}>
-            <InboxTwoToneIcon fontSize="small" />
+            <ListItemIcon>
+              <InboxTwoToneIcon fontSize="small" />
+            </ListItemIcon>
             <ListItemText primary="Manager" />
           </ListItemButton>
         </List>
 
         <Divider />
 
-        <Box>
-          <MuiButton color="primary" fullWidth onClick={handleLogout}>
-            <LockOpenTwoToneIcon sx={{ mr: 1 }} />
+        <Box p={1}>
+          <MuiButton startIcon={<LockOpenTwoToneIcon sx={{ mr: 1 }} />} color="primary" fullWidth onClick={handleLogout}>
             Sign out
           </MuiButton>
         </Box>

@@ -40,6 +40,7 @@ interface IProduct {
   }[],
   title: string;
   price: number;
+  _count: number
   images: string[]; // Assuming it's an array of image URLs
   specification: string;
   overview: string;
@@ -63,6 +64,7 @@ interface IProduct {
 interface IBrand {
   id: string,
   name: string
+  _count: number
   createdAt: string | Date
   updatedAt: string | Date
 }

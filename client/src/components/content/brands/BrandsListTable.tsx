@@ -1,11 +1,13 @@
-import { Box, Card, CardContent, CardHeader, Checkbox, Divider, IconButton, Popover, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { Box, Card, CardContent, CardHeader, Checkbox, Divider, IconButton, Popover, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
 import { BulkActions } from "@/components";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { BrandsActions } from ".";
-import { DeleteBrandForm } from "@/components/forms";
+import { CreateBrandInput, DeleteBrandForm } from "@/components/forms";
+import { exportToExcelBrands } from "@/libs/exportToExcel";
+import { useStore } from "@/hooks";
 
 
 const columnData: TableColumnHeader<IBrand>[] = [
@@ -26,12 +28,16 @@ const columnHeader = columnData.concat([
 
 interface ProductsListTableProps {
   brands: IBrand[]
+  count: number
+  onCreateManyBrands: (data: CreateBrandInput[]) => void
 }
 
 export function BrandsListTable(props: ProductsListTableProps) {
-  const { brands } = props
+  const { brands, count, onCreateManyBrands } = props
 
   const theme = useTheme()
+  const { state: {brandFilter}, dispatch } = useStore()
+
   const [selectedRows, setSellectedRows] = useState<string[]>([])
   const [deletePopover, setDeletePopover] = useState<{
     anchorEl: HTMLButtonElement | null,
@@ -71,6 +77,32 @@ export function BrandsListTable(props: ProductsListTableProps) {
     })
   }
 
+  const handleOnExport = () => {
+    exportToExcelBrands(brands)
+  }
+
+  const handleOnImport = (data: CreateBrandInput[]) => {
+    onCreateManyBrands(data)
+  }
+
+  const handleChangePagination = (_: any, page: number) => {
+    dispatch({
+      type: "SET_BRAND_FILTER",
+      payload: {
+        page: page += 1
+      }
+    })
+  }
+
+  const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "SET_BRAND_FILTER",
+      payload: {
+        limit: parseInt(evt.target.value, 10)
+      }
+    })
+  }
+
   const selectedAllRows = selectedRows.length === brands.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < brands.length
@@ -84,7 +116,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
       <Divider />
 
       <CardContent>
-        <BrandsActions />
+        <BrandsActions onExport={handleOnExport} onImport={handleOnImport}  />
       </CardContent>
 
       <TableContainer>
@@ -170,6 +202,20 @@ export function BrandsListTable(props: ProductsListTableProps) {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Box p={2}>
+        <TablePagination
+          component="div"
+          count={count}
+          onPageChange={handleChangePagination}
+          onRowsPerPageChange={handleChangeLimit}
+          page={brandFilter?.page
+            ? brandFilter.page - 1
+            : 0}
+          rowsPerPage={brandFilter?.limit || 10}
+          rowsPerPageOptions={[5, 10, 25, 30]}
+        />
+      </Box>
 
       <Popover
         id={isOpenDeletePopover ? "delete-popover" : undefined}

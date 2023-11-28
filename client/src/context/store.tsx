@@ -226,7 +226,10 @@ const stateReducer = (state: Store, action: Action): Store => {
     }
 
     case "SET_BRAND_FILTER": {
-      return { ...state, brandFilter: action.payload }
+      return { ...state, brandFilter: {
+        ...state.brandFilter,
+        ...action.payload
+      } }
     }
 
     case "SET_PRODUCT_FILTER": {
