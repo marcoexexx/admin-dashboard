@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { BrandsListTable } from "@/components/content/brands";
-import { createMultiBrandsFn, deleteBrandFn, getBrandsFn } from "@/services/brandsApi";
+import { createMultiBrandsFn, deleteBrandFn, deleteMultiBrandsFn, getBrandsFn } from "@/services/brandsApi";
 import { CreateBrandInput } from "./forms";
 
 export function BrandsList() {
@@ -65,6 +65,29 @@ export function BrandsList() {
     }
   })
 
+  const {
+    mutate: deleteBrands
+  } = useMutation({
+    mutationFn: deleteMultiBrandsFn,
+    onError(err: any) {
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: `failed: ${err.response.data.message}`,
+        severity: "error"
+      } })
+    },
+    onSuccess() {
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: "Success delete multi brands.",
+        severity: "success"
+      } })
+      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
+      queryClient.invalidateQueries({
+        queryKey: ["brands"]
+      })
+    }
+  })
+
+
   if (!data && isError || error) return <h1>ERROR: {JSON.stringify(error)}</h1>
 
   if (!data || isLoading) return <SuspenseLoader />
@@ -77,12 +100,17 @@ export function BrandsList() {
     deleteBrand(id)
   }
 
+  function handleDeleteMultiBrands(ids: string[]) {
+    deleteBrands(ids)
+  }
+
   return <Card>
     <BrandsListTable 
       brands={data.results} 
       count={data.count} 
       onCreateManyBrands={handleCreateManyBrands} 
       onDelete={handleDeleteBrand}
+      onMultiDelete={handleDeleteMultiBrands}
     />
   </Card>
 }

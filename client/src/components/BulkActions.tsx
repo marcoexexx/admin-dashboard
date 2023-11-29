@@ -1,12 +1,10 @@
 import { Box, Button, Typography, styled } from "@mui/material";
 
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { useMutation } from "@tanstack/react-query";
-import { deleteMultiBrandsFn } from "@/services/brandsApi";
 import { useStore } from "@/hooks";
-import { queryClient } from ".";
 import { FormModal } from "./forms";
 import { MuiButton } from "./ui";
+import { Store } from "@/context/store";
 
 
 const ButtonError = styled(Button)(({theme}) => ({
@@ -20,38 +18,17 @@ const ButtonError = styled(Button)(({theme}) => ({
 
 
 interface BulkActionsProps {
-  selectedRows: string[]
+  field: Store["modalForm"]["field"]
+  onDelete: () => void
 }
 
 export function BulkActions(props: BulkActionsProps) {
-  const { selectedRows } = props
+  const { field, onDelete } = props
 
   const { dispatch } = useStore()
 
-  const {
-    mutate: deleteBrand
-  } = useMutation({
-    mutationFn: deleteMultiBrandsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a brand.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["brands"]
-      })
-    }
-  })
-
-  const handleOnDeleteBrands = () => {
-    deleteBrand(selectedRows)
+  const handleOnDelete = () => {
+    onDelete()
   }
 
   const handleCloseDeleteModal = () => {
@@ -63,7 +40,7 @@ export function BulkActions(props: BulkActionsProps) {
   const handleClickDeleteAction = () => {
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: "delete-brand-multi"
+      payload: field
     })
   }
 
@@ -84,7 +61,7 @@ export function BulkActions(props: BulkActionsProps) {
       </Box>
 
       <FormModal
-        field="delete-brand-multi"
+        field={field}
         title="Delete brand"
         onClose={handleCloseDeleteModal}
       >
@@ -93,7 +70,7 @@ export function BulkActions(props: BulkActionsProps) {
             <Typography>Are you sure want to delete</Typography>
           </Box>
           <Box display="flex" flexDirection="row" gap={1}>
-            <MuiButton variant="contained" color="error" onClick={handleOnDeleteBrands}>Delete</MuiButton>
+            <MuiButton variant="contained" color="error" onClick={handleOnDelete}>Delete</MuiButton>
             <MuiButton variant="outlined" onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}>Cancel</MuiButton>
           </Box>
         </Box>

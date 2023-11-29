@@ -33,16 +33,17 @@ interface ProductsListTableProps {
   brands: IBrand[]
   count: number
   onDelete: (id: string) => void
+  onMultiDelete: (ids: string[]) => void
   onCreateManyBrands: (data: CreateBrandInput[]) => void
 }
 
 export function BrandsListTable(props: ProductsListTableProps) {
-  const { brands, count, onCreateManyBrands, onDelete } = props
+  const { brands, count, onCreateManyBrands, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
   const theme = useTheme()
-  const { state: {brandFilter}, dispatch } = useStore()
+  const { state: {brandFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -108,7 +109,10 @@ export function BrandsListTable(props: ProductsListTableProps) {
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
-        <BulkActions selectedRows={selectedRows} />
+        <BulkActions
+          field="delete-brand-multi"
+          onDelete={() => onMultiDelete(selectedRows)}
+        />
       </Box>}
 
       <Divider />
@@ -215,7 +219,8 @@ export function BrandsListTable(props: ProductsListTableProps) {
         />
       </Box>
 
-      <FormModal
+      {modalForm.field === "delete-brand"
+      ? <FormModal
         field="delete-brand"
         title="Delete brand"
         onClose={handleCloseDeleteModal}
@@ -230,6 +235,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
           </Box>
         </Box>
       </FormModal>
+      : null}
     </Card>
   )
 }

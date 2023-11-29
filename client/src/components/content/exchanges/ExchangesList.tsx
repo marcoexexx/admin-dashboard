@@ -2,7 +2,7 @@ import { Card } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
-import { createMultiExchangesFn, deleteExchangeFn, getExchangesFn } from "@/services/exchangesApi";
+import { createMultiExchangesFn, deleteExchangeFn, deleteMultiExchangesFn, getExchangesFn } from "@/services/exchangesApi";
 import { CreateExchangeInput } from "./forms";
 import { ExchangesListTable } from ".";
 
@@ -65,6 +65,28 @@ export function ExchangesList() {
     }
   })
 
+  const {
+    mutate: deleteExchanges
+  } = useMutation({
+    mutationFn: deleteMultiExchangesFn,
+    onError(err: any) {
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: `failed: ${err.response.data.message}`,
+        severity: "error"
+      } })
+    },
+    onSuccess() {
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: "Success delete exchanges.",
+        severity: "success"
+      } })
+      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
+      queryClient.invalidateQueries({
+        queryKey: ["exchanges"]
+      })
+    }
+  })
+
   if (!data && isError || error) return <h1>ERROR: {JSON.stringify(error)}</h1>
 
   if (!data || isLoading) return <SuspenseLoader />
@@ -77,12 +99,17 @@ export function ExchangesList() {
     deleteExchange(id)
   }
 
+  function handleDeleteMultiExchanges(ids: string[]) {
+    deleteExchanges(ids)
+  }
+
   return <Card>
     <ExchangesListTable
       exchanges={data.results} 
       count={data.count} 
       onCreateManyExchanges={handleCreateManyExchanges} 
       onDelete={handleDeleteExchange}
+      onMultiDelete={handleDeleteMultiExchanges}
     />
   </Card>
 }

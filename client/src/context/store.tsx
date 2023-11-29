@@ -1,7 +1,7 @@
 import { createContext, useReducer } from "react"
 import { i18n, Local } from "@/i18n"
 
-type Store = {
+export type Store = {
   theme:
     | "light"
     | "dark"

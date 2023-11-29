@@ -1,15 +1,9 @@
+import { Store } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
 interface FormModalProps {
-  field:
-    | "products"
-    | "brands"
-    | "categories"
-    | "sales-categories"
-
-    | "delete-brand"
-    | "delete-brand-multi"
+  field: Omit<Store["modalForm"]["field"], "*">
   title: string
   description?: string
   onClose: () => void
@@ -19,8 +13,6 @@ interface FormModalProps {
 export function FormModal(props: FormModalProps) {
   const { title, field, description, onClose, children } = props
   const { state } = useStore()
-
-  console.log(state.modalForm.field, field)
 
   return (
     <Dialog open={state.modalForm.state && state.modalForm.field === field} onClose={onClose}>

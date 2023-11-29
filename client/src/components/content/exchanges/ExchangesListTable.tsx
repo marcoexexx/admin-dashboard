@@ -48,16 +48,17 @@ interface ExchangesListTableProps {
   exchanges: IExchange[]
   count: number
   onDelete: (id: string) => void
+  onMultiDelete: (ids: string[]) => void
   onCreateManyExchanges: (data: CreateExchangeInput[]) => void
 }
 
 export function ExchangesListTable(props: ExchangesListTableProps) {
-  const { exchanges, count, onCreateManyExchanges, onDelete } = props
+  const { exchanges, count, onCreateManyExchanges, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
   const theme = useTheme()
-  const { state: {exchangeFilter}, dispatch } = useStore()
+  const { state: {exchangeFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -123,7 +124,10 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
-        <BulkActions selectedRows={selectedRows} />
+        <BulkActions
+          field="delete-exchange-multi"
+          onDelete={() => onMultiDelete(selectedRows)}
+        />
       </Box>}
 
       <Divider />
@@ -230,9 +234,10 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
         />
       </Box>
 
-      <FormModal
-        field="delete-brand"
-        title="Delete brand"
+      {modalForm.field === "delete-exchange"
+      ? <FormModal
+        field="delete-exchange"
+        title="Delete exchange"
         onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>
@@ -245,6 +250,7 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
           </Box>
         </Box>
       </FormModal>
+      : null}
     </Card>
   )
 }
