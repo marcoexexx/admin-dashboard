@@ -7,9 +7,6 @@ import { useStore } from '@/hooks';
 import { MuiButton } from '@/components/ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { FormModal } from '@/components/forms';
-
-import { CreateCategoryForm } from '../content/categories/forms';
 
 export function CatgoryMultiInputField() {
   const { control, setValue, formState: { errors } } = useFormContext<{ categories: string[] }>()
@@ -38,10 +35,6 @@ export function CatgoryMultiInputField() {
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "categories" })
-  }
-
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "*" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))
@@ -108,10 +101,6 @@ export function CatgoryMultiInputField() {
         />
       )}
     />
-
-    <FormModal field='categories' title='Create new category' onClose={handleOnCloseModalForm}>
-      <CreateCategoryForm />
-    </FormModal>
   </>
 }
 

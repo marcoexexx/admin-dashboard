@@ -1,10 +1,10 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import { MuiLabel } from "@/components/ui";
 import { BulkActions } from "@/components";
 import { ProductsActions } from ".";
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 
 const getStatusLabel = (status: Omit<Status, "all">): JSX.Element => {

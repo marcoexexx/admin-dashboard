@@ -1,10 +1,10 @@
 import { PageTitle } from "@/components";
-import { CreateBrandForm } from "@/components/content/brands/forms";
+import { CreateExchangeForm } from "@/components/content/exchanges/forms";
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
-export default function CreateBrand() {
+export default function CreateExchange() {
   return (
     <>
       <PageTitle>
@@ -12,14 +12,14 @@ export default function CreateBrand() {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Tooltip arrow placeholder="top" title="go back">
-              <IconButton color="primary" sx={{ p: 2, mr: 2 }} component={Link} to="/brands">
+              <IconButton color="primary" sx={{ p: 2, mr: 2 }} component={Link} to="/exchanges">
                 <ArrowBackTwoToneIcon />
               </IconButton>
             </Tooltip>
           </Grid>
 
           <Grid item xs={10}>
-            <Typography variant="h3" component="h3" gutterBottom>Create a new brand</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>Create a new exchange</Typography>
             <Typography variant="subtitle2" gutterBottom>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
             </Typography>
@@ -32,7 +32,7 @@ export default function CreateBrand() {
           <Grid item xs={12} md={8}>
             <Card>
               <CardContent>
-                <CreateBrandForm />
+                <CreateExchangeForm />
               </CardContent>
             </Card>
           </Grid>

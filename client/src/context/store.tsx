@@ -21,8 +21,12 @@ type Store = {
       | "products"
       | "categories"
       | "sales-categories"
+
       | "delete-brand"
       | "delete-brand-multi"
+
+      | "delete-exchange"
+      | "delete-exchange-multi"
     state: boolean
   },
   user?: IUser
@@ -56,7 +60,13 @@ type Store = {
     page?: number,
     limit?: number,
     mode?: "insensitive" | "default"
-  }
+  },
+  exchangeFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default"
+  },
 }
 
 interface ProductFilterActions {
@@ -67,6 +77,11 @@ interface ProductFilterActions {
 interface BrandFilterActions {
   type: "SET_BRAND_FILTER",
   payload: Store["brandFilter"]
+}
+
+interface ExchangeFilterActions {
+  type: "SET_EXCHANGE_FILTER",
+  payload: Store["exchangeFilter"]
 }
 
 interface ModalFormOpenActions {
@@ -128,8 +143,11 @@ type Action =
   | SlidebarOpenActions
   | SlidebarToggleActions
   | SlidebarCloseActions
+
   | ProductFilterActions
   | BrandFilterActions
+  | ExchangeFilterActions
+
   | ModalFormOpenActions
   | ModalFormCloseActions
   | AllModalFormCloseActions
@@ -225,6 +243,13 @@ const stateReducer = (state: Store, action: Action): Store => {
 
     case "CLOSE_ALL_MODAL_FORM": {
       return { ...state, modalForm: { state: false, field: "*" } }
+    }
+
+    case "SET_EXCHANGE_FILTER": {
+      return { ...state, exchangeFilter: {
+        ...state.exchangeFilter,
+        ...action.payload
+      } }
     }
 
     case "SET_BRAND_FILTER": {

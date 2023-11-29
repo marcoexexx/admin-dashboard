@@ -4,14 +4,16 @@ import { exchangePermission } from "../utils/auth/permissions/exchange.permissio
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createExchangeSchema, getExchangeSchema } from "../schemas/exchange.schema";
-import { createExchangeHandler, deleteExchangeHandler, getExchangesHandler } from "../controllers/exchange.controller";
+import { createExchangeSchema, createMultiExchangesSchema, getExchangeSchema } from "../schemas/exchange.schema";
+import { createExchangeHandler, createMultiExchangesHandler, deleteExchangeHandler, getExchangesHandler } from "../controllers/exchange.controller";
 
 const router = Router()
 
 
 router.route("")
   .get(
+    deserializeUser,
+    requiredUser,
     permissionUser("read", exchangePermission),
     getExchangesHandler,
   )
@@ -21,6 +23,16 @@ router.route("")
     permissionUser("create", exchangePermission),
     validate(createExchangeSchema),
     createExchangeHandler
+  )
+
+
+router.route("/multi")
+  .post(
+    deserializeUser,
+    requiredUser,
+    permissionUser("create", exchangePermission),
+    validate(createMultiExchangesSchema),
+    createMultiExchangesHandler
   )
 
 

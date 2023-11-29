@@ -20,6 +20,8 @@ export function FormModal(props: FormModalProps) {
   const { title, field, description, onClose, children } = props
   const { state } = useStore()
 
+  console.log(state.modalForm.field, field)
+
   return (
     <Dialog open={state.modalForm.state && state.modalForm.field === field} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>

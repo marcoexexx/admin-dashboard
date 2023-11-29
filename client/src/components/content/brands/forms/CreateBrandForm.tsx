@@ -61,25 +61,27 @@ export function CreateBrandForm() {
   }
 
   return (
-    <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
-        <Grid item xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField 
-              fullWidth 
-              {...register("name")} 
-              label="Name" 
-              error={!!errors.name} 
-              helperText={!!errors.name ? errors.name.message : ""} 
-            />
-          </Box>
-        </Grid>
+    <>
+      <FormProvider {...methods}>
+        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+          <Grid item xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField 
+                fullWidth 
+                {...register("name")} 
+                label="Name" 
+                error={!!errors.name} 
+                helperText={!!errors.name ? errors.name.message : ""} 
+              />
+            </Box>
+          </Grid>
 
-        <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit">Create</MuiButton>
+          <Grid item xs={12}>
+            <MuiButton variant="contained" type="submit">Create</MuiButton>
+          </Grid>
         </Grid>
-      </Grid>
-    </FormProvider>
+      </FormProvider>
+    </>
   )
 }
 

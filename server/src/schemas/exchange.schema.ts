@@ -17,9 +17,19 @@ export const createExchangeSchema = object({
     from: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
     to: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
     rate: number({ required_error: "rate is required" })
-      .min(1).max(128),
+      .min(0),
     date: string({ required_error: "Date field is required" })
   })
+})
+
+export const createMultiExchangesSchema = object({
+  body: object({
+    from: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
+    to: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
+    rate: number({ required_error: "rate is required" })
+      .min(0),
+    date: string({ required_error: "Date field is required" })
+  }).array()
 })
 
 export const getExchangeSchema = object({
@@ -27,5 +37,6 @@ export const getExchangeSchema = object({
 })
 
 export type CreateExchangeInput = z.infer<typeof createExchangeSchema>["body"]
+export type CreateMultiExchangesInput = z.infer<typeof createMultiExchangesSchema>["body"]
 export type GetExchangeInput = z.infer<typeof getExchangeSchema>
 

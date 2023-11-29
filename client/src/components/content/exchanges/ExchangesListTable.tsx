@@ -5,19 +5,34 @@ import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { FormModal } from "@/components/forms";
-import { exportToExcel } from "@/libs/exportToExcel";
 import { useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
+import { CreateExchangeInput } from "./forms";
+import { exportToExcel } from "@/libs/exportToExcel";
+import { ExchangesActions } from ".";
 
-import { CreateBrandInput } from "./forms";
-import { BrandsActions } from ".";
 
 
-const columnData: TableColumnHeader<IBrand>[] = [
+const columnData: TableColumnHeader<IExchange>[] = [
   {
-    id: "name",
+    id: "to",
     align: "left",
-    name: "Name"
+    name: "To"
+  },
+  {
+    id: "from",
+    align: "left",
+    name: "From"
+  },
+  {
+    id: "rate",
+    align: "left",
+    name: "Rate"
+  },
+  {
+    id: "date",
+    align: "left",
+    name: "Date"
   },
 ]
 
@@ -29,20 +44,20 @@ const columnHeader = columnData.concat([
   }
 ])
 
-interface ProductsListTableProps {
-  brands: IBrand[]
+interface ExchangesListTableProps {
+  exchanges: IExchange[]
   count: number
   onDelete: (id: string) => void
-  onCreateManyBrands: (data: CreateBrandInput[]) => void
+  onCreateManyExchanges: (data: CreateExchangeInput[]) => void
 }
 
-export function BrandsListTable(props: ProductsListTableProps) {
-  const { brands, count, onCreateManyBrands, onDelete } = props
+export function ExchangesListTable(props: ExchangesListTableProps) {
+  const { exchanges, count, onCreateManyExchanges, onDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
   const theme = useTheme()
-  const { state: {brandFilter}, dispatch } = useStore()
+  const { state: {exchangeFilter}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -51,7 +66,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
   const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = evt.target
     setSellectedRows(checked
-      ? brands.map(e => e.id)
+      ? exchanges.map(e => e.id)
       : []
     )
   }
@@ -61,25 +76,25 @@ export function BrandsListTable(props: ProductsListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handleClickDeleteAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteId(brandId)
+  const handleClickDeleteAction = (exchangeId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    setDeleteId(exchangeId)
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: "delete-brand"
+      payload: "delete-exchange"
     })
   }
 
   const handleOnExport = () => {
-    exportToExcel(brands, "Brands")
+    exportToExcel(exchanges, "Exchanges")
   }
 
-  const handleOnImport = (data: CreateBrandInput[]) => {
-    onCreateManyBrands(data)
+  const handleOnImport = (data: CreateExchangeInput[]) => {
+    onCreateManyExchanges(data)
   }
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_BRAND_FILTER",
+      type: "SET_EXCHANGE_FILTER",
       payload: {
         page: page += 1
       }
@@ -88,7 +103,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_BRAND_FILTER",
+      type: "SET_EXCHANGE_FILTER",
       payload: {
         limit: parseInt(evt.target.value, 10)
       }
@@ -101,9 +116,9 @@ export function BrandsListTable(props: ProductsListTableProps) {
     })
   }
 
-  const selectedAllRows = selectedRows.length === brands.length
+  const selectedAllRows = selectedRows.length === exchanges.length
   const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < brands.length
+    selectedRows.length < exchanges.length
 
   return (
     <Card>
@@ -114,7 +129,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
       <Divider />
 
       <CardContent>
-        <BrandsActions onExport={handleOnExport} onImport={handleOnImport}  />
+        <ExchangesActions onExport={handleOnExport} onImport={handleOnImport}  />
       </CardContent>
 
       <TableContainer>
@@ -136,7 +151,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
           </TableHead>
 
           <TableBody>
-            {brands.map(row => {
+            {exchanges.map(row => {
               const isSelected = selectedRows.includes(row.id)
               return <TableRow
                 hover
@@ -160,7 +175,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {row.name}
+                    {row[col.id as keyof typeof row] as string}
                   </Typography>
                 </TableCell>)}
 
@@ -207,10 +222,10 @@ export function BrandsListTable(props: ProductsListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={brandFilter?.page
-            ? brandFilter.page - 1
+          page={exchangeFilter?.page
+            ? exchangeFilter.page - 1
             : 0}
-          rowsPerPage={brandFilter?.limit || 10}
+          rowsPerPage={exchangeFilter?.limit || 10}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

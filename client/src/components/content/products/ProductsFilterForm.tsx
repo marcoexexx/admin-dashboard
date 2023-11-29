@@ -103,7 +103,17 @@ export function ProductdsFilterForm() {
 
     <Grid item xs={6} md={3}>
       <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-        <TextField fullWidth type="number" defaultValue={filterQuery.get("maxPrice")} {...register("maxPrice", { setValueAs: value => value === "" ? undefined : parseInt(value, 10) })} label="Maximum price" error={!!errors.maxPrice} helperText={!!errors.maxPrice ? errors.maxPrice.message : ""} />
+        <TextField 
+          fullWidth 
+          type="number" 
+          defaultValue={filterQuery.get("maxPrice")} 
+          {...register("maxPrice", { 
+            setValueAs: value => value === "" ? undefined : parseInt(value, 10) 
+          })} 
+          label="Maximum price" 
+          error={!!errors.maxPrice} 
+          helperText={!!errors.maxPrice ? errors.maxPrice.message : ""} 
+        />
       </Box>
     </Grid>
 

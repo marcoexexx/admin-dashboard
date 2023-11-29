@@ -10,6 +10,14 @@ type UserProvider =
   | "Google"
   | "Facebook"
 
+
+type PriceUnit = 
+  | "MMK"
+  | "USD"
+  | "SGD"
+  | "THB"
+  | "KRW"
+
 interface IUser {
   id: string,
   name: string,
@@ -65,6 +73,18 @@ interface IBrand {
   id: string,
   name: string
   _count: number
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+interface IExchange {
+  id: string,
+  _count: number
+  from: PriceUnit
+  to: PriceUnit
+  rate: number
+  date: Date | string
   createdAt: string | Date
   updatedAt: string | Date
 }

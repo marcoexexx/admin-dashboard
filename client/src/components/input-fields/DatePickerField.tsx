@@ -4,9 +4,10 @@ import { Controller, useFormContext } from "react-hook-form"
 
 interface DatePickerFieldProps {
   fieldName: string,
+  required?: boolean
 }
 
-export function DatePickerField({fieldName}: DatePickerFieldProps) {
+export function DatePickerField({fieldName, required}: DatePickerFieldProps) {
   const { control, formState: {errors} } = useFormContext()
 
   return (
@@ -24,6 +25,7 @@ export function DatePickerField({fieldName}: DatePickerFieldProps) {
           }}
           slotProps={{
             textField: {
+              required: !!required,
               error: !!errors[fieldName],
               helperText: errors[fieldName]?.message?.toString() || ""
             }

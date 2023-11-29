@@ -3,13 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useState } from 'react';
 import { getSalesCategoriesFn } from '@/services/salesCategoryApi';
-import { FormModal } from '@/components/forms';
 import { useStore } from '@/hooks';
 import { MuiButton } from '@/components/ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
-import { CreateSalesCategoryForm } from '../content/sales-categories';
 
 export function SalesCategoryMultiInputField() {
   const { control, setValue, formState: { errors } } = useFormContext<{ salesCategory: string[] }>()
@@ -38,10 +36,6 @@ export function SalesCategoryMultiInputField() {
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "sales-categories" })
-  }
-
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))
@@ -108,10 +102,6 @@ export function SalesCategoryMultiInputField() {
         />
       )}
     />
-
-    <FormModal field='sales-categories' title='Create new sales category' onClose={handleOnCloseModalForm}>
-      <CreateSalesCategoryForm />
-    </FormModal>
   </>
 }
 

@@ -5,7 +5,7 @@ import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { CreateExchangeInput, ExchangeFilterPagination, GetExchangeInput } from "../schemas/exchange.schema";
+import { CreateExchangeInput, CreateMultiExchangesInput, ExchangeFilterPagination, GetExchangeInput } from "../schemas/exchange.schema";
 
 
 export async function getExchangesHandler(
@@ -19,7 +19,8 @@ export async function getExchangesHandler(
       id,
       from,
       to,
-      date,
+      endDate,
+      startDate,
       rate
     } = filter || { status: undefined }
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
@@ -32,7 +33,10 @@ export async function getExchangesHandler(
         id,
         from,
         to,
-        date: !Boolean(date) ? undefined : decodeURIComponent(date),
+        date: {
+          lte: endDate,
+          gte: startDate
+        },
         rate
       },
       skip: offset,
@@ -88,6 +92,30 @@ export async function createExchangeHandler(
     })
 
     res.status(200).json(HttpDataResponse({ exchange }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Exchange already exists"))
+
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function createMultiExchangesHandler(
+  req: Request<{}, {}, CreateMultiExchangesInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const data = req.body
+    await db.exchange.createMany({
+      data,
+      skipDuplicates: true
+    })
+
+    res.status(200).json(HttpResponse(200, "Success"))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

@@ -9,10 +9,14 @@ import { useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
+import { FormModal } from "@/components/forms";
+import { CreateBrandForm } from "../../brands/forms";
+import { CreateCategoryForm } from "../../categories/forms";
+import { CreateSalesCategoryForm } from "../../sales-categories";
 
 const productTypes = ["Switch", "Accessory", "Router", "Wifi"]
 const instockStatus = ["InStock", "OutOfStock", "AskForStock"]
-const priceUnit = ["MMK", "USD"]
+const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"]
 
 const createProductSchema = object({
   price: number({ required_error: "Price is required "}),
@@ -39,7 +43,7 @@ const createProductSchema = object({
   marketPrice: number().min(0),
   discount: number().min(0),
   priceUnit: z.enum(["MMK", "USD"]),
-  salesCategory: string().array(),
+  salesCategory: string().array().default([]),
   quantity: number().min(0),
 })
 
@@ -78,6 +82,9 @@ export function CreateProductForm() {
     resolver: zodResolver(createProductSchema)
   })
 
+  const handleOnCloseModalForm = () => {
+    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
+  }
 
   // useEffect(() => {
 
@@ -100,144 +107,165 @@ export function CreateProductForm() {
   }
 
   return (
-    <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
-        <Grid item md={6} xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField fullWidth {...register("title")} label="Title" error={!!errors.title} helperText={!!errors.title ? errors.title.message : ""} />
-            <OutlinedInput 
-              fullWidth 
-              {...register("price", { valueAsNumber: true })} 
-              type="number" 
-              placeholder="Price" 
-              error={!!errors.price} 
-              // helperText={!!errors.price 
-              //   ? errors.price.message 
-              //   : "1 dolla ~ 2098.91 kyat"
-              // } 
-              endAdornment={
-                <InputAdornment position="end">
-                  <MuiButton onClick={handleOnCalculate} variant="outlined" size="small">
-                    Calculate
-                  </MuiButton>
-                </InputAdornment>
-              }
-            />
-          </Box>
-        </Grid>
+    <>
+      <FormProvider {...methods}>
+        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField fullWidth {...register("title")} label="Title" error={!!errors.title} helperText={!!errors.title ? errors.title.message : ""} />
+              <OutlinedInput 
+                fullWidth 
+                {...register("price", { valueAsNumber: true })} 
+                type="number" 
+                placeholder="Price" 
+                error={!!errors.price} 
+                // helperText={!!errors.price 
+                //   ? errors.price.message 
+                //   : "1 dolla ~ 2098.91 kyat"
+                // } 
+                endAdornment={
+                  <InputAdornment position="end">
+                    <MuiButton onClick={handleOnCalculate} variant="outlined" size="small">
+                      Calculate
+                    </MuiButton>
+                  </InputAdornment>
+                }
+              />
+            </Box>
+          </Grid>
 
-        <Grid item md={6} xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField 
-              {...register("priceUnit")} 
-              defaultValue={priceUnit[0]}
-              name="priceUnit"
-              label="Price unit" 
-              select
-              error={!!errors.priceUnit} 
-              helperText={!!errors.priceUnit ? errors.priceUnit.message : ""} 
-              fullWidth
-            >
-              {priceUnit.map(t => (
-                <MenuItem key={t} value={t}>
-                  {t}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField fullWidth type="number" {...register("warranty", { valueAsNumber: true })} label="Warranty" error={!!errors.warranty} helperText={!!errors.warranty ? errors.warranty.message : ""} />
-          </Box>
-        </Grid>
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField 
+                {...register("priceUnit")} 
+                defaultValue={priceUnit[0]}
+                name="priceUnit"
+                label="Price unit" 
+                select
+                error={!!errors.priceUnit} 
+                helperText={!!errors.priceUnit ? errors.priceUnit.message : ""} 
+                fullWidth
+              >
+                {priceUnit.map(t => (
+                  <MenuItem key={t} value={t}>
+                    {t}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField fullWidth type="number" {...register("warranty", { valueAsNumber: true })} label="Warranty" error={!!errors.warranty} helperText={!!errors.warranty ? errors.warranty.message : ""} />
+            </Box>
+          </Grid>
 
-        <Grid item md={6} xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <EditorInputField fieldName="specification" />
-            <CatgoryMultiInputField />
-          </Box>
-        </Grid>
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <EditorInputField fieldName="specification" />
+              <CatgoryMultiInputField />
+            </Box>
+          </Grid>
 
-        <Grid item md={6} xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <EditorInputField fieldName="overview" />
-            <TextField fullWidth {...register("marketPrice", { valueAsNumber: true })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
-          </Box>
-        </Grid>
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <EditorInputField fieldName="overview" />
+              <TextField fullWidth {...register("marketPrice", { valueAsNumber: true })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
+            </Box>
+          </Grid>
 
-        <Grid item md={6} xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField fullWidth {...register("colors")} label="Color" error={!!errors.colors} helperText={!!errors.colors ? errors.colors.message : ""} />
-            <EditorInputField fieldName="description" />
-          </Box>
-        </Grid>
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField fullWidth {...register("colors")} label="Color" error={!!errors.colors} helperText={!!errors.colors ? errors.colors.message : ""} />
+              <EditorInputField fieldName="description" />
+            </Box>
+          </Grid>
 
-        <Grid item md={6} xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField 
-              fullWidth 
-              {...register("instockStatus")} 
-              defaultValue={instockStatus[2]}
-              select
-              label="Instock Status" 
-              error={!!errors.instockStatus} 
-              helperText={!!errors.instockStatus ? errors.instockStatus.message : ""} 
-            >
-              {instockStatus.map(status => (
-                <MenuItem key={status} value={status}>
-                  {status}
-                </MenuItem>
-              ))}
-            </TextField>
-            <EditorInputField fieldName="features" />
-          </Box>
-        </Grid>
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField 
+                fullWidth 
+                {...register("instockStatus")} 
+                defaultValue={instockStatus[2]}
+                select
+                label="Instock Status" 
+                error={!!errors.instockStatus} 
+                helperText={!!errors.instockStatus ? errors.instockStatus.message : ""} 
+              >
+                {instockStatus.map(status => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <EditorInputField fieldName="features" />
+            </Box>
+          </Grid>
 
-        <Grid item md={6} xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField 
-              fullWidth 
-              {...register("type")} 
-              defaultValue={productTypes[0]}
-              select
-              label="Product Type" 
-              error={!!errors.type} 
-              helperText={!!errors.type ? errors.type.message : ""} 
-            >
-              {productTypes.map(t => (
-                <MenuItem key={t} value={t}>
-                  {t}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-        </Grid>
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField 
+                fullWidth 
+                {...register("type")} 
+                defaultValue={productTypes[0]}
+                select
+                label="Product Type" 
+                error={!!errors.type} 
+                helperText={!!errors.type ? errors.type.message : ""} 
+              >
+                {productTypes.map(t => (
+                  <MenuItem key={t} value={t}>
+                    {t}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Box>
+          </Grid>
 
-        <Grid item md={6} xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <BrandInputField />
-          </Box>
-        </Grid>
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <BrandInputField />
+            </Box>
+          </Grid>
 
-        <Grid item md={6} xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
-            <TextField fullWidth {...register("discount", { valueAsNumber: true })} label="Discount" type="number" error={!!errors.discount} helperText={!!errors.discount ? errors.discount.message : ""} />
-          </Box>
-        </Grid>
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
+              <TextField fullWidth {...register("discount", { valueAsNumber: true })} label="Discount" type="number" error={!!errors.discount} helperText={!!errors.discount ? errors.discount.message : ""} />
+            </Box>
+          </Grid>
 
-        <Grid item md={6} xs={12}>
-          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <SalesCategoryMultiInputField />
-            <TextField fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
-          </Box>
-        </Grid>
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <SalesCategoryMultiInputField />
+              <TextField fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
+            </Box>
+          </Grid>
 
-        {/* <Grid item xs={6}> */}
-        {/*   <UploadProductImage /> */}
-        {/* </Grid> */}
+          {/* <Grid item xs={6}> */}
+          {/*   <UploadProductImage /> */}
+          {/* </Grid> */}
 
-        <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit">Create</MuiButton>
+          <Grid item xs={12}>
+            <MuiButton variant="contained" type="submit">Create</MuiButton>
+          </Grid>
         </Grid>
-      </Grid>
-    </FormProvider>
+      </FormProvider>
+
+      
+      {modalForm.field === "brands"
+      ? <FormModal field='brands' title='Create new brand' onClose={handleOnCloseModalForm}>
+        <CreateBrandForm />
+      </FormModal>
+      : null}
+
+      {modalForm.field === "categories"
+      ? <FormModal field='categories' title='Create new category' onClose={handleOnCloseModalForm}>
+        <CreateCategoryForm />
+      </FormModal>
+      : null}
+
+      {modalForm.field === "sales-categories"
+      ? <FormModal field='sales-categories' title='Create new sales category' onClose={handleOnCloseModalForm}>
+        <CreateSalesCategoryForm />
+      </FormModal>
+      : null}
+    </>
   )
 }

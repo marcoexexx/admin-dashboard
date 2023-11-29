@@ -278,7 +278,7 @@ export function SlidebarMenu() {
                       disableRipple
                       onClick={handleCloseSlidebar}
                       component={Link}
-                      to="/exchange/list"
+                      to="/exchanges/list"
                     >
                       <DotWrapper />
                       List
@@ -289,7 +289,7 @@ export function SlidebarMenu() {
                       disableRipple
                       component={Link}
                       onClick={handleCloseSlidebar}
-                      to="/exchange/create"
+                      to="/exchanges/create"
                     >
                       <DotWrapper />
                       Create
@@ -300,7 +300,7 @@ export function SlidebarMenu() {
                       disableRipple
                       component={Link}
                       onClick={handleCloseSlidebar}
-                      to="/exchange/view"
+                      to="/exchanges/view"
                     >
                       <DotWrapper />
                       View

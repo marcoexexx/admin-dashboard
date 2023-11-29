@@ -1,7 +1,7 @@
-# Rangoon Admin Dashboard
+# Admin Dashboard
 
 ## Overview
-Rangoon Admin Dashboard is a full-stack application utilizing the SERN stack (SQL, Express, React, Node) with TypeScript for a robust and type-safe development experience.
+Admin Dashboard is a full-stack application utilizing the SERN stack (SQL, Express, React, Node) with TypeScript for a robust and type-safe development experience.
 
 ## Features
 - **Database:** PostgreSQL with Prisma for efficient data management.
