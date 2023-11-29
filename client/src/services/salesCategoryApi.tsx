@@ -1,4 +1,4 @@
-import { CreateCategoryInput } from "@/components";
+import { CreateCategoryInput } from "@/components/content/categories/forms";
 import { authApi } from "./authApi";
 
 // TODO: fix filter type

@@ -4,7 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { BrandsListTable } from "@/components/content/brands";
 import { createMultiBrandsFn, deleteBrandFn, getBrandsFn } from "@/services/brandsApi";
-import { CreateBrandInput } from "@/components/forms";
+import { CreateBrandInput } from "./forms";
 
 export function BrandsList() {
   const { state: {brandFilter}, dispatch } = useStore()

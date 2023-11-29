@@ -2,14 +2,13 @@ import { Box, Grid, InputAdornment, MenuItem, OutlinedInput, TextField } from "@
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, string, z } from "zod";
-import { BrandInputField, CatgoryMultiInputField, SalesCategoryMultiInputField } from "@/components/input-fields";
+import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField } from "@/components/input-fields";
 import { useMutation } from "@tanstack/react-query";
 import { createProductFn } from "@/services/productsApi";
 import { useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
-import { EditorInputField } from "../input-fields/EditorInputField";
 
 const productTypes = ["Switch", "Accessory", "Router", "Wifi"]
 const instockStatus = ["InStock", "OutOfStock", "AskForStock"]

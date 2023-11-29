@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ImportIcon from '@mui/icons-material/MoveToInbox';
 
 import * as XLSX from 'xlsx'
-import { CreateBrandInput } from "@/components/forms";
+import { CreateBrandInput } from "./forms";
 
 
 const MenuActionBox = styled(Box)(({theme}) => ({

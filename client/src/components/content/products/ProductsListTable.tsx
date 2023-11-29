@@ -115,7 +115,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
-        <BulkActions />
+        <BulkActions
+          selectedRows={selectedRows}
+        />
       </Box>}
 
       <CardContent>

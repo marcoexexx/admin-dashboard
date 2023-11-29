@@ -3,11 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useState } from 'react';
 import { getSalesCategoriesFn } from '@/services/salesCategoryApi';
-import { CreateSalesCategoryForm, FormModal } from '@/components/forms';
+import { FormModal } from '@/components/forms';
 import { useStore } from '@/hooks';
+import { MuiButton } from '@/components/ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { MuiButton } from '../ui';
+
+import { CreateSalesCategoryForm } from '../content/sales-categories';
 
 export function SalesCategoryMultiInputField() {
   const { control, setValue, formState: { errors } } = useFormContext<{ salesCategory: string[] }>()

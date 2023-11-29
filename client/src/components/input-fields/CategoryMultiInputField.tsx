@@ -7,7 +7,9 @@ import { useStore } from '@/hooks';
 import { MuiButton } from '@/components/ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { CreateCategoryForm, FormModal } from '@/components/forms';
+import { FormModal } from '@/components/forms';
+
+import { CreateCategoryForm } from '../content/categories/forms';
 
 export function CatgoryMultiInputField() {
   const { control, setValue, formState: { errors } } = useFormContext<{ categories: string[] }>()

@@ -4,10 +4,12 @@ import { Autocomplete, Paper, TextField } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiButton } from '@/components/ui';
-import { CreateBrandForm, FormModal } from '@/components/forms';
+import { FormModal } from '@/components/forms';
 import { useStore } from '@/hooks';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+
+import { CreateBrandForm } from '../content/brands/forms';
 
 export function BrandInputField() {
   const { control, setValue, formState: { errors } } = useFormContext<{ brandId: string }>()

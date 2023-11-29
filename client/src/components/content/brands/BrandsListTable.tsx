@@ -4,11 +4,13 @@ import { BulkActions } from "@/components";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
-import { BrandsActions } from ".";
-import { CreateBrandInput, FormModal } from "@/components/forms";
+import { FormModal } from "@/components/forms";
 import { exportToExcelBrands } from "@/libs/exportToExcel";
 import { useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
+
+import { CreateBrandInput } from "./forms";
+import { BrandsActions } from ".";
 
 
 const columnData: TableColumnHeader<IBrand>[] = [
