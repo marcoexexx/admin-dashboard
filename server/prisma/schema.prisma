@@ -33,6 +33,7 @@ model Exchange {
   from      PriceUnit
   to        PriceUnit
   rate      Float
+  date      DateTime
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -121,6 +122,8 @@ enum PriceUnit {
   MMK
   USD
   SGD
+  THB
+  KRW
 }
 
 model Product {

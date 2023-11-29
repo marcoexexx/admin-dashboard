@@ -1,6 +1,5 @@
 import { number, object, string, z } from "zod";
 import { Pagination } from "./types";
-import { PriceUnit } from "@prisma/client";
 
 export type ExchangeFilterPagination = {
   filter?: any,
@@ -15,10 +14,11 @@ const params = {
 
 export const createExchangeSchema = object({
   body: object({
-    from: z.enum(["MMK", "USD", "SGD"]),
-    to: z.enum(["MMK", "USD", "SGD"]),
-    rate: number({ required_error: "MMK is required" })
-      .min(1).max(128)
+    from: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
+    to: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
+    rate: number({ required_error: "rate is required" })
+      .min(1).max(128),
+    date: string({ required_error: "Date field is required" })
   })
 })
 

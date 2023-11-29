@@ -19,6 +19,7 @@ export async function getExchangesHandler(
       id,
       from,
       to,
+      date,
       rate
     } = filter || { status: undefined }
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
@@ -31,6 +32,7 @@ export async function getExchangesHandler(
         id,
         from,
         to,
+        date: !Boolean(date) ? undefined : decodeURIComponent(date),
         rate
       },
       skip: offset,
@@ -75,10 +77,11 @@ export async function createExchangeHandler(
   next: NextFunction
 ) {
   try {
-    const { from, to, rate } = req.body
+    const { from, to, rate, date } = req.body
     const exchange = await db.exchange.create({
       data: {
         from,
+        date,
         to,
         rate
       },
