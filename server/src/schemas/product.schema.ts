@@ -54,6 +54,7 @@ export const createProductSchema = object({
     priceUnit: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
     salesCategory: string().array(),
     quantity: number().min(0),
+    status: z.enum(["Draft", "Pending", "Published"]).default("Draft")
   })
 })
 

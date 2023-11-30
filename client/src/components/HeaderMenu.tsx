@@ -13,6 +13,7 @@ const ListWrapper = styled(Box)(({theme}) => ({
     
     "&.MuiListItem-indicators": {
       padding: theme.spacing(1, 2),
+      cursor: "pointer",
 
       ".MuiListItemText-root": {
         ".MuiTypography-root": {
@@ -64,7 +65,6 @@ export function HeaderMenu() {
       <ListWrapper sx={{ display: { xs: "none", md: "block" } }}>
         <List disablePadding component={Box} display="flex">
           <ListItem
-            sx={{ cursor: "pointer" }}
             classes={{ root: "MuiListItem-indicators" }}
             onClick={() => navigate("/products/list")}
           >
@@ -72,7 +72,6 @@ export function HeaderMenu() {
           </ListItem>
 
           <ListItem
-            sx={{ cursor: "pointer" }}
             classes={{ root: "MuiListItem-indicators" }}
             onClick={() => navigate("/brands/list")}
           >
@@ -80,7 +79,6 @@ export function HeaderMenu() {
           </ListItem>
 
           <ListItem
-            sx={{ cursor: "pointer" }}
             classes={{ root: "MuiListItem-indicators" }}
             onClick={() => navigate("/categories/list")}
           >
@@ -88,7 +86,6 @@ export function HeaderMenu() {
           </ListItem>
 
           <ListItem
-            sx={{ cursor: "pointer" }}
             classes={{ root: "MuiListItem-indicators" }}
             onClick={() => navigate("/sales-categories/list")}
           >

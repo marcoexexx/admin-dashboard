@@ -139,6 +139,7 @@ export async function createProductHandler(
       salesCategory,
       categories,
       quantity,
+      status
     } = req.body;
     const new_product = await db.product.create({
       data: {
@@ -156,7 +157,7 @@ export async function createProductHandler(
         dealerPrice,
         marketPrice,
         discount,
-        status: "Draft",
+        status,
         priceUnit,
         categories: {
           create: categories.map(id => ({

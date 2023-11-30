@@ -1,7 +1,7 @@
-import { Box, Grid, InputAdornment, MenuItem, OutlinedInput, TextField } from "@mui/material";
+import { Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, Switch, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { number, object, string, z } from "zod";
+import { boolean, number, object, string, z } from "zod";
 import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField } from "@/components/input-fields";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createProductFn } from "@/services/productsApi";
@@ -47,6 +47,8 @@ const createProductSchema = object({
   priceUnit: z.enum(["MMK", "USD"]),
   salesCategory: string().array().default([]),
   quantity: number().min(0),
+  isPending: boolean().default(false),
+  status: z.enum(["Draft", "Pending", "Published"]).default("Draft")
 })
 
 export type CreateProductInput = z.infer<typeof createProductSchema>
@@ -115,7 +117,12 @@ export function CreateProductForm() {
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<CreateProductInput> = (value) => {
-    createProduct(value)
+    createProduct({
+      ...value,
+      status: value.isPending 
+        ? "Pending" 
+        : "Draft"
+    })
   }
 
   const handleOnCalculate = (_: React.MouseEvent<HTMLButtonElement>) => {
@@ -256,9 +263,14 @@ export function CreateProductForm() {
             </Box>
           </Grid>
 
-          {/* <Grid item xs={6}> */}
-          {/*   <UploadProductImage /> */}
-          {/* </Grid> */}
+          <Grid item xs={12}>
+            <FormControlLabel
+              label="Request review"
+              control={<Switch 
+                {...register("isPending")}
+              />}
+            />
+          </Grid>
 
           <Grid item xs={12}>
             <MuiButton variant="contained" type="submit">Create</MuiButton>
