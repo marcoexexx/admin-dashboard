@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { number, object, z } from "zod";
 import { priceUnit } from "./forms";
 import { DatePickerField } from "@/components/input-fields";
+import dayjs from "dayjs";
 
 
 const filterExchangesSchema = object({
@@ -25,7 +26,11 @@ export function ExchangesFilterForm() {
   const [filterQuery, setFilterQuery] = useSearchParams()
 
   const methods = useForm<FilterExchangesInput>({
-    resolver: zodResolver(filterExchangesSchema)
+    resolver: zodResolver(filterExchangesSchema),
+    defaultValues: {
+      startDate: dayjs(filterQuery.get("startDate")),
+      endDate: dayjs(filterQuery.get("endDate")),
+    }
   })
 
   const { handleSubmit, register, formState: { errors }, setValue } = methods
