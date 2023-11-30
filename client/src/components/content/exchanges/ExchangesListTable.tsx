@@ -171,17 +171,26 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
                   />
                 </TableCell>
 
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {row[col.id as keyof typeof row] as string}
-                  </Typography>
-                </TableCell>)}
+                {columnData.map(col => {
+                  const key = col.id as keyof typeof row
+                  const dataRow = row[key]
+
+                  return (
+                    <TableCell align={col.align} key={col.id}>
+                    <Typography
+                      variant="body1"
+                      fontWeight="normal"
+                      color="text.primary"
+                      gutterBottom
+                      noWrap
+                    >
+                      {key === "date"
+                        ? (new Date(dataRow)).toLocaleString()
+                        : dataRow as string}
+                    </Typography>
+                  </TableCell>
+                  )
+                })}
 
                 <TableCell align="right">
                   <Tooltip title="Edit Product" arrow>

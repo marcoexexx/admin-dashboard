@@ -40,10 +40,8 @@ export function ExchangesFilterForm() {
         to,
         from,
         rate,
-        date: {
-          gte: !Boolean(startDate) ? undefined : startDate.toISOString(),
-          // lte: ""
-        }
+        startDate: startDate?.toISOString(),
+        endDate: endDate?.toISOString(),
       },
     } })
   }
@@ -62,6 +60,25 @@ export function ExchangesFilterForm() {
 
   return <FormProvider {...methods}>
     <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid item xs={12}>
+        <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+          <TextField 
+            fullWidth 
+            {...register("rate", {
+              setValueAs: value => value === "" ? undefined : parseInt(value, 10) 
+            })} 
+            defaultValue={filterQuery.get("rate")}
+            type="number"
+            inputProps={{
+              step: "0.01"
+            }}
+            label="Rate" 
+            error={!!errors.rate} 
+            helperText={!!errors.rate ? errors.rate.message : ""} 
+          />
+        </Box>
+      </Grid>
+
       <Grid item xs={12} md={6}>
         <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
           <TextField 
@@ -99,24 +116,9 @@ export function ExchangesFilterForm() {
 
       <Grid item xs={12} md={6}>
         <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-          <TextField 
-            fullWidth 
-            {...register("rate", {
-              setValueAs: value => value === "" ? undefined : parseInt(value, 10) 
-            })} 
-            defaultValue={filterQuery.get("rate")}
-            type="number"
-            inputProps={{
-              step: "0.01"
-            }}
-            label="Rate" 
-            error={!!errors.rate} 
-            helperText={!!errors.rate ? errors.rate.message : ""} 
-          />
+          <DatePickerField fieldName="startDate" />
+          <DatePickerField fieldName="endDate" />
         </Box>
-
-        <DatePickerField fieldName="startDate" />
-        <DatePickerField fieldName="endDate" />
       </Grid>
 
       <Grid item>
