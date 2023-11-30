@@ -1,10 +1,14 @@
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
-import { MuiLabel } from "@/components/ui";
+import { MuiButton, MuiLabel } from "@/components/ui";
 import { BulkActions } from "@/components";
 import { ProductsActions } from ".";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import { CreateProductInput } from "./forms";
+import { useStore } from "@/hooks";
+import { exportToExcel } from "@/libs/exportToExcel";
+import { FormModal } from "@/components/forms";
 
 
 const getStatusLabel = (status: Omit<Status, "all">): JSX.Element => {
@@ -81,13 +85,20 @@ const columnHeader = columnData.concat([
 
 interface ProductsListTableProps {
   products: IProduct[]
+  count: number,
+  onDelete: (id: string) => void
+  onMultiDelete: (ids: string[]) => void
+  onCreateManyProducts: (data: CreateProductInput[]) => void
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
-  const { products } = props
+  const { products, count, onDelete, onMultiDelete, onCreateManyProducts } = props
 
   const theme = useTheme()
+  const { state: {productFilter, modalForm}, dispatch } = useStore()
+
   const [selectedRows, setSellectedRows] = useState<string[]>([])
+  const [deleteId, setDeleteId] = useState("")
 
   const selectedBulkActions = selectedRows.length > 0
 
@@ -108,6 +119,46 @@ export function ProductsListTable(props: ProductsListTableProps) {
     console.log(product)
   }
 
+  const handleClickDeleteAction = (exchangeId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    setDeleteId(exchangeId)
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: "delete-product"
+    })
+  }
+
+  const handleOnExport = () => {
+    exportToExcel(products, "Products")
+  }
+
+  const handleOnImport = (data: CreateProductInput[]) => {
+    onCreateManyProducts(data)
+  }
+
+  const handleChangePagination = (_: any, page: number) => {
+    dispatch({
+      type: "SET_PRODUCT_FILTER",
+      payload: {
+        page: page += 1
+      }
+    })
+  }
+
+  const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "SET_PRODUCT_FILTER",
+      payload: {
+        limit: parseInt(evt.target.value, 10)
+      }
+    })
+  }
+
+  const handleCloseDeleteModal = () => {
+    dispatch({
+      type: "CLOSE_ALL_MODAL_FORM"
+    })
+  }
+
   const selectedAllRows = selectedRows.length === products.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < products.length
@@ -116,12 +167,18 @@ export function ProductsListTable(props: ProductsListTableProps) {
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
-          selectedRows={selectedRows}
+          field="delete-product-multi"
+          onDelete={() => onMultiDelete(selectedRows)}
         />
       </Box>}
 
+      <Divider />
+
       <CardContent>
-        <ProductsActions />
+        <ProductsActions 
+          onExport={handleOnExport}
+          onImport={handleOnImport}
+        />
       </CardContent>
 
       <Divider />
@@ -223,6 +280,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
                         },
                         color: theme.palette.error.main
                       }}
+                      onClick={handleClickDeleteAction(row.id)}
                       color="inherit"
                       size="small"
                     >
@@ -235,6 +293,50 @@ export function ProductsListTable(props: ProductsListTableProps) {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Box p={2}>
+        <TablePagination
+          component="div"
+          count={count}
+          onPageChange={handleChangePagination}
+          onRowsPerPageChange={handleChangeLimit}
+          page={productFilter?.page
+            ? productFilter.page - 1
+            : 0}
+          rowsPerPage={productFilter?.limit || 10}
+          rowsPerPageOptions={[5, 10, 25, 30]}
+        />
+      </Box>
+
+      {modalForm.field === "delete-product"
+      ? <FormModal
+          field="delete-product"
+          title="Delete product"
+          onClose={handleCloseDeleteModal}
+        >
+          <Box display="flex" flexDirection="row" gap={1}>
+            <Box>
+              <Typography>Are you sure want to delete</Typography>
+            </Box>
+            <Box display="flex" flexDirection="row" gap={1}>
+              <MuiButton
+                variant="contained"
+                color="error"
+                onClick={() => onDelete(deleteId)}
+              >
+                Delete
+              </MuiButton>
+              
+              <MuiButton
+                variant="outlined"
+                onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}
+              >
+                Cancel
+              </MuiButton>
+            </Box>
+          </Box>
+        </FormModal>
+      : null}
     </Card>
   )
 }

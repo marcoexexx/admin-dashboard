@@ -2,12 +2,13 @@ import { CreateExchangeInput, DeleteExchangeInput } from "@/components/content/e
 import { authApi } from "./authApi";
 
 
-export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination }: { filter: any, pagination: any }) {
+export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination, orderBy }: { filter: any, pagination: any, orderBy: Partial<Record<keyof IExchange, "asc" | "desc">> }) {
   const { data } = await authApi.get<HttpListResponse<IExchange>>("/exchanges", {
     ...opt,
     params: {
       filter,
-      pagination
+      pagination,
+      orderBy
     },
   })
   return data
@@ -21,7 +22,7 @@ export async function createExchangeFn(brand: CreateExchangeInput) {
 
 
 export async function createMultiExchangesFn(brand: CreateExchangeInput[]) {
-  const { data } = await authApi.post<IExchange>("/exchanges/multi", brand)
+  const { data } = await authApi.post<HttpResponse>("/exchanges/multi", brand)
   return data
 }
 

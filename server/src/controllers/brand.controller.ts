@@ -14,7 +14,7 @@ export async function getBrandsHandler(
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination } = convertNumericStrings(req.query)
+    const { filter = {}, pagination, orderBy } = convertNumericStrings(req.query)
     const {
       id,
       name
@@ -31,6 +31,7 @@ export async function getBrandsHandler(
           id,
           name
         },
+        orderBy,
         skip: offset,
         take: pageSize,
       })

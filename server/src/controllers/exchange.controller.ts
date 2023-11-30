@@ -14,7 +14,7 @@ export async function getExchangesHandler(
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination } = convertNumericStrings(req.query)
+    const { filter = {}, pagination, orderBy } = convertNumericStrings(req.query)
     const {
       id,
       from,
@@ -28,22 +28,26 @@ export async function getExchangesHandler(
 
     const offset = (page - 1) * pageSize
 
-    const exchanges = await db.exchange.findMany({
-      where: {
-        id,
-        from,
-        to,
-        date: {
-          lte: endDate,
-          gte: startDate
+    const [count, exchanges] = await db.$transaction([
+      db.exchange.count(),
+      db.exchange.findMany({
+        where: {
+          id,
+          from,
+          to,
+          date: {
+            lte: endDate,
+            gte: startDate
+          },
+          rate
         },
-        rate
-      },
-      skip: offset,
-      take: pageSize,
-    })
+        orderBy,
+        skip: offset,
+        take: pageSize,
+      })
+    ])
 
-    res.status(200).json(HttpListResponse(exchanges))
+    res.status(200).json(HttpListResponse(exchanges, count))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

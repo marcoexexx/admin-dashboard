@@ -4,6 +4,9 @@ import { Pagination } from "./types";
 export type BrandFilterPagination = {
   filter?: any,
   pagination?: Pagination,
+  orderBy?: Record<
+    keyof CreateBrandInput | "createdAt" | "updatedAt", 
+    "asc" | "desc">
 }
 
 const params = {

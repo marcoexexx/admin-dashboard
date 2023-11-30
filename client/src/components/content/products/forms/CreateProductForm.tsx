@@ -3,7 +3,7 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, string, z } from "zod";
 import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField } from "@/components/input-fields";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createProductFn } from "@/services/productsApi";
 import { useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,8 @@ import { FormModal } from "@/components/forms";
 import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
 import { CreateSalesCategoryForm } from "../../sales-categories";
+import { getExchangesFn } from "@/services/exchangesApi";
+import { useEffect } from "react";
 
 const productTypes = ["Switch", "Accessory", "Router", "Wifi"]
 const instockStatus = ["InStock", "OutOfStock", "AskForStock"]
@@ -82,13 +84,33 @@ export function CreateProductForm() {
     resolver: zodResolver(createProductSchema)
   })
 
+  const { data: exchangeRate } = useQuery({
+    queryKey: ["exchanges", "latest", methods.getValues("priceUnit")],
+    queryFn: args => getExchangesFn(args, {
+      filter: {
+        from: methods.getValues("priceUnit"),
+        to: "MMK",
+      },
+      orderBy: {
+        updatedAt: "asc"
+      },
+      pagination: {
+        page: 1,
+        pageSize: 1
+      }
+    }),
+    select: data => data.results
+  })
+
+  useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["exchanges", "latest", methods.getValues("priceUnit")],
+    })
+  }, [methods.watch("priceUnit")])
+
   const handleOnCloseModalForm = () => {
     dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
   }
-
-  // useEffect(() => {
-
-  // }, [methods.watch("priceUnit")])
 
   const { handleSubmit, register, formState: { errors } } = methods
 
@@ -97,13 +119,9 @@ export function CreateProductForm() {
   }
 
   const handleOnCalculate = (_: React.MouseEvent<HTMLButtonElement>) => {
-    const unit = methods.getValues("priceUnit")
-    if (unit === "USD")  {
-      const price = methods.getValues("price")
-      const fatchedUsd = 2098.91
-      methods.setValue("price", price * fatchedUsd)
-    }
-
+    const price = methods.getValues("price")
+    const rate = exchangeRate?.[0]?.rate || 1
+    methods.setValue("price", price * rate)
   }
 
   return (

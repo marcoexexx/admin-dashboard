@@ -21,7 +21,7 @@ export async function createBrandFn(brand: CreateBrandInput) {
 
 
 export async function createMultiBrandsFn(brand: CreateBrandInput[]) {
-  const { data } = await authApi.post<IBrand>("/brands/multi", brand)
+  const { data } = await authApi.post<HttpResponse>("/brands/multi", brand)
   return data
 }
 

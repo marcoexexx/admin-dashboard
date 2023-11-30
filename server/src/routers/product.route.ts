@@ -7,6 +7,8 @@ import { createProductHandler, deleteProductHandler, getProductHandler, getProdu
 import { createProductSchema, getProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
 import { productPermission } from "../utils/auth/permissions";
 import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
+import { createMultiExchangesSchema } from "../schemas/exchange.schema";
+import { createMultiExchangesHandler } from "../controllers/exchange.controller";
 
 
 const router = Router()
@@ -23,6 +25,16 @@ router.route("")
     permissionUser("create", productPermission), 
     validate(createProductSchema), 
     createProductHandler
+  )
+
+
+router.route("/multi")
+  .post(
+    deserializeUser,
+    requiredUser,
+    permissionUser("create", productPermission),
+    validate(createMultiExchangesSchema),
+    createMultiExchangesHandler
   )
 
 

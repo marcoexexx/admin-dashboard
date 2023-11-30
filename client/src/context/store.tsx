@@ -22,6 +22,9 @@ export type Store = {
       | "categories"
       | "sales-categories"
 
+      | "delete-product"
+      | "delete-product-multi"
+
       | "delete-brand"
       | "delete-brand-multi"
 

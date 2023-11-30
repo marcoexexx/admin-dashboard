@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { db } from '../utils/db'
 import AppError from '../utils/appError';
-import { CreateProductInput, GetProductInput, ProductFilterPagination, UploadImagesProductInput } from '../schemas/product.schema';
+import { CreateMultiProductsInput, CreateProductInput, GetProductInput, ProductFilterPagination, UploadImagesProductInput } from '../schemas/product.schema';
 import logging from '../middleware/logging/logging';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -15,7 +15,7 @@ export async function getProductsHandler(
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, include: includes } = convertNumericStrings(req.query)
+    const { filter = {}, pagination, include: includes, orderBy } = convertNumericStrings(req.query)
     const include = convertStringToBoolean(includes)
     const {
       id,
@@ -45,37 +45,41 @@ export async function getProductsHandler(
 
     const offset = (page - 1) * pageSize
 
-    const products = await db.product.findMany({
-      where: {
-        id,
-        brand,
-        brandId,
-        title,
-        price,
-        specification,
-        overview,
-        features,
-        warranty,
-        categories,
-        colors,
-        instockStatus,
-        description,
-        type,
-        dealerPrice,
-        marketPrice,
-        discount,
-        status,
-        priceUnit,
-        salesCategory,
-        likedUsers,
-      },
-      skip: offset,
-      take: pageSize,
-      // @ts-ignore
-      include
-    })
+    const [ count, products ] = await db.$transaction([
+      db.product.count(),
+      db.product.findMany({
+        where: {
+          id,
+          brand,
+          brandId,
+          title,
+          price,
+          specification,
+          overview,
+          features,
+          warranty,
+          categories,
+          colors,
+          instockStatus,
+          description,
+          type,
+          dealerPrice,
+          marketPrice,
+          discount,
+          status,
+          priceUnit,
+          salesCategory,
+          likedUsers,
+        },
+        orderBy,
+        skip: offset,
+        take: pageSize,
+        // @ts-ignore
+        include
+      })
+    ])
 
-    res.status(200).json(HttpListResponse(products))
+    res.status(200).json(HttpListResponse(products, count))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
@@ -177,6 +181,30 @@ export async function createProductHandler(
     logging.error(msg)
 
     if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Category name already exists"))
+
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function createMultiProductsHandler(
+  req: Request<{}, {}, CreateMultiProductsInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const data = req.body
+    await db.product.createMany({
+      data,
+      skipDuplicates: true
+    })
+
+    res.status(200).json(HttpResponse(200, "Success"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Exchange already exists"))
 
     next(new AppError(500, msg))
   }

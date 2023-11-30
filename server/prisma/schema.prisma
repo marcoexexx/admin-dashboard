@@ -145,8 +145,8 @@ model Product {
   dealerPrice   Int
   marketPrice   Int
   discount      Int
-  status        Status
-  priceUnit     PriceUnit
+  status        Status                 @default(Draft)
+  priceUnit     PriceUnit              @default(MMK)
   likedUsers    Favorites[]
   quantity      Int
   reviews       Review[]

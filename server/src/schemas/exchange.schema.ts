@@ -4,6 +4,9 @@ import { Pagination } from "./types";
 export type ExchangeFilterPagination = {
   filter?: any,
   pagination?: Pagination,
+  orderBy?: Record<
+    keyof CreateExchangeInput | "createdAt" | "updatedAt", 
+    "asc" | "desc">
 }
 
 const params = {

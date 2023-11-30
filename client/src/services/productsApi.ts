@@ -1,17 +1,19 @@
-import { CreateProductInput } from "@/components/content/products/forms";
+import { CreateProductInput, DeleteProductInput } from "@/components/content/products/forms";
 import { authApi } from "./authApi";
 
-// TODO: fix filter type
-export async function getProductsFn(opt: QueryOptionArgs, { filter, include }: { filter: any, include: any }) {
+
+export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pagination }: { filter: any, include: any, pagination: any }) {
   const { data } = await authApi.get<HttpListResponse<IProduct>>("/products", {
     ...opt,
     params: {
       filter,
-      include
+      include,
+      pagination
     }
   })
   return data
 }
+
 
 export async function getProductFn(productId: string) {
   const { data } = await authApi.get<ProductResponse>("/products/detail", {
@@ -22,7 +24,26 @@ export async function getProductFn(productId: string) {
   return data
 }
 
+
+export async function createMultiProductsFn(brand: CreateProductInput[]) {
+  const { data } = await authApi.post<HttpResponse>("/products/multi", brand)
+  return data
+}
+
+
 export async function createProductFn(product: CreateProductInput) {
   const { data } = await authApi.post<ProductResponse>("/products", product)
   return data
+}
+
+
+export async function deleteProductFn(productId: DeleteProductInput["productId"]) {
+  const { data } = await authApi.delete<HttpResponse>(`/products/detail/${productId}`)
+  return data
+}
+
+
+export async function deleteMultiProductsFn(productIds: DeleteProductInput["productId"][]) {
+  await Promise.all(productIds.map(id => authApi.delete<HttpResponse>(`/products/detail/${id}`)))
+  return null
 }
