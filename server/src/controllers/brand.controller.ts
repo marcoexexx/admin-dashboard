@@ -3,7 +3,7 @@ import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { BrandFilterPagination, CreateBrandInput, CreateMultiBrandsInput, GetBrandInput } from "../schemas/brand.schema";
+import { BrandFilterPagination, CreateBrandInput, CreateMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
@@ -131,6 +131,31 @@ export async function deleteBrandHandler(
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function updateBrandHandler(
+  req: Request<UpdateBrandInput["params"], {}, UpdateBrandInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { brandId } = req.params
+    const data = req.body
+
+    const brand = await db.brand.update({
+      where: {
+        id: brandId,
+      },
+      data
+    })
+
+    res.status(200).json(HttpDataResponse({ brand }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

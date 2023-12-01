@@ -39,7 +39,16 @@ export const getBrandSchema = object({
   ...params
 })
 
+export const updateBrandSchema = object({
+  ...params,
+  body: object({
+    name: string({ required_error: "Name is required" })
+      .min(0).max(128)
+  })
+})
+
 export type CreateBrandInput = z.infer<typeof createBrandSchema>["body"]
 export type CreateMultiBrandsInput = z.infer<typeof createMultiBrandsSchema>["body"]
 export type GetBrandInput = z.infer<typeof getBrandSchema>
+export type UpdateBrandInput = z.infer<typeof updateBrandSchema>
 export type DeleteMultiBrandInput = z.infer<typeof deleteMultiBrandsSchema>["body"]
