@@ -45,7 +45,7 @@ export function UpdateBrandForm() {
       } })
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      if (brand) queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: ["brands"]
       })
     },

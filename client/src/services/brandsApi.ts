@@ -24,7 +24,7 @@ export async function getBrandFn(opt: QueryOptionArgs, { brandId }: { brandId: s
 
 
 export async function createBrandFn(brand: CreateBrandInput) {
-  const { data } = await authApi.post<IBrand>("/brands", brand)
+  const { data } = await authApi.post<BrandResponse>("/brands", brand)
   return data
 }
 
@@ -36,13 +36,13 @@ export async function createMultiBrandsFn(brand: CreateBrandInput[]) {
 
 
 export async function updateBrandFn({brandId, brand}: {brandId: string, brand: UpdateBrandInput}) {
-  const { data } = await authApi.patch<HttpResponse>(`/brands/detail/${brandId}`, brand)
+  const { data } = await authApi.patch<BrandResponse>(`/brands/detail/${brandId}`, brand)
   return data
 }
 
 
 export async function deleteMultiBrandsFn(brandIds: DeleteBrandInput["brandId"][]) {
-  await Promise.all(brandIds.map(id => authApi.delete<HttpResponse>(`/brands/detail/${id}`)))
+  await Promise.all(brandIds.map(id => authApi.delete(`/brands/detail/${id}`)))
   return null
 }
 

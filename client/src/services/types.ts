@@ -180,3 +180,5 @@ type SalesCategoryResponse = Omit<HttpResponse, "message"> & ISalesCategory;
 type ProductResponse = Omit<HttpResponse, "message"> & IProduct;
 
 type BrandResponse = Omit<HttpResponse, "message"> & { brand: IBrand };
+
+type ExchangeResponse = Omit<HttpResponse, "message"> & { exchange: IExchange };

@@ -10,6 +10,7 @@ import { MuiButton } from "@/components/ui";
 import { CreateExchangeInput } from "./forms";
 import { exportToExcel } from "@/libs/exportToExcel";
 import { ExchangesActions } from ".";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -57,6 +58,8 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
 
   const [deleteId, setDeleteId] = useState("")
 
+  const navigate = useNavigate()
+
   const theme = useTheme()
   const { state: {exchangeFilter, modalForm}, dispatch } = useStore()
 
@@ -75,6 +78,10 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
   const handleSelectOne = (id: string) => (_: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedRows.includes(id)) setSellectedRows(prev => ([ ...prev, id ]))
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
+  }
+
+  const handleClickUpdateAction = (exchangeId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/exchanges/update/${exchangeId}`)
   }
 
   const handleClickDeleteAction = (exchangeId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
@@ -201,6 +208,7 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
                         },
                         color: theme.palette.primary.main
                       }}
+                      onClick={handleClickUpdateAction(row.id)}
                       color="inherit"
                       size="small"
                     >

@@ -54,12 +54,12 @@ export async function updateProductFn(
     >
   }
 ) {
-  const { data } = await authApi.patch<HttpResponse>(`/products/detail/${id}`, product)
+  const { data } = await authApi.patch<ProductResponse>(`/products/detail/${id}`, product)
   return data
 }
 
 
 export async function deleteMultiProductsFn(productIds: DeleteProductInput["productId"][]) {
-  await Promise.all(productIds.map(id => authApi.delete<HttpResponse>(`/products/detail/${id}`)))
+  await Promise.all(productIds.map(id => authApi.delete(`/products/detail/${id}`)))
   return null
 }

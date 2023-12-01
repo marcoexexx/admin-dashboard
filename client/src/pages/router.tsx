@@ -13,6 +13,7 @@ const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.pa
 // produts
 const ListExchangePage = Loader(lazy(() => import("@/pages/exchanges/ListExchange")))
 const CreateExchangePage = Loader(lazy(() => import("@/pages/exchanges/CreateExchange")))
+const UpdateExchangePage = Loader(lazy(() => import("@/pages/exchanges/UpdateExchange")))
 
 // Auth
 const RegisterPage = Loader(lazy(() => import("@/pages/register.page")))
@@ -77,7 +78,17 @@ const routes = createBrowserRouter([
                     Component: CreateExchangePage
                   }
                 ]
-              }
+              },
+              {
+                path: "update/:exchangeId",
+                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                children: [
+                  {
+                    path: "",
+                    Component: UpdateExchangePage
+                  }
+                ]
+              },
             ]
           },
 
