@@ -4,12 +4,13 @@ import { MuiButton, MuiLabel } from "@/components/ui";
 import { BulkActions } from "@/components";
 import { ProductsActions } from ".";
 import { CreateProductInput } from "./forms";
-import { useStore } from "@/hooks";
+import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
 import { exportToExcel } from "@/libs/exportToExcel";
 import { FormModal } from "@/components/forms";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import { getProductPermissionsFn } from "@/services/permissionsApi";
 
 
 const getStatusLabel = (status: Omit<Status, "all">): JSX.Element => {
@@ -97,7 +98,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
   const { products, count, onDelete, onMultiDelete, onCreateManyProducts, onPublished } = props
 
   const theme = useTheme()
-  const { state: {productFilter, modalForm}, dispatch } = useStore()
+  const { state: {productFilter, modalForm, user}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
   const [deleteId, setDeleteId] = useState("")
@@ -191,6 +192,23 @@ export function ProductsListTable(props: ProductsListTableProps) {
   const selectedAllRows = selectedRows.length === products.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < products.length
+
+
+  const onlyAdminAccess = useOnlyAdmin(user)
+
+  const isAllowedUpdateProduct = usePermission({
+    key: "product-permissions",
+    actions: "update",
+    queryFn: getProductPermissionsFn,
+    user
+  })
+
+  const isAllowedDeleteProduct = usePermission({
+    key: "product-permissions",
+    actions: "update",
+    queryFn: getProductPermissionsFn,
+    user
+  })
 
   return (
     <Card>
@@ -292,51 +310,57 @@ export function ProductsListTable(props: ProductsListTableProps) {
                     display="flex"
                     flexDirection="row"
                   >
-                    <Tooltip title="Published product" arrow>
-                      <IconButton
-                        onClick={handlePublishedProduct(row)}
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.primary.lighter
-                          },
-                          color: theme.palette.primary.main
-                        }}
-                        color="inherit"
-                        size="small"
-                      >
-                        <PublishedWithChangesIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Edit Product" arrow>
-                      <IconButton
-                        onClick={handleUpdateProduct(row)}
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.primary.lighter
-                          },
-                          color: theme.palette.primary.main
-                        }}
-                        color="inherit"
-                        size="small"
-                      >
-                        <EditTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete Product" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.error.lighter
-                          },
-                          color: theme.palette.error.main
-                        }}
-                        onClick={handleClickDeleteAction(row.id)}
-                        color="inherit"
-                        size="small"
-                      >
-                        <DeleteTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                    {onlyAdminAccess
+                    ? <Tooltip title="Published product" arrow>
+                        <IconButton
+                          onClick={handlePublishedProduct(row)}
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.primary.lighter
+                            },
+                            color: theme.palette.primary.main
+                          }}
+                          color="inherit"
+                          size="small"
+                        >
+                          <PublishedWithChangesIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    : null}
+                    {isAllowedUpdateProduct
+                    ? <Tooltip title="Edit Product" arrow>
+                        <IconButton
+                          onClick={handleUpdateProduct(row)}
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.primary.lighter
+                            },
+                            color: theme.palette.primary.main
+                          }}
+                          color="inherit"
+                          size="small"
+                        >
+                          <EditTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    : null}
+                    {isAllowedDeleteProduct
+                    ? <Tooltip title="Delete Product" arrow>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.error.lighter
+                            },
+                            color: theme.palette.error.main
+                          }}
+                          onClick={handleClickDeleteAction(row.id)}
+                          color="inherit"
+                          size="small"
+                        >
+                          <DeleteTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    : null}
                   </Box>
                 </TableCell>
               </TableRow>

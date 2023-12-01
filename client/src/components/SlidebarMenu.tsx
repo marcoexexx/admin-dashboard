@@ -1,4 +1,4 @@
-import { useStore } from "@/hooks"
+import { usePermission, useStore } from "@/hooks"
 import { Box, Button, Collapse, List, ListItem, ListSubheader, alpha, styled } from "@mui/material"
 import { NavLink as Link } from 'react-router-dom'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -12,6 +12,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from "react";
+import { getBrandPermissionsFn, getExchangePermissionsFn, getProductPermissionsFn, getUserPermissionsFn } from "@/services/permissionsApi";
 
 
 const DotWrapper = styled(Box)(({theme}) => ({
@@ -161,7 +162,35 @@ type ExpandMenu = {
 }
 
 export function SlidebarMenu() {
-  const { dispatch } = useStore()
+  const { state: {user}, dispatch } = useStore()
+
+  const isAllowedReadExchange = usePermission({
+    key: "exchange-permissions",
+    actions: "read",
+    queryFn: getExchangePermissionsFn,
+    user,
+  })
+
+  const isAllowedReadProduct = usePermission({
+    key: "product-permissions",
+    actions: "read",
+    queryFn: getProductPermissionsFn,
+    user,
+  })
+
+  const isAllowedReadBrand = usePermission({
+    key: "brand-permissions",
+    actions: "read",
+    queryFn: getBrandPermissionsFn,
+    user,
+  })
+
+  const isAllowedReadUser = usePermission({
+    key: "user-permissions",
+    actions: "read",
+    queryFn: getUserPermissionsFn,
+    user,
+  })
 
   const [isExpandMenu, setIsExpandMenu] = useState<ExpandMenu>({
     id: "*",
@@ -256,217 +285,233 @@ export function SlidebarMenu() {
         >
           <SubMenuWrapper>
             <List component="div">
-              {/* Exchange Menues */}
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  onClick={handleToggleExpandMenu("exchange")}
-                  startIcon={<AttachMoneyIcon />}
-                  endIcon={getStateCurrentExpandMenu("exchange")
-                    ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
-                >
-                  Exchange
-                </Button>
-              </ListItem>
+              {isAllowedReadExchange
+              ? <>
+                {/* Exchange Menues */}
+                <ListItem component="div">
+                  <Button
+                    disableRipple
+                    onClick={handleToggleExpandMenu("exchange")}
+                    startIcon={<AttachMoneyIcon />}
+                    endIcon={getStateCurrentExpandMenu("exchange")
+                      ? <ExpandLessIcon />
+                      : <ExpandMoreIcon />
+                    }
+                  >
+                    Exchange
+                  </Button>
+                </ListItem>
 
-              <Collapse in={getStateCurrentExpandMenu("exchange")}>
-                <List component="div" disablePadding>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/exchanges/list"
-                    >
-                      <DotWrapper />
-                      List
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/exchanges/create"
-                    >
-                      <DotWrapper />
-                      Create
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/exchanges/view"
-                    >
-                      <DotWrapper />
-                      View
-                    </Button>
-                  </ListItem>
-                </List>
-              </Collapse>
+                <Collapse in={getStateCurrentExpandMenu("exchange")}>
+                  <List component="div" disablePadding>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        onClick={handleCloseSlidebar}
+                        component={Link}
+                        to="/exchanges/list"
+                      >
+                        <DotWrapper />
+                        List
+                      </Button>
+                    </ListItem>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        component={Link}
+                        onClick={handleCloseSlidebar}
+                        to="/exchanges/create"
+                      >
+                        <DotWrapper />
+                        Create
+                      </Button>
+                    </ListItem>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        component={Link}
+                        onClick={handleCloseSlidebar}
+                        to="/exchanges/view"
+                      >
+                        <DotWrapper />
+                        View
+                      </Button>
+                    </ListItem>
+                  </List>
+                </Collapse>
+              </>
+              : null}
 
-              {/* Products Menues */}
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  onClick={handleToggleExpandMenu("products")}
-                  startIcon={<ShoppingCartIcon />}
-                  endIcon={getStateCurrentExpandMenu("products")
-                    ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
-                >
-                  Products
-                </Button>
-              </ListItem>
+              {isAllowedReadProduct
+              ? <>
+                {/* Products Menues */}
+                <ListItem component="div">
+                  <Button
+                    disableRipple
+                    onClick={handleToggleExpandMenu("products")}
+                    startIcon={<ShoppingCartIcon />}
+                    endIcon={getStateCurrentExpandMenu("products")
+                      ? <ExpandLessIcon />
+                      : <ExpandMoreIcon />
+                    }
+                  >
+                    Products
+                  </Button>
+                </ListItem>
 
-              <Collapse in={getStateCurrentExpandMenu("products")}>
-                <List component="div" disablePadding>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/products/list"
-                    >
-                      <DotWrapper />
-                      List
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/products/create"
-                    >
-                      <DotWrapper />
-                      Create
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/products/view"
-                    >
-                      <DotWrapper />
-                      View
-                    </Button>
-                  </ListItem>
-                </List>
-              </Collapse>
+                <Collapse in={getStateCurrentExpandMenu("products")}>
+                  <List component="div" disablePadding>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        onClick={handleCloseSlidebar}
+                        component={Link}
+                        to="/products/list"
+                      >
+                        <DotWrapper />
+                        List
+                      </Button>
+                    </ListItem>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        component={Link}
+                        onClick={handleCloseSlidebar}
+                        to="/products/create"
+                      >
+                        <DotWrapper />
+                        Create
+                      </Button>
+                    </ListItem>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        component={Link}
+                        onClick={handleCloseSlidebar}
+                        to="/products/view"
+                      >
+                        <DotWrapper />
+                        View
+                      </Button>
+                    </ListItem>
+                  </List>
+                </Collapse>
+                </>
+              : null}
 
-              {/* Brand Menues */}
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  onClick={handleToggleExpandMenu("brands")}
-                  startIcon={<LoyaltyIcon />}
-                  endIcon={getStateCurrentExpandMenu("brands")
-                    ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
-                >
-                  Brands
-                </Button>
-              </ListItem>
+              {isAllowedReadBrand
+              ? <>
+                {/* Brand Menues */}
+                <ListItem component="div">
+                  <Button
+                    disableRipple
+                    onClick={handleToggleExpandMenu("brands")}
+                    startIcon={<LoyaltyIcon />}
+                    endIcon={getStateCurrentExpandMenu("brands")
+                      ? <ExpandLessIcon />
+                      : <ExpandMoreIcon />
+                    }
+                  >
+                    Brands
+                  </Button>
+                </ListItem>
 
-              <Collapse in={getStateCurrentExpandMenu("brands")}>
-                <List component="div" disablePadding>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/brands/list"
-                    >
-                      <DotWrapper />
-                      List
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/brands/create"
-                    >
-                      <DotWrapper />
-                      Create
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/brands/view"
-                    >
-                      <DotWrapper />
-                      View
-                    </Button>
-                  </ListItem>
-                </List>
-              </Collapse>
+                <Collapse in={getStateCurrentExpandMenu("brands")}>
+                  <List component="div" disablePadding>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        onClick={handleCloseSlidebar}
+                        component={Link}
+                        to="/brands/list"
+                      >
+                        <DotWrapper />
+                        List
+                      </Button>
+                    </ListItem>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        component={Link}
+                        onClick={handleCloseSlidebar}
+                        to="/brands/create"
+                      >
+                        <DotWrapper />
+                        Create
+                      </Button>
+                    </ListItem>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        component={Link}
+                        onClick={handleCloseSlidebar}
+                        to="/brands/view"
+                      >
+                        <DotWrapper />
+                        View
+                      </Button>
+                    </ListItem>
+                  </List>
+                </Collapse>
+              </>
+              : null}
 
-              {/* User Menues */}
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  onClick={handleToggleExpandMenu("users")}
-                  startIcon={<PeopleIcon />}
-                  endIcon={getStateCurrentExpandMenu("users")
-                    ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
-                >
-                  Users
-                </Button>
-              </ListItem>
+              {isAllowedReadUser
+              ? <>
+                {/* User Menues */}
+                <ListItem component="div">
+                  <Button
+                    disableRipple
+                    onClick={handleToggleExpandMenu("users")}
+                    startIcon={<PeopleIcon />}
+                    endIcon={getStateCurrentExpandMenu("users")
+                      ? <ExpandLessIcon />
+                      : <ExpandMoreIcon />
+                    }
+                  >
+                    Users
+                  </Button>
+                </ListItem>
 
-              <Collapse in={getStateCurrentExpandMenu("users")}>
-                <List component="div" disablePadding>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/users/list"
-                    >
-                      <DotWrapper />
-                      List
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/users/create"
-                    >
-                      <DotWrapper />
-                      Create
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/brands/view"
-                    >
-                      <DotWrapper />
-                      View
-                    </Button>
-                  </ListItem>
-                </List>
-              </Collapse>
+                <Collapse in={getStateCurrentExpandMenu("users")}>
+                  <List component="div" disablePadding>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        onClick={handleCloseSlidebar}
+                        component={Link}
+                        to="/users/list"
+                      >
+                        <DotWrapper />
+                        List
+                      </Button>
+                    </ListItem>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        component={Link}
+                        onClick={handleCloseSlidebar}
+                        to="/users/create"
+                      >
+                        <DotWrapper />
+                        Create
+                      </Button>
+                    </ListItem>
+                    <ListItem component="div">
+                      <Button
+                        disableRipple
+                        component={Link}
+                        onClick={handleCloseSlidebar}
+                        to="/brands/view"
+                      >
+                        <DotWrapper />
+                        View
+                      </Button>
+                    </ListItem>
+                  </List>
+                </Collapse>
+              </>
+              : null}
 
             </List>
           </SubMenuWrapper>

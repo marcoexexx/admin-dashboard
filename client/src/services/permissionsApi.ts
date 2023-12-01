@@ -25,6 +25,14 @@ export async function getCategoryPermissionsFn(opt: QueryOptionArgs) {
 }
 
 
+export async function getSalesCategoryPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/sales-category", {
+    ...opt,
+  })
+  return data
+}
+
+
 export async function getBrandPermissionsFn(opt: QueryOptionArgs) {
   const { data } = await authApi.get<PermissionsResponse>("/permissions/brands", {
     ...opt,

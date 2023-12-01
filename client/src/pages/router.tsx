@@ -3,6 +3,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import Loader from "./loader";
 import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
+import { brandPermissionsLoader, categoryPermissionsLoader, exchangePermissionsLoader, productPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 
 const HomePage = Loader(lazy(() => import("@/pages/home.page")))
 
@@ -64,6 +65,7 @@ const routes = createBrowserRouter([
           /// EXCHANGES ROUTES
           {
             path: "exchanges",
+            loader: exchangePermissionsLoader,
             children: [
               {
                 path: "",
@@ -100,6 +102,7 @@ const routes = createBrowserRouter([
           /// USER ROUTES
           {
             path: "users",
+            loader: userPermissionsLoader,
             children: [
               {
                 path: "",
@@ -126,6 +129,7 @@ const routes = createBrowserRouter([
           /// BRAND ROUTES
           {
             path: "brands",
+            loader: brandPermissionsLoader,
             children: [
               {
                 path: "",
@@ -161,6 +165,7 @@ const routes = createBrowserRouter([
           /// SALES-CATEGORY ROUTES
           {
             path: "sales-categories",
+            loader: salesCategoryPermissionsLoader,
             children: [
               {
                 path: "",
@@ -186,6 +191,7 @@ const routes = createBrowserRouter([
           /// CATEGORY ROUTES
           {
             path: "categories",
+            loader: categoryPermissionsLoader,
             children: [
               {
                 path: "",
@@ -211,6 +217,7 @@ const routes = createBrowserRouter([
           /// PRODUCT ROUTES
           {
             path: "products",
+            loader: productPermissionsLoader,
             children: [
               {
                 path: "",
