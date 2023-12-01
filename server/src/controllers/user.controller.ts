@@ -23,14 +23,36 @@ export async function getMeHandler(
 }
 
 
+export async function getUserHandler(
+  req: Request<GetUserInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { userId } = req.params
+
+    const user = await db.user.findUnique({
+      where: {
+        id: userId
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ user }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
 export async function getUsersHandler(
-  // TODO: pagination & filter  with relationship
   req: Request<{}, {}, {}, UserFilterPagination>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter, pagination } = convertNumericStrings(req.query)
+    const { filter = {}, pagination } = convertNumericStrings(req.query)
     const { id, name, email } = filter
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
       { page: 1, pageSize: 10 }
