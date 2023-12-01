@@ -11,6 +11,7 @@ import { MuiButton } from "@/components/ui";
 
 import { CreateBrandInput } from "./forms";
 import { BrandsActions } from ".";
+import { useNavigate } from "react-router-dom";
 
 
 const columnData: TableColumnHeader<IBrand>[] = [
@@ -42,6 +43,8 @@ export function BrandsListTable(props: ProductsListTableProps) {
 
   const [deleteId, setDeleteId] = useState("")
 
+  const navigate = useNavigate()
+
   const theme = useTheme()
   const { state: {brandFilter, modalForm}, dispatch } = useStore()
 
@@ -68,6 +71,10 @@ export function BrandsListTable(props: ProductsListTableProps) {
       type: "OPEN_MODAL_FORM",
       payload: "delete-brand"
     })
+  }
+
+  const handleClickUpdateAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/brands/update/${brandId}`)
   }
 
   const handleOnExport = () => {
@@ -179,6 +186,7 @@ export function BrandsListTable(props: ProductsListTableProps) {
                       }}
                       color="inherit"
                       size="small"
+                      onClick={handleClickUpdateAction(row.id)}
                     >
                       <EditTwoToneIcon fontSize="small" />
                     </IconButton>

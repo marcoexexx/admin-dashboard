@@ -5,7 +5,7 @@ import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { CreateExchangeInput, CreateMultiExchangesInput, ExchangeFilterPagination, GetExchangeInput } from "../schemas/exchange.schema";
+import { CreateExchangeInput, CreateMultiExchangesInput, ExchangeFilterPagination, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
 
 
 export async function getExchangesHandler(
@@ -68,6 +68,31 @@ export async function getExchangeHandler(
       where: {
         id: exchangeId
       }
+    })
+
+    res.status(200).json(HttpDataResponse({ exchange }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function updateExchangeHandler(
+  req: Request<UpdateExchangeInput["params"], {}, UpdateExchangeInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { exchangeId } = req.params
+    const data = req.body
+
+    const exchange = await db.exchange.update({
+      where: {
+        id: exchangeId
+      },
+      data
     })
 
     res.status(200).json(HttpDataResponse({ exchange }))

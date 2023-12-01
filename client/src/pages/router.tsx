@@ -13,6 +13,7 @@ const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.pa
 // produts
 const ListExchangePage = Loader(lazy(() => import("@/pages/exchanges/ListExchange")))
 const CreateExchangePage = Loader(lazy(() => import("@/pages/exchanges/CreateExchange")))
+const UpdateExchangePage = Loader(lazy(() => import("@/pages/exchanges/UpdateExchange")))
 
 // Auth
 const RegisterPage = Loader(lazy(() => import("@/pages/register.page")))
@@ -25,6 +26,7 @@ const CreateProductPage = Loader(lazy(() => import("@/pages/products/CreateProdu
 // brands
 const ListBrandPage = Loader(lazy(() => import("@/pages/brands/ListBrand")))
 const CreateBrandPage = Loader(lazy(() => import("@/pages/brands/CreateBrand")))
+const UpdateBrandPage = Loader(lazy(() => import("@/pages/brands/UpdateBrand")))
 
 // categories
 const ListCategoryPage = Loader(lazy(() => import("@/pages/categories/ListCategory")))
@@ -76,7 +78,17 @@ const routes = createBrowserRouter([
                     Component: CreateExchangePage
                   }
                 ]
-              }
+              },
+              {
+                path: "update/:exchangeId",
+                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                children: [
+                  {
+                    path: "",
+                    Component: UpdateExchangePage
+                  }
+                ]
+              },
             ]
           },
 
@@ -102,7 +114,17 @@ const routes = createBrowserRouter([
                     Component: CreateBrandPage
                   }
                 ]
-              }
+              },
+              {
+                path: "update/:brandId",
+                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                children: [
+                  {
+                    path: "",
+                    Component: UpdateBrandPage
+                  }
+                ]
+              },
             ]
           },
 

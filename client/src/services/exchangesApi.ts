@@ -1,4 +1,4 @@
-import { CreateExchangeInput, DeleteExchangeInput } from "@/components/content/exchanges/forms";
+import { CreateExchangeInput, DeleteExchangeInput, UpdateExchangeInput } from "@/components/content/exchanges/forms";
 import { authApi } from "./authApi";
 
 
@@ -15,26 +15,41 @@ export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination,
 }
 
 
-export async function createExchangeFn(brand: CreateExchangeInput) {
-  const { data } = await authApi.post<IExchange>("/exchanges", brand)
+export async function getExchangeFn(opt: QueryOptionArgs, { exchangeId }: { exchangeId: string | undefined }) {
+  if (!exchangeId) return
+  const { data } = await authApi.get<ExchangeResponse>(`/exchanges/detail/${exchangeId}`, {
+    ...opt,
+  })
   return data
 }
 
 
-export async function createMultiExchangesFn(brand: CreateExchangeInput[]) {
-  const { data } = await authApi.post<HttpResponse>("/exchanges/multi", brand)
+export async function createExchangeFn(exchange: CreateExchangeInput) {
+  const { data } = await authApi.post<ExchangeResponse>("/exchanges", exchange)
   return data
 }
 
 
-export async function deleteMultiExchangesFn(brandIds: DeleteExchangeInput["exchangeId"][]) {
-  await Promise.all(brandIds.map(id => authApi.delete<HttpResponse>(`/exchanges/detail/${id}`)))
+export async function updateExchangeFn({ exchangeId, exchange }: {exchangeId: string, exchange: UpdateExchangeInput}) {
+  const { data } = await authApi.patch<ExchangeResponse>(`/exchanges/detail/${exchangeId}`, exchange)
+  return data
+}
+
+
+export async function createMultiExchangesFn(exchange: CreateExchangeInput[]) {
+  const { data } = await authApi.post<HttpResponse>("/exchanges/multi", exchange)
+  return data
+}
+
+
+export async function deleteMultiExchangesFn(exchangeIds: DeleteExchangeInput["exchangeId"][]) {
+  await Promise.all(exchangeIds.map(id => authApi.delete(`/exchanges/detail/${id}`)))
   return null
 }
 
 
-export async function deleteExchangeFn(brandId: DeleteExchangeInput["exchangeId"]) {
-  const { data } = await authApi.delete<HttpResponse>(`/exchanges/detail/${brandId}`)
+export async function deleteExchangeFn(exchangeId: DeleteExchangeInput["exchangeId"]) {
+  const { data } = await authApi.delete<HttpResponse>(`/exchanges/detail/${exchangeId}`)
   return data
 }
 

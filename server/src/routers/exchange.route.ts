@@ -4,8 +4,8 @@ import { exchangePermission } from "../utils/auth/permissions/exchange.permissio
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createExchangeSchema, createMultiExchangesSchema, getExchangeSchema } from "../schemas/exchange.schema";
-import { createExchangeHandler, createMultiExchangesHandler, deleteExchangeHandler, getExchangesHandler } from "../controllers/exchange.controller";
+import { createExchangeSchema, createMultiExchangesSchema, getExchangeSchema, updateExchangeSchema } from "../schemas/exchange.schema";
+import { createExchangeHandler, createMultiExchangesHandler, deleteExchangeHandler, getExchangeHandler, getExchangesHandler, updateExchangeHandler } from "../controllers/exchange.controller";
 
 const router = Router()
 
@@ -38,9 +38,18 @@ router.route("/multi")
 
 router.route("/detail/:exchangeId")
   .get(
+    deserializeUser,
+    requiredUser,
     permissionUser("read", exchangePermission),
     validate(getExchangeSchema),
-    getExchangesHandler
+    getExchangeHandler
+  )
+  .patch(
+    deserializeUser, 
+    requiredUser, 
+    permissionUser("update", exchangePermission),
+    validate(updateExchangeSchema), 
+    updateExchangeHandler
   )
   .delete(
     deserializeUser,
