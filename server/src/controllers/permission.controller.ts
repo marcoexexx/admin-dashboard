@@ -7,6 +7,7 @@ import { HttpDataResponse } from "../utils/helper";
 import { brandPermission } from "../utils/auth/permissions/brand.permission";
 import { categoryPermission } from "../utils/auth/permissions/category.permission";
 import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory.permission";
+import { exchangePermission } from "../utils/auth/permissions/exchange.permission";
 
 
 export async function permissionsUserHandler(
@@ -16,6 +17,25 @@ export async function permissionsUserHandler(
 ) {
   try {
     const permissions = mapValues(userPermission, value => value())
+
+    res
+      .status(200)
+      .json(HttpDataResponse({ permissions, label: "user" }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function permissionsExchangeHandler(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const permissions = mapValues(exchangePermission, value => value())
 
     res
       .status(200)
