@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { db } from '../utils/db'
 import AppError from '../utils/appError';
-import { CreateMultiProductsInput, CreateProductInput, GetProductInput, ProductFilterPagination, UploadImagesProductInput } from '../schemas/product.schema';
+import { CreateMultiProductsInput, CreateProductInput, GetProductInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
 import logging from '../middleware/logging/logging';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -228,6 +228,18 @@ export async function deleteProductHandler(
 
     if (!product) return next(new AppError(404,  `Product not found`))
 
+    await db.productCategory.deleteMany({
+      where: {
+        productId,
+      }
+    })
+
+    await db.productSalesCategory.deleteMany({
+      where: {
+        productId,
+      }
+    })
+
     await db.product.delete({
       where: {
         id: productId
@@ -240,6 +252,93 @@ export async function deleteProductHandler(
     logging.error(msg)
     if (err?.code === "23505") next(new AppError(409, "data already exists"))
     next(new AppError(500, msg))
+  }
+}
+
+
+export async function updateProductHandler(
+  req: Request<UpdateProductInput["params"], {}, UpdateProductInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productId } = req.params
+    const {
+      price,
+      brandId,
+      title,
+      specification,
+      overview,
+      features,
+      warranty,
+      colors,
+      instockStatus,
+      description,
+      type,
+      dealerPrice,
+      marketPrice,
+      discount,
+      priceUnit,
+      salesCategory,
+      categories,
+      quantity,
+      status
+    } = req.body
+
+    await db.productCategory.deleteMany({
+      where: {
+        productId,
+      }
+    })
+
+    await db.productSalesCategory.deleteMany({
+      where: {
+        productId,
+      }
+    })
+
+    const product = await db.product.update({
+      where: {
+        id: productId
+      },
+      data: {
+        price,
+        brandId,
+        title,
+        specification,
+        overview,
+        features,
+        warranty,
+        colors,
+        instockStatus,
+        description,
+        type,
+        dealerPrice,
+        marketPrice,
+        discount,
+        status,
+        priceUnit,
+        categories: {
+          create: categories.map(id => ({
+            category: {
+              connect: { id }
+            }
+          }))
+        },
+        salesCategory: {
+          create: salesCategory.map(id => ({
+            salesCategory: {
+              connect: { id }
+            }
+          }))
+        },
+        quantity,
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ product }))
+  } catch (err) {
+    next(err)
   }
 }
 

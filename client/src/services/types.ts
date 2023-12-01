@@ -11,6 +11,19 @@ type UserProvider =
   | "Facebook"
 
 
+type ProductType = 
+  | "Switch"
+  | "Router"
+  | "Wifi"
+  | "Accessory"
+
+
+type InstockStatus = 
+  | "InStock"
+  | "OutOfStock"
+  | "AskForStock"
+
+
 type PriceUnit = 
   | "MMK"
   | "USD"
@@ -55,14 +68,14 @@ interface IProduct {
   features: string;
   warranty: number;
   colors: string;
-  instockStatus: string;
+  instockStatus: InstockStatus;
   description: string;
-  type: string;
+  type: ProductType;
   dealerPrice: number;
   marketPrice: number;
   discount: number;
   status: string;
-  priceUnit: string;
+  priceUnit: PriceUnit;
   quantity: number;
   createdAt: string; // Assuming it's a string representation of a date
   updatedAt: string; // Assuming it's a string representation of a date

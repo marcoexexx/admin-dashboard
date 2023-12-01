@@ -3,12 +3,13 @@ import { useState } from "react"
 import { MuiButton, MuiLabel } from "@/components/ui";
 import { BulkActions } from "@/components";
 import { ProductsActions } from ".";
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import { CreateProductInput } from "./forms";
 import { useStore } from "@/hooks";
 import { exportToExcel } from "@/libs/exportToExcel";
 import { FormModal } from "@/components/forms";
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 
 const getStatusLabel = (status: Omit<Status, "all">): JSX.Element => {
@@ -87,18 +88,20 @@ interface ProductsListTableProps {
   products: IProduct[]
   count: number,
   onDelete: (id: string) => void
+  onPublished: (product: IProduct) => void
   onMultiDelete: (ids: string[]) => void
   onCreateManyProducts: (data: CreateProductInput[]) => void
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
-  const { products, count, onDelete, onMultiDelete, onCreateManyProducts } = props
+  const { products, count, onDelete, onMultiDelete, onCreateManyProducts, onPublished } = props
 
   const theme = useTheme()
   const { state: {productFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
   const [deleteId, setDeleteId] = useState("")
+  const [updateProduct, setUpdateProduct] = useState<IProduct|null>(null)
 
   const selectedBulkActions = selectedRows.length > 0
 
@@ -153,7 +156,33 @@ export function ProductsListTable(props: ProductsListTableProps) {
     })
   }
 
-  const handleCloseDeleteModal = () => {
+  const handlePublishedProduct = (product: IProduct) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    if (product.status === "Pending") {
+      setUpdateProduct(product)
+      dispatch({
+        type: "OPEN_MODAL_FORM",
+        payload: "update-product"
+      })
+    } else if (product.status === "Published") {
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: "Already published",
+          severity: "info"
+        }
+      })
+    } else {
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: "Cannot published for `Draft` state",
+          severity: "error"
+        }
+      })
+    }
+  }
+
+  const handleCloseModal = () => {
     dispatch({
       type: "CLOSE_ALL_MODAL_FORM"
     })
@@ -253,40 +282,62 @@ export function ProductsListTable(props: ProductsListTableProps) {
                     </TableCell>
                   )
                 })}
+
                 <TableCell align="right">
                   {getStatusLabel(row.status.toLowerCase())}
                 </TableCell>
+
                 <TableCell align="right">
-                  <Tooltip title="Edit Order" arrow>
-                    <IconButton
-                      onClick={handleUpdateProduct(row)}
-                      sx={{
-                        '&:hover': {
-                          background: theme.colors.primary.lighter
-                        },
-                        color: theme.palette.primary.main
-                      }}
-                      color="inherit"
-                      size="small"
-                    >
-                      <EditTwoToneIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Edit Order" arrow>
-                    <IconButton
-                      sx={{
-                        '&:hover': {
-                          background: theme.colors.error.lighter
-                        },
-                        color: theme.palette.error.main
-                      }}
-                      onClick={handleClickDeleteAction(row.id)}
-                      color="inherit"
-                      size="small"
-                    >
-                      <DeleteTwoToneIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                  >
+                    <Tooltip title="Published product" arrow>
+                      <IconButton
+                        onClick={handlePublishedProduct(row)}
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.primary.lighter
+                          },
+                          color: theme.palette.primary.main
+                        }}
+                        color="inherit"
+                        size="small"
+                      >
+                        <PublishedWithChangesIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit Product" arrow>
+                      <IconButton
+                        onClick={handleUpdateProduct(row)}
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.primary.lighter
+                          },
+                          color: theme.palette.primary.main
+                        }}
+                        color="inherit"
+                        size="small"
+                      >
+                        <EditTwoToneIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete Product" arrow>
+                      <IconButton
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.error.lighter
+                          },
+                          color: theme.palette.error.main
+                        }}
+                        onClick={handleClickDeleteAction(row.id)}
+                        color="inherit"
+                        size="small"
+                      >
+                        <DeleteTwoToneIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </TableCell>
               </TableRow>
             })}
@@ -312,9 +363,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
       ? <FormModal
           field="delete-product"
           title="Delete product"
-          onClose={handleCloseDeleteModal}
+          onClose={handleCloseModal}
         >
-          <Box display="flex" flexDirection="row" gap={1}>
+          <Box display="flex" flexDirection="column" gap={1}>
             <Box>
               <Typography>Are you sure want to delete</Typography>
             </Box>
@@ -325,6 +376,36 @@ export function ProductsListTable(props: ProductsListTableProps) {
                 onClick={() => onDelete(deleteId)}
               >
                 Delete
+              </MuiButton>
+              
+              <MuiButton
+                variant="outlined"
+                onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}
+              >
+                Cancel
+              </MuiButton>
+            </Box>
+          </Box>
+        </FormModal>
+      : null}
+
+      {modalForm.field === "update-product"
+      ? <FormModal
+          field="update-product"
+          title="Update product"
+          onClose={handleCloseModal}
+        >
+          <Box display="flex" flexDirection="column" gap={1}>
+            <Box>
+              <Typography>Are you sure want to update</Typography>
+            </Box>
+            <Box display="flex" flexDirection="row" gap={1}>
+              <MuiButton
+                variant="contained"
+                color="error"
+                onClick={() => updateProduct ? onPublished(updateProduct) : null}
+              >
+                Save
               </MuiButton>
               
               <MuiButton

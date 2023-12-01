@@ -1,4 +1,4 @@
-import { CreateProductInput, DeleteProductInput } from "@/components/content/products/forms";
+import { CreateProductInput, DeleteProductInput, UpdateProductInput } from "@/components/content/products/forms";
 import { authApi } from "./authApi";
 
 
@@ -15,7 +15,8 @@ export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pag
 }
 
 
-export async function getProductFn(productId: string) {
+export async function getProductFn(productId: string | undefined) {
+  if (!productId) return
   const { data } = await authApi.get<ProductResponse>("/products/detail", {
     params: {
       productId
@@ -39,6 +40,21 @@ export async function createProductFn(product: CreateProductInput) {
 
 export async function deleteProductFn(productId: DeleteProductInput["productId"]) {
   const { data } = await authApi.delete<HttpResponse>(`/products/detail/${productId}`)
+  return data
+}
+
+
+export async function updateProductFn(
+  {
+    id, product
+  }: {
+    id: string, 
+    product: Partial<
+      Omit<UpdateProductInput, "isPending"> & { status: "Draft" | "Pending" | "Published" }
+    >
+  }
+) {
+  const { data } = await authApi.patch<HttpResponse>(`/products/detail/${id}`, product)
   return data
 }
 

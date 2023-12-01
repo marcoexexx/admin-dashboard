@@ -1,5 +1,4 @@
 import { Box, List, ListItem, ListItemText, styled } from "@mui/material"
-import { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 const ListWrapper = styled(Box)(({theme}) => ({
@@ -50,14 +49,7 @@ const ListWrapper = styled(Box)(({theme}) => ({
 }))
 
 export function HeaderMenu() {
-  const ref = useRef<any>(null)
-  const [isOpen, setIsOpen] = useState(false)
-
   const navigate = useNavigate()
-
-  const onClickOpen = () => setIsOpen(true)
-
-  const onClickClose = () => setIsOpen(false)
 
   return (
     <>

@@ -3,8 +3,8 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { permissionUser } from "../middleware/permissionUser";
-import { createProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, uploadImagesProductHandler } from "../controllers/product.controller";
-import { createProductSchema, getProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
+import { createProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, updateProductHandler, uploadImagesProductHandler } from "../controllers/product.controller";
+import { createProductSchema, getProductSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
 import { productPermission } from "../utils/auth/permissions";
 import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
 import { createMultiExchangesSchema } from "../schemas/exchange.schema";
@@ -49,6 +49,13 @@ router.route("/detail/:productId")
     permissionUser("delete", productPermission),
     validate(getProductSchema), 
     deleteProductHandler
+  )
+  .patch(
+    deserializeUser, 
+    requiredUser, 
+    permissionUser("update", productPermission),
+    validate(updateProductSchema), 
+    updateProductHandler
   )
 
 

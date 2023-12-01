@@ -1,12 +1,12 @@
-import { Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, Switch, TextField } from "@mui/material";
+import { Box, Grid, InputAdornment, MenuItem, OutlinedInput, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
 import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField } from "@/components/input-fields";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createProductFn } from "@/services/productsApi";
+import { getProductFn, updateProductFn } from "@/services/productsApi";
 import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
@@ -20,7 +20,7 @@ const productTypes = ["Switch", "Accessory", "Router", "Wifi"]
 const instockStatus = ["InStock", "OutOfStock", "AskForStock"]
 const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"]
 
-const createProductSchema = object({
+const updateProductSchema = object({
   price: number({ required_error: "Price is required "}),
   brandId: string({ required_error: "Brand is required" })
     .min(2).max(128),
@@ -48,30 +48,37 @@ const createProductSchema = object({
   salesCategory: string().array().default([]),
   quantity: number().min(0),
   isPending: boolean().default(false),
-  status: z.enum(["Draft", "Pending", "Published"]).default("Draft")
 })
 
-export type CreateProductInput = z.infer<typeof createProductSchema>
+export type UpdateProductInput = z.infer<typeof updateProductSchema>
 
-export function CreateProductForm() {
+export function UpdateProductForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
   const from = "/products"
 
+  const { id } = useParams()
+
+  const { data: product } = useQuery({
+    enabled: !!id,
+    queryKey: ["products", { id }],
+    queryFn: () => getProductFn(id)
+  })
+
   const {
-    mutate: createProduct
+    mutate: updateProduct
   } = useMutation({
-    mutationFn: createProductFn,
+    mutationFn: updateProductFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new product.",
+        message: "Success updated a new product.",
         severity: "success"
       } })
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["products"]
+        queryKey: ["products", { id }]
       })
     },
     onError: () => {
@@ -82,8 +89,11 @@ export function CreateProductForm() {
     }
   })
 
-  const methods = useForm<CreateProductInput>({
-    resolver: zodResolver(createProductSchema)
+  const methods = useForm<UpdateProductInput>({
+    resolver: zodResolver(updateProductSchema),
+    defaultValues: {
+      brandId: product?.brandId
+    }
   })
 
   const { data: exchangeRate } = useQuery({
@@ -116,13 +126,10 @@ export function CreateProductForm() {
 
   const { handleSubmit, register, formState: { errors } } = methods
 
-  const onSubmit: SubmitHandler<CreateProductInput> = (value) => {
-    createProduct({
-      ...value,
-      status: value.isPending 
-        ? "Pending" 
-        : "Draft"
-    })
+  const onSubmit: SubmitHandler<UpdateProductInput> = (value) => {
+    if (id) updateProduct({id, product: {
+      ...value
+    }})
   }
 
   const handleOnCalculate = (_: React.MouseEvent<HTMLButtonElement>) => {
@@ -264,15 +271,6 @@ export function CreateProductForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <FormControlLabel
-              label="Request review"
-              control={<Switch 
-                {...register("isPending")}
-              />}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
             <MuiButton variant="contained" type="submit">Create</MuiButton>
           </Grid>
         </Grid>
@@ -299,3 +297,4 @@ export function CreateProductForm() {
     </>
   )
 }
+
