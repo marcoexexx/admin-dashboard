@@ -13,7 +13,11 @@ const router = Router()
 router.use(deserializeUser, requiredUser)
 
 
-router.route("/").get(getUsersHandler)
+router.route("")
+  .get(
+    permissionUser("read", userPermission),
+    getUsersHandler
+  )
 
 router.route("/change-role/:userId")
   .patch(

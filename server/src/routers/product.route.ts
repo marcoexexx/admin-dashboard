@@ -3,16 +3,18 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { permissionUser } from "../middleware/permissionUser";
-import { createProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, uploadImagesProductHandler } from "../controllers/product.controller";
-import { createProductSchema, getProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
+import { createProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, updateProductHandler, uploadImagesProductHandler } from "../controllers/product.controller";
+import { createProductSchema, getProductSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
 import { productPermission } from "../utils/auth/permissions";
+import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
+import { createMultiExchangesSchema } from "../schemas/exchange.schema";
+import { createMultiExchangesHandler } from "../controllers/exchange.controller";
+
 
 const router = Router()
 
 
-
-// /products?filter[name][contains]=test&filter[name][mode]=insensitive
-router.route("/")
+router.route("")
   .get(
     permissionUser("read", productPermission),
     getProductsHandler
@@ -23,6 +25,16 @@ router.route("/")
     permissionUser("create", productPermission), 
     validate(createProductSchema), 
     createProductHandler
+  )
+
+
+router.route("/multi")
+  .post(
+    deserializeUser,
+    requiredUser,
+    permissionUser("create", productPermission),
+    validate(createMultiExchangesSchema),
+    createMultiExchangesHandler
   )
 
 
@@ -38,6 +50,13 @@ router.route("/detail/:productId")
     validate(getProductSchema), 
     deleteProductHandler
   )
+  .patch(
+    deserializeUser, 
+    requiredUser, 
+    permissionUser("update", productPermission),
+    validate(updateProductSchema), 
+    updateProductHandler
+  )
 
 
 router.route("/upload/:productId")
@@ -45,8 +64,8 @@ router.route("/upload/:productId")
     deserializeUser, 
     requiredUser, 
     permissionUser("update", productPermission),
-    // uploadProductImage,
-    // resizeProductImages,
+    uploadProductImage,
+    resizeProductImages,
     validate(getProductSchema),
     validate(uploadImagesProductSchema),
     uploadImagesProductHandler

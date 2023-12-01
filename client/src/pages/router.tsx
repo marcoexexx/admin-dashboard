@@ -10,6 +10,10 @@ const HomePage = Loader(lazy(() => import("@/pages/home.page")))
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))
 const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.page")))
 
+// produts
+const ListExchangePage = Loader(lazy(() => import("@/pages/exchanges/ListExchange")))
+const CreateExchangePage = Loader(lazy(() => import("@/pages/exchanges/CreateExchange")))
+
 // Auth
 const RegisterPage = Loader(lazy(() => import("@/pages/register.page")))
 const LoginPage = Loader(lazy(() => import("@/pages/login.page")))
@@ -50,6 +54,32 @@ const routes = createBrowserRouter([
             path: "home",
             element: <Navigate to="/" />
           },
+
+          /// EXCHANGES ROUTES
+          {
+            path: "exchanges",
+            children: [
+              {
+                path: "",
+                element: <Navigate to="/exchanges/list" />
+              },
+              {
+                path: "list",
+                Component: ListExchangePage
+              },
+              {
+                path: "create",
+                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                children: [
+                  {
+                    path: "",
+                    Component: CreateExchangePage
+                  }
+                ]
+              }
+            ]
+          },
+
 
           /// BRAND ROUTES
           {
@@ -182,6 +212,11 @@ const routes = createBrowserRouter([
           {
             path: "unauthorized",
             Component: StatusUnauthorizedPage
+          },
+
+          {
+            path: "500",
+            Component: ErrorBoundary
           }
         ]
       },

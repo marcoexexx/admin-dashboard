@@ -1,12 +1,10 @@
 import { StoreProvider } from '@/context/store'
-import { FacebookProvider } from 'react-facebook'
 import ThemeWrapper from '@/themes/themeWrapper'
 import { StylesProvider } from '@mui/styles'
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import getConfig from '@/libs/getConfig'
 import { AuthProvider } from '.';
 
 export const queryClient = new QueryClient({

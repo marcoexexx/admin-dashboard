@@ -1,5 +1,5 @@
-import { PageTitle, UploadProductImage } from "@/components";
-import { CreateProductForm } from "@/components/forms";
+import { PageTitle } from "@/components";
+import { CreateProductForm } from "@/components/content/products/forms";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
@@ -28,23 +28,20 @@ export default function CreateProduct() {
       </PageTitle>
 
       <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <UploadProductImage />
-              </CardContent>
-            </Card>
-          </Grid>
+        {/* <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}> */}
+        {/*   <Grid item xs={12} md={4}> */}
+        {/*     <Card> */}
+        {/*       <CardContent> */}
+        {/*         <UploadProductImage /> */}
+        {/*       </CardContent> */}
+        {/*     </Card> */}
+        {/*   </Grid> */}
 
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <CreateProductForm />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+        <Card>
+          <CardContent>
+            <CreateProductForm />
+          </CardContent>
+        </Card>
       </Container>
     </>
   )

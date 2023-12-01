@@ -1,4 +1,4 @@
-import { OAuthForm, RegisterForm } from '@/components/forms'
+import { OAuthForm, RegisterForm } from '@/components/forms/auth'
 import { Box, Container, Grid, Typography, styled } from '@mui/material'
 import { Link } from 'react-router-dom'
 

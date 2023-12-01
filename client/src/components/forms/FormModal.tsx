@@ -1,12 +1,9 @@
+import { Store } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
 interface FormModalProps {
-  field:
-    | "products"
-    | "brands"
-    | "categories"
-    | "sales-categories"
+  field: Omit<Store["modalForm"]["field"], "*">
   title: string
   description?: string
   onClose: () => void

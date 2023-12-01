@@ -1,7 +1,7 @@
 import { createContext, useReducer } from "react"
 import { i18n, Local } from "@/i18n"
 
-type Store = {
+export type Store = {
   theme:
     | "light"
     | "dark"
@@ -21,6 +21,16 @@ type Store = {
       | "products"
       | "categories"
       | "sales-categories"
+
+      | "update-product"
+      | "delete-product"
+      | "delete-product-multi"
+
+      | "delete-brand"
+      | "delete-brand-multi"
+
+      | "delete-exchange"
+      | "delete-exchange-multi"
     state: boolean
   },
   user?: IUser
@@ -30,14 +40,37 @@ type Store = {
     fields?: any,
     page?: number,
     limit?: number,
-    mode?: "insensitive" | "default"
+    mode?: "insensitive" | "default",
+    include?: {
+      likedUsers?: boolean,
+      brand?: boolean,
+      categories?: {
+        include?: {
+          category?: boolean,
+          product?: boolean,
+        }
+      },
+      salesCategory?: {
+        include?: {
+          salesCategory?: boolean,
+          product?: boolean,
+        }
+      },
+      reviews?: boolean
+    }
   },
   brandFilter?: {
     fields?: any,
     page?: number,
     limit?: number,
     mode?: "insensitive" | "default"
-  }
+  },
+  exchangeFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default"
+  },
 }
 
 interface ProductFilterActions {
@@ -48,6 +81,11 @@ interface ProductFilterActions {
 interface BrandFilterActions {
   type: "SET_BRAND_FILTER",
   payload: Store["brandFilter"]
+}
+
+interface ExchangeFilterActions {
+  type: "SET_EXCHANGE_FILTER",
+  payload: Store["exchangeFilter"]
 }
 
 interface ModalFormOpenActions {
@@ -109,8 +147,11 @@ type Action =
   | SlidebarOpenActions
   | SlidebarToggleActions
   | SlidebarCloseActions
+
   | ProductFilterActions
   | BrandFilterActions
+  | ExchangeFilterActions
+
   | ModalFormOpenActions
   | ModalFormCloseActions
   | AllModalFormCloseActions
@@ -137,7 +178,20 @@ const initialState: Store = {
   productFilter: {
     page: 0,
     limit: 10,
-    mode: "default"
+    mode: "default",
+    include: {
+      brand: true,
+      categories: {
+        include: {
+          category: true
+        }
+      },
+      salesCategory: {
+        include: {
+          salesCategory: true
+        }
+      },
+    }
   },
   brandFilter: {
     page: 0,
@@ -195,14 +249,27 @@ const stateReducer = (state: Store, action: Action): Store => {
       return { ...state, modalForm: { state: false, field: "*" } }
     }
 
+    case "SET_EXCHANGE_FILTER": {
+      return { ...state, exchangeFilter: {
+        ...state.exchangeFilter,
+        ...action.payload
+      } }
+    }
+
     case "SET_BRAND_FILTER": {
-      return { ...state, brandFilter: action.payload }
+      return { ...state, brandFilter: {
+        ...state.brandFilter,
+        ...action.payload
+      } }
     }
 
     case "SET_PRODUCT_FILTER": {
       return { 
         ...state,
-        productFilter: action.payload
+        productFilter: {
+          ...state.productFilter,
+          ...action.payload
+        }
       }
     }
 

@@ -1,21 +1,22 @@
 import { Request, Response, NextFunction } from 'express'
 import { db } from '../utils/db'
 import AppError from '../utils/appError';
-import { CreateProductInput, GetProductInput, ProductFilterPagination, UploadImagesProductInput } from '../schemas/product.schema';
+import { CreateMultiProductsInput, CreateProductInput, GetProductInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
 import logging from '../middleware/logging/logging';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { convertNumericStrings } from '../utils/convertNumber';
+import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 
 
 export async function getProductsHandler(
-  // TODO: pagination & filter  with relationship
   req: Request<{}, {}, {}, ProductFilterPagination>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination } = convertNumericStrings(req.query)
+    const { filter = {}, pagination, include: includes, orderBy } = convertNumericStrings(req.query)
+    const include = convertStringToBoolean(includes)
     const {
       id,
       brand,
@@ -44,35 +45,41 @@ export async function getProductsHandler(
 
     const offset = (page - 1) * pageSize
 
-    const products = await db.product.findMany({
-      where: {
-        id,
-        brand,
-        brandId,
-        title,
-        price,
-        specification,
-        overview,
-        features,
-        warranty,
-        categories,
-        colors,
-        instockStatus,
-        description,
-        type,
-        dealerPrice,
-        marketPrice,
-        discount,
-        status,
-        priceUnit,
-        salesCategory,
-        likedUsers,
-      },
-      skip: offset,
-      take: pageSize,
-    })
+    const [ count, products ] = await db.$transaction([
+      db.product.count(),
+      db.product.findMany({
+        where: {
+          id,
+          brand,
+          brandId,
+          title,
+          price,
+          specification,
+          overview,
+          features,
+          warranty,
+          categories,
+          colors,
+          instockStatus,
+          description,
+          type,
+          dealerPrice,
+          marketPrice,
+          discount,
+          status,
+          priceUnit,
+          salesCategory,
+          likedUsers,
+        },
+        orderBy,
+        skip: offset,
+        take: pageSize,
+        // @ts-ignore
+        include
+      })
+    ])
 
-    res.status(200).json(HttpListResponse(products))
+    res.status(200).json(HttpListResponse(products, count))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
@@ -132,6 +139,7 @@ export async function createProductHandler(
       salesCategory,
       categories,
       quantity,
+      status
     } = req.body;
     const new_product = await db.product.create({
       data: {
@@ -149,7 +157,7 @@ export async function createProductHandler(
         dealerPrice,
         marketPrice,
         discount,
-        status: "Draft",
+        status,
         priceUnit,
         categories: {
           create: categories.map(id => ({
@@ -180,6 +188,30 @@ export async function createProductHandler(
 }
 
 
+export async function createMultiProductsHandler(
+  req: Request<{}, {}, CreateMultiProductsInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const data = req.body
+    await db.product.createMany({
+      data,
+      skipDuplicates: true
+    })
+
+    res.status(200).json(HttpResponse(200, "Success"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Exchange already exists"))
+
+    next(new AppError(500, msg))
+  }
+}
+
+
 export async function deleteProductHandler(
   req: Request<GetProductInput>,
   res: Response,
@@ -196,6 +228,18 @@ export async function deleteProductHandler(
 
     if (!product) return next(new AppError(404,  `Product not found`))
 
+    await db.productCategory.deleteMany({
+      where: {
+        productId,
+      }
+    })
+
+    await db.productSalesCategory.deleteMany({
+      where: {
+        productId,
+      }
+    })
+
     await db.product.delete({
       where: {
         id: productId
@@ -208,6 +252,93 @@ export async function deleteProductHandler(
     logging.error(msg)
     if (err?.code === "23505") next(new AppError(409, "data already exists"))
     next(new AppError(500, msg))
+  }
+}
+
+
+export async function updateProductHandler(
+  req: Request<UpdateProductInput["params"], {}, UpdateProductInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productId } = req.params
+    const {
+      price,
+      brandId,
+      title,
+      specification,
+      overview,
+      features,
+      warranty,
+      colors,
+      instockStatus,
+      description,
+      type,
+      dealerPrice,
+      marketPrice,
+      discount,
+      priceUnit,
+      salesCategory,
+      categories,
+      quantity,
+      status
+    } = req.body
+
+    await db.productCategory.deleteMany({
+      where: {
+        productId,
+      }
+    })
+
+    await db.productSalesCategory.deleteMany({
+      where: {
+        productId,
+      }
+    })
+
+    const product = await db.product.update({
+      where: {
+        id: productId
+      },
+      data: {
+        price,
+        brandId,
+        title,
+        specification,
+        overview,
+        features,
+        warranty,
+        colors,
+        instockStatus,
+        description,
+        type,
+        dealerPrice,
+        marketPrice,
+        discount,
+        status,
+        priceUnit,
+        categories: {
+          create: categories.map(id => ({
+            category: {
+              connect: { id }
+            }
+          }))
+        },
+        salesCategory: {
+          create: salesCategory.map(id => ({
+            salesCategory: {
+              connect: { id }
+            }
+          }))
+        },
+        quantity,
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ product }))
+  } catch (err) {
+    next(err)
   }
 }
 

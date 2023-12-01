@@ -4,7 +4,6 @@ import { Autocomplete, Paper, TextField } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiButton } from '@/components/ui';
-import { CreateBrandForm, FormModal } from '@/components/forms';
 import { useStore } from '@/hooks';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
@@ -23,7 +22,13 @@ export function BrandInputField() {
     error
   } = useQuery({
     queryKey: ["brands"],
-    queryFn: args => getBrandsFn(args, { filter: {} }),
+    queryFn: args => getBrandsFn(args, {
+      filter: {},
+      pagination: {
+        page: 1,
+        pageSize: 100 * 1000
+      }
+    }),
     select: data => data.results
   })
 
@@ -36,10 +41,6 @@ export function BrandInputField() {
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "brands" })
-  }
-
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))
@@ -105,9 +106,5 @@ export function BrandInputField() {
         />
       )}
     />
-
-    <FormModal field='brands' title='Create new brand' onClose={handleOnCloseModalForm}>
-      <CreateBrandForm />
-    </FormModal>
   </>
 }

@@ -10,6 +10,27 @@ type UserProvider =
   | "Google"
   | "Facebook"
 
+
+type ProductType = 
+  | "Switch"
+  | "Router"
+  | "Wifi"
+  | "Accessory"
+
+
+type InstockStatus = 
+  | "InStock"
+  | "OutOfStock"
+  | "AskForStock"
+
+
+type PriceUnit = 
+  | "MMK"
+  | "USD"
+  | "SGD"
+  | "THB"
+  | "KRW"
+
 interface IUser {
   id: string,
   name: string,
@@ -27,22 +48,34 @@ interface IUser {
 interface IProduct {
   id: string;
   brandId: string;
+  brand: IBrand,
+  categories: {
+    productId: string,
+    categoryId: string,
+    category: ICategory
+  }[],
+  salesCategory: {
+    productId: string,
+    salesCategoryId: string,
+    salesCategory: ISalesCategory
+  }[],
   title: string;
   price: number;
+  _count: number
   images: string[]; // Assuming it's an array of image URLs
   specification: string;
   overview: string;
   features: string;
   warranty: number;
   colors: string;
-  instockStatus: string;
+  instockStatus: InstockStatus;
   description: string;
-  type: string;
+  type: ProductType;
   dealerPrice: number;
   marketPrice: number;
   discount: number;
   status: string;
-  priceUnit: string;
+  priceUnit: PriceUnit;
   quantity: number;
   createdAt: string; // Assuming it's a string representation of a date
   updatedAt: string; // Assuming it's a string representation of a date
@@ -52,6 +85,19 @@ interface IProduct {
 interface IBrand {
   id: string,
   name: string
+  _count: number
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+interface IExchange {
+  id: string,
+  _count: number
+  from: PriceUnit
+  to: PriceUnit
+  rate: number
+  date: Date | string
   createdAt: string | Date
   updatedAt: string | Date
 }

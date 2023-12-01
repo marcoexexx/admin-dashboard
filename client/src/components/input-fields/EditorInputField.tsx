@@ -23,19 +23,20 @@ const EditorWrapper = styled(ReactQuill)(() => ({
 }))
 
 interface EditorInputFieldProps {
-  field: string
+  fieldName: string
 }
 
-export function EditorInputField({field}: EditorInputFieldProps) {
+export function EditorInputField({fieldName}: EditorInputFieldProps) {
   const { control } = useFormContext()
 
   return <>
     <Controller 
-      name={field}
+      name={fieldName}
       control={control}
       render={({field}) => (
         <EditorWrapper
           {...field}
+          placeholder={fieldName}
         />
       )}
     />

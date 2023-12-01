@@ -3,7 +3,7 @@ import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { BrandFilterPagination, CreateBrandInput, GetBrandInput } from "../schemas/brand.schema";
+import { BrandFilterPagination, CreateBrandInput, CreateMultiBrandsInput, GetBrandInput } from "../schemas/brand.schema";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
@@ -14,7 +14,7 @@ export async function getBrandsHandler(
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination } = convertNumericStrings(req.query)
+    const { filter = {}, pagination, orderBy } = convertNumericStrings(req.query)
     const {
       id,
       name
@@ -24,16 +24,20 @@ export async function getBrandsHandler(
 
     const offset = (page - 1) * pageSize
 
-    const brands = await db.brand.findMany({
-      where: {
-        id,
-        name
-      },
-      skip: offset,
-      take: pageSize,
-    })
+    const [count, brands] = await db.$transaction([
+      db.brand.count(),
+      db.brand.findMany({
+        where: {
+          id,
+          name
+        },
+        orderBy,
+        skip: offset,
+        take: pageSize,
+      })
+    ])
 
-    res.status(200).json(HttpListResponse(brands))
+    res.status(200).json(HttpListResponse(brands, count))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
@@ -56,10 +60,34 @@ export async function getBrandHandler(
       }
     })
 
-    res.status(200).json(HttpDataResponse(brand))
+    res.status(200).json(HttpDataResponse({ brand }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function createMultiBrandsHandler(
+  req: Request<{}, {}, CreateMultiBrandsInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const data = req.body
+    await db.brand.createMany({
+      data,
+      skipDuplicates: true
+    })
+
+    res.status(200).json(HttpResponse(200, "Success"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Brand already exists"))
+
     next(new AppError(500, msg))
   }
 }

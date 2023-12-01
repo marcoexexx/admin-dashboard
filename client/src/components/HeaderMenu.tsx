@@ -1,7 +1,5 @@
-import { Box, List, ListItem, ListItemText, Menu, MenuItem, styled } from "@mui/material"
-import { useRef, useState } from "react"
-import { NavLink } from "react-router-dom"
-import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
+import { Box, List, ListItem, ListItemText, styled } from "@mui/material"
+import { useNavigate } from "react-router-dom"
 
 const ListWrapper = styled(Box)(({theme}) => ({
   ".MuiTouchRipple-root": {
@@ -13,6 +11,7 @@ const ListWrapper = styled(Box)(({theme}) => ({
     
     "&.MuiListItem-indicators": {
       padding: theme.spacing(1, 2),
+      cursor: "pointer",
 
       ".MuiListItemText-root": {
         ".MuiTypography-root": {
@@ -50,12 +49,7 @@ const ListWrapper = styled(Box)(({theme}) => ({
 }))
 
 export function HeaderMenu() {
-  const ref = useRef<any>(null)
-  const [isOpen, setIsOpen] = useState(false)
-
-  const onClickOpen = () => setIsOpen(true)
-
-  const onClickClose = () => setIsOpen(false)
+  const navigate = useNavigate()
 
   return (
     <>
@@ -63,57 +57,33 @@ export function HeaderMenu() {
         <List disablePadding component={Box} display="flex">
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
-            component={NavLink}
-            to="/products/list"
+            onClick={() => navigate("/products/list")}
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Products" />
           </ListItem>
 
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
-            component={NavLink}
-            to="/brands/list"
+            onClick={() => navigate("/brands/list")}
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Brands" />
           </ListItem>
 
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
-            component={NavLink}
-            to="/categories/list"
+            onClick={() => navigate("/categories/list")}
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Categories" />
           </ListItem>
 
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
-            component={NavLink}
-            to="/sales-categories/list"
+            onClick={() => navigate("/sales-categories/list")}
           >
             <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Sales Categories" />
           </ListItem>
-
-          <ListItem
-            classes={{ root: "MuiListItem-indicators" }}
-            ref={ref}
-            onClick={onClickOpen}
-          >
-            <ListItemText primaryTypographyProps={{ noWrap: true }} primary={
-              <Box display="flex" alignItems="center">
-                Others
-                <Box display="flex" alignItems="center" pl={0.3}>
-                  <ExpandMoreTwoToneIcon fontSize="small" />
-                </Box>
-              </Box>
-            } />
-          </ListItem>
         </List>
       </ListWrapper>
-
-      <Menu anchorEl={ref.current} onClose={onClickClose} open={isOpen}>
-        <MenuItem sx={{ px: 3 }} component={NavLink} to="/auth/login">Login</MenuItem>
-        <MenuItem sx={{ px: 3 }} component={NavLink} to="/auth/register">Register</MenuItem>
-      </Menu>
     </>
   )
 }

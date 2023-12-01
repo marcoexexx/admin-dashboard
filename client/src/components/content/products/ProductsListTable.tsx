@@ -1,10 +1,15 @@
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { MuiLabel } from "@/components/ui";
+import { MuiButton, MuiLabel } from "@/components/ui";
 import { BulkActions } from "@/components";
 import { ProductsActions } from ".";
+import { CreateProductInput } from "./forms";
+import { useStore } from "@/hooks";
+import { exportToExcel } from "@/libs/exportToExcel";
+import { FormModal } from "@/components/forms";
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 
 const getStatusLabel = (status: Omit<Status, "all">): JSX.Element => {
@@ -39,6 +44,21 @@ const columnData: TableColumnHeader<IProduct>[] = [
     name: "Price"
   },
   {
+    id: "brand",
+    align: "right",
+    name: "Brand"
+  },
+  {
+    id: "categories",
+    align: "right",
+    name: "Categories"
+  },
+  {
+    id: "salesCategory",
+    align: "right",
+    name: "Sales Categories"
+  },
+  {
     id: "instockStatus",
     align: "right",
     name: "InstockStatus"
@@ -66,13 +86,22 @@ const columnHeader = columnData.concat([
 
 interface ProductsListTableProps {
   products: IProduct[]
+  count: number,
+  onDelete: (id: string) => void
+  onPublished: (product: IProduct) => void
+  onMultiDelete: (ids: string[]) => void
+  onCreateManyProducts: (data: CreateProductInput[]) => void
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
-  const { products } = props
+  const { products, count, onDelete, onMultiDelete, onCreateManyProducts, onPublished } = props
 
   const theme = useTheme()
+  const { state: {productFilter, modalForm}, dispatch } = useStore()
+
   const [selectedRows, setSellectedRows] = useState<string[]>([])
+  const [deleteId, setDeleteId] = useState("")
+  const [updateProduct, setUpdateProduct] = useState<IProduct|null>(null)
 
   const selectedBulkActions = selectedRows.length > 0
 
@@ -89,6 +118,76 @@ export function ProductsListTable(props: ProductsListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
+  const handleUpdateProduct = (product: IProduct) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    console.log(product)
+  }
+
+  const handleClickDeleteAction = (exchangeId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    setDeleteId(exchangeId)
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: "delete-product"
+    })
+  }
+
+  const handleOnExport = () => {
+    exportToExcel(products, "Products")
+  }
+
+  const handleOnImport = (data: CreateProductInput[]) => {
+    onCreateManyProducts(data)
+  }
+
+  const handleChangePagination = (_: any, page: number) => {
+    dispatch({
+      type: "SET_PRODUCT_FILTER",
+      payload: {
+        page: page += 1
+      }
+    })
+  }
+
+  const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "SET_PRODUCT_FILTER",
+      payload: {
+        limit: parseInt(evt.target.value, 10)
+      }
+    })
+  }
+
+  const handlePublishedProduct = (product: IProduct) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    if (product.status === "Pending") {
+      setUpdateProduct(product)
+      dispatch({
+        type: "OPEN_MODAL_FORM",
+        payload: "update-product"
+      })
+    } else if (product.status === "Published") {
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: "Already published",
+          severity: "info"
+        }
+      })
+    } else {
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: "Cannot published for `Draft` state",
+          severity: "error"
+        }
+      })
+    }
+  }
+
+  const handleCloseModal = () => {
+    dispatch({
+      type: "CLOSE_ALL_MODAL_FORM"
+    })
+  }
+
   const selectedAllRows = selectedRows.length === products.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < products.length
@@ -96,11 +195,19 @@ export function ProductsListTable(props: ProductsListTableProps) {
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
-        <BulkActions />
+        <BulkActions
+          field="delete-product-multi"
+          onDelete={() => onMultiDelete(selectedRows)}
+        />
       </Box>}
 
+      <Divider />
+
       <CardContent>
-        <ProductsActions />
+        <ProductsActions 
+          onExport={handleOnExport}
+          onImport={handleOnImport}
+        />
       </CardContent>
 
       <Divider />
@@ -145,61 +252,172 @@ export function ProductsListTable(props: ProductsListTableProps) {
 
                 <TableCell align="left">
                   <img 
-                    src={row.images[0] || "/public/samsung.jpg"} 
+                    src={row.images[0] || "/public/default.jpg"} 
                     alt={row.title} 
                     height={100}
                   />
                 </TableCell>
 
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {row[col.id as keyof typeof row]}
-                  </Typography>
-                </TableCell>)}
+                {columnData.map(col => {
+                  const key = col.id as keyof typeof row
+
+                  const getRow = (key: keyof typeof row) => {
+                    if (key === "categories") return row.categories.map(i => i.category.name).join(", ")
+                    if (key === "salesCategory") return row.salesCategory.map(i => i.salesCategory.name).join(", ")
+                    if (key === "brand") return row.brand.name || "empty"
+                    return row[key]
+                  }
+
+                  return (
+                    <TableCell align={col.align} key={col.id}>
+                      <Typography
+                        variant="body1"
+                        fontWeight="normal"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {getRow(key)}
+                      </Typography>
+                    </TableCell>
+                  )
+                })}
+
                 <TableCell align="right">
                   {getStatusLabel(row.status.toLowerCase())}
                 </TableCell>
+
                 <TableCell align="right">
-                  <Tooltip title="Edit Order" arrow>
-                    <IconButton
-                      sx={{
-                        '&:hover': {
-                          background: theme.colors.primary.lighter
-                        },
-                        color: theme.palette.primary.main
-                      }}
-                      color="inherit"
-                      size="small"
-                    >
-                      <EditTwoToneIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Edit Order" arrow>
-                    <IconButton
-                      sx={{
-                        '&:hover': {
-                          background: theme.colors.error.lighter
-                        },
-                        color: theme.palette.error.main
-                      }}
-                      color="inherit"
-                      size="small"
-                    >
-                      <DeleteTwoToneIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                  >
+                    <Tooltip title="Published product" arrow>
+                      <IconButton
+                        onClick={handlePublishedProduct(row)}
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.primary.lighter
+                          },
+                          color: theme.palette.primary.main
+                        }}
+                        color="inherit"
+                        size="small"
+                      >
+                        <PublishedWithChangesIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit Product" arrow>
+                      <IconButton
+                        onClick={handleUpdateProduct(row)}
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.primary.lighter
+                          },
+                          color: theme.palette.primary.main
+                        }}
+                        color="inherit"
+                        size="small"
+                      >
+                        <EditTwoToneIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete Product" arrow>
+                      <IconButton
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.error.lighter
+                          },
+                          color: theme.palette.error.main
+                        }}
+                        onClick={handleClickDeleteAction(row.id)}
+                        color="inherit"
+                        size="small"
+                      >
+                        <DeleteTwoToneIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </TableCell>
               </TableRow>
             })}
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Box p={2}>
+        <TablePagination
+          component="div"
+          count={count}
+          onPageChange={handleChangePagination}
+          onRowsPerPageChange={handleChangeLimit}
+          page={productFilter?.page
+            ? productFilter.page - 1
+            : 0}
+          rowsPerPage={productFilter?.limit || 10}
+          rowsPerPageOptions={[5, 10, 25, 30]}
+        />
+      </Box>
+
+      {modalForm.field === "delete-product"
+      ? <FormModal
+          field="delete-product"
+          title="Delete product"
+          onClose={handleCloseModal}
+        >
+          <Box display="flex" flexDirection="column" gap={1}>
+            <Box>
+              <Typography>Are you sure want to delete</Typography>
+            </Box>
+            <Box display="flex" flexDirection="row" gap={1}>
+              <MuiButton
+                variant="contained"
+                color="error"
+                onClick={() => onDelete(deleteId)}
+              >
+                Delete
+              </MuiButton>
+              
+              <MuiButton
+                variant="outlined"
+                onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}
+              >
+                Cancel
+              </MuiButton>
+            </Box>
+          </Box>
+        </FormModal>
+      : null}
+
+      {modalForm.field === "update-product"
+      ? <FormModal
+          field="update-product"
+          title="Update product"
+          onClose={handleCloseModal}
+        >
+          <Box display="flex" flexDirection="column" gap={1}>
+            <Box>
+              <Typography>Are you sure want to update</Typography>
+            </Box>
+            <Box display="flex" flexDirection="row" gap={1}>
+              <MuiButton
+                variant="contained"
+                color="error"
+                onClick={() => updateProduct ? onPublished(updateProduct) : null}
+              >
+                Save
+              </MuiButton>
+              
+              <MuiButton
+                variant="outlined"
+                onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}
+              >
+                Cancel
+              </MuiButton>
+            </Box>
+          </Box>
+        </FormModal>
+      : null}
     </Card>
   )
 }

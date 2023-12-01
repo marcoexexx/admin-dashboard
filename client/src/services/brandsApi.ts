@@ -1,12 +1,13 @@
-import { CreateBrandInput, DeleteBrandInput } from "@/components/forms";
+import { CreateBrandInput, DeleteBrandInput } from "@/components/content/brands/forms";
 import { authApi } from "./authApi";
 
-// TODO
-export async function getBrandsFn(opt: QueryOptionArgs, { filter }: { filter: any }) {
+
+export async function getBrandsFn(opt: QueryOptionArgs, { filter, pagination }: { filter: any, pagination: any }) {
   const { data } = await authApi.get<HttpListResponse<IBrand>>("/brands", {
     ...opt,
     params: {
-      filter
+      filter,
+      pagination
     },
   })
   return data
@@ -16,6 +17,18 @@ export async function getBrandsFn(opt: QueryOptionArgs, { filter }: { filter: an
 export async function createBrandFn(brand: CreateBrandInput) {
   const { data } = await authApi.post<IBrand>("/brands", brand)
   return data
+}
+
+
+export async function createMultiBrandsFn(brand: CreateBrandInput[]) {
+  const { data } = await authApi.post<HttpResponse>("/brands/multi", brand)
+  return data
+}
+
+
+export async function deleteMultiBrandsFn(brandIds: DeleteBrandInput["brandId"][]) {
+  await Promise.all(brandIds.map(id => authApi.delete<HttpResponse>(`/brands/detail/${id}`)))
+  return null
 }
 
 

@@ -56,8 +56,15 @@ export const changeUserRoleSchema = object({
   })
 })
 
+export const uploadImageProfileSchema = object({
+  body: object({
+    image: string({ required_error: "Image is required"}),
+  })
+})
+
 
 export type CreateUserInput = z.infer<typeof createUserSchema>["body"]
 export type LoginUserInput = z.infer<typeof loginUserSchema>["body"]
 export type GetUserInput = z.infer<typeof getUserSchema>["params"]
 export type ChangeUserRoleInput = z.infer<typeof changeUserRoleSchema>["body"]
+export type UploadImageUserInput = z.infer<typeof uploadImageProfileSchema>["body"]

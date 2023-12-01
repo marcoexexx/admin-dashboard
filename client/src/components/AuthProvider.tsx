@@ -27,5 +27,8 @@ export function AuthProvider(props: AuthProviderProps) {
 
   if (query.isLoading) return <SuspenseLoader />
 
+  // if (query.isError) throw new Error(query.error)
+  if (query.isError) return <h1>Change Error: {query.error.message}</h1>
+
   return children
 }
