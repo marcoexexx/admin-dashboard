@@ -1,25 +1,26 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
 import { BulkActions } from "@/components";
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
-import { FormModal } from "@/components/forms";
 import { exportToExcel } from "@/libs/exportToExcel";
 import { useStore } from "@/hooks";
-import { MuiButton } from "@/components/ui";
 
-import { CreateBrandInput } from "./forms";
-import { BrandsActions } from ".";
 import { useNavigate } from "react-router-dom";
+import { UsersActions } from ".";
 
 
-const columnData: TableColumnHeader<IBrand>[] = [
+const columnData: TableColumnHeader<IUser>[] = [
   {
     id: "name",
     align: "left",
     name: "Name"
   },
+  {
+    id: "role",
+    align: "left",
+    name: "Role"
+  }
 ]
 
 const columnHeader = columnData.concat([
@@ -30,23 +31,18 @@ const columnHeader = columnData.concat([
   }
 ])
 
-interface BrandsListTableProps {
-  brands: IBrand[]
+interface UsersListTableProps {
+  users: IUser[]
   count: number
-  onDelete: (id: string) => void
-  onMultiDelete: (ids: string[]) => void
-  onCreateManyBrands: (data: CreateBrandInput[]) => void
 }
 
-export function BrandsListTable(props: BrandsListTableProps) {
-  const { brands, count, onCreateManyBrands, onDelete, onMultiDelete } = props
-
-  const [deleteId, setDeleteId] = useState("")
+export function UsersListTable(props: UsersListTableProps) {
+  const { users, count } = props
 
   const navigate = useNavigate()
 
   const theme = useTheme()
-  const { state: {brandFilter, modalForm}, dispatch } = useStore()
+  const { state: {brandFilter}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -55,7 +51,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
   const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = evt.target
     setSellectedRows(checked
-      ? brands.map(e => e.id)
+      ? users.map(e => e.id)
       : []
     )
   }
@@ -65,29 +61,17 @@ export function BrandsListTable(props: BrandsListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handleClickDeleteAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteId(brandId)
-    dispatch({
-      type: "OPEN_MODAL_FORM",
-      payload: "delete-brand"
-    })
-  }
-
-  const handleClickUpdateAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/brands/update/${brandId}`)
+  const handleClickUpdateAction = (userId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/users/change-role/${userId}`)
   }
 
   const handleOnExport = () => {
-    exportToExcel(brands, "Brands")
-  }
-
-  const handleOnImport = (data: CreateBrandInput[]) => {
-    onCreateManyBrands(data)
+    exportToExcel(users, "Users")
   }
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_BRAND_FILTER",
+      type: "SET_USER_FILTER",
       payload: {
         page: page += 1
       }
@@ -96,36 +80,30 @@ export function BrandsListTable(props: BrandsListTableProps) {
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_BRAND_FILTER",
+      type: "SET_USER_FILTER",
       payload: {
         limit: parseInt(evt.target.value, 10)
       }
     })
   }
 
-  const handleCloseDeleteModal = () => {
-    dispatch({
-      type: "CLOSE_ALL_MODAL_FORM"
-    })
-  }
-
-  const selectedAllRows = selectedRows.length === brands.length
+  const selectedAllRows = selectedRows.length === users.length
   const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < brands.length
+    selectedRows.length < users.length
 
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
           field="delete-brand-multi"
-          onDelete={() => onMultiDelete(selectedRows)}
+          onDelete={() => {}}
         />
       </Box>}
 
       <Divider />
 
       <CardContent>
-        <BrandsActions onExport={handleOnExport} onImport={handleOnImport}  />
+        <UsersActions onExport={handleOnExport} />
       </CardContent>
 
       <TableContainer>
@@ -147,7 +125,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
           </TableHead>
 
           <TableBody>
-            {brands.map(row => {
+            {users.map(row => {
               const isSelected = selectedRows.includes(row.id)
               return <TableRow
                 hover
@@ -171,12 +149,12 @@ export function BrandsListTable(props: BrandsListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {row.name}
+                    {row[col.id as keyof typeof row] as string}
                   </Typography>
                 </TableCell>)}
 
                 <TableCell align="right">
-                  <Tooltip title="Edit Product" arrow>
+                  <Tooltip title="Change Role" arrow>
                     <IconButton
                       sx={{
                         '&:hover': {
@@ -184,26 +162,11 @@ export function BrandsListTable(props: BrandsListTableProps) {
                         },
                         color: theme.palette.primary.main
                       }}
-                      color="inherit"
-                      size="small"
                       onClick={handleClickUpdateAction(row.id)}
-                    >
-                      <EditTwoToneIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete Product" arrow>
-                    <IconButton
-                      sx={{
-                        '&:hover': {
-                          background: theme.colors.error.lighter
-                        },
-                        color: theme.palette.error.main
-                      }}
-                      onClick={handleClickDeleteAction(row.id)}
                       color="inherit"
                       size="small"
                     >
-                      <DeleteTwoToneIcon fontSize="small" />
+                      <AdminPanelSettingsIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                 </TableCell>
@@ -226,24 +189,6 @@ export function BrandsListTable(props: BrandsListTableProps) {
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>
-
-      {modalForm.field === "delete-brand"
-      ? <FormModal
-        field="delete-brand"
-        title="Delete brand"
-        onClose={handleCloseDeleteModal}
-      >
-        <Box display="flex" flexDirection="column" gap={1}>
-          <Box>
-            <Typography>Are you sure want to delete</Typography>
-          </Box>
-          <Box display="flex" flexDirection="row" gap={1}>
-            <MuiButton variant="contained" color="error" onClick={() => onDelete(deleteId)}>Delete</MuiButton>
-            <MuiButton variant="outlined" onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}>Cancel</MuiButton>
-          </Box>
-        </Box>
-      </FormModal>
-      : null}
     </Card>
   )
 }

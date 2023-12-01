@@ -23,6 +23,10 @@ const LoginPage = Loader(lazy(() => import("@/pages/login.page")))
 const ListProductPage = Loader(lazy(() => import("@/pages/products/ListProduct")))
 const CreateProductPage = Loader(lazy(() => import("@/pages/products/CreateProduct")))
 
+// users
+const ListUserPage = Loader(lazy(() => import("@/pages/users/ListUser")))
+const UpdateUserPage = Loader(lazy(() => import("@/pages/users/UpdateUser")))
+
 // brands
 const ListBrandPage = Loader(lazy(() => import("@/pages/brands/ListBrand")))
 const CreateBrandPage = Loader(lazy(() => import("@/pages/brands/CreateBrand")))
@@ -86,6 +90,32 @@ const routes = createBrowserRouter([
                   {
                     path: "",
                     Component: UpdateExchangePage
+                  }
+                ]
+              },
+            ]
+          },
+
+
+          /// USER ROUTES
+          {
+            path: "users",
+            children: [
+              {
+                path: "",
+                element: <Navigate to="/brands/list" />
+              },
+              {
+                path: "list",
+                Component: ListUserPage
+              },
+              {
+                path: "change-role/:userId",
+                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                children: [
+                  {
+                    path: "",
+                    Component: UpdateUserPage
                   }
                 ]
               },

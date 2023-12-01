@@ -36,6 +36,12 @@ export type Store = {
   user?: IUser
   slidebar: boolean
   local: Local
+  userFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default",
+  },
   productFilter?: {
     fields?: any,
     page?: number,
@@ -71,6 +77,11 @@ export type Store = {
     limit?: number,
     mode?: "insensitive" | "default"
   },
+}
+
+interface UserFilterActions {
+  type: "SET_USER_FILTER",
+  payload: Store["userFilter"]
 }
 
 interface ProductFilterActions {
@@ -148,6 +159,7 @@ type Action =
   | SlidebarToggleActions
   | SlidebarCloseActions
 
+  | UserFilterActions
   | ProductFilterActions
   | BrandFilterActions
   | ExchangeFilterActions
@@ -174,6 +186,11 @@ const initialState: Store = {
   modalForm: {
     field: "*",
     state: false
+  },
+  userFilter: {
+    page: 0,
+    limit: 10,
+    mode: "default",
   },
   productFilter: {
     page: 0,
@@ -247,6 +264,13 @@ const stateReducer = (state: Store, action: Action): Store => {
 
     case "CLOSE_ALL_MODAL_FORM": {
       return { ...state, modalForm: { state: false, field: "*" } }
+    }
+
+    case "SET_USER_FILTER": {
+      return { ...state, userFilter: {
+        ...state.userFilter,
+        ...action.payload
+      } }
     }
 
     case "SET_EXCHANGE_FILTER": {
