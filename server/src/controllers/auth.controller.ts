@@ -10,6 +10,7 @@ import AppError from "../utils/appError";
 import redisClient from "../utils/connectRedis";
 import { signToken, verifyJwt } from "../utils/auth/jwt";
 import { getGoogleAuthToken, getGoogleUser } from "../services/googleOAuth.service";
+import { generateRandomUsername } from "../utils/generateRandomUsername";
 
 const cookieOptions: CookieOptions = {
   httpOnly: true,
@@ -44,6 +45,7 @@ export async function registerUserHandler(
     let data = {
       name,
       email,
+      username: generateRandomUsername(12),
       password: hashedPassword,
       role: "User" as Role,
       verificationToken: undefined,   //  verificationToken generate
@@ -106,6 +108,7 @@ export async function googleOAuthHandler(
       create: {
         createdAt: new Date(),
         name,
+        username: generateRandomUsername(12),
         email,
         image: picture,
         password: "",
