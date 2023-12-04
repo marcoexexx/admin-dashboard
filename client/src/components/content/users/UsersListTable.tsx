@@ -34,10 +34,11 @@ const columnHeader = columnData.concat([
 interface UsersListTableProps {
   users: IUser[]
   count: number
+  me: IUser
 }
 
 export function UsersListTable(props: UsersListTableProps) {
-  const { users, count } = props
+  const { users, count, me } = props
 
   const navigate = useNavigate()
 
@@ -141,17 +142,25 @@ export function UsersListTable(props: UsersListTableProps) {
                   />
                 </TableCell>
 
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {row[col.id as keyof typeof row] as string}
-                  </Typography>
-                </TableCell>)}
+                {columnData.map(col => {
+                  const key = col.id as keyof typeof row
+
+                  return (
+                    <TableCell align={col.align} key={col.id}>
+                      <Typography
+                        variant="body1"
+                        fontWeight="normal"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {key === "name" && me.id === row.id
+                        ? <a href={"/me/profile/"+row.id}>{row[key]}</a>
+                        : row[key] as string}
+                      </Typography>
+                    </TableCell>
+                  )
+                })}
 
                 <TableCell align="right">
                   <Tooltip title="Change Role" arrow>
