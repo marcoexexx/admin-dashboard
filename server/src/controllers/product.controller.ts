@@ -9,6 +9,7 @@ import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 
 
+// TODO: specification filter
 export async function getProductsHandler(
   req: Request<{}, {}, {}, ProductFilterPagination>,
   res: Response,
@@ -23,7 +24,6 @@ export async function getProductsHandler(
       brandId,
       title,
       price,
-      specification,
       overview,
       features,
       warranty,
@@ -54,7 +54,6 @@ export async function getProductsHandler(
           brandId,
           title,
           price,
-          specification,
           overview,
           features,
           warranty,
@@ -89,7 +88,6 @@ export async function getProductsHandler(
 
 
 export async function getProductHandler(
-  // TODO: pagination & filter
   req: Request<GetProductInput, {}, {}>,
   res: Response,
   next: NextFunction
@@ -146,7 +144,9 @@ export async function createProductHandler(
         price,
         brandId,
         title,
-        specification,
+        specification: {
+          create: specification
+        },
         overview,
         features,
         warranty,
@@ -228,6 +228,14 @@ export async function deleteProductHandler(
 
     if (!product) return next(new AppError(404,  `Product not found`))
 
+    logging.log(await db.specification.count())
+
+    await db.specification.deleteMany({
+      where: {
+        productId,
+      }
+    })
+
     await db.productCategory.deleteMany({
       where: {
         productId,
@@ -297,6 +305,12 @@ export async function updateProductHandler(
       }
     })
 
+    await db.specification.deleteMany({
+      where: {
+        productId
+      }
+    })
+
     const product = await db.product.update({
       where: {
         id: productId
@@ -305,7 +319,9 @@ export async function updateProductHandler(
         price,
         brandId,
         title,
-        specification,
+        specification: {
+          create: specification
+        },
         overview,
         features,
         warranty,

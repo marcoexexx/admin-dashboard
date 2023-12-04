@@ -153,9 +153,8 @@ model Product {
   reviews       Review[]
   salesCategory ProductSalesCategory[]
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  specificationId String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model Specification {

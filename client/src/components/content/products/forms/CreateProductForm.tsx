@@ -2,7 +2,7 @@ import { Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, S
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
-import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField } from "@/components/input-fields";
+import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField, SpecificationInputField } from "@/components/input-fields";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createProductFn } from "@/services/productsApi";
 import { useStore } from "@/hooks";
@@ -26,8 +26,10 @@ const createProductSchema = object({
     .min(2).max(128),
   title: string({ required_error: "Brand is required" })
     .min(2).max(128),
-  specification: string({ required_error: "Brand is required" })
-    .min(2).max(5000),
+  specification: object({
+    name: string({ required_error: "Specification name is required" }),
+    value: string({ required_error: "Specification value is required" }),
+  }).array(),
   overview: string({ required_error: "Brand is required" })
     .min(2).max(5000),
   features: string({ required_error: "Features is required" })
@@ -183,7 +185,8 @@ export function CreateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <EditorInputField fieldName="specification" />
+              {/* <EditorInputField fieldName="specification" /> */}
+              <SpecificationInputField />
               <CatgoryMultiInputField />
             </Box>
           </Grid>

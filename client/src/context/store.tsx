@@ -50,6 +50,7 @@ export type Store = {
     include?: {
       likedUsers?: boolean,
       brand?: boolean,
+      specification?: boolean,
       categories?: {
         include?: {
           category?: boolean,
@@ -197,10 +198,11 @@ const initialState: Store = {
     limit: 10,
     mode: "default",
     include: {
+      specification: true,
       brand: true,
       categories: {
         include: {
-          category: true
+          category: true,
         }
       },
       salesCategory: {
