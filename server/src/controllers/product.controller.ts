@@ -293,15 +293,30 @@ export async function updateProductHandler(
       status
     } = req.body
 
+    // remove association data: productCategory
     await db.productCategory.deleteMany({
       where: {
         productId,
       }
     })
 
+    // remove association data: productSalesCategory
     await db.productSalesCategory.deleteMany({
       where: {
         productId,
+      }
+    })
+
+    // TODO: relation bug
+    // disconnect and remove specifications
+    await db.product.update({
+      where: {
+        id: productId
+      },
+      data: {
+        specification: {
+          disconnect: categories.map(id => ({ id }))
+        }
       }
     })
 
@@ -311,6 +326,7 @@ export async function updateProductHandler(
       }
     })
 
+    // UPDATE PRODUCT
     const product = await db.product.update({
       where: {
         id: productId
