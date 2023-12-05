@@ -1,10 +1,18 @@
 import { PageTitle } from "@/components";
 import { UpdateExchangeForm } from "@/components/content/exchanges/forms";
+import { usePermission } from "@/hooks";
+import { getExchangePermissionsFn } from "@/services/permissionsApi";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
 
 export default function UpdateExchange() {
+  const isAllowedUpdateExchange = usePermission({
+    key: "exchange-permissions",
+    actions: "update",
+    queryFn: getExchangePermissionsFn
+  })
+
   return (
     <>
       <PageTitle>
@@ -27,17 +35,20 @@ export default function UpdateExchange() {
         </Grid>
       </PageTitle>
 
-      <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <UpdateExchangeForm />
-              </CardContent>
-            </Card>
+      {isAllowedUpdateExchange
+      ? <Container maxWidth="lg">
+          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+            <Grid item xs={12} md={8}>
+              <Card>
+                <CardContent>
+                  <UpdateExchangeForm />
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      : null}
+      
     </>
   )
 }

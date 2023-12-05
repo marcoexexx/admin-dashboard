@@ -1,10 +1,18 @@
 import { PageTitle } from "@/components";
 import { CreateExchangeForm } from "@/components/content/exchanges/forms";
+import { usePermission } from "@/hooks";
+import { getExchangePermissionsFn } from "@/services/permissionsApi";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
 
 export default function CreateExchange() {
+  const isAllowedCreateExchange = usePermission({
+    key: "exchange-permissions",
+    actions: "create",
+    queryFn: getExchangePermissionsFn
+  })
+
   return (
     <>
       <PageTitle>
@@ -27,17 +35,20 @@ export default function CreateExchange() {
         </Grid>
       </PageTitle>
 
-      <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <CreateExchangeForm />
-              </CardContent>
-            </Card>
+      {isAllowedCreateExchange
+      ? <Container maxWidth="lg">
+          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+            <Grid item xs={12} md={8}>
+              <Card>
+                <CardContent>
+                  <CreateExchangeForm />
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      : null}
+      
     </>
   )
 }

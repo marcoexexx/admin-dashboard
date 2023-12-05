@@ -5,12 +5,13 @@ import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { FormModal } from "@/components/forms";
-import { useStore } from "@/hooks";
+import { usePermission, useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
 import { CreateExchangeInput } from "./forms";
 import { exportToExcel } from "@/libs/exportToExcel";
 import { ExchangesActions } from ".";
 import { useNavigate } from "react-router-dom";
+import { getExchangePermissionsFn } from "@/services/permissionsApi";
 
 
 
@@ -124,6 +125,18 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
     })
   }
 
+  const isAllowedUpdateExchange = usePermission({
+    key: "exchange-permissions",
+    actions: "update",
+    queryFn: getExchangePermissionsFn
+  })
+
+  const isAllowedDeleteExchange = usePermission({
+    key: "exchange-permissions",
+    actions: "delete",
+    queryFn: getExchangePermissionsFn
+  })
+
   const selectedAllRows = selectedRows.length === exchanges.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < exchanges.length
@@ -133,6 +146,7 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
           field="delete-exchange-multi"
+          isAllowedDelete={isAllowedDeleteExchange}
           onDelete={() => onMultiDelete(selectedRows)}
         />
       </Box>}
@@ -200,36 +214,42 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
                 })}
 
                 <TableCell align="right">
-                  <Tooltip title="Edit Product" arrow>
-                    <IconButton
-                      sx={{
-                        '&:hover': {
-                          background: theme.colors.primary.lighter
-                        },
-                        color: theme.palette.primary.main
-                      }}
-                      onClick={handleClickUpdateAction(row.id)}
-                      color="inherit"
-                      size="small"
-                    >
-                      <EditTwoToneIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete Product" arrow>
-                    <IconButton
-                      sx={{
-                        '&:hover': {
-                          background: theme.colors.error.lighter
-                        },
-                        color: theme.palette.error.main
-                      }}
-                      onClick={handleClickDeleteAction(row.id)}
-                      color="inherit"
-                      size="small"
-                    >
-                      <DeleteTwoToneIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+                  {isAllowedUpdateExchange
+                  ? <Tooltip title="Edit Product" arrow>
+                      <IconButton
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.primary.lighter
+                          },
+                          color: theme.palette.primary.main
+                        }}
+                        onClick={handleClickUpdateAction(row.id)}
+                        color="inherit"
+                        size="small"
+                      >
+                        <EditTwoToneIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  : null}
+                  
+                  {isAllowedDeleteExchange
+                  ? <Tooltip title="Delete Product" arrow>
+                      <IconButton
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.error.lighter
+                          },
+                          color: theme.palette.error.main
+                        }}
+                        onClick={handleClickDeleteAction(row.id)}
+                        color="inherit"
+                        size="small"
+                      >
+                        <DeleteTwoToneIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  : null}
+                  
                 </TableCell>
               </TableRow>
             })}
