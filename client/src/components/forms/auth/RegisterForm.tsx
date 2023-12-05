@@ -1,34 +1,13 @@
 import { registerUserFn } from "@/services/authApi"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Stack, TextField, styled } from "@mui/material"
+import { Button, Stack } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
-import { SubmitHandler, useForm } from "react-hook-form"
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
 import { object, string, z } from "zod"
 import { useStore } from "@/hooks"
-import { useLocation, useNavigate } from "react-router-dom"
-
-const MuiTextFieldWrapper = styled(TextField)(({theme}) => ({
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      borderColor: theme.colors.alpha.white[70],
-    },
-    '&:hover fieldset': {
-      borderColor: theme.colors.alpha.white[70],
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: theme.colors.alpha.white[100],
-    },
-  },
-
-  '& .MuiInputLabel-root': {
-    color: theme.colors.alpha.white[70],
-  },
-
-  '& .MuiInputBase-input': {
-    color: theme.colors.alpha.white[100],
-  }
-}))
-
+import { useNavigate } from "react-router-dom"
+import { MuiTextFieldWrapper } from "."
+import { PasswordInputField } from "@/components/input-fields"
 
 const registerUserSchema = object({
   name: string({ required_error: "Username is required" })
@@ -51,8 +30,7 @@ export type RegisterUserInput = z.infer<typeof registerUserSchema>
 export function RegisterForm() {
   const { dispatch } = useStore()
   const navigate = useNavigate()
-  const location = useLocation()
-  const from = location.pathname || "/auth/login"
+  const from = "/auth/login"
 
   const { mutate } = useMutation({
     mutationFn: registerUserFn,
@@ -71,9 +49,11 @@ export function RegisterForm() {
     }
   })
 
-  const { handleSubmit, register, formState: { errors } } = useForm<RegisterUserInput>({
+  const methods = useForm<RegisterUserInput>({
     resolver: zodResolver(registerUserSchema)
   })
+
+  const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<RegisterUserInput> = (value) => {
     mutate(value)
@@ -81,12 +61,14 @@ export function RegisterForm() {
 
   return (
     <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={handleSubmit(onSubmit)}>
-      <MuiTextFieldWrapper {...register("name")} label="Username" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
-      <MuiTextFieldWrapper {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
-      <MuiTextFieldWrapper {...register("password")} label="Password" error={!!errors.password} helperText={!!errors.password ? errors.password.message : ""} />
-      <MuiTextFieldWrapper {...register("passwordConfirm")} label="Password confirm" error={!!errors.passwordConfirm} helperText={!!errors.passwordConfirm ? errors.passwordConfirm.message : ""} />
+      <FormProvider {...methods}>
+        <MuiTextFieldWrapper {...register("name")} label="Username" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
+        <MuiTextFieldWrapper {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
+        <PasswordInputField fieldName="password" />
+        <PasswordInputField fieldName="passwordConfirm" />
 
-      <Button variant="contained" fullWidth type="submit">Sign Up</Button>
+        <Button variant="contained" fullWidth type="submit">Sign Up</Button>
+      </FormProvider>
     </Stack>
   )
 }

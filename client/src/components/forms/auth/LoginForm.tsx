@@ -7,9 +7,10 @@ import { useStore } from "@/hooks"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useCookies } from "react-cookie"
 import { useEffect } from "react"
-import { SubmitHandler, useForm } from "react-hook-form"
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
+import { PasswordInputField } from "@/components/input-fields"
 
-const MuiTextFieldWrapper = styled(TextField)(({theme}) => ({
+export const MuiTextFieldWrapper = styled(TextField)(({theme}) => ({
   '& .MuiOutlinedInput-root': {
     '& fieldset': {
       borderColor: theme.colors.alpha.white[70],
@@ -69,9 +70,11 @@ export function LoginForm() {
     }
   })
 
-  const { handleSubmit, register, formState: {errors} } = useForm<LoginUserInput>({
+  const methods = useForm<LoginUserInput>({
     resolver: zodResolver(loginUserSchema)
   })
+
+  const { handleSubmit, register, formState: {errors} } = methods
 
   const onSubmit: SubmitHandler<LoginUserInput> = (value) => {
     mutate(value)
@@ -79,10 +82,12 @@ export function LoginForm() {
 
   return (
     <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={handleSubmit(onSubmit)}>
-      <MuiTextFieldWrapper {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
-      <MuiTextFieldWrapper {...register("password")} label="Password" error={!!errors.password} helperText={!!errors.password ? errors.password.message : ""} />
+      <FormProvider {...methods}>
+        <MuiTextFieldWrapper {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
+        <PasswordInputField fieldName="password" />
 
-      <Button variant="contained" fullWidth type="submit">Login</Button>
+        <Button variant="contained" fullWidth type="submit">Login</Button>
+      </FormProvider>
     </Stack>
   )
 }

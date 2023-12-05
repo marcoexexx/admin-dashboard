@@ -1,13 +1,12 @@
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { useState } from "react"
-import { BulkActions } from "@/components";
+import { Box, Card, CardContent, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 import { exportToExcel } from "@/libs/exportToExcel";
-import { useStore } from "@/hooks";
+import { usePermission, useStore } from "@/hooks";
 
 import { useNavigate } from "react-router-dom";
 import { UsersActions } from ".";
+import { getUserPermissionsFn } from "@/services/permissionsApi";
 
 
 const columnData: TableColumnHeader<IUser>[] = [
@@ -34,32 +33,16 @@ const columnHeader = columnData.concat([
 interface UsersListTableProps {
   users: IUser[]
   count: number
+  me: IUser
 }
 
 export function UsersListTable(props: UsersListTableProps) {
-  const { users, count } = props
+  const { users, count, me } = props
 
   const navigate = useNavigate()
 
   const theme = useTheme()
   const { state: {brandFilter}, dispatch } = useStore()
-
-  const [selectedRows, setSellectedRows] = useState<string[]>([])
-
-  const selectedBulkActions = selectedRows.length > 0
-
-  const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked } = evt.target
-    setSellectedRows(checked
-      ? users.map(e => e.id)
-      : []
-    )
-  }
-
-  const handleSelectOne = (id: string) => (_: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedRows.includes(id)) setSellectedRows(prev => ([ ...prev, id ]))
-    else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
-  }
 
   const handleClickUpdateAction = (userId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate(`/users/change-role/${userId}`)
@@ -87,21 +70,14 @@ export function UsersListTable(props: UsersListTableProps) {
     })
   }
 
-  const selectedAllRows = selectedRows.length === users.length
-  const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < users.length
+  const isAllowedUpdateUser = usePermission({
+    key: "user-permissions",
+    actions: "update",
+    queryFn: getUserPermissionsFn
+  })
 
   return (
     <Card>
-      {selectedBulkActions && <Box flex={1} p={2}>
-        <BulkActions
-          field="delete-brand-multi"
-          onDelete={() => {}}
-        />
-      </Box>}
-
-      <Divider />
-
       <CardContent>
         <UsersActions onExport={handleOnExport} />
       </CardContent>
@@ -110,14 +86,6 @@ export function UsersListTable(props: UsersListTableProps) {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  color="primary"
-                  checked={selectedAllRows}
-                  indeterminate={selectedSomeRows}
-                  onChange={handleSelectAll}
-                />
-              </TableCell>
               {columnHeader.map(header => (
                 <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
               ))}
@@ -126,49 +94,48 @@ export function UsersListTable(props: UsersListTableProps) {
 
           <TableBody>
             {users.map(row => {
-              const isSelected = selectedRows.includes(row.id)
               return <TableRow
                 hover
                 key={row.id}
-                selected={isSelected}
               >
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    color="primary"
-                    checked={isSelected}
-                    onChange={handleSelectOne(row.id)}
-                    value={isSelected}
-                  />
-                </TableCell>
+                {columnData.map(col => {
+                  const key = col.id as keyof typeof row
 
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {row[col.id as keyof typeof row] as string}
-                  </Typography>
-                </TableCell>)}
+                  return (
+                    <TableCell align={col.align} key={col.id}>
+                      <Typography
+                        variant="body1"
+                        fontWeight="normal"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {key === "name" && me.id === row.id
+                        ? <a href={"/me/profile/"+row.id}>{row[key]}</a>
+                        : row[key] as string}
+                      </Typography>
+                    </TableCell>
+                  )
+                })}
 
                 <TableCell align="right">
-                  <Tooltip title="Change Role" arrow>
-                    <IconButton
-                      sx={{
-                        '&:hover': {
-                          background: theme.colors.primary.lighter
-                        },
-                        color: theme.palette.primary.main
-                      }}
-                      onClick={handleClickUpdateAction(row.id)}
-                      color="inherit"
-                      size="small"
-                    >
-                      <AdminPanelSettingsIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+                  {isAllowedUpdateUser
+                  ? <Tooltip title="Change Role" arrow>
+                      <IconButton
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.primary.lighter
+                          },
+                          color: theme.palette.primary.main
+                        }}
+                        onClick={handleClickUpdateAction(row.id)}
+                        color="inherit"
+                        size="small"
+                      >
+                        <AdminPanelSettingsIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  : null}
                 </TableCell>
               </TableRow>
             })}

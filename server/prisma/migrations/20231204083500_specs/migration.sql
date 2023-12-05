@@ -14,7 +14,7 @@ CREATE TYPE "InstockStatus" AS ENUM ('InStock', 'OutOfStock', 'AskForStock');
 CREATE TYPE "ProductType" AS ENUM ('Switch', 'Accessory', 'Router', 'Wifi');
 
 -- CreateEnum
-CREATE TYPE "PriceUnit" AS ENUM ('MMK', 'USD', 'SGD');
+CREATE TYPE "PriceUnit" AS ENUM ('MMK', 'USD', 'SGD', 'THB', 'KRW');
 
 -- CreateTable
 CREATE TABLE "Exchange" (
@@ -22,6 +22,7 @@ CREATE TABLE "Exchange" (
     "from" "PriceUnit" NOT NULL,
     "to" "PriceUnit" NOT NULL,
     "rate" DOUBLE PRECISION NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -33,6 +34,7 @@ CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'User',
     "image" TEXT NOT NULL DEFAULT 'default_pp.png',
@@ -105,7 +107,6 @@ CREATE TABLE "Product" (
     "title" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "images" TEXT[],
-    "specification" TEXT NOT NULL,
     "overview" TEXT NOT NULL,
     "features" TEXT NOT NULL,
     "warranty" INTEGER NOT NULL,
@@ -116,13 +117,25 @@ CREATE TABLE "Product" (
     "dealerPrice" INTEGER NOT NULL,
     "marketPrice" INTEGER NOT NULL,
     "discount" INTEGER NOT NULL,
-    "status" "Status" NOT NULL,
-    "priceUnit" "PriceUnit" NOT NULL,
+    "status" "Status" NOT NULL DEFAULT 'Draft',
+    "priceUnit" "PriceUnit" NOT NULL DEFAULT 'MMK',
     "quantity" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Specification" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Specification_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -138,6 +151,9 @@ CREATE TABLE "Review" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE INDEX "User_email_idx" ON "User"("email");
@@ -171,6 +187,9 @@ ALTER TABLE "ProductCategory" ADD CONSTRAINT "ProductCategory_categoryId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "Brand"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Specification" ADD CONSTRAINT "Specification_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

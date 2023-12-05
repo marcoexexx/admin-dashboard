@@ -3,8 +3,22 @@ import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { Link } from 'react-router-dom'
 import { Button, Container, Grid, Typography } from "@mui/material"
 import { BrandsList } from "@/components/content/brands";
+import { usePermission } from "@/hooks";
+import { getBrandPermissionsFn } from "@/services/permissionsApi";
 
 export default function ListBrand() {
+  const isAllowedReactBrand = usePermission({
+    key: "brand-permissions",
+    actions: "read",
+    queryFn: getBrandPermissionsFn
+  })
+
+  const isAllowedCreateBrand = usePermission({
+    key: "brand-permissions",
+    actions: "create",
+    queryFn: getBrandPermissionsFn
+  })
+
   return (
     <>
       <PageTitle>
@@ -17,25 +31,29 @@ export default function ListBrand() {
             </Typography>
           </Grid>
 
-          <Grid item>
-            <Button
-              sx={{ mt: { xs: 2, md: 0 } }}
-              variant="contained"
-              startIcon={<AddTwoToneIcon fontSize="small" />}
-              component={Link}
-              to="/brands/create"
-            >Create new brand</Button>
-          </Grid>
+          {isAllowedCreateBrand
+          ? <Grid item>
+              <Button
+                sx={{ mt: { xs: 2, md: 0 } }}
+                variant="contained"
+                startIcon={<AddTwoToneIcon fontSize="small" />}
+                component={Link}
+                to="/brands/create"
+              >Create new brand</Button>
+            </Grid>
+          : null}
         </Grid>
       </PageTitle>
 
-      <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12}>
-            <BrandsList />
+      {isAllowedReactBrand
+      ?  <Container maxWidth="lg">
+          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+            <Grid item xs={12}>
+              <BrandsList />
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      : null}
     </>
   )
 }

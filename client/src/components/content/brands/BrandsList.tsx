@@ -88,7 +88,7 @@ export function BrandsList() {
   })
 
 
-  if (!data && isError || error) return <h1>ERROR: {JSON.stringify(error)}</h1>
+  if (isError && error) return <h1>ERROR: {JSON.stringify(error)}</h1>
 
   if (!data || isLoading) return <SuspenseLoader />
 

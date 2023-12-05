@@ -467,7 +467,6 @@ export function SlidebarMenu() {
                   </ListItem>
                 </List>
               </Collapse>
-
             </List>
           </SubMenuWrapper>
         </List>

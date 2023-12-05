@@ -3,8 +3,22 @@ import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { Link } from 'react-router-dom'
 import { Button, Container, Grid, Typography } from "@mui/material"
 import { ProductsList } from "@/components/content/products";
+import { usePermission } from "@/hooks";
+import { getProductPermissionsFn } from "@/services/permissionsApi";
 
 export default function ListProduct() {
+  const isAllowedCreateProduct = usePermission({
+    key: "product-permissions",
+    actions: "create",
+    queryFn: getProductPermissionsFn
+  })
+
+  const isAllowedReadProduct = usePermission({
+    key: "product-permissions",
+    actions: "read",
+    queryFn: getProductPermissionsFn
+  })
+
   return (
     <>
       <PageTitle>
@@ -17,25 +31,29 @@ export default function ListProduct() {
             </Typography>
           </Grid>
 
-          <Grid item>
-            <Button
-              sx={{ mt: { xs: 2, md: 0 } }}
-              variant="contained"
-              startIcon={<AddTwoToneIcon fontSize="small" />}
-              component={Link}
-              to="/products/create"
-            >Create new product</Button>
-          </Grid>
+          {isAllowedCreateProduct
+          ? <Grid item>
+              <Button
+                sx={{ mt: { xs: 2, md: 0 } }}
+                variant="contained"
+                startIcon={<AddTwoToneIcon fontSize="small" />}
+                component={Link}
+                to="/products/create"
+              >Create new product</Button>
+            </Grid>
+          : null}
         </Grid>
       </PageTitle>
 
-      <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12}>
-            <ProductsList />
+      {isAllowedReadProduct
+      ? <Container maxWidth="lg">
+          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+            <Grid item xs={12}>
+              <ProductsList />
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      : null}
     </>
   )
 }

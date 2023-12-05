@@ -159,6 +159,7 @@ type PermissionsResponse = {
     updateAllowedRoles: Role[],
     deleteAllowedRoles: Role[]
   }
+  label: string
 }
 
 
