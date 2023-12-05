@@ -24,7 +24,7 @@ export async function getCategoryFn(opt: QueryOptionArgs, { categoryId }: { cate
 
 
 export async function createCategoryFn(category: CreateCategoryInput) {
-  const { data } = await authApi.post<BrandResponse>("/categories", category)
+  const { data } = await authApi.post<CategoryResponse>("/categories", category)
   return data
 }
 

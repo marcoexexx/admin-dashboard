@@ -41,6 +41,7 @@ const UpdateCategoryPage = Loader(lazy(() => import("@/pages/categories/UpdateCa
 // sales categories
 const ListSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategories/ListSalesCategory")))
 const CreateSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategories/CreateSalesCategory")))
+const UpdateSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategories/UpdateSalesCategory")))
 
 
 const routes = createBrowserRouter([
@@ -185,7 +186,17 @@ const routes = createBrowserRouter([
                     Component: CreateSalesCategoryPage
                   }
                 ]
-              }
+              },
+              {
+                path: "update/:salesCategoryId",
+                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                children: [
+                  {
+                    path: "",
+                    Component: UpdateSalesCategoryPage
+                  }
+                ]
+              },
             ]
           },
 

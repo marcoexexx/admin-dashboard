@@ -3,13 +3,13 @@ import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CreateCategoryInput, CreateMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
+import { CategoryFilterPagination, CreateCategoryInput, CreateMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { convertNumericStrings } from "../utils/convertNumber";
 
 
 export async function getCategoriesHandler(
-  req: Request,
+  req: Request<{}, {}, {}, CategoryFilterPagination>,
   res: Response,
   next: NextFunction
 ) {

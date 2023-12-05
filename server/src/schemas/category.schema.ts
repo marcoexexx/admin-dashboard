@@ -1,4 +1,14 @@
 import { object, string, z } from "zod";
+import { Pagination } from "./types";
+import { CreateBrandInput } from "./brand.schema";
+
+export type CategoryFilterPagination = {
+  filter?: any,
+  pagination?: Pagination,
+  orderBy?: Record<
+    keyof CreateBrandInput | "createdAt" | "updatedAt", 
+    "asc" | "desc">
+}
 
 const params = {
   params: object({

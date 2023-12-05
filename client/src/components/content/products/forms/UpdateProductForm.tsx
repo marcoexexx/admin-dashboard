@@ -12,9 +12,9 @@ import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
 import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
-import { CreateSalesCategoryForm } from "../../sales-categories";
 import { getExchangesFn } from "@/services/exchangesApi";
 import { useEffect } from "react";
+import { CreateSalesCategoryForm } from "../../sales-categories/forms";
 
 const productTypes = ["Switch", "Accessory", "Router", "Wifi"]
 const instockStatus = ["InStock", "OutOfStock", "AskForStock"]

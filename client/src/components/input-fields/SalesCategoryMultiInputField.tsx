@@ -27,7 +27,13 @@ export function SalesCategoryMultiInputField() {
     error
   } = useQuery({
     queryKey: ["sales-categories"],
-    queryFn: args => getSalesCategoriesFn(args, { filter: {} }),
+    queryFn: args => getSalesCategoriesFn(args, { 
+      filter: {},
+      pagination: {
+        page: 1,
+        pageSize: 100 * 1000
+      }
+    }),
     select: data => data.results
   })
 

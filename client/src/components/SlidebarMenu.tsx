@@ -13,6 +13,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CategoryIcon from '@mui/icons-material/Category';
+import SellIcon from '@mui/icons-material/Sell';
 
 
 const DotWrapper = styled(Box)(({theme}) => ({
@@ -341,6 +342,48 @@ export function SlidebarMenu() {
                 </List>
               </Collapse>
 
+              {/* Brand Menues */}
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  onClick={handleToggleExpandMenu("brands")}
+                  startIcon={<SellIcon />}
+                  endIcon={getStateCurrentExpandMenu("brands")
+                    ? <ExpandLessIcon />
+                    : <ExpandMoreIcon />
+                  }
+                >
+                  Brands
+                </Button>
+              </ListItem>
+
+              <Collapse in={getStateCurrentExpandMenu("brands")}>
+                <List component="div" disablePadding>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      onClick={handleCloseSlidebar}
+                      component={Link}
+                      to="/brands/list"
+                    >
+                      <DotWrapper />
+                      List
+                    </Button>
+                  </ListItem>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={Link}
+                      onClick={handleCloseSlidebar}
+                      to="/brands/create"
+                    >
+                      <DotWrapper />
+                      Create
+                    </Button>
+                  </ListItem>
+                </List>
+              </Collapse>
+
               {/* Categories Menues */}
               <ListItem component="div">
                 <Button
@@ -383,29 +426,29 @@ export function SlidebarMenu() {
                 </List>
               </Collapse>
 
-              {/* Brand Menues */}
+              {/* Sales categories Menues */}
               <ListItem component="div">
                 <Button
                   disableRipple
-                  onClick={handleToggleExpandMenu("brands")}
+                  onClick={handleToggleExpandMenu("sales-categories")}
                   startIcon={<LoyaltyIcon />}
-                  endIcon={getStateCurrentExpandMenu("brands")
+                  endIcon={getStateCurrentExpandMenu("sales-categories")
                     ? <ExpandLessIcon />
                     : <ExpandMoreIcon />
                   }
                 >
-                  Brands
+                  Sales categories
                 </Button>
               </ListItem>
 
-              <Collapse in={getStateCurrentExpandMenu("brands")}>
+              <Collapse in={getStateCurrentExpandMenu("sales-categories")}>
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <Button
                       disableRipple
                       onClick={handleCloseSlidebar}
                       component={Link}
-                      to="/brands/list"
+                      to="/sales-categories/list"
                     >
                       <DotWrapper />
                       List
@@ -416,7 +459,7 @@ export function SlidebarMenu() {
                       disableRipple
                       component={Link}
                       onClick={handleCloseSlidebar}
-                      to="/brands/create"
+                      to="/sales-categories/create"
                     >
                       <DotWrapper />
                       Create
