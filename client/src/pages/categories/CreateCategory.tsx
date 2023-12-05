@@ -1,10 +1,18 @@
-import { PageTitle, UploadProductImage } from "@/components";
+import { PageTitle } from "@/components";
 import { CreateCategoryForm } from "@/components/content/categories/forms";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import { usePermission } from "@/hooks";
+import { getCategoryPermissionsFn } from "@/services/permissionsApi";
 
 export default function CreateCategory() {
+  const isAllowedCreateCategory = usePermission({
+    key: "category-permissions",
+    actions: "create",
+    queryFn: getCategoryPermissionsFn
+  })
+
   return (
     <>
       <PageTitle>
@@ -27,25 +35,28 @@ export default function CreateCategory() {
         </Grid>
       </PageTitle>
 
-      <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <UploadProductImage />
-              </CardContent>
-            </Card>
-          </Grid>
+      {isAllowedCreateCategory
+      ? <Container maxWidth="lg">
+          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+            {/* <Grid item xs={12} md={4}> */}
+            {/*   <Card> */}
+            {/*     <CardContent> */}
+            {/*       <UploadProductImage /> */}
+            {/*     </CardContent> */}
+            {/*   </Card> */}
+            {/* </Grid> */}
 
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <CreateCategoryForm />
-              </CardContent>
-            </Card>
+            <Grid item xs={12} md={8}>
+              <Card>
+                <CardContent>
+                  <CreateCategoryForm />
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      : null}
+      
     </>
   )
 }

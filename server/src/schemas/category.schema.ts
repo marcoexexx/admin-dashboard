@@ -12,10 +12,26 @@ export const createCategorySchema = object({
   })
 })
 
+export const createMultiCategoriesSchema = object({
+  body: object({
+    name: string({ required_error: "Category name is required" })
+  }).array()
+})
+
 export const getCategorySchema = object({
   ...params
 })
 
+export const updateCategorySchema = object({
+  ...params,
+  body: object({
+    name: string({ required_error: "Name is required" })
+      .min(0).max(128)
+  })
+})
+
 
 export type GetCategoryInput = z.infer<typeof getCategorySchema>
+export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>["body"]
+export type CreateMultiCategoriesInput = z.infer<typeof createMultiCategoriesSchema>["body"]

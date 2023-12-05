@@ -7,7 +7,7 @@ import { usePermission } from "@/hooks";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
 
 export default function ListBrand() {
-  const isAllowedReactBrand = usePermission({
+  const isAllowedReadBrand = usePermission({
     key: "brand-permissions",
     actions: "read",
     queryFn: getBrandPermissionsFn
@@ -45,7 +45,7 @@ export default function ListBrand() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReactBrand
+      {isAllowedReadBrand
       ?  <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>

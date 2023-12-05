@@ -213,6 +213,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
           field="delete-product-multi"
+          isAllowedDelete={isAllowedDeleteProduct}
           onDelete={() => onMultiDelete(selectedRows)}
         />
       </Box>}

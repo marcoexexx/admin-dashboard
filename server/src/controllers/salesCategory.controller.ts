@@ -60,7 +60,7 @@ export async function createSalesCategoryHandler(
       data: { name },
     })
 
-    res.status(200).json(HttpDataResponse({ category }))
+    res.status(201).json(HttpDataResponse({ category }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

@@ -9,13 +9,13 @@ import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
 
-import { CreateBrandInput } from "./forms";
-import { BrandsActions } from ".";
+import { CategoriesActions } from ".";
 import { useNavigate } from "react-router-dom";
-import { getBrandPermissionsFn } from "@/services/permissionsApi";
+import { getCategoryPermissionsFn } from "@/services/permissionsApi";
+import { CreateCategoryInput } from "./forms";
 
 
-const columnData: TableColumnHeader<IBrand>[] = [
+const columnData: TableColumnHeader<ICategory>[] = [
   {
     id: "name",
     align: "left",
@@ -31,23 +31,23 @@ const columnHeader = columnData.concat([
   }
 ])
 
-interface BrandsListTableProps {
-  brands: IBrand[]
+interface CategoriesListTableProps {
+  categories: ICategory[]
   count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyBrands: (data: CreateBrandInput[]) => void
+  onCreateManyCategories: (data: CreateCategoryInput[]) => void
 }
 
-export function BrandsListTable(props: BrandsListTableProps) {
-  const { brands, count, onCreateManyBrands, onDelete, onMultiDelete } = props
+export function CategoriesListTable(props: CategoriesListTableProps) {
+  const { categories, count, onCreateManyCategories, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
   const navigate = useNavigate()
 
   const theme = useTheme()
-  const { state: {brandFilter, modalForm}, dispatch } = useStore()
+  const { state: {categoryFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -56,7 +56,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
   const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = evt.target
     setSellectedRows(checked
-      ? brands.map(e => e.id)
+      ? categories.map(e => e.id)
       : []
     )
   }
@@ -66,29 +66,29 @@ export function BrandsListTable(props: BrandsListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handleClickDeleteAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteId(brandId)
+  const handleClickDeleteAction = (categoryId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    setDeleteId(categoryId)
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: "delete-brand"
+      payload: "delete-category"
     })
   }
 
-  const handleClickUpdateAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/brands/update/${brandId}`)
+  const handleClickUpdateAction = (categoryId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/categories/update/${categoryId}`)
   }
 
   const handleOnExport = () => {
-    exportToExcel(brands, "Brands")
+    exportToExcel(categories, "Categories")
   }
 
-  const handleOnImport = (data: CreateBrandInput[]) => {
-    onCreateManyBrands(data)
+  const handleOnImport = (data: CreateCategoryInput[]) => {
+    onCreateManyCategories(data)
   }
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_BRAND_FILTER",
+      type: "SET_CATEGORY_FILTER",
       payload: {
         page: page += 1
       }
@@ -97,7 +97,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_BRAND_FILTER",
+      type: "SET_CATEGORY_FILTER",
       payload: {
         limit: parseInt(evt.target.value, 10)
       }
@@ -110,28 +110,28 @@ export function BrandsListTable(props: BrandsListTableProps) {
     })
   }
 
-  const isAllowedDeleteBrand = usePermission({
-    key: "brand-permissions",
+  const isAllowedDeleteCategory = usePermission({
+    key: "category-permissions",
     actions: "delete",
-    queryFn: getBrandPermissionsFn
+    queryFn: getCategoryPermissionsFn
   })
 
-  const isAllowedUpdateBrand = usePermission({
-    key: "brand-permissions",
+  const isAllowedUpdateCategory = usePermission({
+    key: "category-permissions",
     actions: "update",
-    queryFn: getBrandPermissionsFn
+    queryFn: getCategoryPermissionsFn
   })
 
-  const selectedAllRows = selectedRows.length === brands.length
+  const selectedAllRows = selectedRows.length === categories.length
   const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < brands.length
+    selectedRows.length < categories.length
 
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
-          field="delete-brand-multi"
-          isAllowedDelete={isAllowedDeleteBrand}
+          field="delete-category-multi"
+          isAllowedDelete={isAllowedDeleteCategory}
           onDelete={() => onMultiDelete(selectedRows)}
         />
       </Box>}
@@ -139,7 +139,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
       <Divider />
 
       <CardContent>
-        <BrandsActions onExport={handleOnExport} onImport={handleOnImport}  />
+        <CategoriesActions onExport={handleOnExport} onImport={handleOnImport}  />
       </CardContent>
 
       <TableContainer>
@@ -161,7 +161,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
           </TableHead>
 
           <TableBody>
-            {brands.map(row => {
+            {categories.map(row => {
               const isSelected = selectedRows.includes(row.id)
               return <TableRow
                 hover
@@ -190,7 +190,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
                 </TableCell>)}
 
                 <TableCell align="right">
-                  {isAllowedUpdateBrand
+                  {isAllowedUpdateCategory
                   ?  <Tooltip title="Edit Product" arrow>
                       <IconButton
                         sx={{
@@ -208,7 +208,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
                     </Tooltip>
                   : null}
 
-                  {isAllowedDeleteBrand
+                  {isAllowedDeleteCategory
                   ? <Tooltip title="Delete Product" arrow>
                       <IconButton
                         sx={{
@@ -238,18 +238,18 @@ export function BrandsListTable(props: BrandsListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={brandFilter?.page
-            ? brandFilter.page - 1
+          page={categoryFilter?.page
+            ? categoryFilter.page - 1
             : 0}
-          rowsPerPage={brandFilter?.limit || 10}
+          rowsPerPage={categoryFilter?.limit || 10}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>
 
-      {modalForm.field === "delete-brand"
+      {modalForm.field === "delete-category"
       ? <FormModal
-        field="delete-brand"
-        title="Delete brand"
+        field="delete-category"
+        title="Delete category"
         onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>

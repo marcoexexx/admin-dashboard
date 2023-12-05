@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { createCategoryFn } from "@/services/categoryApi";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
@@ -17,11 +17,10 @@ const createCategorySchema = object({
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>
 
 export function CreateCategoryForm() {
-  const { dispatch } = useStore()
+  const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const location = useLocation()
-  const from = location.pathname || "/categories"
+  const from = "/categories"
 
   const {
     mutate: createCategory,
@@ -32,7 +31,8 @@ export function CreateCategoryForm() {
         message: "Success created a new category.",
         severity: "success"
       } })
-      navigate(from)
+      if (modalForm.field === "*") navigate(from)
+      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
         queryKey: ["categories"]
       })

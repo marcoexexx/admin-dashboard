@@ -1,10 +1,18 @@
 import { PageTitle } from "@/components";
 import { CreateProductForm } from "@/components/content/products/forms";
+import { usePermission } from "@/hooks";
+import { getProductPermissionsFn } from "@/services/permissionsApi";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
 
 export default function CreateProduct() {
+  const isAllowedCreateProduct = usePermission({
+    key: "product-permissions",
+    actions: "create",
+    queryFn: getProductPermissionsFn
+  })
+
   return (
     <>
       <PageTitle>
@@ -27,22 +35,25 @@ export default function CreateProduct() {
         </Grid>
       </PageTitle>
 
-      <Container maxWidth="lg">
-        {/* <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}> */}
-        {/*   <Grid item xs={12} md={4}> */}
-        {/*     <Card> */}
-        {/*       <CardContent> */}
-        {/*         <UploadProductImage /> */}
-        {/*       </CardContent> */}
-        {/*     </Card> */}
-        {/*   </Grid> */}
+      {isAllowedCreateProduct
+      ? <Container maxWidth="lg">
+          {/* <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}> */}
+          {/*   <Grid item xs={12} md={4}> */}
+          {/*     <Card> */}
+          {/*       <CardContent> */}
+          {/*         <UploadProductImage /> */}
+          {/*       </CardContent> */}
+          {/*     </Card> */}
+          {/*   </Grid> */}
 
-        <Card>
-          <CardContent>
-            <CreateProductForm />
-          </CardContent>
-        </Card>
-      </Container>
+          <Card>
+            <CardContent>
+              <CreateProductForm />
+            </CardContent>
+          </Card>
+        </Container>
+      : null}
+      
     </>
   )
 }

@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { useStore } from "@/hooks"
 import { Box, Button, Collapse, List, ListItem, ListSubheader, alpha, styled } from "@mui/material"
 import { NavLink as Link } from 'react-router-dom'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import PeopleIcon from '@mui/icons-material/People';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -11,7 +12,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useState } from "react";
+import CategoryIcon from '@mui/icons-material/Category';
 
 
 const DotWrapper = styled(Box)(({theme}) => ({
@@ -354,6 +355,59 @@ export function SlidebarMenu() {
                       component={Link}
                       onClick={handleCloseSlidebar}
                       to="/products/view"
+                    >
+                      <DotWrapper />
+                      View
+                    </Button>
+                  </ListItem>
+                </List>
+              </Collapse>
+
+              {/* Categories Menues */}
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  onClick={handleToggleExpandMenu("categories")}
+                  startIcon={<CategoryIcon />}
+                  endIcon={getStateCurrentExpandMenu("categories")
+                    ? <ExpandLessIcon />
+                    : <ExpandMoreIcon />
+                  }
+                >
+                  Categories
+                </Button>
+              </ListItem>
+
+              <Collapse in={getStateCurrentExpandMenu("categories")}>
+                <List component="div" disablePadding>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      onClick={handleCloseSlidebar}
+                      component={Link}
+                      to="/categories/list"
+                    >
+                      <DotWrapper />
+                      List
+                    </Button>
+                  </ListItem>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={Link}
+                      onClick={handleCloseSlidebar}
+                      to="/categories/create"
+                    >
+                      <DotWrapper />
+                      Create
+                    </Button>
+                  </ListItem>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={Link}
+                      onClick={handleCloseSlidebar}
+                      to="/categories/view"
                     >
                       <DotWrapper />
                       View

@@ -22,7 +22,13 @@ export function CatgoryMultiInputField() {
     error
   } = useQuery({
     queryKey: ["categories"],
-    queryFn: args => getCategoriesFn(args, { filter: {} }),
+    queryFn: args => getCategoriesFn(args, { 
+      filter: {},
+      pagination: {
+        page: 1,
+        pageSize: 100 * 1000
+      }
+    }),
     select: data => data.results
   })
 
