@@ -36,6 +36,7 @@ interface IUser {
   name: string,
   email: string,
   password: string,
+  username: string,
   role: Role,
   image?: string,
   verified: boolean,

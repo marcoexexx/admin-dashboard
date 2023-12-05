@@ -33,7 +33,6 @@ export function CreateSalesCategoryForm() {
       } })
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      navigate(from)
       queryClient.invalidateQueries({
         queryKey: ["sales-categories"]
       })

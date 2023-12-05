@@ -86,6 +86,8 @@ export function UsersListTable(props: UsersListTableProps) {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell align="left">Image</TableCell>
+
               {columnHeader.map(header => (
                 <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
               ))}
@@ -98,6 +100,13 @@ export function UsersListTable(props: UsersListTableProps) {
                 hover
                 key={row.id}
               >
+                <TableCell align="left">
+                  <img 
+                    src={"/public/profile.png"}  // TODO: image upload
+                    alt={row.username} 
+                    height={60}
+                  />
+                </TableCell>
                 {columnData.map(col => {
                   const key = col.id as keyof typeof row
 
