@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { usePermission } from "@/hooks";
 import { getCategoryPermissionsFn } from "@/services/permissionsApi";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function CreateCategory() {
   const isAllowedCreateCategory = usePermission({
@@ -55,7 +56,7 @@ export default function CreateCategory() {
             </Grid>
           </Grid>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
       
     </>
   )

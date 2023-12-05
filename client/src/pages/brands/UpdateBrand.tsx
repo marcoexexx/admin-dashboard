@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { usePermission } from "@/hooks";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function UpdateBrand() {
   const isAllowedUpdateBrand = usePermission({
@@ -47,7 +48,7 @@ export default function UpdateBrand() {
             </Grid>
           </Grid>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
       
     </>
   )

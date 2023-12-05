@@ -5,6 +5,7 @@ import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { usePermission } from "@/hooks";
 import { getCategoryPermissionsFn } from "@/services/permissionsApi";
 import { UpdateCategoryForm } from "@/components/content/categories/forms";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function UpdateCategory() {
   const isAllowedUpdateCategory = usePermission({
@@ -47,7 +48,7 @@ export default function UpdateCategory() {
             </Grid>
           </Grid>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
       
     </>
   )

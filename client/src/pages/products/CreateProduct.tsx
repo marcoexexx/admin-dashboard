@@ -1,4 +1,5 @@
 import { PageTitle } from "@/components";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { CreateProductForm } from "@/components/content/products/forms";
 import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
@@ -52,7 +53,7 @@ export default function CreateProduct() {
             </CardContent>
           </Card>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
       
     </>
   )

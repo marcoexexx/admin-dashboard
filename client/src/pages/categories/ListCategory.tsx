@@ -5,6 +5,7 @@ import { usePermission } from "@/hooks";
 import { getCategoryPermissionsFn } from "@/services/permissionsApi";
 import { CategoriesList } from "@/components/content/categories";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function ListCategory() {
   const isAllowedCreateCategory = usePermission({
@@ -54,7 +55,7 @@ export default function ListCategory() {
             </Grid>
           </Grid>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
       
     </>
   )

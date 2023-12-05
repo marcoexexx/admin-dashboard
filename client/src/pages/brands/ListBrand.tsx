@@ -5,6 +5,7 @@ import { Button, Container, Grid, Typography } from "@mui/material"
 import { BrandsList } from "@/components/content/brands";
 import { usePermission } from "@/hooks";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function ListBrand() {
   const isAllowedReadBrand = usePermission({
@@ -53,7 +54,7 @@ export default function ListBrand() {
             </Grid>
           </Grid>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
     </>
   )
 }

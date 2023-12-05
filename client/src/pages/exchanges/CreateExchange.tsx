@@ -1,4 +1,5 @@
 import { PageTitle } from "@/components";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { CreateExchangeForm } from "@/components/content/exchanges/forms";
 import { usePermission } from "@/hooks";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
@@ -47,7 +48,7 @@ export default function CreateExchange() {
             </Grid>
           </Grid>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
       
     </>
   )

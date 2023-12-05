@@ -5,6 +5,7 @@ import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { ExchangesList } from "@/components/content/exchanges";
 import { usePermission } from "@/hooks";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function ListExchange() {
   const isAllowedReadExchange = usePermission({
@@ -54,7 +55,7 @@ export default function ListExchange() {
             </Grid>
           </Grid>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
       
     </>
   )

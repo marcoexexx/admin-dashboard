@@ -296,17 +296,6 @@ export function SlidebarMenu() {
                       Create
                     </Button>
                   </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/exchanges/view"
-                    >
-                      <DotWrapper />
-                      View
-                    </Button>
-                  </ListItem>
                 </List>
               </Collapse>
 
@@ -347,17 +336,6 @@ export function SlidebarMenu() {
                     >
                       <DotWrapper />
                       Create
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/products/view"
-                    >
-                      <DotWrapper />
-                      View
                     </Button>
                   </ListItem>
                 </List>
@@ -402,17 +380,6 @@ export function SlidebarMenu() {
                       Create
                     </Button>
                   </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/categories/view"
-                    >
-                      <DotWrapper />
-                      View
-                    </Button>
-                  </ListItem>
                 </List>
               </Collapse>
 
@@ -455,17 +422,6 @@ export function SlidebarMenu() {
                       Create
                     </Button>
                   </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/brands/view"
-                    >
-                      <DotWrapper />
-                      View
-                    </Button>
-                  </ListItem>
                 </List>
               </Collapse>
 
@@ -495,28 +451,6 @@ export function SlidebarMenu() {
                     >
                       <DotWrapper />
                       List
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/users/create"
-                    >
-                      <DotWrapper />
-                      Create
-                    </Button>
-                  </ListItem>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/brands/view"
-                    >
-                      <DotWrapper />
-                      View
                     </Button>
                   </ListItem>
                 </List>
