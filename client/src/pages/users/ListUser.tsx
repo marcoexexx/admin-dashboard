@@ -1,8 +1,16 @@
 import { PageTitle } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { UsersList } from "@/components/content/users";
+import { usePermission } from "@/hooks";
+import { getUserPermissionsFn } from "@/services/permissionsApi";
 
 export default function ListUser() {
+  const isAllowedReadUser = usePermission({
+    key: "user-permissions",
+    actions: "read",
+    queryFn: getUserPermissionsFn
+  })
+
   return (
     <>
       <PageTitle>
@@ -17,13 +25,15 @@ export default function ListUser() {
         </Grid>
       </PageTitle>
 
-      <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12}>
-            <UsersList />
+      {isAllowedReadUser
+      ? <Container maxWidth="lg">
+          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+            <Grid item xs={12}>
+              <UsersList />
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      : null}
     </>
   )
 }

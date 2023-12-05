@@ -1,4 +1,4 @@
-import { FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, styled, useTheme } from "@mui/material"
+import { FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, OutlinedInput, styled, useTheme } from "@mui/material"
 import { useState } from "react"
 import { Controller, useFormContext } from "react-hook-form"
 
@@ -73,7 +73,7 @@ export function PasswordInputField({fieldName}: {fieldName: "password" | "passwo
                 color: theme.colors.alpha.white[70]
               }}
             >
-              {errors[fieldName].message || ""}
+              {errors?.[fieldName]?.message as string || ""}
             </FormHelperText>
            : null}
         </FormControl>

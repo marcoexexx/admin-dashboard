@@ -83,7 +83,7 @@ export default function Register() {
               <RegisterForm />
 
               <TypographySecondary variant='h4' fontWeight="normal" sx={{ my: 2 }}>
-                Already have an account? <LinkWrapper component="a" onClick={() => navigate("/auth/login")}>Login</LinkWrapper>
+                Already have an account? <LinkWrapper onClick={() => navigate("/auth/login")}>Login</LinkWrapper>
               </TypographySecondary>
 
               <OAuthForm />

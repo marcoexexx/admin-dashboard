@@ -6,12 +6,13 @@ import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { FormModal } from "@/components/forms";
 import { exportToExcel } from "@/libs/exportToExcel";
-import { useStore } from "@/hooks";
+import { usePermission, useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
 
 import { CreateBrandInput } from "./forms";
 import { BrandsActions } from ".";
 import { useNavigate } from "react-router-dom";
+import { getBrandPermissionsFn } from "@/services/permissionsApi";
 
 
 const columnData: TableColumnHeader<IBrand>[] = [
@@ -109,6 +110,18 @@ export function BrandsListTable(props: BrandsListTableProps) {
     })
   }
 
+  const isAllowedDeleteBrand = usePermission({
+    key: "brand-permissions",
+    actions: "delete",
+    queryFn: getBrandPermissionsFn
+  })
+
+  const isAllowedUpdateBrand = usePermission({
+    key: "brand-permissions",
+    actions: "update",
+    queryFn: getBrandPermissionsFn
+  })
+
   const selectedAllRows = selectedRows.length === brands.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < brands.length
@@ -176,36 +189,41 @@ export function BrandsListTable(props: BrandsListTableProps) {
                 </TableCell>)}
 
                 <TableCell align="right">
-                  <Tooltip title="Edit Product" arrow>
-                    <IconButton
-                      sx={{
-                        '&:hover': {
-                          background: theme.colors.primary.lighter
-                        },
-                        color: theme.palette.primary.main
-                      }}
-                      color="inherit"
-                      size="small"
-                      onClick={handleClickUpdateAction(row.id)}
-                    >
-                      <EditTwoToneIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete Product" arrow>
-                    <IconButton
-                      sx={{
-                        '&:hover': {
-                          background: theme.colors.error.lighter
-                        },
-                        color: theme.palette.error.main
-                      }}
-                      onClick={handleClickDeleteAction(row.id)}
-                      color="inherit"
-                      size="small"
-                    >
-                      <DeleteTwoToneIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+                  {isAllowedUpdateBrand
+                  ?  <Tooltip title="Edit Product" arrow>
+                      <IconButton
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.primary.lighter
+                          },
+                          color: theme.palette.primary.main
+                        }}
+                        color="inherit"
+                        size="small"
+                        onClick={handleClickUpdateAction(row.id)}
+                      >
+                        <EditTwoToneIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  : null}
+
+                  {isAllowedDeleteBrand
+                  ? <Tooltip title="Delete Product" arrow>
+                      <IconButton
+                        sx={{
+                          '&:hover': {
+                            background: theme.colors.error.lighter
+                          },
+                          color: theme.palette.error.main
+                        }}
+                        onClick={handleClickDeleteAction(row.id)}
+                        color="inherit"
+                        size="small"
+                      >
+                        <DeleteTwoToneIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  : null}
                 </TableCell>
               </TableRow>
             })}

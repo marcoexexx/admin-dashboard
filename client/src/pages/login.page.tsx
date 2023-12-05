@@ -85,7 +85,7 @@ export default function Login() {
               <LoginForm />
 
               <TypographySecondary variant='h4' fontWeight="normal" sx={{ my: 2 }}>
-                Need an account? <LinkWrapper component="a" onClick={() => navigate("/auth/register")}>Create an account</LinkWrapper>
+                Need an account? <LinkWrapper onClick={() => navigate("/auth/register")}>Create an account</LinkWrapper>
               </TypographySecondary>
 
               <OAuthForm />

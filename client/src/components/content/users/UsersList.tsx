@@ -8,12 +8,12 @@ import { UsersListTable } from ".";
 export function UsersList() {
   const { state: {userFilter} } = useStore()
 
-  const { data: me, isMeError, isMeLoading, meError } = useQuery({
+  const { data: me, isError: isMeError, isLoading: isMeLoading, error: meError } = useQuery({
     queryKey: ["authUser"],
-    select: (data: IUser | undefined) => data.user,
+    select: (data: UserResponse) => data.user,
   })
 
-  const { data: users, isUsersError, isUsersLoading, usersError } = useQuery({
+  const { data: users, isError: isUsersError, isLoading: isUsersLoading, error: usersError } = useQuery({
     queryKey: ["users", { filter: userFilter } ],
     queryFn: args => getUsersFn(args, { 
       filter: userFilter?.fields,
@@ -30,7 +30,7 @@ export function UsersList() {
   const error = usersError || meError
 
 
-  if ((!users || !me) && isError || error) return <h1>ERROR: {error.message}</h1>
+  if (isError && error) return <h1>ERROR: {error.message}</h1>
 
   if ((!users || !me) || isLoading) return <SuspenseLoader />
 

@@ -1,4 +1,5 @@
 import { QueryFunction, useQuery } from "@tanstack/react-query"
+import { useStore } from "."
 
 
 type ExtractPerm<T extends string> = T extends `${infer P}-permissions` ? P : never
@@ -14,12 +15,13 @@ type PermissionKey =
 interface Args {
   key: PermissionKey,
   actions: "create" | "read" | "update" | "delete"
-  user: IUser | undefined,
   queryFn?: QueryFunction<PermissionsResponse, PermissionKey[], never> | undefined
 }
 
-export function usePermission({key, actions, user, queryFn}: Args) {
-  const role = user?.role || "User"
+export function usePermission({key, actions, queryFn}: Args) {
+  const { state: {user} } = useStore()
+
+  const role = user?.role || "*"
   const resource = key.split("-")[0] as ExtractPerm<PermissionKey>
 
   const {

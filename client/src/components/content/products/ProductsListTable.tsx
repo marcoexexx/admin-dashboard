@@ -98,7 +98,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
   const { products, count, onDelete, onMultiDelete, onCreateManyProducts, onPublished } = props
 
   const theme = useTheme()
-  const { state: {productFilter, modalForm, user}, dispatch } = useStore()
+  const { state: {productFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
   const [deleteId, setDeleteId] = useState("")
@@ -194,20 +194,18 @@ export function ProductsListTable(props: ProductsListTableProps) {
     selectedRows.length < products.length
 
 
-  const onlyAdminAccess = useOnlyAdmin(user)
+  const onlyAdminAccess = useOnlyAdmin()
 
   const isAllowedUpdateProduct = usePermission({
     key: "product-permissions",
     actions: "update",
     queryFn: getProductPermissionsFn,
-    user
   })
 
   const isAllowedDeleteProduct = usePermission({
     key: "product-permissions",
     actions: "update",
     queryFn: getProductPermissionsFn,
-    user
   })
 
   return (
