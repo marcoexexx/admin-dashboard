@@ -17,12 +17,12 @@ export function MiniAccessDenied() {
     <Container maxWidth="lg">
       <Grid container spacing={1} alignItems="center">
         <Grid item xs={16} md={6}>
-          <img
-            alt="access-denied-pic"
-            src="/static/access-denied.svg"
-            height={350}
-            width="auto"
-          />
+          <Box minWidth={300} maxWidth={430}>
+            <img
+              alt="access-denied-pic"
+              src="/static/access-denied.svg"
+            />
+          </Box>
         </Grid>
 
         <Grid item xs={12} md={6}>
