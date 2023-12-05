@@ -131,6 +131,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
           field="delete-brand-multi"
+          isAllowedDelete={isAllowedDeleteBrand}
           onDelete={() => onMultiDelete(selectedRows)}
         />
       </Box>}

@@ -5,9 +5,10 @@ import { Button, Container, Grid, Typography } from "@mui/material"
 import { BrandsList } from "@/components/content/brands";
 import { usePermission } from "@/hooks";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function ListBrand() {
-  const isAllowedReactBrand = usePermission({
+  const isAllowedReadBrand = usePermission({
     key: "brand-permissions",
     actions: "read",
     queryFn: getBrandPermissionsFn
@@ -45,7 +46,7 @@ export default function ListBrand() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReactBrand
+      {isAllowedReadBrand
       ?  <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>
@@ -53,7 +54,7 @@ export default function ListBrand() {
             </Grid>
           </Grid>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
     </>
   )
 }

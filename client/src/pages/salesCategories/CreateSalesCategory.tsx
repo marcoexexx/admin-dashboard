@@ -1,10 +1,19 @@
-import { PageTitle, UploadProductImage } from "@/components";
-import { CreateSalesCategoryForm } from "@/components/content/sales-categories";
+import { PageTitle } from "@/components";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import { CreateSalesCategoryForm } from "@/components/content/sales-categories/forms";
+import { usePermission } from "@/hooks";
+import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
 
 export default function CreateProduct() {
+  const isAllowedCreateSalesCategory = usePermission({
+    key: "sales-categor-permissions",
+    actions: "create",
+    queryFn: getSalesCategoryPermissionsFn
+  })
+
   return (
     <>
       <PageTitle>
@@ -27,25 +36,28 @@ export default function CreateProduct() {
         </Grid>
       </PageTitle>
 
-      <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <UploadProductImage />
-              </CardContent>
-            </Card>
-          </Grid>
+      {isAllowedCreateSalesCategory
+      ? <Container maxWidth="lg">
+          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          {/*   <Grid item xs={12} md={4}> */}
+          {/*     <Card> */}
+          {/*       <CardContent> */}
+          {/*         <UploadProductImage /> */}
+          {/*       </CardContent> */}
+          {/*     </Card> */}
+          {/*   </Grid> */}
 
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <CreateSalesCategoryForm />
-              </CardContent>
-            </Card>
+            <Grid item xs={12} md={8}>
+              <Card>
+                <CardContent>
+                  <CreateSalesCategoryForm />
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      : <MiniAccessDenied />}
+      
     </>
   )
 }

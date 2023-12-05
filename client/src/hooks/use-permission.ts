@@ -8,7 +8,7 @@ type PermissionKey =
   | "user-permissions"
   | "exchange-permissions"
   | "category-permissions"
-  | "sales-ategor-permissions"
+  | "sales-categor-permissions"
   | "brand-permissions"
   | "product-permissions"
 

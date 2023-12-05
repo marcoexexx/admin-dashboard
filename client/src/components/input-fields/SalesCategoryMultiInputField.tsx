@@ -1,4 +1,4 @@
-import { Autocomplete, Paper, TextField } from '@mui/material';
+import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useState } from 'react';
@@ -8,6 +8,10 @@ import { MuiButton } from '@/components/ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
+
+const InnerPaper = styled(Paper)(() => ({
+  padding: "10px"
+}))
 
 export function SalesCategoryMultiInputField() {
   const { control, setValue, formState: { errors } } = useFormContext<{ salesCategory: string[] }>()
@@ -23,7 +27,13 @@ export function SalesCategoryMultiInputField() {
     error
   } = useQuery({
     queryKey: ["sales-categories"],
-    queryFn: args => getSalesCategoriesFn(args, { filter: {} }),
+    queryFn: args => getSalesCategoriesFn(args, { 
+      filter: {},
+      pagination: {
+        page: 1,
+        pageSize: 100 * 1000
+      }
+    }),
     select: data => data.results
   })
 
@@ -73,18 +83,18 @@ export function SalesCategoryMultiInputField() {
               {option.name}
             </li>
           )}
-          PaperComponent={({children}) => <Paper>
+          PaperComponent={({children}) => <InnerPaper>
             {children}
             <MuiButton
               fullWidth
               startIcon={<AddTwoToneIcon />}
-              variant='text'
+              variant='outlined'
               component="label"
               onClick={handleOnClickCreateNew}
             >
               Create new
             </MuiButton>
-          </Paper>}
+          </InnerPaper>}
           renderInput={params => <TextField
             {...params}
             error={!!errors.salesCategory}

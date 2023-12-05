@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { permissionUser } from "../middleware/permissionUser";
 import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory.permission";
-import { createSalesCategoryHandler, deleteSalesCategoryHandler, getSalesCategoriesHandler, getSalesCategoryHandler } from "../controllers/salesCategory.controller";
+import { createMultiSalesCategoriesHandler, createSalesCategoryHandler, deleteSalesCategoryHandler, getSalesCategoriesHandler, getSalesCategoryHandler, updateSalesCategoryHandler } from "../controllers/salesCategory.controller";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createSalesCategorySchema, getSalesCategorySchema } from "../schemas/salesCategory.schema";
+import { createMultiSalesCategoriesSchema, createSalesCategorySchema, getSalesCategorySchema, updateSalesCategorySchema } from "../schemas/salesCategory.schema";
 
 const router = Router()
 
@@ -24,11 +24,28 @@ router.route("")
   )
 
 
+router.route("/multi")
+  .post(
+    deserializeUser,
+    requiredUser,
+    permissionUser("create", salesCategoryPermission),
+    validate(createMultiSalesCategoriesSchema),
+    createMultiSalesCategoriesHandler
+  )
+
+
 router.route("/detail/:salesCategoryId")
   .get(
     permissionUser("read", salesCategoryPermission),
     validate(getSalesCategorySchema),
     getSalesCategoryHandler
+  )
+  .patch(
+    deserializeUser, 
+    requiredUser, 
+    permissionUser("update", salesCategoryPermission),
+    validate(updateSalesCategorySchema), 
+    updateSalesCategoryHandler
   )
   .delete(
     deserializeUser,

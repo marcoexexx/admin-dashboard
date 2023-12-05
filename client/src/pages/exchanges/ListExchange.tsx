@@ -3,8 +3,23 @@ import { Link } from 'react-router-dom'
 import { Button, Container, Grid, Typography } from "@mui/material"
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { ExchangesList } from "@/components/content/exchanges";
+import { usePermission } from "@/hooks";
+import { getExchangePermissionsFn } from "@/services/permissionsApi";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function ListExchange() {
+  const isAllowedReadExchange = usePermission({
+    key: "exchange-permissions",
+    actions: "read",
+    queryFn: getExchangePermissionsFn
+  })
+
+  const isAllowedCreateExchange = usePermission({
+    key: "exchange-permissions",
+    actions: "create",
+    queryFn: getExchangePermissionsFn
+  })
+
   return (
     <>
       <PageTitle>
@@ -17,25 +32,31 @@ export default function ListExchange() {
             </Typography>
           </Grid>
 
-          <Grid item>
-            <Button
-              sx={{ mt: { xs: 2, md: 0 } }}
-              variant="contained"
-              startIcon={<AddTwoToneIcon fontSize="small" />}
-              component={Link}
-              to="/exchanges/create"
-            >Create new exchange</Button>
-          </Grid>
+          {isAllowedCreateExchange
+          ? <Grid item>
+              <Button
+                sx={{ mt: { xs: 2, md: 0 } }}
+                variant="contained"
+                startIcon={<AddTwoToneIcon fontSize="small" />}
+                component={Link}
+                to="/exchanges/create"
+              >Create new exchange</Button>
+            </Grid>
+          : null }
+          
         </Grid>
       </PageTitle>
 
-      <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12}>
-            <ExchangesList />
+      {isAllowedReadExchange
+      ? <Container maxWidth="lg">
+          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+            <Grid item xs={12}>
+              <ExchangesList />
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      : <MiniAccessDenied />}
+      
     </>
   )
 }

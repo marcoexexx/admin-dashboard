@@ -120,7 +120,7 @@ export async function createExchangeHandler(
       },
     })
 
-    res.status(200).json(HttpDataResponse({ exchange }))
+    res.status(201).json(HttpDataResponse({ exchange }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
@@ -144,7 +144,7 @@ export async function createMultiExchangesHandler(
       skipDuplicates: true
     })
 
-    res.status(200).json(HttpResponse(200, "Success"))
+    res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

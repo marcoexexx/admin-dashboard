@@ -5,6 +5,7 @@ import { Button, Container, Grid, Typography } from "@mui/material"
 import { ProductsList } from "@/components/content/products";
 import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function ListProduct() {
   const isAllowedCreateProduct = usePermission({
@@ -53,7 +54,7 @@ export default function ListProduct() {
             </Grid>
           </Grid>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
     </>
   )
 }

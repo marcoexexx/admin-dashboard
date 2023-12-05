@@ -30,7 +30,7 @@ export async function categoryPermissionsLoader() {
 
 export async function salesCategoryPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["sales-ategor-permissions"],
+    queryKey: ["sales-categor-permissions"],
     queryFn: getSalesCategoryPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24

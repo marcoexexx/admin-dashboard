@@ -3,6 +3,7 @@ import { Container, Grid, Typography } from "@mui/material"
 import { UsersList } from "@/components/content/users";
 import { usePermission } from "@/hooks";
 import { getUserPermissionsFn } from "@/services/permissionsApi";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function ListUser() {
   const isAllowedReadUser = usePermission({
@@ -33,7 +34,7 @@ export default function ListUser() {
             </Grid>
           </Grid>
         </Container>
-      : null}
+      : <MiniAccessDenied />}
     </>
   )
 }

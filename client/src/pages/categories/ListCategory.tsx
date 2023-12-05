@@ -1,9 +1,25 @@
 import { PageTitle } from "@/components"
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { Link } from 'react-router-dom'
 import { Button, Container, Grid, Typography } from "@mui/material"
+import { usePermission } from "@/hooks";
+import { getCategoryPermissionsFn } from "@/services/permissionsApi";
+import { CategoriesList } from "@/components/content/categories";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 export default function ListCategory() {
+  const isAllowedCreateCategory = usePermission({
+    key: "category-permissions",
+    actions: "create",
+    queryFn: getCategoryPermissionsFn
+  })
+
+  const isAllowedReadCategory = usePermission({
+    key: "category-permissions",
+    actions: "read",
+    queryFn: getCategoryPermissionsFn
+  })
+
   return (
     <>
       <PageTitle>
@@ -16,25 +32,31 @@ export default function ListCategory() {
             </Typography>
           </Grid>
 
-          <Grid item>
-            <Button
-              sx={{ mt: { xs: 2, md: 0 } }}
-              variant="contained"
-              startIcon={<AddTwoToneIcon fontSize="small" />}
-              component={Link}
-              to="/categories/create"
-            >Create new product</Button>
-          </Grid>
+          {isAllowedCreateCategory
+          ? <Grid item>
+              <Button
+                sx={{ mt: { xs: 2, md: 0 } }}
+                variant="contained"
+                startIcon={<AddTwoToneIcon fontSize="small" />}
+                component={Link}
+                to="/categories/create"
+              >Create new category</Button>
+            </Grid>
+          : null}
+          
         </Grid>
       </PageTitle>
 
-      <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-          <Grid item xs={12}>
-            {/* <ProductsList /> */}
+      {isAllowedReadCategory
+      ? <Container maxWidth="lg">
+          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+            <Grid item xs={12}>
+              <CategoriesList />
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      : <MiniAccessDenied />}
+      
     </>
   )
 }

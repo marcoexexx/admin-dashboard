@@ -22,9 +22,15 @@ export type Store = {
       | "categories"
       | "sales-categories"
 
-      | "update-product"
+      | "update-product"  // Only for on publish product
       | "delete-product"
       | "delete-product-multi"
+
+      | "delete-category"
+      | "delete-category-multi"
+
+      | "delete-sales-category"
+      | "delete-sales-category-multi"
 
       | "delete-brand"
       | "delete-brand-multi"
@@ -66,6 +72,18 @@ export type Store = {
       reviews?: boolean
     }
   },
+  salesCategoryFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default"
+  },
+  categoryFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default"
+  },
   brandFilter?: {
     fields?: any,
     page?: number,
@@ -98,6 +116,16 @@ interface BrandFilterActions {
 interface ExchangeFilterActions {
   type: "SET_EXCHANGE_FILTER",
   payload: Store["exchangeFilter"]
+}
+
+interface SalesCategoryFilterActions {
+  type: "SET_SALES_CATEGORY_FILTER",
+  payload: Store["salesCategoryFilter"]
+}
+
+interface CategoryFilterActions {
+  type: "SET_CATEGORY_FILTER",
+  payload: Store["categoryFilter"]
 }
 
 interface ModalFormOpenActions {
@@ -164,6 +192,8 @@ type Action =
   | ProductFilterActions
   | BrandFilterActions
   | ExchangeFilterActions
+  | CategoryFilterActions
+  | SalesCategoryFilterActions
 
   | ModalFormOpenActions
   | ModalFormCloseActions
@@ -189,12 +219,12 @@ const initialState: Store = {
     state: false
   },
   userFilter: {
-    page: 0,
+    page: 1,
     limit: 10,
     mode: "default",
   },
   productFilter: {
-    page: 0,
+    page: 1,
     limit: 10,
     mode: "default",
     include: {
@@ -213,10 +243,25 @@ const initialState: Store = {
     }
   },
   brandFilter: {
-    page: 0,
+    page: 1,
     limit: 10,
     mode: "default"
   },
+  categoryFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default"
+  },
+  salesCategoryFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default"
+  },
+  exchangeFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default"
+  }
 }
 
 const stateReducer = (state: Store, action: Action): Store => {
@@ -278,6 +323,20 @@ const stateReducer = (state: Store, action: Action): Store => {
     case "SET_EXCHANGE_FILTER": {
       return { ...state, exchangeFilter: {
         ...state.exchangeFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_CATEGORY_FILTER": {
+      return { ...state, categoryFilter: {
+        ...state.categoryFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_SALES_CATEGORY_FILTER": {
+      return { ...state, salesCategoryFilter: {
+        ...state.salesCategoryFilter,
         ...action.payload
       } }
     }

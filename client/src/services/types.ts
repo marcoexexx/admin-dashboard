@@ -174,9 +174,9 @@ type LoginResponse = Omit<HttpResponse, "message"> & {accessToken: string};
 
 type UserResponse = Omit<HttpResponse, "message"> & {user: IUser};
 
-type CategoryResponse = Omit<HttpResponse, "message"> & ICategory;
+type CategoryResponse = Omit<HttpResponse, "message"> & { category: ICategory };
 
-type SalesCategoryResponse = Omit<HttpResponse, "message"> & ISalesCategory;
+type SalesCategoryResponse = Omit<HttpResponse, "message"> & { category: ISalesCategory };
 
 type ProductResponse = Omit<HttpResponse, "message"> & IProduct;
 

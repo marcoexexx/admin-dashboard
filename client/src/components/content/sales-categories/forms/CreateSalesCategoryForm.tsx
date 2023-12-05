@@ -5,54 +5,55 @@ import { object, string, z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
-import { createCategoryFn } from "@/services/categoryApi";
+import { createSalesCategoryFn } from "@/services/salesCategoryApi";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 
-const createCategorySchema = object({
-  name: string({ required_error: "Category name is required" })
+const createSalesCategorySchema = object({
+  name: string({ required_error: "Sales category name is required" })
     .min(1).max(128)
 })
 
-export type CreateCategoryInput = z.infer<typeof createCategorySchema>
+export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>
 
-export function CreateCategoryForm() {
+export function CreateSalesCategoryForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/categories"
+  const from = "/sales-categories"
 
   const {
-    mutate: createCategory,
+    mutate: createSalesCategory,
   } = useMutation({
-    mutationFn: createCategoryFn,
+    mutationFn: createSalesCategoryFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new category.",
+        message: "Success created a new sales category.",
         severity: "success"
       } })
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
+      navigate(from)
       queryClient.invalidateQueries({
-        queryKey: ["categories"]
+        queryKey: ["sales-categories"]
       })
     },
     onError: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed created a new category.",
+        message: "failed created a new sales category.",
         severity: "error"
       } })
     },
   })
 
-  const methods = useForm<CreateCategoryInput>({
-    resolver: zodResolver(createCategorySchema)
+  const methods = useForm<CreateSalesCategoryInput>({
+    resolver: zodResolver(createSalesCategorySchema)
   })
 
   const { handleSubmit, register, formState: { errors } } = methods
 
-  const onSubmit: SubmitHandler<CreateCategoryInput> = (value) => {
-    createCategory(value)
+  const onSubmit: SubmitHandler<CreateSalesCategoryInput> = (value) => {
+    createSalesCategory(value)
     dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
   }
 
@@ -72,5 +73,6 @@ export function CreateCategoryForm() {
     </FormProvider>
   )
 }
+
 
 

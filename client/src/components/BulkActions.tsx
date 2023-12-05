@@ -18,12 +18,13 @@ const ButtonError = styled(Button)(({theme}) => ({
 
 
 interface BulkActionsProps {
-  field: Store["modalForm"]["field"]
+  field: Store["modalForm"]["field"],
+  isAllowedDelete: boolean
   onDelete: () => void
 }
 
 export function BulkActions(props: BulkActionsProps) {
-  const { field, onDelete } = props
+  const { field, isAllowedDelete, onDelete } = props
 
   const { dispatch } = useStore()
 
@@ -50,14 +51,18 @@ export function BulkActions(props: BulkActionsProps) {
         <Typography variant="h5" color="text.secondary">
           Bulk actions:
         </Typography>
-        <ButtonError
-          sx={{ ml: 1 }}
-          startIcon={<DeleteTwoToneIcon />}
-          variant="contained"
-          onClick={handleClickDeleteAction}
-        >
-          Delete
-        </ButtonError>
+
+        {isAllowedDelete
+        ? <ButtonError
+            sx={{ ml: 1 }}
+            startIcon={<DeleteTwoToneIcon />}
+            variant="contained"
+            onClick={handleClickDeleteAction}
+          >
+            Delete
+          </ButtonError>
+        : null}
+        
       </Box>
 
       <FormModal

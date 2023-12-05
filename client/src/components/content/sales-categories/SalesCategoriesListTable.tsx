@@ -5,36 +5,21 @@ import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { FormModal } from "@/components/forms";
+import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
-import { CreateExchangeInput } from "./forms";
-import { exportToExcel } from "@/libs/exportToExcel";
-import { ExchangesActions } from ".";
+
 import { useNavigate } from "react-router-dom";
-import { getExchangePermissionsFn } from "@/services/permissionsApi";
+import { CreateSalesCategoryInput } from "./forms";
+import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
+import { SalesCategoriesActions } from "./SalesCategoriesActions";
 
 
-
-const columnData: TableColumnHeader<IExchange>[] = [
+const columnData: TableColumnHeader<IBrand>[] = [
   {
-    id: "to",
+    id: "name",
     align: "left",
-    name: "To"
-  },
-  {
-    id: "from",
-    align: "left",
-    name: "From"
-  },
-  {
-    id: "rate",
-    align: "left",
-    name: "Rate"
-  },
-  {
-    id: "date",
-    align: "left",
-    name: "Date"
+    name: "Name"
   },
 ]
 
@@ -46,23 +31,23 @@ const columnHeader = columnData.concat([
   }
 ])
 
-interface ExchangesListTableProps {
-  exchanges: IExchange[]
+interface SalesCategoriesListTableProps {
+  salesCategoiries: ISalesCategory[]
   count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyExchanges: (data: CreateExchangeInput[]) => void
+  onCreateManySalesCategories: (data: CreateSalesCategoryInput[]) => void
 }
 
-export function ExchangesListTable(props: ExchangesListTableProps) {
-  const { exchanges, count, onCreateManyExchanges, onDelete, onMultiDelete } = props
+export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
+  const { salesCategoiries, count, onCreateManySalesCategories, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
   const navigate = useNavigate()
 
   const theme = useTheme()
-  const { state: {exchangeFilter, modalForm}, dispatch } = useStore()
+  const { state: {salesCategoryFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -71,7 +56,7 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
   const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = evt.target
     setSellectedRows(checked
-      ? exchanges.map(e => e.id)
+      ? salesCategoiries.map(e => e.id)
       : []
     )
   }
@@ -81,29 +66,29 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handleClickUpdateAction = (exchangeId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/exchanges/update/${exchangeId}`)
-  }
-
-  const handleClickDeleteAction = (exchangeId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteId(exchangeId)
+  const handleClickDeleteAction = (salesCategoryId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    setDeleteId(salesCategoryId)
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: "delete-exchange"
+      payload: "delete-sales-category"
     })
   }
 
-  const handleOnExport = () => {
-    exportToExcel(exchanges, "Exchanges")
+  const handleClickUpdateAction = (salesCategoryId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/sales-categories/update/${salesCategoryId}`)
   }
 
-  const handleOnImport = (data: CreateExchangeInput[]) => {
-    onCreateManyExchanges(data)
+  const handleOnExport = () => {
+    exportToExcel(salesCategoiries, "SalesCategories")
+  }
+
+  const handleOnImport = (data: CreateSalesCategoryInput[]) => {
+    onCreateManySalesCategories(data)
   }
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_EXCHANGE_FILTER",
+      type: "SET_SALES_CATEGORY_FILTER",
       payload: {
         page: page += 1
       }
@@ -112,7 +97,7 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_EXCHANGE_FILTER",
+      type: "SET_SALES_CATEGORY_FILTER",
       payload: {
         limit: parseInt(evt.target.value, 10)
       }
@@ -125,28 +110,28 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
     })
   }
 
-  const isAllowedUpdateExchange = usePermission({
-    key: "exchange-permissions",
-    actions: "update",
-    queryFn: getExchangePermissionsFn
-  })
-
-  const isAllowedDeleteExchange = usePermission({
-    key: "exchange-permissions",
+  const isAllowedDeleteSalesCategory = usePermission({
+    key: "sales-categor-permissions",
     actions: "delete",
-    queryFn: getExchangePermissionsFn
+    queryFn: getSalesCategoryPermissionsFn
   })
 
-  const selectedAllRows = selectedRows.length === exchanges.length
+  const isAllowedUpdateSalesCategory = usePermission({
+    key: "sales-categor-permissions",
+    actions: "update",
+    queryFn: getSalesCategoryPermissionsFn
+  })
+
+  const selectedAllRows = selectedRows.length === salesCategoiries.length
   const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < exchanges.length
+    selectedRows.length < salesCategoiries.length
 
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
-          field="delete-exchange-multi"
-          isAllowedDelete={isAllowedDeleteExchange}
+          field="delete-sales-category-multi"
+          isAllowedDelete={isAllowedDeleteSalesCategory}
           onDelete={() => onMultiDelete(selectedRows)}
         />
       </Box>}
@@ -154,7 +139,7 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
       <Divider />
 
       <CardContent>
-        <ExchangesActions onExport={handleOnExport} onImport={handleOnImport}  />
+        <SalesCategoriesActions onExport={handleOnExport} onImport={handleOnImport}  />
       </CardContent>
 
       <TableContainer>
@@ -176,7 +161,7 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
           </TableHead>
 
           <TableBody>
-            {exchanges.map(row => {
+            {salesCategoiries.map(row => {
               const isSelected = selectedRows.includes(row.id)
               return <TableRow
                 hover
@@ -192,30 +177,21 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
                   />
                 </TableCell>
 
-                {columnData.map(col => {
-                  const key = col.id as keyof typeof row
-                  const dataRow = row[key]
-
-                  return (
-                    <TableCell align={col.align} key={col.id}>
-                    <Typography
-                      variant="body1"
-                      fontWeight="normal"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {key === "date"
-                        ? (new Date(dataRow)).toLocaleString()
-                        : dataRow as string}
-                    </Typography>
-                  </TableCell>
-                  )
-                })}
+                {columnData.map(col => <TableCell align={col.align} key={col.id}>
+                  <Typography
+                    variant="body1"
+                    fontWeight="normal"
+                    color="text.primary"
+                    gutterBottom
+                    noWrap
+                  >
+                    {row.name}
+                  </Typography>
+                </TableCell>)}
 
                 <TableCell align="right">
-                  {isAllowedUpdateExchange
-                  ? <Tooltip title="Edit Product" arrow>
+                  {isAllowedUpdateSalesCategory
+                  ?  <Tooltip title="Edit Sales category" arrow>
                       <IconButton
                         sx={{
                           '&:hover': {
@@ -223,17 +199,17 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
                           },
                           color: theme.palette.primary.main
                         }}
-                        onClick={handleClickUpdateAction(row.id)}
                         color="inherit"
                         size="small"
+                        onClick={handleClickUpdateAction(row.id)}
                       >
                         <EditTwoToneIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
                   : null}
-                  
-                  {isAllowedDeleteExchange
-                  ? <Tooltip title="Delete Product" arrow>
+
+                  {isAllowedDeleteSalesCategory
+                  ? <Tooltip title="Delete Sales category" arrow>
                       <IconButton
                         sx={{
                           '&:hover': {
@@ -249,7 +225,6 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
                       </IconButton>
                     </Tooltip>
                   : null}
-                  
                 </TableCell>
               </TableRow>
             })}
@@ -263,18 +238,18 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={exchangeFilter?.page
-            ? exchangeFilter.page - 1
+          page={salesCategoryFilter?.page
+            ? salesCategoryFilter.page - 1
             : 0}
-          rowsPerPage={exchangeFilter?.limit || 10}
+          rowsPerPage={salesCategoryFilter?.limit || 10}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>
 
-      {modalForm.field === "delete-exchange"
+      {modalForm.field === "delete-sales-category"
       ? <FormModal
-        field="delete-exchange"
-        title="Delete exchange"
+        field="delete-sales-category"
+        title="Delete sales category"
         onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>

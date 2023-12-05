@@ -36,10 +36,12 @@ const UpdateBrandPage = Loader(lazy(() => import("@/pages/brands/UpdateBrand")))
 // categories
 const ListCategoryPage = Loader(lazy(() => import("@/pages/categories/ListCategory")))
 const CreateCategoryPage = Loader(lazy(() => import("@/pages/categories/CreateCategory")))
+const UpdateCategoryPage = Loader(lazy(() => import("@/pages/categories/UpdateCategory")))
 
 // sales categories
 const ListSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategories/ListSalesCategory")))
 const CreateSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategories/CreateSalesCategory")))
+const UpdateSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategories/UpdateSalesCategory")))
 
 
 const routes = createBrowserRouter([
@@ -184,7 +186,17 @@ const routes = createBrowserRouter([
                     Component: CreateSalesCategoryPage
                   }
                 ]
-              }
+              },
+              {
+                path: "update/:salesCategoryId",
+                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                children: [
+                  {
+                    path: "",
+                    Component: UpdateSalesCategoryPage
+                  }
+                ]
+              },
             ]
           },
 
@@ -210,7 +222,17 @@ const routes = createBrowserRouter([
                     Component: CreateCategoryPage
                   }
                 ]
-              }
+              },
+              {
+                path: "update/:categoryId",
+                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                children: [
+                  {
+                    path: "",
+                    Component: UpdateCategoryPage
+                  }
+                ]
+              },
             ]
           },
 
