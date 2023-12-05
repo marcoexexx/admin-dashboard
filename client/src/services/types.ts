@@ -179,7 +179,7 @@ type CategoryResponse = Omit<HttpResponse, "message"> & { category: ICategory };
 
 type SalesCategoryResponse = Omit<HttpResponse, "message"> & { category: ISalesCategory };
 
-type ProductResponse = Omit<HttpResponse, "message"> & IProduct;
+type ProductResponse = Omit<HttpResponse, "message"> & { product: IProduct };
 
 type BrandResponse = Omit<HttpResponse, "message"> & { brand: IBrand };
 

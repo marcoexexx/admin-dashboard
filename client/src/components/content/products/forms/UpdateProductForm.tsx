@@ -58,12 +58,13 @@ export function UpdateProductForm() {
   const navigate = useNavigate()
   const from = "/products"
 
-  const { id } = useParams()
+  const { productId } = useParams()
 
   const { data: product } = useQuery({
-    enabled: !!id,
-    queryKey: ["products", { id }],
-    queryFn: () => getProductFn(id)
+    enabled: !!productId,
+    queryKey: ["products", { id: productId }],
+    queryFn: arg => getProductFn(arg, { productId }),
+    select: data => data?.product
   })
 
   const {
@@ -78,7 +79,7 @@ export function UpdateProductForm() {
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["products", { id }]
+        queryKey: ["products", { productId }]
       })
     },
     onError: () => {
@@ -127,7 +128,7 @@ export function UpdateProductForm() {
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<UpdateProductInput> = (value) => {
-    if (id) updateProduct({id, product: {
+    if (productId) updateProduct({id: productId, product: {
       ...value
     }})
   }

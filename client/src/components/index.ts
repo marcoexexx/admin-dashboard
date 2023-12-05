@@ -1,6 +1,7 @@
 export * from './Providers'
 export * from './PageBreadcrumbs'
 export * from './HeaderUserBox'
+export * from './LinkLabel'
 export * from './Logo'
 export * from './SuspenseLoader'
 export * from './ErrorBoundary'

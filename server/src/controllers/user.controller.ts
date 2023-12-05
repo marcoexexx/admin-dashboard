@@ -3,7 +3,7 @@ import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { ChangeUserRoleInput, GetUserInput, UploadImageUserInput, UserFilterPagination } from "../schemas/user.schema";
+import { ChangeUserRoleInput, GetUserByUsernameInput, GetUserInput, UploadImageUserInput, UserFilterPagination } from "../schemas/user.schema";
 import { db } from "../utils/db";
 
 export async function getMeHandler(
@@ -34,6 +34,29 @@ export async function getUserHandler(
     const user = await db.user.findUnique({
       where: {
         id: userId
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ user }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function getUserByUsernameHandler(
+  req: Request<GetUserByUsernameInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { username } = req.params
+
+    const user = await db.user.findUnique({
+      where: {
+        username
       }
     })
 

@@ -13,6 +13,15 @@ export async function getUsersFn(opt: QueryOptionArgs, { filter, pagination }: {
 }
 
 
+export async function getUserProfileFn(opt: QueryOptionArgs, { username }: { username: string | undefined }) {
+  if (!username) return
+  const { data } = await authApi.get<UserResponse>(`/users/profile/${username}`, {
+    ...opt,
+  })
+  return data
+}
+
+
 export async function getUserFn(opt: QueryOptionArgs, { userId }: { userId: string | undefined }) {
   if (!userId) return
   const { data } = await authApi.get<UserResponse>(`/users/detail/${userId}`, {

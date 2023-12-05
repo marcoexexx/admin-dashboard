@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { changeUserRoleHandler, getUserHandler, getUsersHandler } from "../controllers/user.controller";
-import { changeUserRoleSchema, getUserSchema } from "../schemas/user.schema";
+import { changeUserRoleHandler, getUserByUsernameHandler, getUserHandler, getUsersHandler } from "../controllers/user.controller";
+import { changeUserRoleSchema, getUserByUsernameSchema, getUserSchema } from "../schemas/user.schema";
 import { validate } from "../middleware/validate";
 import { onlyAdminUser } from "../middleware/onlyAdminUser";
 import { permissionUser } from "../middleware/permissionUser";
@@ -17,6 +17,14 @@ router.route("")
   .get(
     permissionUser("read", userPermission),
     getUsersHandler
+  )
+
+
+router.route("/profile/:username")
+  .get(
+    permissionUser("read", userPermission),
+    validate(getUserByUsernameSchema),
+    getUserByUsernameHandler
   )
 
 

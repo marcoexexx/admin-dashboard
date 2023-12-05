@@ -23,10 +23,12 @@ const LoginPage = Loader(lazy(() => import("@/pages/login.page")))
 // produts
 const ListProductPage = Loader(lazy(() => import("@/pages/products/ListProduct")))
 const CreateProductPage = Loader(lazy(() => import("@/pages/products/CreateProduct")))
+const ViewProductPage = Loader(lazy(() => import("@/pages/products/ViewProduct")))
 
 // users
 const ListUserPage = Loader(lazy(() => import("@/pages/users/ListUser")))
 const UpdateUserPage = Loader(lazy(() => import("@/pages/users/UpdateUser")))
+const UserProfilePage = Loader(lazy(() => import("@/pages/users/ViewUserProfile")))
 
 // brands
 const ListBrandPage = Loader(lazy(() => import("@/pages/brands/ListBrand")))
@@ -250,6 +252,10 @@ const routes = createBrowserRouter([
                 Component: ListProductPage
               },
               {
+                path: "detail/:productId",
+                Component: ViewProductPage
+              },
+              {
                 path: "create",
                 element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
                 children: [
@@ -258,7 +264,7 @@ const routes = createBrowserRouter([
                     Component: CreateProductPage
                   }
                 ]
-              }
+              },
             ]
           },
         ]
@@ -277,6 +283,18 @@ const routes = createBrowserRouter([
             path: "login",
             Component: LoginPage
           }
+        ]
+      },
+
+      /// PROFILE ROUTES
+      {
+        path: "profile",
+        Component: SlidebarLayout,
+        children: [
+          {
+            path: "detail/:username",
+            Component: UserProfilePage,
+          },
         ]
       },
 
