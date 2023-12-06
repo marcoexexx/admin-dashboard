@@ -10,7 +10,13 @@ export type Role =
 
 export type UserFilterPagination = {
   filter?: any,
-  pagination?: Pagination
+  pagination?: Pagination,
+  include?: {
+    orders?: boolean,
+    addresses?: boolean,
+    favorites?: boolean,
+    reviews?: boolean
+  }
 }
 
 

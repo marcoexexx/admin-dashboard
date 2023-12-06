@@ -1,11 +1,10 @@
 import { Router } from "express";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { getMeHandler, uploadImageCoverHandler, uploadImageProfileHandler } from "../controllers/user.controller";
+import { getMeHandler, getMeProfileHandler, uploadImageCoverHandler, uploadImageProfileHandler } from "../controllers/user.controller";
 import { resizeProfileImage, uploadProfileImage } from "../upload/singleUpload";
 import { validate } from "../middleware/validate";
 import { uploadImageProfileSchema } from "../schemas/user.schema";
-import { uploadImagesProductHandler } from "../controllers/product.controller";
 
 const router = Router()
 
@@ -14,6 +13,10 @@ router.use(deserializeUser, requiredUser)
 
 router.route("/")
   .get(getMeHandler)
+
+
+router.route("/profile")
+  .get(getMeProfileHandler)
 
 
 // router

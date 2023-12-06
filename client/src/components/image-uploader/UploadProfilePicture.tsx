@@ -30,7 +30,7 @@ export function UploadProfilePicture() {
         severity: "success"
       } })
       queryClient.invalidateQueries({
-        queryKey: ["authUser"]
+        queryKey: ["authUser", "authUserProfile"]
       })
     },
     onError() {

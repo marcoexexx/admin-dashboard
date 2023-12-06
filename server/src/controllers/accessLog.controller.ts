@@ -21,11 +21,14 @@ export async function getAccessLogsHandler(
       db.accessLog.findMany({
         where: {
           userId: user.id
+        },
+        include: {
+          user: true
         }
       })
     ])
 
-    res.send(200).json(HttpListResponse(logs, count))
+    res.status(200).json(HttpListResponse(logs, count))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

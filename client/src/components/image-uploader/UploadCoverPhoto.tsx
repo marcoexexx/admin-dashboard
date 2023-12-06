@@ -31,7 +31,7 @@ export function UploadCoverPhoto() {
         severity: "success"
       } })
       queryClient.invalidateQueries({
-        queryKey: ["authUser"]
+        queryKey: ["authUser", "authUserProfile"]
       })
     },
     onError() {

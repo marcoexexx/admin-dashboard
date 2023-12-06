@@ -54,7 +54,7 @@ const CardCoverAction = styled(Box)(({theme}) => ({
 
 
 interface ProfileCoverProps {
-  user: IUser
+  user: IUserProfile
 }
 
 export function ProfileCover({user}: ProfileCoverProps) {
