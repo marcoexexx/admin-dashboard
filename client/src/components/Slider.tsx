@@ -1,5 +1,5 @@
 import { useStore } from "@/hooks"
-import { Box, Divider, Drawer, Stack, alpha, darken, lighten, styled, useTheme } from "@mui/material"
+import { Box, Divider, Drawer, Stack, darken, styled, useTheme } from "@mui/material"
 import { Logo, SlidebarMenu } from "."
 
 const MainContent = styled(Box)(({theme}) => ({
@@ -42,7 +42,7 @@ export function Slider() {
       }}>
         <Stack flexDirection="column">
           <Box mt={3}>
-            <Box mx={2} sx={{ width: 52 }}>
+            <Box mx={2}>
               <Logo />
             </Box>
           </Box>

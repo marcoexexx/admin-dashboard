@@ -1,7 +1,7 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
 import { MuiButton, MuiLabel } from "@/components/ui";
-import { BulkActions, LinkLabel } from "@/components";
+import { BulkActions } from "@/components";
 import { ProductsActions } from ".";
 import { CreateProductInput } from "./forms";
 import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
@@ -11,7 +11,8 @@ import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import { getProductPermissionsFn } from "@/services/permissionsApi";
-import { useNavigate } from "react-router-dom";
+import { RenderBrandLabel, RenderImageLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
+import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLabel";
 
 
 const getStatusLabel = (status: Omit<Status, "all">): JSX.Element => {
@@ -31,16 +32,6 @@ const getStatusLabel = (status: Omit<Status, "all">): JSX.Element => {
   }
   const { label, color } = map[status as keyof typeof map]
   return <MuiLabel color={color}>{label}</MuiLabel>
-}
-
-
-function RenderCategoryLabel({category}: {category: ICategory}) {
-  const navigate = useNavigate()
-  const to = "/category/detail" + category.id
-
-  return <LinkLabel onClick={() => navigate(to)}>
-    {category.name}
-  </LinkLabel>
 }
 
 
@@ -279,10 +270,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
                 </TableCell>
 
                 <TableCell align="left">
-                  <img 
-                    src={row.images[0] || "/public/default.jpg"} 
+                  <RenderImageLabel
+                    src={row.images[0] || "/public/default.jpg"}
                     alt={row.title} 
-                    height={100}
                   />
                 </TableCell>
 
@@ -290,10 +280,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
                   const key = col.id as keyof typeof row
 
                   const getRow = (key: keyof typeof row) => {
-                    // if (key === "categories") return row.categories.map(i => i.category.name).join(", ")
-                    if (key === "categories") return row.categories.map((i, idx) => <RenderCategoryLabel key={idx} category={i.category} />)
-                    if (key === "salesCategory") return row.salesCategory.map(i => i.salesCategory.name).join(", ")
-                    if (key === "brand") return row.brand.name || "empty"
+                    if (key === "categories") return row.categories.map(({category}, idx) => <RenderCategoryLabel key={idx} category={category} />)
+                    if (key === "salesCategory") return row.salesCategory.map(({salesCategory}, idx) => <RenderSalesCategoryLabel key={idx} salesCategory={salesCategory} />)
+                    if (key === "brand") return <RenderBrandLabel brand={row.brand} />
                     return row[key]
                   }
 

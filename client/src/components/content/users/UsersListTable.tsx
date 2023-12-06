@@ -7,17 +7,7 @@ import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { UsersActions } from ".";
 import { getUserPermissionsFn } from "@/services/permissionsApi";
-import { LinkLabel } from "@/components";
-
-
-function RenderUsernameLabel({user}: {user: IUser}) {
-  const navigate = useNavigate()
-  const to = "/profile/detail/" + user.username
-
-  return <LinkLabel onClick={() => navigate(to)}>
-    {user.name}
-  </LinkLabel>
-}
+import { RenderImageLabel, RenderUsernameLabel } from "@/components/table-labels";
 
 
 const columnData: TableColumnHeader<IUser>[] = [
@@ -112,10 +102,9 @@ export function UsersListTable(props: UsersListTableProps) {
                 key={row.id}
               >
                 <TableCell align="left">
-                  <img 
-                    src={"/public/profile.png"}  // TODO: image upload
-                    alt={row.username} 
-                    height={60}
+                  <RenderImageLabel
+                    src={row.image}
+                    alt={row.username}
                   />
                 </TableCell>
                 {columnData.map(col => {
