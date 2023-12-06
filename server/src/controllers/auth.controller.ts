@@ -171,6 +171,19 @@ export async function loginUserHandler(
       httpOnly: false
     })
 
+    const platform = req.useragent.platform
+    const browser = `${req.useragent.browser}/${req.useragent.version}`
+
+    // create access log
+    await db.accessLog.create({
+      data: {
+        userId: user.id,
+        ip: req.ip || "unknown ip",
+        browser,
+        platform,
+      }
+    })
+
     res.status(200).json(HttpDataResponse({ accessToken }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
