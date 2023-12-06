@@ -20,7 +20,7 @@ const Image = styled("img")(({theme}) => ({
   cursor: "pointer"
 }))
 
-export function Logo() {
+export default function Logo() {
   const navigate = useNavigate()
 
   const handleOnClickLogo = () => {

@@ -48,7 +48,7 @@ const ListWrapper = styled(Box)(({theme}) => ({
   },
 }))
 
-export function HeaderMenu() {
+export default function HeaderMenu() {
   const navigate = useNavigate()
 
   return (

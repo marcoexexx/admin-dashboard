@@ -1,6 +1,8 @@
 import { useStore } from "@/hooks"
 import { Box, Divider, Drawer, Stack, darken, styled, useTheme } from "@mui/material"
-import { Logo, SlidebarMenu } from "."
+import Logo from "./Logo"
+import SlidebarMenu from "./SlidebarMenu"
+
 
 const MainContent = styled(Box)(({theme}) => ({
   width: theme.colors.layout.sidebar.width,
@@ -12,7 +14,7 @@ const MainContent = styled(Box)(({theme}) => ({
   paddingBottom: "68px",
 }))
 
-export function Slider() {
+export default function Slider() {
   const { state, dispatch } = useStore()
 
   const { slidebar } = state

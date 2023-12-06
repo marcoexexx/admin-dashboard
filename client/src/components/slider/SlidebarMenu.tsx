@@ -162,7 +162,7 @@ type ExpandMenu = {
   state: boolean
 }
 
-export function SlidebarMenu() {
+export default function SlidebarMenu() {
   const { dispatch } = useStore()
 
   const [isExpandMenu, setIsExpandMenu] = useState<ExpandMenu>({

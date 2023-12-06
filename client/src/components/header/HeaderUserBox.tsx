@@ -2,14 +2,14 @@ import { useStore } from "@/hooks"
 import { Avatar, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
 import { useRef, useState } from "react"
 import { NavLink as Link } from 'react-router-dom'
-import { MuiButton } from "./ui"
+import { MuiButton } from "@/components/ui"
 import InboxTwoToneIcon from '@mui/icons-material/InboxTwoTone'
 import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone'
 import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone'
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone'
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { getMeFn, logoutUserFn } from "@/services/authApi"
-import { queryClient } from "."
+import { queryClient } from ".."
 
 const UserBoxButton = styled(Button)(({theme}) => ({
   padding: theme.spacing(1),
@@ -37,7 +37,7 @@ const UserBoxDescription = styled(Typography)(({theme}) => ({
 }))
 
 
-export function HeaderUserBox() {
+export default function HeaderUserBox() {
   const { dispatch } = useStore()
 
   const { data: user, isLoading, isError, error } = useQuery({
