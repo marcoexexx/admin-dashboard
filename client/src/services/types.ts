@@ -38,12 +38,18 @@ interface IUser {
   password: string,
   username: string,
   role: Role,
-  image?: string,
+  image: string,
+  coverImage: string
   verified: boolean,
   provider: UserProvider,
   createdAt: string | Date
   updatedAt: string | Date
 }
+
+
+// TODO: order interface
+
+// TODO: accessLog interface
 
 
 interface IProduct {

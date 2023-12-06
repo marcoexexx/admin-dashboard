@@ -4,6 +4,7 @@ import Loader from "./loader";
 import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
 import { brandPermissionsLoader, categoryPermissionsLoader, exchangePermissionsLoader, productPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
+import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 const HomePage = Loader(lazy(() => import("@/pages/home.page")))
 
@@ -29,6 +30,9 @@ const ViewProductPage = Loader(lazy(() => import("@/pages/products/ViewProduct")
 const ListUserPage = Loader(lazy(() => import("@/pages/users/ListUser")))
 const UpdateUserPage = Loader(lazy(() => import("@/pages/users/UpdateUser")))
 const UserProfilePage = Loader(lazy(() => import("@/pages/users/ViewUserProfile")))
+
+// Me
+const ManagementUserProfilePage = Loader(lazy(() => import("@/pages/me/ManagementUserProfile")))
 
 // brands
 const ListBrandPage = Loader(lazy(() => import("@/pages/brands/ListBrand")))
@@ -59,6 +63,12 @@ const routes = createBrowserRouter([
           {
             path: "",
             Component: HomePage
+          },
+
+          {
+            path: "me",
+            loader: meProfileLoader,
+            Component: ManagementUserProfilePage
           },
 
           {

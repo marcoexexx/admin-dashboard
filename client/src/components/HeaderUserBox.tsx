@@ -126,7 +126,7 @@ export function HeaderUserBox() {
         <Divider sx={{ mb: 0 }} />
 
         <List sx={{ p: 1 }} component="nav">
-          <ListItemButton to={"/profile/detail/" + user.username} component={Link}>
+          <ListItemButton to={"/me"} component={Link}>
             <ListItemIcon>
               <AccountBoxTwoToneIcon fontSize="small" />
             </ListItemIcon>

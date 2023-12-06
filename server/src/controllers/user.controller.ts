@@ -130,6 +130,35 @@ export async function changeUserRoleHandler(
 }
 
 
+export async function uploadImageCoverHandler(
+  req: Request<{}, {}, UploadImageUserInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // @ts-ignore  for mocha testing
+    const user = req.user
+
+    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+
+    const { image } = req.body
+
+    const updatedUser = await db.user.update({
+      where: {
+        id: user.id
+      },
+      data: {
+        coverImage: image
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
 export async function uploadImageProfileHandler(
   req: Request<{}, {}, UploadImageUserInput>,
   res: Response,

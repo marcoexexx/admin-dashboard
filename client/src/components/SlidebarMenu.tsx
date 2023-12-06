@@ -258,6 +258,37 @@ export function SlidebarMenu() {
         >
           <SubMenuWrapper>
             <List component="div">
+              {/* User Menues */}
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  onClick={handleToggleExpandMenu("users")}
+                  startIcon={<PeopleIcon />}
+                  endIcon={getStateCurrentExpandMenu("users")
+                    ? <ExpandLessIcon />
+                    : <ExpandMoreIcon />
+                  }
+                >
+                  Users
+                </Button>
+              </ListItem>
+
+              <Collapse in={getStateCurrentExpandMenu("users")}>
+                <List component="div" disablePadding>
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      onClick={handleCloseSlidebar}
+                      component={Link}
+                      to="/users/list"
+                    >
+                      <DotWrapper />
+                      List
+                    </Button>
+                  </ListItem>
+                </List>
+              </Collapse>
+
               {/* Exchange Menues */}
               <ListItem component="div">
                 <Button
@@ -468,36 +499,6 @@ export function SlidebarMenu() {
                 </List>
               </Collapse>
 
-              {/* User Menues */}
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  onClick={handleToggleExpandMenu("users")}
-                  startIcon={<PeopleIcon />}
-                  endIcon={getStateCurrentExpandMenu("users")
-                    ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
-                >
-                  Users
-                </Button>
-              </ListItem>
-
-              <Collapse in={getStateCurrentExpandMenu("users")}>
-                <List component="div" disablePadding>
-                  <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/users/list"
-                    >
-                      <DotWrapper />
-                      List
-                    </Button>
-                  </ListItem>
-                </List>
-              </Collapse>
             </List>
           </SubMenuWrapper>
         </List>
