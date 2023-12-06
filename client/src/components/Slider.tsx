@@ -32,9 +32,10 @@ export function Slider() {
         position: "fixed",
         left: 0,
         top: 0,
-        background: theme.palette.mode === "dark"
-          ? alpha(lighten(theme.colors.layout.header.background, 0.1), 0.5)
-          : darken(theme.colors.alpha.black[100], 0.5),
+        // background: theme.palette.mode === "dark"
+        //   ? alpha(lighten(theme.colors.layout.header.background, 0.1), 0.5)
+        //   : darken(theme.colors.alpha.black[100], 0.5),
+        background: theme.palette.secondary.main,
         boxShadow: theme.palette.mode === "dark"
           ? theme.colors.layout.sidebar.boxShadow
           : "none"
