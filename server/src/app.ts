@@ -16,7 +16,6 @@ import validateEnv from './utils/validateEnv'
 import getConfig from './utils/getConfig'
 import cookieParser from 'cookie-parser'
 import AppError, { errorHandler } from './utils/appError'
-import logging, { loggingMiddleware } from './middleware/logging/logging'
 import redisClient from './utils/connectRedis'
 
 import authRouter from './routers/auth.route'
@@ -24,12 +23,15 @@ import meRouter from './routers/me.route'
 import permissionRouter from './routers/permission.route'
 import exchangeRouter from './routers/exchange.route'
 import userRouter from './routers/user.route'
+import accessLogRouter from './routers/accessLog.route'
 import productRouter from './routers/product.route'
 import brandRouter from './routers/brand.route'
 import categoryRouter from './routers/category.route'
 import salesCategoryRouter from './routers/salesCategory.route'
 
 import helmet from 'helmet';
+import useragent from 'express-useragent';
+import logging, { loggingMiddleware } from './middleware/logging/logging'
 import { rateLimitMiddleware } from './middleware/rateLimit';
 
 
@@ -68,6 +70,9 @@ if (process.env.NODE_ENV === "development") app.use(loggingMiddleware)
 // Cookie parser
 app.use(cookieParser())
 
+// Useragent
+app.use(useragent.express())
+
 
 /* Routers */
 app.get("/ping", async (_req: Request, res: Response, _next: NextFunction) => {
@@ -86,6 +91,7 @@ app.use("/api/v1/me", meRouter)
 app.use("/api/v1/permissions", permissionRouter)
 app.use("/api/v1/exchanges", exchangeRouter)
 app.use("/api/v1/users", userRouter)
+app.use("/api/v1/access-logs", accessLogRouter)
 app.use("/api/v1/products", productRouter)
 app.use("/api/v1/brands", brandRouter)
 app.use("/api/v1/categories", categoryRouter)

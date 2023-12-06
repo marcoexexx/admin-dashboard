@@ -43,6 +43,11 @@ export async function getMeFn() {
   return res.data
 }
 
+export async function getMeProfileFn() {
+  const res = await authApi.get<UserProfileResponse>("me/profile");
+  return res.data
+}
+
 export async function logoutUserFn() {
   const res = await authApi.post<HttpResponse>("auth/logout")
   return res.data

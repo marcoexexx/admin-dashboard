@@ -4,6 +4,7 @@ import Loader from "./loader";
 import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
 import { brandPermissionsLoader, categoryPermissionsLoader, exchangePermissionsLoader, productPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
+import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 const HomePage = Loader(lazy(() => import("@/pages/home.page")))
 
@@ -23,10 +24,15 @@ const LoginPage = Loader(lazy(() => import("@/pages/login.page")))
 // produts
 const ListProductPage = Loader(lazy(() => import("@/pages/products/ListProduct")))
 const CreateProductPage = Loader(lazy(() => import("@/pages/products/CreateProduct")))
+const ViewProductPage = Loader(lazy(() => import("@/pages/products/ViewProduct")))
 
 // users
 const ListUserPage = Loader(lazy(() => import("@/pages/users/ListUser")))
 const UpdateUserPage = Loader(lazy(() => import("@/pages/users/UpdateUser")))
+const UserProfilePage = Loader(lazy(() => import("@/pages/users/ViewUserProfile")))
+
+// Me
+const ManagementUserProfilePage = Loader(lazy(() => import("@/pages/me/ManagementUserProfile")))
 
 // brands
 const ListBrandPage = Loader(lazy(() => import("@/pages/brands/ListBrand")))
@@ -57,6 +63,12 @@ const routes = createBrowserRouter([
           {
             path: "",
             Component: HomePage
+          },
+
+          {
+            path: "me",
+            loader: meProfileLoader,
+            Component: ManagementUserProfilePage
           },
 
           {
@@ -250,6 +262,10 @@ const routes = createBrowserRouter([
                 Component: ListProductPage
               },
               {
+                path: "detail/:productId",
+                Component: ViewProductPage
+              },
+              {
                 path: "create",
                 element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
                 children: [
@@ -258,7 +274,7 @@ const routes = createBrowserRouter([
                     Component: CreateProductPage
                   }
                 ]
-              }
+              },
             ]
           },
         ]
@@ -277,6 +293,18 @@ const routes = createBrowserRouter([
             path: "login",
             Component: LoginPage
           }
+        ]
+      },
+
+      /// PROFILE ROUTES
+      {
+        path: "profile",
+        Component: SlidebarLayout,
+        children: [
+          {
+            path: "detail/:username",
+            Component: UserProfilePage,
+          },
         ]
       },
 

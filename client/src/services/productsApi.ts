@@ -15,12 +15,13 @@ export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pag
 }
 
 
-export async function getProductFn(productId: string | undefined) {
+export async function getProductFn(opt: QueryOptionArgs, { productId }: { productId: string | undefined}) {
   if (!productId) return
   const { data } = await authApi.get<ProductResponse>("/products/detail", {
     params: {
       productId
-    }
+    },
+    ...opt,
   })
   return data
 }

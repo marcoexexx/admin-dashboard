@@ -3,8 +3,39 @@ import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { ChangeUserRoleInput, GetUserInput, UploadImageUserInput, UserFilterPagination } from "../schemas/user.schema";
+import { ChangeUserRoleInput, GetUserByUsernameInput, GetUserInput, UploadImageUserInput, UserFilterPagination } from "../schemas/user.schema";
 import { db } from "../utils/db";
+
+export async function getMeProfileHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const userSession = req.user
+
+    if (!userSession) return next(new AppError(400, "Session has expired or user doesn't exist"))
+
+    const user = await db.user.findUnique({
+      where: {
+        id: userSession.id
+      },
+      include: {
+        orders: true,
+        favorites: true,
+        addresses: true,
+        reviews: true,
+        _count: true
+      },
+    })
+
+    res.status(200).json(HttpDataResponse({ user }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
 
 export async function getMeHandler(
   req: Request,
@@ -34,6 +65,29 @@ export async function getUserHandler(
     const user = await db.user.findUnique({
       where: {
         id: userId
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ user }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function getUserByUsernameHandler(
+  req: Request<GetUserByUsernameInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { username } = req.params
+
+    const user = await db.user.findUnique({
+      where: {
+        username
       }
     })
 
@@ -97,6 +151,35 @@ export async function changeUserRoleHandler(
       },
       data: {
         role
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function uploadImageCoverHandler(
+  req: Request<{}, {}, UploadImageUserInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    // @ts-ignore  for mocha testing
+    const user = req.user
+
+    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+
+    const { image } = req.body
+
+    const updatedUser = await db.user.update({
+      where: {
+        id: user.id
+      },
+      data: {
+        coverImage: image
       }
     })
 

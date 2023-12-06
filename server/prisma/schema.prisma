@@ -39,20 +39,41 @@ model Exchange {
 }
 
 model User {
-  id        String       @id @default(uuid())
-  name      String
-  email     String       @unique
-  username  String       @unique
-  password  String
-  role      Role         @default(User)
-  image     String       @default("default_pp.png")
-  verified  Boolean      @default(false)
-  provider  AuthProvider @default(Local)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  favorites Favorites[]
+  id         String       @id @default(uuid())
+  name       String
+  email      String       @unique
+  username   String       @unique
+  password   String
+  role       Role         @default(User)
+  image      String       @default("default_pp.png")
+  coverImage String       @default("default_cover.png")
+  verified   Boolean      @default(false)
+  provider   AuthProvider @default(Local)
+  favorites  Favorites[]
+  orders     Order[]
+  reviews    Review[]
+  accessLogs AccessLog[]
+  addresses  Address[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([email])
+}
+
+model Address {
+  id          String  @id @default(uuid())
+  isDefault   Boolean
+  name        String
+  phone       String
+  state       String
+  township    String
+  fullAddress String
+  user        User    @relation(fields: [userId], references: [id])
+  userId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Favorites {
@@ -151,10 +172,11 @@ model Product {
   likedUsers    Favorites[]
   quantity      Int
   reviews       Review[]
+  orders        Order[]
   salesCategory ProductSalesCategory[]
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Specification {
@@ -171,8 +193,44 @@ model Specification {
 model Review {
   id        String  @id @default(uuid())
   comment   String
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
   product   Product @relation(fields: [productId], references: [id])
   productId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderState {
+  Pending
+  Processing
+  Shipped
+  Delivered
+  Cancelled
+}
+
+model Order {
+  id        String     @id @default(uuid())
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product    @relation(fields: [productId], references: [id])
+  productId String
+  state     OrderState @default(Pending)
+  quantity  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AccessLog {
+  id       String   @id @default(uuid())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   String
+  browser  String
+  ip       String
+  platform String
+  date     DateTime @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

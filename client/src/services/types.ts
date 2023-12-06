@@ -36,13 +36,20 @@ interface IUser {
   name: string,
   email: string,
   password: string,
+  username: string,
   role: Role,
-  image?: string,
+  image: string,
+  coverImage: string
   verified: boolean,
   provider: UserProvider,
   createdAt: string | Date
   updatedAt: string | Date
 }
+
+
+// TODO: order interface
+
+// TODO: accessLog interface
 
 
 interface IProduct {
@@ -169,16 +176,68 @@ type QueryOptionArgs = {
   meta: Record<string, unknown> | undefined
 }
 
+type IAddress = {
+  id: string,
+  isDefault: boolean
+  name: string
+  phone: string
+  state: string
+  township: string
+  fullAddress: string
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+type OrderState = 
+  | "Pending"
+  | "Processing"
+  | "Shipped"
+  | "Delivered"
+  | "Cancelled"
+
+
+type IOrder = {
+  id: string,
+  state: OrderState
+  quantity: number
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+type IReview = {
+  id: string,
+  createdAt: string | Date
+  updatedAt: string | Date
+  comment: string
+}
+
+type IUserProfile = IUser & {
+  orders: IOrder[],
+  favorites: IProduct[],
+  addresses: IAddress[],
+  reviews: IReview[],
+  _count: {
+    favorites: number,
+    orders: number,
+    reviews: number,
+    accessLogs: number,
+    addresses: number
+  }
+}
 
 type LoginResponse = Omit<HttpResponse, "message"> & {accessToken: string};
 
 type UserResponse = Omit<HttpResponse, "message"> & {user: IUser};
 
+type UserProfileResponse = Omit<HttpResponse, "message"> & {
+  user: IUserProfile
+};
+
 type CategoryResponse = Omit<HttpResponse, "message"> & { category: ICategory };
 
 type SalesCategoryResponse = Omit<HttpResponse, "message"> & { category: ISalesCategory };
 
-type ProductResponse = Omit<HttpResponse, "message"> & IProduct;
+type ProductResponse = Omit<HttpResponse, "message"> & { product: IProduct };
 
 type BrandResponse = Omit<HttpResponse, "message"> & { brand: IBrand };
 

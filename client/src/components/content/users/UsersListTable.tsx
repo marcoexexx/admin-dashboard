@@ -7,6 +7,17 @@ import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { UsersActions } from ".";
 import { getUserPermissionsFn } from "@/services/permissionsApi";
+import { LinkLabel } from "@/components";
+
+
+function RenderUsernameLabel({user}: {user: IUser}) {
+  const navigate = useNavigate()
+  const to = "/profile/detail/" + user.username
+
+  return <LinkLabel onClick={() => navigate(to)}>
+    {user.name}
+  </LinkLabel>
+}
 
 
 const columnData: TableColumnHeader<IUser>[] = [
@@ -86,6 +97,8 @@ export function UsersListTable(props: UsersListTableProps) {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell align="left">Image</TableCell>
+
               {columnHeader.map(header => (
                 <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
               ))}
@@ -98,6 +111,13 @@ export function UsersListTable(props: UsersListTableProps) {
                 hover
                 key={row.id}
               >
+                <TableCell align="left">
+                  <img 
+                    src={"/public/profile.png"}  // TODO: image upload
+                    alt={row.username} 
+                    height={60}
+                  />
+                </TableCell>
                 {columnData.map(col => {
                   const key = col.id as keyof typeof row
 
@@ -111,7 +131,7 @@ export function UsersListTable(props: UsersListTableProps) {
                         noWrap
                       >
                         {key === "name" && me.id === row.id
-                        ? <a href={"/me/profile/"+row.id}>{row[key]}</a>
+                        ? <RenderUsernameLabel user={row} />
                         : row[key] as string}
                       </Typography>
                     </TableCell>

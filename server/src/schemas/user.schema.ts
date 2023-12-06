@@ -10,7 +10,13 @@ export type Role =
 
 export type UserFilterPagination = {
   filter?: any,
-  pagination?: Pagination
+  pagination?: Pagination,
+  include?: {
+    orders?: boolean,
+    addresses?: boolean,
+    favorites?: boolean,
+    reviews?: boolean
+  }
 }
 
 
@@ -49,6 +55,12 @@ export const getUserSchema = object({
   ...params
 })
 
+export const getUserByUsernameSchema = object({
+  params: object({
+    username: string({ required_error: "Username is required" })
+  })
+})
+
 export const changeUserRoleSchema = object({
   ...params,
   body: object({
@@ -66,5 +78,6 @@ export const uploadImageProfileSchema = object({
 export type CreateUserInput = z.infer<typeof createUserSchema>["body"]
 export type LoginUserInput = z.infer<typeof loginUserSchema>["body"]
 export type GetUserInput = z.infer<typeof getUserSchema>["params"]
+export type GetUserByUsernameInput = z.infer<typeof getUserByUsernameSchema>["params"]
 export type ChangeUserRoleInput = z.infer<typeof changeUserRoleSchema>["body"]
 export type UploadImageUserInput = z.infer<typeof uploadImageProfileSchema>["body"]

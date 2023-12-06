@@ -4,7 +4,12 @@ declare global {
   namespace Express {
     export interface Request {
       user?: IUser,
-      files?: Express.Multer.File[]
+      files?: Express.Multer.File[],
+      useragent: {
+        platform: string,
+        browser: string,
+        version: string
+      }
     }
   }
 }
