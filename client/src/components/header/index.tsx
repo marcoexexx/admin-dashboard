@@ -2,7 +2,10 @@ import { useStore } from "@/hooks"
 import { Box, Divider, IconButton, Stack, Tooltip, alpha, lighten, styled } from "@mui/material"
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 import CloseTwoToneIcon from '@mui/icons-material/CloseTwoTone';
-import { HeaderMenu, HeaderUserBox } from "@/components";
+import HeaderMenu from "./HeaderMenu";
+import HeaderUserBox from "./HeaderUserBox";
+import HeaderButtons from "./HeaderButtons";
+
 
 const MainContent = styled(Box)(({theme}) => ({
   height: theme.colors.layout.header.height,
@@ -33,7 +36,7 @@ const MainContent = styled(Box)(({theme}) => ({
       )}`
 }))
 
-export function Header() {
+export default function Header() {
   const { state, dispatch } = useStore()
   const { slidebar } = state
 
@@ -48,7 +51,7 @@ export function Header() {
       </Stack>
 
       <Box display="flex" alignItems="center">
-        {/* <HeaderButtons /> */}
+        <HeaderButtons />
         <HeaderUserBox />
         <Box component="span" sx={{ ml: 2, display: { lg: "none", xs: "inline-block" } }}>
           <Tooltip arrow title="Toggle Menu">

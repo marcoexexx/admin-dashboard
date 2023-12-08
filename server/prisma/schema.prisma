@@ -45,8 +45,8 @@ model User {
   username   String       @unique
   password   String
   role       Role         @default(User)
-  image      String       @default("default_pp.png")
-  coverImage String       @default("default_cover.png")
+  image      String?
+  coverImage String?
   verified   Boolean      @default(false)
   provider   AuthProvider @default(Local)
   favorites  Favorites[]

@@ -1,6 +1,8 @@
 import { useStore } from "@/hooks"
-import { Box, Divider, Drawer, Stack, alpha, darken, lighten, styled, useTheme } from "@mui/material"
-import { Logo, SlidebarMenu } from "."
+import { Box, Divider, Drawer, Stack, darken, styled, useTheme } from "@mui/material"
+import Logo from "./Logo"
+import SlidebarMenu from "./SlidebarMenu"
+
 
 const MainContent = styled(Box)(({theme}) => ({
   width: theme.colors.layout.sidebar.width,
@@ -12,7 +14,7 @@ const MainContent = styled(Box)(({theme}) => ({
   paddingBottom: "68px",
 }))
 
-export function Slider() {
+export default function Slider() {
   const { state, dispatch } = useStore()
 
   const { slidebar } = state
@@ -32,16 +34,17 @@ export function Slider() {
         position: "fixed",
         left: 0,
         top: 0,
-        background: theme.palette.mode === "dark"
-          ? alpha(lighten(theme.colors.layout.header.background, 0.1), 0.5)
-          : darken(theme.colors.alpha.black[100], 0.5),
+        // background: theme.palette.mode === "dark"
+        //   ? alpha(lighten(theme.colors.layout.header.background, 0.1), 0.5)
+        //   : darken(theme.colors.alpha.black[100], 0.5),
+        background: theme.palette.secondary.main,
         boxShadow: theme.palette.mode === "dark"
           ? theme.colors.layout.sidebar.boxShadow
           : "none"
       }}>
         <Stack flexDirection="column">
           <Box mt={3}>
-            <Box mx={2} sx={{ width: 52 }}>
+            <Box mx={2}>
               <Logo />
             </Box>
           </Box>

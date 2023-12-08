@@ -2,6 +2,7 @@ import { Avatar, Box, Card, CardMedia, IconButton, Tooltip, Typography, styled }
 import { MuiButton } from "@/components/ui"
 import { UploadCoverPhoto, UploadProfilePicture } from "@/components/image-uploader"
 import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone"
+import { useNavigate } from "react-router-dom";
 
 const AvatarWrapper = styled(Card)(({ theme }) => ({
   position: "relative",
@@ -58,11 +59,18 @@ interface ProfileCoverProps {
 }
 
 export function ProfileCover({user}: ProfileCoverProps) {
+  const navigate = useNavigate()
+
+  const handleViewAs = () => {
+    navigate(`/profile/detail/${user.username}`)
+  }
+
+
   return (
     <>
       <Box display="flex" mb={3}>
         <Tooltip arrow placement="top" title="Go back">
-          <IconButton color="primary" sx={{ p: 2, mr: 2 }}>
+          <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={() => navigate("/")}>
             <ArrowBackTwoToneIcon />
           </IconButton>
         </Tooltip>
@@ -109,7 +117,7 @@ export function ProfileCover({user}: ProfileCoverProps) {
             <MuiButton size="small" variant="contained">
               Edit
             </MuiButton>
-            <MuiButton size="small" sx={{ mx: 1 }} variant="outlined">
+            <MuiButton size="small" sx={{ mx: 1 }} variant="outlined" onClick={handleViewAs}>
               View as
             </MuiButton>
             {/* <IconButton color="primary" sx={{ p: 0.5 }}> */}

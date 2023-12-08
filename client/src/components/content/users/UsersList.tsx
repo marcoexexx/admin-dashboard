@@ -4,12 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { getUsersFn } from "@/services/usersApi";
 import { SuspenseLoader } from "@/components";
 import { UsersListTable } from ".";
+import { getMeFn } from "@/services/authApi";
 
 export function UsersList() {
   const { state: {userFilter} } = useStore()
 
   const { data: me, isError: isMeError, isLoading: isMeLoading, error: meError } = useQuery({
     queryKey: ["authUser"],
+    queryFn: getMeFn,
     select: (data: UserResponse) => data.user,
   })
 

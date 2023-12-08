@@ -1,8 +1,10 @@
 import { alpha, darken, lighten } from "@mui/material"
 
 export const themeColors = {
-  primary: '#5569ff',
-  secondary: '#6E759F',
+  // primary: '#5569ff',
+  // secondary: '#6E759F',
+  primary: "#068c94",
+  secondary: '#002734',
   info: '#33C2FF',
   success: '#57CA22',
   warning: '#FFA319',

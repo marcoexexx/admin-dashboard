@@ -1,4 +1,5 @@
-import { Header, Slider } from "@/components";
+import Slider from "@/components/slider";
+import Header from "@/components/header";
 import { Box, alpha, lighten, styled, useTheme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
