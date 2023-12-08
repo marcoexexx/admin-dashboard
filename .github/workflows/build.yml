@@ -14,17 +14,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Build client
-      working-directory: client
-      run: |
-        cd ../../client
-        pnpm install
-        pnpm run build
+    # - name: Build client
+    #   working-directory: client
+    #   run: |
+    #     cd ./client
+    #     pnpm install
+    #     pnpm run build
 
     - name: Build server
       working-directory: server
       run: |
-        cd ../../server
+        cd ./server
         pnpm install
         pnpm run build
 
