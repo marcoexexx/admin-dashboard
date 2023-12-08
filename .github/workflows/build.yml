@@ -17,14 +17,14 @@ jobs:
     - name: Build client
       working-directory: client
       run: |
-        cd ../client
+        cd ./client
         pnpm install
         pnpm run build
 
     - name: Build server
       working-directory: server
       run: |
-        cd ../server
+        cd ./server
         pnpm install
         pnpm run build
 
