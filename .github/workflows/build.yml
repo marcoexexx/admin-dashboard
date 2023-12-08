@@ -1,0 +1,42 @@
+name: Buid
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - github-action
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - run: npm install -g pnpm
+
+      - name: Install Dependencies
+        run: |
+          cd server
+          pnpm install
+          cd ../client
+          pnpm install
+
+      - name: Build Server
+        run: |
+          cd server
+          pnpm run build
+
+      - name: Build Client
+        run: |
+          cd client
+          pnpm run build
