@@ -28,5 +28,12 @@ export const config = {
     adminUserId: process.env.TEST_ADMIN_USER_ID,
     userId: process.env.TEST_USER_ID,
     productId: process.env.TEST_PRODUCT_ID
-  }
+  },
+
+  smtp: {
+    host: process.env.EMAIL_HOST,
+    pass: process.env.EMAIL_PASS,
+    port: process.env.EMAIL_PORT,
+    user: process.env.EMAIL_USER
+  },
 }

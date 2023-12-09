@@ -16,6 +16,9 @@ CREATE TYPE "ProductType" AS ENUM ('Switch', 'Accessory', 'Router', 'Wifi');
 -- CreateEnum
 CREATE TYPE "PriceUnit" AS ENUM ('MMK', 'USD', 'SGD', 'THB', 'KRW');
 
+-- CreateEnum
+CREATE TYPE "OrderState" AS ENUM ('Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled');
+
 -- CreateTable
 CREATE TABLE "Exchange" (
     "id" TEXT NOT NULL,
@@ -37,9 +40,10 @@ CREATE TABLE "User" (
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'User',
-    "image" TEXT NOT NULL DEFAULT 'default_pp.png',
-    "coverImage" TEXT NOT NULL DEFAULT 'default_cover.png',
+    "image" TEXT,
+    "coverImage" TEXT,
     "verified" BOOLEAN NOT NULL DEFAULT false,
+    "verificationCode" TEXT,
     "provider" "AuthProvider" NOT NULL DEFAULT 'Local',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -172,6 +176,7 @@ CREATE TABLE "Order" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
+    "state" "OrderState" NOT NULL DEFAULT 'Pending',
     "quantity" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

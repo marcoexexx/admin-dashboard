@@ -1,3 +1,4 @@
+import getConfig from "@/libs/getConfig";
 import { Box, Typography, styled } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -35,7 +36,7 @@ export default function Logo() {
         onClick={handleOnClickLogo}
       />
 
-      <LogoLabel>Rangoon</LogoLabel>
+      <LogoLabel>{getConfig("appName")}</LogoLabel>
     </MainContent>
   )
 }

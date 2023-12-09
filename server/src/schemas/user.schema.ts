@@ -74,6 +74,12 @@ export const uploadImageProfileSchema = object({
   })
 })
 
+export const veriffyEmailSchema = object({
+  params: object({
+    verificationCode: string()
+  })
+})
+
 
 export type CreateUserInput = z.infer<typeof createUserSchema>["body"]
 export type LoginUserInput = z.infer<typeof loginUserSchema>["body"]
@@ -81,3 +87,4 @@ export type GetUserInput = z.infer<typeof getUserSchema>["params"]
 export type GetUserByUsernameInput = z.infer<typeof getUserByUsernameSchema>["params"]
 export type ChangeUserRoleInput = z.infer<typeof changeUserRoleSchema>["body"]
 export type UploadImageUserInput = z.infer<typeof uploadImageProfileSchema>["body"]
+export type VerificationEmailInput = z.infer<typeof veriffyEmailSchema>["params"]

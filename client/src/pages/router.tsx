@@ -21,6 +21,8 @@ const UpdateExchangePage = Loader(lazy(() => import("@/pages/exchanges/UpdateExc
 const RegisterPage = Loader(lazy(() => import("@/pages/register.page")))
 const LoginPage = Loader(lazy(() => import("@/pages/login.page")))
 
+const VerifyEmailPage = Loader(lazy(() => import("@/pages/verifyEmail.page")))
+
 // produts
 const ListProductPage = Loader(lazy(() => import("@/pages/products/ListProduct")))
 const CreateProductPage = Loader(lazy(() => import("@/pages/products/CreateProduct")))
@@ -342,14 +344,14 @@ const routes = createBrowserRouter([
     ]
   },
 
-  // TEST ROUTES
   {
-    path: "test",
-    Component: SlidebarLayout,
+    path: "verify-email/:verifyEmailCode",
+    Component: BaseLayout,
+    ErrorBoundary,
     children: [
       {
-        path: "brandinput",
-        Component: CreateProductPage
+        path: "",
+        Component: VerifyEmailPage
       }
     ]
   }

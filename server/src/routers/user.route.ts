@@ -10,12 +10,12 @@ import { userPermission } from "../utils/auth/permissions";
 
 const router = Router()
 
-router.use(deserializeUser, requiredUser)
+// router.use(deserializeUser, requiredUser)
 
 
 router.route("")
   .get(
-    permissionUser("read", userPermission),
+    // permissionUser("read", userPermission),
     getUsersHandler
   )
 
