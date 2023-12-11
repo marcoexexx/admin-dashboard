@@ -127,7 +127,6 @@ export function ProductsList() {
   }
 
   function handlePublishedProduct(product: IProduct) {
-    console.log(product)
     publishedProduct({ 
       id: product.id, 
       product: {
