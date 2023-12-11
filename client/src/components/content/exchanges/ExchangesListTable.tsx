@@ -169,9 +169,15 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
                   onChange={handleSelectAll}
                 />
               </TableCell>
-              {columnHeader.map(header => (
-                <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-              ))}
+
+              {columnHeader.map(header => {
+                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
+                return header.id !== "actions"
+                  ? render
+                  : isAllowedUpdateExchange && isAllowedDeleteExchange
+                  ? render
+                  : null
+              })}
             </TableRow>
           </TableHead>
 
@@ -213,44 +219,46 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
                   )
                 })}
 
-                <TableCell align="right">
-                  {isAllowedUpdateExchange
-                  ? <Tooltip title="Edit Product" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.primary.lighter
-                          },
-                          color: theme.palette.primary.main
-                        }}
-                        onClick={handleClickUpdateAction(row.id)}
-                        color="inherit"
-                        size="small"
-                      >
-                        <EditTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  : null}
-                  
-                  {isAllowedDeleteExchange
-                  ? <Tooltip title="Delete Product" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.error.lighter
-                          },
-                          color: theme.palette.error.main
-                        }}
-                        onClick={handleClickDeleteAction(row.id)}
-                        color="inherit"
-                        size="small"
-                      >
-                        <DeleteTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  : null}
-                  
-                </TableCell>
+                {isAllowedUpdateExchange && isAllowedDeleteExchange
+                ? <TableCell align="right">
+                    {isAllowedUpdateExchange
+                    ? <Tooltip title="Edit Product" arrow>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.primary.lighter
+                            },
+                            color: theme.palette.primary.main
+                          }}
+                          onClick={handleClickUpdateAction(row.id)}
+                          color="inherit"
+                          size="small"
+                        >
+                          <EditTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    : null}
+                    
+                    {isAllowedDeleteExchange
+                    ? <Tooltip title="Delete Product" arrow>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.error.lighter
+                            },
+                            color: theme.palette.error.main
+                          }}
+                          onClick={handleClickDeleteAction(row.id)}
+                          color="inherit"
+                          size="small"
+                        >
+                          <DeleteTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    : null}
+                    
+                  </TableCell>
+                : null}
               </TableRow>
             })}
           </TableBody>

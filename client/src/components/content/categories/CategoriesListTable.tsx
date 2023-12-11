@@ -154,9 +154,15 @@ export function CategoriesListTable(props: CategoriesListTableProps) {
                   onChange={handleSelectAll}
                 />
               </TableCell>
-              {columnHeader.map(header => (
-                <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-              ))}
+
+              {columnHeader.map(header => {
+                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
+                return header.id !== "actions"
+                  ? render
+                  : isAllowedUpdateCategory && isAllowedDeleteCategory
+                  ? render
+                  : null
+              })}
             </TableRow>
           </TableHead>
 
@@ -189,43 +195,45 @@ export function CategoriesListTable(props: CategoriesListTableProps) {
                   </Typography>
                 </TableCell>)}
 
-                <TableCell align="right">
-                  {isAllowedUpdateCategory
-                  ?  <Tooltip title="Edit Product" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.primary.lighter
-                          },
-                          color: theme.palette.primary.main
-                        }}
-                        color="inherit"
-                        size="small"
-                        onClick={handleClickUpdateAction(row.id)}
-                      >
-                        <EditTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  : null}
+                {isAllowedUpdateCategory && isAllowedDeleteCategory
+                ? <TableCell align="right">
+                    {isAllowedUpdateCategory
+                    ?  <Tooltip title="Edit Product" arrow>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.primary.lighter
+                            },
+                            color: theme.palette.primary.main
+                          }}
+                          color="inherit"
+                          size="small"
+                          onClick={handleClickUpdateAction(row.id)}
+                        >
+                          <EditTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    : null}
 
-                  {isAllowedDeleteCategory
-                  ? <Tooltip title="Delete Product" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.error.lighter
-                          },
-                          color: theme.palette.error.main
-                        }}
-                        onClick={handleClickDeleteAction(row.id)}
-                        color="inherit"
-                        size="small"
-                      >
-                        <DeleteTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  : null}
-                </TableCell>
+                    {isAllowedDeleteCategory
+                    ? <Tooltip title="Delete Product" arrow>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.error.lighter
+                            },
+                            color: theme.palette.error.main
+                          }}
+                          onClick={handleClickDeleteAction(row.id)}
+                          color="inherit"
+                          size="small"
+                        >
+                          <DeleteTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    : null}
+                  </TableCell>
+                : null}
               </TableRow>
             })}
           </TableBody>

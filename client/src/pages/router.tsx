@@ -66,16 +66,19 @@ const routes = createBrowserRouter([
             path: "",
             Component: HomePage
           },
+          {
+            path: "overview",
+            element: <Navigate to="/" />
+          },
+          {
+            path: "home",
+            element: <Navigate to="/" />
+          },
 
           {
             path: "me",
             loader: meProfileLoader,
             Component: ManagementUserProfilePage
-          },
-
-          {
-            path: "home",
-            element: <Navigate to="/" />
           },
 
           /// EXCHANGES ROUTES

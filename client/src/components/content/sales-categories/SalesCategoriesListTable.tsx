@@ -154,9 +154,15 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                   onChange={handleSelectAll}
                 />
               </TableCell>
-              {columnHeader.map(header => (
-                <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-              ))}
+
+              {columnHeader.map(header => {
+                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
+                return header.id !== "actions"
+                  ? render
+                  : isAllowedUpdateSalesCategory && isAllowedDeleteSalesCategory
+                  ? render
+                  : null
+              })}
             </TableRow>
           </TableHead>
 
@@ -189,43 +195,45 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                   </Typography>
                 </TableCell>)}
 
-                <TableCell align="right">
-                  {isAllowedUpdateSalesCategory
-                  ?  <Tooltip title="Edit Sales category" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.primary.lighter
-                          },
-                          color: theme.palette.primary.main
-                        }}
-                        color="inherit"
-                        size="small"
-                        onClick={handleClickUpdateAction(row.id)}
-                      >
-                        <EditTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  : null}
+                {isAllowedUpdateSalesCategory && isAllowedDeleteSalesCategory
+                ? <TableCell align="right">
+                    {isAllowedUpdateSalesCategory
+                    ?  <Tooltip title="Edit Sales category" arrow>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.primary.lighter
+                            },
+                            color: theme.palette.primary.main
+                          }}
+                          color="inherit"
+                          size="small"
+                          onClick={handleClickUpdateAction(row.id)}
+                        >
+                          <EditTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    : null}
 
-                  {isAllowedDeleteSalesCategory
-                  ? <Tooltip title="Delete Sales category" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.error.lighter
-                          },
-                          color: theme.palette.error.main
-                        }}
-                        onClick={handleClickDeleteAction(row.id)}
-                        color="inherit"
-                        size="small"
-                      >
-                        <DeleteTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  : null}
-                </TableCell>
+                    {isAllowedDeleteSalesCategory
+                    ? <Tooltip title="Delete Sales category" arrow>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.error.lighter
+                            },
+                            color: theme.palette.error.main
+                          }}
+                          onClick={handleClickDeleteAction(row.id)}
+                          color="inherit"
+                          size="small"
+                        >
+                          <DeleteTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    : null}
+                  </TableCell>
+                : null}
               </TableRow>
             })}
           </TableBody>
