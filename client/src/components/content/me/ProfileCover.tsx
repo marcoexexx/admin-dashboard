@@ -65,6 +65,9 @@ export function ProfileCover({user}: ProfileCoverProps) {
     navigate(`/profile/detail/${user.username}`)
   }
 
+  const profilePicture = user.image || "/profile_pp.png"
+  const coverPhoto = user.coverImage || "/outdoor.svg"
+
 
   return (
     <>
@@ -86,14 +89,14 @@ export function ProfileCover({user}: ProfileCoverProps) {
       </Box>
 
       <CardCover>
-        <CardMedia image={user.coverImage} />
+        <CardMedia image={coverPhoto} />
         <CardCoverAction>
           <UploadCoverPhoto />
         </CardCoverAction>
       </CardCover>
 
       <AvatarWrapper>
-        <Avatar variant="rounded" alt={user.name} src={user.image} />
+        <Avatar variant="rounded" alt={user.name} src={profilePicture} />
         <ButtonUploadWrapper>
           <UploadProfilePicture />
         </ButtonUploadWrapper>
