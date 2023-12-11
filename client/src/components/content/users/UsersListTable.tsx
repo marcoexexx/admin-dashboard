@@ -119,7 +119,9 @@ export function UsersListTable(props: UsersListTableProps) {
                         gutterBottom
                         noWrap
                       >
-                        <RenderUsernameLabel user={row} me={me} />
+                        {key === "name"
+                        ? <RenderUsernameLabel user={row} me={me} />
+                        : row[key] as string}
                       </Typography>
                     </TableCell>
                   )
