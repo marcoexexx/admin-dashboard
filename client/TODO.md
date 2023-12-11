@@ -18,14 +18,14 @@
  - [ ] backend product.controller.ts -> many to many update
  - [ ] bugs -> all delete products
 
- - [ ] product publish -> relation specs bug
+ - [x] product publish -> relation specs bug
  - [ ] filter -> specs products
  - [ ] update product
  - [ ] excel -> multi create products
 
  - [x] permissions update form
 
- - [ ] user table image :: avatar
+ - [x] user table image :: acatar
 
  - [ ] status/unauthorized -> redirect
  - [x] register -> login/ 
@@ -41,7 +41,7 @@
  - [ ] image upload
  - [ ] product image append -> [ + ] in product detail view
  - [ ] product image form -> multi image with create form
- - [ ] user table profile picture
+ - [x] user table profile picture
 
  - [x] Bulk action inject permissions
  - [x] autocomplete add button padding
