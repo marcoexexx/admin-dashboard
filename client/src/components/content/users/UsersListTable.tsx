@@ -7,7 +7,7 @@ import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { UsersActions } from ".";
 import { getUserPermissionsFn } from "@/services/permissionsApi";
-import { RenderImageLabel, RenderUsernameLabel } from "@/components/table-labels";
+import { RenderProileAvatar, RenderUsernameLabel } from "@/components/table-labels";
 
 
 const columnData: TableColumnHeader<IUser>[] = [
@@ -102,9 +102,9 @@ export function UsersListTable(props: UsersListTableProps) {
                 key={row.id}
               >
                 <TableCell align="left">
-                  <RenderImageLabel
+                  <RenderProileAvatar
                     src={row.image}
-                    alt={row.username}
+                    alt={row.name}
                   />
                 </TableCell>
                 {columnData.map(col => {
