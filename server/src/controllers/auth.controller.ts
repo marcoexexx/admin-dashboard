@@ -82,7 +82,10 @@ export async function registerUserHandler(
     try {
       await new Email(user, redirectUrl).sendVerificationCode()
 
-      res.status(201).json(HttpDataResponse({ user }))
+      res.status(201).json(HttpDataResponse({ 
+        user,
+        redirectUrl: getConfig("nodeEnv") === "development" ? redirectUrl : undefined
+      }))
     } catch (err: any) {
       user.verificationCode = null
 

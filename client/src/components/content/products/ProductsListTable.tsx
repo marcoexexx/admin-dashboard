@@ -246,9 +246,14 @@ export function ProductsListTable(props: ProductsListTableProps) {
 
               <TableCell align="left">Image</TableCell>
 
-              {columnHeader.map(header => (
-                <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-              ))}
+              {columnHeader.map(header => {
+                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
+                return header.id !== "actions"
+                  ? render
+                  : onlyAdminAccess && isAllowedUpdateProduct && isAllowedDeleteProduct
+                  ? render
+                  : null
+              })}
             </TableRow>
           </TableHead>
 
@@ -305,7 +310,8 @@ export function ProductsListTable(props: ProductsListTableProps) {
                   {getStatusLabel(row.status.toLowerCase())}
                 </TableCell>
 
-                <TableCell align="right">
+                {onlyAdminAccess && isAllowedUpdateProduct && isAllowedDeleteProduct
+                ? <TableCell align="right">
                   <Box
                     display="flex"
                     flexDirection="row"
@@ -363,6 +369,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
                     : null}
                   </Box>
                 </TableCell>
+                : null}
               </TableRow>
             })}
           </TableBody>

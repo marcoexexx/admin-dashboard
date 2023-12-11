@@ -40,11 +40,12 @@ export function RegisterForm() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: registerUserFn,
-    onSuccess: () => {
+    onSuccess: (data) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success create an acount: check your email",
         severity: "success"
       } })
+      console.log({ _devOnly: { redirectUrl: data.redirectUrl } })
       navigate(from)
     },
     onError: () => {

@@ -227,7 +227,7 @@ type IUserProfile = IUser & {
 
 type LoginResponse = Omit<HttpResponse, "message"> & {accessToken: string};
 
-type UserResponse = Omit<HttpResponse, "message"> & {user: IUser};
+type UserResponse = Omit<HttpResponse, "message"> & {user: IUser, redirectUrl: string | undefined };
 
 type UserProfileResponse = Omit<HttpResponse, "message"> & {
   user: IUserProfile
