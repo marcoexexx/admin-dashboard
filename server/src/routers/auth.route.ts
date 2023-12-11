@@ -12,6 +12,11 @@ const router = Router()
 if (getConfig("nodeEnv") === "development") router.get("/delete/:userId", async (req, res) => {
   const { db } = await import("../utils/db")
   const {userId} = req.params
+  await db.accessLog.deleteMany({
+    where: {
+      userId
+    }
+  })
   await db.user.delete({
     where: {
       id: userId

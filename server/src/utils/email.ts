@@ -7,7 +7,7 @@ import logging from "../middleware/logging/logging"
 
 
 const smtp = getConfig("smtp")
-console.log({ smtp })
+
 
 export default class Email {
   username: string
@@ -36,22 +36,19 @@ export default class Email {
   }
 
   private async send(template: string, subject: string) {
-    // TODO: make html template
-    // const html = pug.renderFile(`${__dirname}/../views/${template}.pug`, {
-    //   username: this.username,
-    //   subject,
-    //   url: this.url,
-    // })
+    const html = pug.renderFile(`${__dirname}/../views/${template}.pug`, {
+      username: this.username,
+      subject,
+      url: this.url,
+    })
 
     const mailOptions = {
       from: this.from,
       to: this.to,
       subject,
-      text: this.url,
-      // text: convert(html),
-      // html
+      text: convert(html),
+      html
     }
-    console.log({ mailOptions, smtp })
 
     const info = await this.newTransport().sendMail(mailOptions)
     logging.info(nodemailer.getTestMessageUrl(info))

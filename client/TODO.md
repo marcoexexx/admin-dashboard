@@ -26,9 +26,10 @@
  - [x] permissions update form
 
  - [ ] status/unauthorized -> redirect
- - [ ] register -> login/ 
- - [ ] click email link -> _blank 
- - [ ] regex for password -> input-fields
+ - [x] register -> login/ 
+ - [x] click email link -> _blank 
+ - [x] regex for password -> input-fields
+ - [x] auth loading button
 
  - [x] modalForm -> update-
 

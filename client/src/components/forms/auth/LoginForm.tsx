@@ -1,6 +1,6 @@
 import { loginUserFn } from "@/services/authApi"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Stack, TextField, styled } from "@mui/material"
+import { Stack, TextField, styled } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { object, string, z } from "zod"
 import { useStore } from "@/hooks"
@@ -9,6 +9,8 @@ import { useCookies } from "react-cookie"
 import { useEffect } from "react"
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
 import { PasswordInputField } from "@/components/input-fields"
+import { LoadingButton } from "@mui/lab"
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export const MuiTextFieldWrapper = styled(TextField)(({theme}) => ({
   '& .MuiOutlinedInput-root': {
@@ -53,8 +55,9 @@ export function LoginForm() {
     if (cookies.logged_in) navigate("/home")
   }, [cookies.logged_in])
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: loginUserFn,
+    // mutationFn: async (_: LoginUserInput) => new Promise(resolve => setTimeout(resolve, 2000)),
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success login.",
@@ -62,9 +65,9 @@ export function LoginForm() {
       } })
       navigate(from)
     },
-    onError: () => {
+    onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Failed login.",
+        message: `Failed login: ${err.response.data.message}`,
         severity: "error"
       } })
     }
@@ -86,7 +89,16 @@ export function LoginForm() {
         <MuiTextFieldWrapper {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
         <PasswordInputField fieldName="password" />
 
-        <Button variant="contained" fullWidth type="submit">Login</Button>
+        <LoadingButton 
+          variant="contained" 
+          fullWidth
+          type="submit"
+          loading={isPending}
+          loadingPosition="start"
+          startIcon={<AccountCircleIcon />}
+        >
+          Login
+        </LoadingButton>
       </FormProvider>
     </Stack>
   )

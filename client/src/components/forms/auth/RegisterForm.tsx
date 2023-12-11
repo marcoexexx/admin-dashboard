@@ -1,6 +1,6 @@
 import { registerUserFn } from "@/services/authApi"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
 import { object, string, z } from "zod"
@@ -8,6 +8,8 @@ import { useStore } from "@/hooks"
 import { useNavigate } from "react-router-dom"
 import { MuiTextFieldWrapper } from "."
 import { PasswordInputField } from "@/components/input-fields"
+import { LoadingButton } from "@mui/lab"
+import AccountCircleIcon from "@mui/icons-material/AccountCircle"
 
 const registerUserSchema = object({
   name: string({ required_error: "Username is required" })
@@ -16,6 +18,10 @@ const registerUserSchema = object({
   email: string({ required_error: "Email is required"})
     .email(),
   password: string({ required_error: "Password id required" })
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      { message: "Password must contain special characters, a number, a capital letter, and a small letter" }
+    )
     .min(8)
     .max(32),
   passwordConfirm: string({ required_error: "Please confirm your password" })
@@ -32,7 +38,7 @@ export function RegisterForm() {
   const navigate = useNavigate()
   const from = "/auth/login"
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: registerUserFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -67,7 +73,16 @@ export function RegisterForm() {
         <PasswordInputField fieldName="password" />
         <PasswordInputField fieldName="passwordConfirm" />
 
-        <Button variant="contained" fullWidth type="submit">Sign Up</Button>
+        <LoadingButton 
+          variant="contained" 
+          fullWidth
+          type="submit"
+          loading={isPending}
+          loadingPosition="start"
+          startIcon={<AccountCircleIcon />}
+        >
+          Login
+        </LoadingButton>
       </FormProvider>
     </Stack>
   )
