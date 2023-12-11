@@ -64,3 +64,10 @@ export async function loginUserFn(user: LoginUserInput) {
   const res = await authApi.post<UserResponse>("auth/login", user)
   return res.data
 }
+
+
+export async function verifyEmailFn(opt: QueryOptionArgs, verificationCode: string | undefined) {
+  if (!verificationCode) return
+  const res = await authApi.get<HttpResponse>(`auth/verifyEmail/${verificationCode}`, opt);
+  return res.data
+}

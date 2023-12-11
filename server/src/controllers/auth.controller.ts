@@ -1,16 +1,20 @@
+import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
+
 import { CookieOptions, NextFunction, Request, Response } from "express";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import bcrypt from 'bcryptjs'
-import getConfig from "../utils/getConfig";
-import { CreateUserInput, LoginUserInput, Role } from "../schemas/user.schema";
-import { db } from "../utils/db";
+import { CreateUserInput, LoginUserInput, Role, VerificationEmailInput } from "../schemas/user.schema";
 import { HttpDataResponse, HttpResponse } from "../utils/helper";
-import logging from "../middleware/logging/logging";
-import AppError from "../utils/appError";
-import redisClient from "../utils/connectRedis";
 import { signToken, verifyJwt } from "../utils/auth/jwt";
 import { getGoogleAuthToken, getGoogleUser } from "../services/googleOAuth.service";
 import { generateRandomUsername } from "../utils/generateRandomUsername";
+import { createVerificationCode } from "../utils/createVeriicationCode";
+import { db } from "../utils/db";
+import AppError from "../utils/appError";
+import redisClient from "../utils/connectRedis";
+import getConfig from "../utils/getConfig";
+import logging from "../middleware/logging/logging";
+import Email from "../utils/email";
 
 const cookieOptions: CookieOptions = {
   httpOnly: true,
@@ -31,7 +35,7 @@ const refreshTokenCookieOptions: CookieOptions = {
   maxAge: getConfig("refreshTokenExpiresIn") * 1000
 }
 
-// TODO: email verification
+
 export async function registerUserHandler(
   req: Request<{}, {}, CreateUserInput>,
   res: Response,
@@ -48,26 +52,86 @@ export async function registerUserHandler(
       username: generateRandomUsername(12),
       password: hashedPassword,
       role: "User" as Role,
-      verificationToken: undefined,   //  verificationToken generate
-      verified: false
+      verified: false,
+      verificationCode: undefined as undefined | string
     }
 
     // set Admin if first time create user,
-    const usersExist = await db.user.findMany();
-
-    if (usersExist.length === 0) {
+    const usersExistCount = await db.user.count();
+    if (usersExistCount === 0) {
       data.role = "Admin"
     }
 
-    const user = await db.user.create({ data });
+    // check user already exists
+    const userExists = await db.user.findUnique({ 
+      where: {
+        email
+      }
+    })
+    if (userExists) return next(new AppError(409, "User already exists")) 
 
-    res.status(201).json(HttpDataResponse({ user }))
+    // Email verification
+    const { hashedVerificationCode, verificationCode } = createVerificationCode()
+    data.verificationCode = hashedVerificationCode
+    //
+    // Crete new user
+    const user = await db.user.create({ data });
+    const redirectUrl = `${getConfig('origin')}/verify-email/${verificationCode}`
+
+
+    try {
+      await new Email(user, redirectUrl).sendVerificationCode()
+
+      res.status(201).json(HttpDataResponse({ user }))
+    } catch (err: any) {
+      user.verificationCode = null
+
+      return next(new AppError(500, "There was an error sending email, please try again" + err.message))
+    }
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
 
     if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "User already exists"))
 
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function verificationEmailHandler(
+  req: Request<VerificationEmailInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const verificationCode = crypto
+      .createHash("sha256")
+      .update(req.params.verificationCode)
+      .digest("hex")
+
+    const user = await db.user.findFirst({
+      where: {
+        verificationCode
+      }
+    })
+
+    if (!user) return next(new AppError(401, "Could not verify email"))
+
+    await db.user.update({
+      where: {
+        id: user.id
+      },
+      data: {
+        verified: true,
+        verificationCode: null
+      }
+    })
+
+    res.status(200).json(HttpResponse(200, "Email verified successfully"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
     next(new AppError(500, msg))
   }
 }
@@ -159,6 +223,10 @@ export async function loginUserHandler(
 
     if (!user) return next(new AppError(400, "invalid email or password"))
 
+    // Check verified
+    if (!user.verified) return next(new AppError(400, 'You are not verified'))
+
+    // Check password
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) return next(new AppError(400, "invalid email or password"))

@@ -21,5 +21,10 @@ namespace NodeJS {
     TEST_ADMIN_USER_ID: string,
     TEST_USER_ID: string,
     TEST_PRODUCT_ID: string
+
+    EMAIL_USER: string,
+    EMAIL_PASS: string,
+    EMAIL_HOST: stirng,
+    EMAIL_PORT: number
   }
 }

@@ -40,6 +40,10 @@ validateEnv()
 
 export const app = express()
 
+// Set Pub Template
+app.set('view engine', 'pug');
+app.set('views', `${__dirname}/views`)
+
 /* Middlewares */
 // CORS
 app.use(cors({

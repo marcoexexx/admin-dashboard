@@ -39,21 +39,22 @@ model Exchange {
 }
 
 model User {
-  id         String       @id @default(uuid())
-  name       String
-  email      String       @unique
-  username   String       @unique
-  password   String
-  role       Role         @default(User)
-  image      String?
-  coverImage String?
-  verified   Boolean      @default(false)
-  provider   AuthProvider @default(Local)
-  favorites  Favorites[]
-  orders     Order[]
-  reviews    Review[]
-  accessLogs AccessLog[]
-  addresses  Address[]
+  id               String       @id @default(uuid())
+  name             String
+  email            String       @unique
+  username         String       @unique
+  password         String
+  role             Role         @default(User)
+  image            String?
+  coverImage       String?
+  verified         Boolean      @default(false)
+  verificationCode String?
+  provider         AuthProvider @default(Local)
+  favorites        Favorites[]
+  orders           Order[]
+  reviews          Review[]
+  accessLogs       AccessLog[]
+  addresses        Address[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
