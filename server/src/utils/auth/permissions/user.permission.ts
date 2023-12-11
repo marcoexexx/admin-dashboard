@@ -4,7 +4,7 @@ import { Permission } from "../rbac";
 export const userPermission: Permission<Role> = {
   createAllowedRoles: () => ["Admin"],
 
-  readAllowedRoles: () => ["Admin"],
+  readAllowedRoles: () => ["*"],
 
   updateAllowedRoles: () => ["Admin"],
 

@@ -24,7 +24,7 @@ export function UserProfile(props: UserProfileProps) {
   })
 
 
-  if (isUserError && userError) return <h1>ERROR: {JSON.stringify(userError)}</h1>
+  if (isUserError && userError) return <h1>ERROR: {userError.message}: {(userError as any).response.data.message}</h1>
   if (!user || isUserLoading) return <SuspenseLoader />
 
   return (
