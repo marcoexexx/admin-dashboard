@@ -25,6 +25,8 @@
 
  - [x] permissions update form
 
+ - [ ] user table image :: avatar
+
  - [ ] status/unauthorized -> redirect
  - [x] register -> login/ 
  - [x] click email link -> _blank 
