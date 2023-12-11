@@ -1,5 +1,5 @@
 import { queryClient } from "@/components";
-import { MuiButton } from "@/components/ui";
+import { MuiButton, Text } from "@/components/ui";
 import { useStore } from "@/hooks";
 import { logoutUserFn } from "@/services/authApi";
 import { Typography } from "@mui/material";
@@ -30,8 +30,11 @@ export default function Home() {
     <div>
       <Typography>{state.local}</Typography>
       <MuiButton onClick={() => {
-        dispatch({ type: "SET_LOCAL", payload: "my" })
-      }}>Change local</MuiButton>
+        dispatch({ type: "SET_LOCAL", payload: "en" })
+      }}>Change local EN</MuiButton>
+
+      <Text tx="common.retry" />
+
       <MuiButton onClick={onToggleThemeHandler}>{state.theme}</MuiButton>
       <MuiButton onClick={handleLogout}>Logout</MuiButton>
     </div>
