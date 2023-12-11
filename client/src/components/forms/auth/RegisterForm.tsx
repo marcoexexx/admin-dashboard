@@ -42,7 +42,7 @@ export function RegisterForm() {
     mutationFn: registerUserFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success create an acount.",
+        message: "Success create an acount: check your email",
         severity: "success"
       } })
       navigate(from)
