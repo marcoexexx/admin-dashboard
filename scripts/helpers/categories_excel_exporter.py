@@ -1,15 +1,14 @@
-from typing import List
+from typing import Dict, List
 
 from libs.category_parser import CategoryParser
 from libs.serializer import JSONSerializer, Path
 from libs.excel import ExcelHandler
-from helpers.get_keys import Product
 
 
 OUTPUT = "./categories.xlsx"
 
 def categories_export(path: Path):
-    serializer = JSONSerializer[List[Product]]()
+    serializer = JSONSerializer[List[Dict]]()
     raw_products = serializer.serialize(path)
 
     categories_parser = CategoryParser()
