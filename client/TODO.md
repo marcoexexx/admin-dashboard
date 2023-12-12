@@ -20,7 +20,6 @@
  - [ ] backend product.controller.ts -> many to many update
  - [ ] bugs -> all delete products
 
-
  - [ ] select :: emum, product type
 
  - [x] product publish -> relation specs bug
