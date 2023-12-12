@@ -122,6 +122,12 @@ export function BrandsListTable(props: BrandsListTableProps) {
     queryFn: getBrandPermissionsFn
   })
 
+  const isAllowedCreateBrand = usePermission({
+    key: "brand-permissions",
+    actions: "create",
+    queryFn: getBrandPermissionsFn
+  })
+
   const selectedAllRows = selectedRows.length === brands.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < brands.length
@@ -139,7 +145,11 @@ export function BrandsListTable(props: BrandsListTableProps) {
       <Divider />
 
       <CardContent>
-        <BrandsActions onExport={handleOnExport} onImport={handleOnImport}  />
+        <BrandsActions 
+          onExport={handleOnExport} 
+          onImport={handleOnImport}  
+          isAllowedImport={isAllowedCreateBrand}
+        />
       </CardContent>
 
       <TableContainer>

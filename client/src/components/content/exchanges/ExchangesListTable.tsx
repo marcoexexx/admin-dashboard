@@ -137,6 +137,12 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
     queryFn: getExchangePermissionsFn
   })
 
+  const isAllowedCreateExchange = usePermission({
+    key: "exchange-permissions",
+    actions: "create",
+    queryFn: getExchangePermissionsFn
+  })
+
   const selectedAllRows = selectedRows.length === exchanges.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < exchanges.length
@@ -154,7 +160,11 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
       <Divider />
 
       <CardContent>
-        <ExchangesActions onExport={handleOnExport} onImport={handleOnImport}  />
+        <ExchangesActions 
+          onExport={handleOnExport} 
+          onImport={handleOnImport}  
+          isAllowedImport={isAllowedCreateExchange}
+        />
       </CardContent>
 
       <TableContainer>

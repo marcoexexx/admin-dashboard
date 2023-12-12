@@ -19,10 +19,11 @@ const MenuActionBox = styled(Box)(({theme}) => ({
 interface BrandsActionsProps {
   onExport: () => void
   onImport: (data: CreateBrandInput[]) => void
+  isAllowedImport: boolean
 }
 
 export function BrandsActions(props: BrandsActionsProps) {
-  const { onExport, onImport } = props
+  const { onExport, onImport, isAllowedImport } = props
 
   const ref = useRef<HTMLButtonElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -104,21 +105,24 @@ export function BrandsActions(props: BrandsActionsProps) {
               </ListItemIcon>
               <ListItemText primary="Export" />
             </ListItemButton>
-            <ListItemButton onClick={handleImportExcel}>
-              <ListItemIcon>
-                <ImportIcon fontSize="small" />
-              </ListItemIcon>
-              <input 
-                type="file"
-                style={{
-                  display: "none"
-                }}
-                ref={inputRef}
-                accept=".xlsx, .xls"
-                onChange={handleChangeImportExcel}
-              />
-              <ListItemText primary="Import" />
-            </ListItemButton>
+
+            {isAllowedImport
+            ? <ListItemButton onClick={handleImportExcel}>
+                <ListItemIcon>
+                  <ImportIcon fontSize="small" />
+                </ListItemIcon>
+                <input 
+                  type="file"
+                  style={{
+                    display: "none"
+                  }}
+                  ref={inputRef}
+                  accept=".xlsx, .xls"
+                  onChange={handleChangeImportExcel}
+                />
+                <ListItemText primary="Import" />
+              </ListItemButton>
+            : null}
           </List>
         </MenuActionBox>
       </Popover>

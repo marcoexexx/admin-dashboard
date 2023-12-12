@@ -210,6 +210,12 @@ export function ProductsListTable(props: ProductsListTableProps) {
     queryFn: getProductPermissionsFn,
   })
 
+  const isAllowedCreateProduct = usePermission({
+    key: "product-permissions",
+    actions: "create",
+    queryFn: getProductPermissionsFn,
+  })
+
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
@@ -226,6 +232,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
         <ProductsActions 
           onExport={handleOnExport}
           onImport={handleOnImport}
+          isAllowedImport={isAllowedCreateProduct}
         />
       </CardContent>
 
