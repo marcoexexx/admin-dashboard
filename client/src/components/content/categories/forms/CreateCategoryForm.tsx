@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { createCategoryFn } from "@/services/categoryApi";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
+import { useEffect } from "react";
 
 const createCategorySchema = object({
   name: string({ required_error: "Category name is required" })
@@ -49,7 +50,11 @@ export function CreateCategoryForm() {
     resolver: zodResolver(createCategorySchema)
   })
 
-  const { handleSubmit, register, formState: { errors } } = methods
+  const { handleSubmit, register, formState: { errors }, setFocus } = methods
+
+  useEffect(() => {
+    setFocus("name")
+  }, [setFocus])
 
   const onSubmit: SubmitHandler<CreateCategoryInput> = (value) => {
     createCategory(value)
