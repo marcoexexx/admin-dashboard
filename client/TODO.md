@@ -15,6 +15,8 @@
  - [x] fetch exchange rate from create product
  - [x] date param state
 
+ - [ ] product type :: Prisma Schemma
+
  - [ ] backend product.controller.ts -> many to many update
  - [ ] bugs -> all delete products
 
