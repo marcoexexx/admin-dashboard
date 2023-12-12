@@ -16,5 +16,3 @@ def sales_categories_export(path: Path):
 
     excel_handler = ExcelHandler(data=categories, save_as=Path(OUTPUT))
     excel_handler.export()
-
-
