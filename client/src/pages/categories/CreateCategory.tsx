@@ -1,7 +1,7 @@
 import { PageTitle } from "@/components";
 import { CreateCategoryForm } from "@/components/content/categories/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { usePermission } from "@/hooks";
 import { getCategoryPermissionsFn } from "@/services/permissionsApi";
@@ -13,6 +13,12 @@ export default function CreateCategory() {
     actions: "create",
     queryFn: getCategoryPermissionsFn
   })
+  
+  const navigate = useNavigate()
+
+  const handleBack = () => {
+    navigate(-1)
+  }
 
   return (
     <>
@@ -21,7 +27,7 @@ export default function CreateCategory() {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Tooltip arrow placeholder="top" title="go back">
-              <IconButton color="primary" sx={{ p: 2, mr: 2 }} component={Link} to="/categories">
+              <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={handleBack}>
                 <ArrowBackTwoToneIcon />
               </IconButton>
             </Tooltip>

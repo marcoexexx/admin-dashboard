@@ -5,7 +5,7 @@ import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function CreateProduct() {
   const isAllowedCreateProduct = usePermission({
@@ -13,6 +13,12 @@ export default function CreateProduct() {
     actions: "create",
     queryFn: getProductPermissionsFn
   })
+  
+  const navigate = useNavigate()
+
+  const handleBack = () => {
+    navigate(-1)
+  }
 
   return (
     <>
@@ -21,7 +27,7 @@ export default function CreateProduct() {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Tooltip arrow placeholder="top" title="go back">
-              <IconButton color="primary" sx={{ p: 2, mr: 2 }} component={Link} to="/products">
+              <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={handleBack}>
                 <ArrowBackTwoToneIcon />
               </IconButton>
             </Tooltip>
