@@ -18,7 +18,7 @@ const columnData: TableColumnHeader<IUser>[] = [
   },
   {
     id: "role",
-    align: "left",
+    align: "right",
     name: "Role"
   }
 ]
@@ -89,9 +89,14 @@ export function UsersListTable(props: UsersListTableProps) {
             <TableRow>
               <TableCell align="left">Image</TableCell>
 
-              {columnHeader.map(header => (
-                <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-              ))}
+              {columnHeader.map(header => {
+                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
+                return header.id !== "actions"
+                  ? render
+                  : isAllowedUpdateUser
+                  ? render
+                  : null
+              })}
             </TableRow>
           </TableHead>
 
@@ -127,25 +132,27 @@ export function UsersListTable(props: UsersListTableProps) {
                   )
                 })}
 
-                <TableCell align="right">
-                  {isAllowedUpdateUser
-                  ? <Tooltip title="Change Role" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.primary.lighter
-                          },
-                          color: theme.palette.primary.main
-                        }}
-                        onClick={handleClickUpdateAction(row.id)}
-                        color="inherit"
-                        size="small"
-                      >
-                        <AdminPanelSettingsIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  : null}
-                </TableCell>
+                {isAllowedUpdateUser
+                ? <TableCell align="right">
+                    {isAllowedUpdateUser
+                    ? <Tooltip title="Change Role" arrow>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.primary.lighter
+                            },
+                            color: theme.palette.primary.main
+                          }}
+                          onClick={handleClickUpdateAction(row.id)}
+                          color="inherit"
+                          size="small"
+                        >
+                          <AdminPanelSettingsIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    : null}
+                  </TableCell>
+                : null}
               </TableRow>
             })}
           </TableBody>

@@ -33,7 +33,7 @@ const columnData: TableColumnHeader<IExchange>[] = [
   },
   {
     id: "date",
-    align: "left",
+    align: "right",
     name: "Date"
   },
 ]

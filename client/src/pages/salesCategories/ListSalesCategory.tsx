@@ -16,7 +16,7 @@ export default function ListSalesCategory() {
 
   const isAllowedCreateSalesCategory = usePermission({
     key: "sales-categor-permissions",
-    actions: "read",
+    actions: "create",
     queryFn: getSalesCategoryPermissionsFn
   })
 
