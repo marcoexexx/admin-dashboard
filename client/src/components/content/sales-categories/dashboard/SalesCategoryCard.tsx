@@ -46,12 +46,6 @@ export function SalesCategoryCard() {
     ? null
     : data[1]
 
-  console.log({
-    data,
-    isAllowedCreateSalesCategory,
-    firstSalesCategory,
-    secondSalesCategory
-  })
 
   return (
     <>
