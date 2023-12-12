@@ -5,6 +5,7 @@ from pathlib import Path
 
 from helpers.brands_excel_expoter import brands_export
 from helpers.categories_excel_exporter import categories_export
+from helpers.sales_categories_excel_exporter import sales_categories_export
 
 
 logging.basicConfig(
@@ -16,7 +17,7 @@ logging.basicConfig(
 def main() -> None:
     brands_export(Path("./data/raw.json"))
     categories_export(Path("./data/raw.json"))
-
+    sales_categories_export(Path("./data/raw.json"))
 
 if __name__ == "__main__":
     main()
