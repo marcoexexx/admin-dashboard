@@ -5,25 +5,25 @@ export const typography: TypographyOptions = {
   fontFamily:
     '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
   h1: {
-    fontWeight: 700,
+    fontWeight: 500,
     fontSize: 35
   },
   h2: {
-    fontWeight: 700,
+    fontWeight: 500,
     fontSize: 30
   },
   h3: {
-    fontWeight: 700,
+    fontWeight: 500,
     fontSize: 25,
     lineHeight: 1.4,
     color: colors.alpha.black[100]
   },
   h4: {
-    fontWeight: 700,
+    fontWeight: 500,
     fontSize: 16
   },
   h5: {
-    fontWeight: 700,
+    fontWeight: 500,
     fontSize: 14
   },
   h6: {
