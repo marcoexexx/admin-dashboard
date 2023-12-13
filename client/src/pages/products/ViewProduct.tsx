@@ -66,11 +66,7 @@ export default function ViewProduct() {
 
       {isAllowedReadProduct
       ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <ProductDetail productId={productId} />
-            </Grid>
-          </Grid>
+          <ProductDetail productId={productId} />
         </Container>
       : <MiniAccessDenied />}
     </>

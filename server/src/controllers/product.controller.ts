@@ -95,10 +95,15 @@ export async function getProductHandler(
   try {
     const { productId } = req.params
 
+    const { include: includes } = convertNumericStrings(req.query)
+    const include = convertStringToBoolean(includes)
+
     const product = await db.product.findUnique({
       where: {
         id: productId
-      }
+      },
+      // @ts-ignore
+      include
     })
 
     if (!product) return next(new AppError(404, "Product not found"))

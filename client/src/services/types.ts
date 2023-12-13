@@ -51,6 +51,13 @@ interface IUser {
 
 // TODO: accessLog interface
 
+type ProductSpecification = {
+  id: string,
+  name: string,
+  value: string,
+  createdAt: string | Date
+  updatedAt: string | Date
+}
 
 interface IProduct {
   id: string;
@@ -68,9 +75,16 @@ interface IProduct {
   }[],
   title: string;
   price: number;
-  _count: number
+  _count: {
+    specification: number
+    categories: number
+    likedUsers: number
+    orders: number
+    salesCategory: number
+    reviews: number
+  }
   images: string[]; // Assuming it's an array of image URLs
-  specification: string;
+  specification: ProductSpecification[];
   overview: string;
   features: string;
   warranty: number;

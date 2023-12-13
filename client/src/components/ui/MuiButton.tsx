@@ -1,11 +1,12 @@
-import { Button, ButtonProps, styled } from "@mui/material"
+import { LoadingButton, LoadingButtonProps } from "@mui/lab"
+import { styled } from "@mui/material"
 import { forwardRef } from "react"
 
-const MuiButtonWrapper = styled(Button)(() => ({
+const MuiButtonWrapper = styled(LoadingButton)(() => ({
 }))
 
 
-interface MuiButtonProps extends ButtonProps {}
+interface MuiButtonProps extends LoadingButtonProps {}
 
 export const MuiButton = forwardRef<HTMLButtonElement, MuiButtonProps>((props, ref) => {
   const { children, ...reset } = props
