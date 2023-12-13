@@ -1,8 +1,8 @@
 import { Box, Card, CardActions, CardMedia, Divider, Typography, styled } from "@mui/material"
 import { MuiButton, Text } from '@/components/ui'
 
-import ThumbUpAltTwoToneIcon from '@mui/icons-material/ThumbUpAltTwoTone';
-// import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUpTwoTone';
+import ThumbUpAltTwoToneIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUp';
 import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
 
 import ProductSpecificationTable from "./ProductSpecificationTable"
@@ -129,7 +129,9 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         <Box display="flex" flexDirection={{ xs: "column", sm: "row" }} alignItems="start" justifyContent="start" gap={1}>
           <MuiButton 
             fullWidth
-            startIcon={<ThumbUpAltTwoToneIcon />} 
+            startIcon={isLiked
+              ? <ThumbUpTwoToneIcon />
+              : <ThumbUpAltTwoToneIcon />} 
             variant="contained"
             onClick={isLiked
               ? handleOnUnLikeProduct
