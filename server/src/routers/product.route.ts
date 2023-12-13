@@ -3,8 +3,8 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { permissionUser } from "../middleware/permissionUser";
-import { createProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, updateProductHandler, uploadImagesProductHandler } from "../controllers/product.controller";
-import { createProductSchema, getProductSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
+import { createProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, uploadImagesProductHandler } from "../controllers/product.controller";
+import { createProductSchema, getProductSchema, likeProductByUserSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
 import { productPermission } from "../utils/auth/permissions";
 import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
 import { createMultiExchangesSchema } from "../schemas/exchange.schema";
@@ -56,6 +56,26 @@ router.route("/detail/:productId")
     permissionUser("update", productPermission),
     validate(updateProductSchema), 
     updateProductHandler
+  )
+
+
+router.route("/like/:productId")
+  .patch(
+    deserializeUser, 
+    requiredUser, 
+    // permissionUser("update", productPermission),   /* Should not access update permission!! */
+    validate(likeProductByUserSchema), 
+    likeProductByUserHandler
+  )
+
+
+router.route("/unlike/:productId")
+  .patch(
+    deserializeUser, 
+    requiredUser, 
+    // permissionUser("update", productPermission),   /* Should not access update permission!! */
+    validate(likeProductByUserSchema), 
+    unLikeProductByUserHandler
   )
 
 

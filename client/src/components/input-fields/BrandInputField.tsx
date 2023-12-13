@@ -87,7 +87,6 @@ export function BrandInputField() {
               fullWidth
               startIcon={<AddTwoToneIcon />}
               variant='outlined'
-              component="label"
               onClick={handleOnClickCreateNew}
             >
               Create new

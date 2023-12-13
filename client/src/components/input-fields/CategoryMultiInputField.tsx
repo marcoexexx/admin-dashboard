@@ -88,7 +88,6 @@ export function CatgoryMultiInputField() {
               fullWidth
               startIcon={<AddTwoToneIcon />}
               variant="outlined"
-              component="label"
               onClick={handleOnClickCreateNew}
             >
               Create new

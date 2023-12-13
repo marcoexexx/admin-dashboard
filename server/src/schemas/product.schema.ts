@@ -27,6 +27,14 @@ export const getProductSchema = object({
   ...params
 })
 
+
+export const likeProductByUserSchema = object({
+  ...params,
+  body: object({
+    userId: string()
+  })
+})
+
 export const createProductSchema = object({
   body: object({
     price: number({ required_error: "Price is required "}),
@@ -142,3 +150,4 @@ export type CreateProductInput = z.infer<typeof createProductSchema>["body"]
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
 export type CreateMultiProductsInput = z.infer<typeof createMultiProductsSchema>["body"]
 export type UploadImagesProductInput = z.infer<typeof uploadImagesProductSchema>["body"]
+export type LikeProductByUserInput = z.infer<typeof likeProductByUserSchema>

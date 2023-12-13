@@ -4,7 +4,7 @@ import { uploadCoverPhotoFn } from "@/services/usersApi"
 import { styled } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { queryClient } from ".."
-import { MuiButton } from "../ui"
+import { MuiButton } from "@/components/ui"
 import UploadTwoToneIcon from '@mui/icons-material/UploadTwoTone'
 
 
@@ -60,7 +60,6 @@ export function UploadCoverPhoto() {
         <MuiButton
           startIcon={<UploadTwoToneIcon />}
           variant="contained"
-          component="span"
         >
           Change cover
         </MuiButton>

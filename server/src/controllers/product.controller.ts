@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { db } from '../utils/db'
 import AppError from '../utils/appError';
-import { CreateMultiProductsInput, CreateProductInput, GetProductInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
+import { CreateMultiProductsInput, CreateProductInput, GetProductInput, LikeProductByUserInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
 import logging from '../middleware/logging/logging';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -396,6 +396,67 @@ export async function uploadImagesProductHandler(
     })
 
     res.status(200).json(HttpListResponse(images))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function likeProductByUserHandler(
+  req: Request<LikeProductByUserInput["params"], {}, LikeProductByUserInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productId } = req.params
+    const { userId } = req.body
+
+    const product = await db.product.update({
+      where: { id: productId },
+      data: {
+        likedUsers: {
+          create: {
+            userId: userId
+          }
+        }
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ product }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function unLikeProductByUserHandler(
+  req: Request<LikeProductByUserInput["params"], {}, LikeProductByUserInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productId } = req.params
+    const { userId } = req.body
+
+    await db.favorites.deleteMany({
+      where: {
+        productId,
+        userId
+      }
+    })
+
+    // const product = await db.product.update({
+    //   where: { id: productId },
+    //   data: {
+    //     likedUsers: {
+    //       create: {
+    //         userId: userId
+    //       }
+    //     }
+    //   }
+    // })
+
+    res.status(200).json(HttpResponse(200, "Success Unlike"))
   } catch (err) {
     next(err)
   }

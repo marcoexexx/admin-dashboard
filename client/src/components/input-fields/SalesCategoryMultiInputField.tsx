@@ -89,7 +89,6 @@ export function SalesCategoryMultiInputField() {
               fullWidth
               startIcon={<AddTwoToneIcon />}
               variant='outlined'
-              component="label"
               onClick={handleOnClickCreateNew}
             >
               Create new

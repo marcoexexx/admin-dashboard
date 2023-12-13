@@ -9,6 +9,7 @@ import ProductSpecificationTable from "./ProductSpecificationTable"
 import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { queryClient } from "@/components";
+import { likeProductByUserFn, unLikeProductByUserFn } from "@/services/productsApi";
 
 
 const CardActionsWrapper = styled(CardActions)(({theme}) => ({
@@ -24,10 +25,35 @@ interface ProductDetailTabProps {
 export default function ProductDetailTab(props: ProductDetailTabProps) {
   const { product } = props
 
-  const { dispatch } = useStore()
+  const { state, dispatch } = useStore()
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async () => new Promise(resolve => setTimeout(resolve, 2000)),
+  const { mutate: likeProduct, isPending: likeIsPending } = useMutation({
+    mutationFn: likeProductByUserFn,
+    onSuccess() {
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: `Success Like product ${product.title}`,
+          severity: "success"
+        }
+      })
+      queryClient.invalidateQueries({
+        queryKey: ["products"]
+      })
+    },
+    onError(err: any) {
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: `Failed Like product ${product.title}: ${err.data.response.message}`,
+          severity: "success"
+        }
+      })
+    }
+  })
+
+  const { mutate: unLikeProduct, isPending: unLikeIsPending } = useMutation({
+    mutationFn: unLikeProductByUserFn,
     onSuccess() {
       dispatch({
         type: "OPEN_TOAST",
@@ -46,9 +72,19 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
   const likedTotal = product._count.likedUsers
   const reviewsTotal = product._count.reviews
 
+  const isPending = likeIsPending || unLikeIsPending
+
   const handleOnLikeProduct = () => {
-    mutate()
+    if (state.user) likeProduct({ productId: product.id, userId: state.user.id })
   }
+
+  const handleOnUnLikeProduct = () => {
+    if (state.user) unLikeProduct({ productId: product.id, userId: state.user.id })
+  }
+
+  const isLiked = (product as IProduct & {likedUsers: { productId: string, userId: string }[]} ).likedUsers.find(fav => fav.userId === state.user?.id) 
+    ? true 
+    : false
 
 
   return (
@@ -83,15 +119,18 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         }}
       >
         <Box display="flex" flexDirection={{ xs: "column", sm: "row" }} alignItems="start" justifyContent="start" gap={1}>
-          {/* TODO: liked product */}
           <MuiButton 
             fullWidth
             startIcon={<ThumbUpAltTwoToneIcon />} 
             variant="contained"
-            onClick={handleOnLikeProduct}
+            onClick={isLiked
+              ? handleOnUnLikeProduct
+              : handleOnLikeProduct}
             loading={isPending}
           >
-            Like
+            {isLiked
+            ? "Unlike"
+            : "Like"}
           </MuiButton>
           {/* TODO: review product */}
           <MuiButton
