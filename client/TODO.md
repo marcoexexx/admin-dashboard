@@ -16,6 +16,8 @@
  - [x] date param state
 
  - [x] back key
+ - [x] back key -> detail pages
+ - [ ] profile -> detail/ move
  - [ ] select :: emum, product type
 
  - [ ] backend product.controller.ts -> many to many update

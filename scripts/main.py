@@ -8,6 +8,8 @@ from helpers.categories_excel_exporter import categories_export
 from helpers.sales_categories_excel_exporter import sales_categories_export
 
 
+INPUT_RAW_DATA = Path("./data/raw.json")
+
 logging.basicConfig(
     format="[ %(levelname)s::%(asctime)s ] %(message)s",
     level=logging.INFO
@@ -15,9 +17,10 @@ logging.basicConfig(
 
 
 def main() -> None:
-    brands_export(Path("./data/raw.json"))
-    categories_export(Path("./data/raw.json"))
-    sales_categories_export(Path("./data/raw.json"))
+    brands_export(INPUT_RAW_DATA)
+    categories_export(INPUT_RAW_DATA)
+    sales_categories_export(INPUT_RAW_DATA)
+
 
 if __name__ == "__main__":
     main()

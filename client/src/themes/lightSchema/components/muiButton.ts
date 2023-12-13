@@ -3,7 +3,7 @@ import { ComponentCustomizedStyle } from "../types";
 
 export const MuiButton: ComponentCustomizedStyle["MuiButton"] = {
   defaultProps: {
-    disableRipple: true
+    disableRipple: false
   },
   styleOverrides: {
     root: {
