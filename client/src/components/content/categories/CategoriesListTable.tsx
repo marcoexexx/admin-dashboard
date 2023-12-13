@@ -122,6 +122,12 @@ export function CategoriesListTable(props: CategoriesListTableProps) {
     queryFn: getCategoryPermissionsFn
   })
 
+  const isAllowedCreateCategory = usePermission({
+    key: "category-permissions",
+    actions: "create",
+    queryFn: getCategoryPermissionsFn
+  })
+
   const selectedAllRows = selectedRows.length === categories.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < categories.length
@@ -139,7 +145,11 @@ export function CategoriesListTable(props: CategoriesListTableProps) {
       <Divider />
 
       <CardContent>
-        <CategoriesActions onExport={handleOnExport} onImport={handleOnImport}  />
+        <CategoriesActions 
+          onExport={handleOnExport} 
+          onImport={handleOnImport}  
+          isAllowedImport={isAllowedCreateCategory}
+        />
       </CardContent>
 
       <TableContainer>

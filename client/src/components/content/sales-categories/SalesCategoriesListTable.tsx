@@ -122,6 +122,12 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
     queryFn: getSalesCategoryPermissionsFn
   })
 
+  const isAllowedCreateSalesCategory = usePermission({
+    key: "sales-categor-permissions",
+    actions: "create",
+    queryFn: getSalesCategoryPermissionsFn
+  })
+
   const selectedAllRows = selectedRows.length === salesCategoiries.length
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < salesCategoiries.length
@@ -139,7 +145,11 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
       <Divider />
 
       <CardContent>
-        <SalesCategoriesActions onExport={handleOnExport} onImport={handleOnImport}  />
+        <SalesCategoriesActions 
+          onExport={handleOnExport} 
+          onImport={handleOnImport} 
+          isAllowedImport={isAllowedCreateSalesCategory}
+        />
       </CardContent>
 
       <TableContainer>

@@ -15,12 +15,11 @@
  - [x] fetch exchange rate from create product
  - [x] date param state
 
- - [ ] product type :: Prisma Schemma
+ - [x] back key
+ - [ ] select :: emum, product type
 
  - [ ] backend product.controller.ts -> many to many update
- - [ ] bugs -> all delete products
-
- - [ ] select :: emum, product type
+ - [x] bugs -> all delete products
 
  - [x] product publish -> relation specs bug
  - [ ] filter -> specs products

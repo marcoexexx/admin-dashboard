@@ -6,7 +6,7 @@ import { BaseLayout, SlidebarLayout } from "@/layouts";
 import { brandPermissionsLoader, categoryPermissionsLoader, exchangePermissionsLoader, productPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
-const HomePage = Loader(lazy(() => import("@/pages/home.page")))
+const HomePage = Loader(lazy(() => import("@/pages/home/Home")))
 
 // Status
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))

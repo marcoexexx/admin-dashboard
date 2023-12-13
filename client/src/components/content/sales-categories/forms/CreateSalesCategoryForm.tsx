@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { createSalesCategoryFn } from "@/services/salesCategoryApi";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
+import { useEffect } from "react";
 
 const createSalesCategorySchema = object({
   name: string({ required_error: "Sales category name is required" })
@@ -49,7 +50,11 @@ export function CreateSalesCategoryForm() {
     resolver: zodResolver(createSalesCategorySchema)
   })
 
-  const { handleSubmit, register, formState: { errors } } = methods
+  const { handleSubmit, register, formState: { errors }, setFocus } = methods
+
+  useEffect(() => {
+    setFocus("name")
+  }, [setFocus])
 
   const onSubmit: SubmitHandler<CreateSalesCategoryInput> = (value) => {
     createSalesCategory(value)
