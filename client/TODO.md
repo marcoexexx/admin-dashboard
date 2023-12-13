@@ -18,6 +18,7 @@
  - [x] back key
  - [x] back key -> detail pages
  - [ ] MuiButton for loading :: LoadinButton and i18n 
+ - [ ] readonly after publish state
  - [ ] profile -> detail/ move
  - [ ] select :: emum, product type
 
