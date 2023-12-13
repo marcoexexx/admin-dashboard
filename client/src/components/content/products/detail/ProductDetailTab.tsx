@@ -82,9 +82,10 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
           justifyContent: "space-between"
         }}
       >
-        <Box>
+        <Box display="flex" flexDirection={{ xs: "column", sm: "row" }} alignItems="start" justifyContent="start" gap={1}>
           {/* TODO: liked product */}
           <MuiButton 
+            fullWidth
             startIcon={<ThumbUpAltTwoToneIcon />} 
             variant="contained"
             onClick={handleOnLikeProduct}
@@ -94,17 +95,19 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
           </MuiButton>
           {/* TODO: review product */}
           <MuiButton
+            fullWidth
             startIcon={<CommentTwoToneIcon />}
             variant="outlined"
-            sx={{ mx: 2 }}
           >
             Review
           </MuiButton>
         </Box>
 
-        <Box sx={{ mt: { xs: 2, md: 0 } }}>
+        <Box display="flex" flexDirection={{ xs: "column", sm: "row" }} alignItems="start" justifyContent="start" gap={1}>
           <Typography variant="subtitle2" component="span">
             <Text color="black"><b>{likedTotal}</b></Text> reactions •{' '}
+          </Typography>
+          <Typography variant="subtitle2" component="span">
             <Text color="black"><b>{reviewsTotal}</b></Text> reviews •{' '}
           </Typography>
         </Box>
