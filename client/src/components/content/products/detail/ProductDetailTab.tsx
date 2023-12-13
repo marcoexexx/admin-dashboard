@@ -45,7 +45,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       dispatch({
         type: "OPEN_TOAST",
         payload: {
-          message: `Failed Like product ${product.title}: ${err.data.response.message}`,
+          message: `Failed like product ${product.title}: ${err.data.response.message}`,
           severity: "success"
         }
       })
@@ -58,7 +58,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       dispatch({
         type: "OPEN_TOAST",
         payload: {
-          message: `Like product ${product.title}`,
+          message: `Unlike product ${product.title}`,
           severity: "success"
         }
       })
@@ -66,7 +66,15 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         queryKey: ["products"]
       })
     },
-    onError() {}
+    onError(err: any) {
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: `Failed unlike product ${product.title}: ${err.data.response.message}`,
+          severity: "success"
+        }
+      })
+    }
   })
 
   const likedTotal = product._count.likedUsers
