@@ -1,13 +1,16 @@
 import { PageTitle } from "@/components"
-import { useParams } from 'react-router-dom'
-import { Container, Grid, Typography } from "@mui/material"
+import { useNavigate, useParams } from 'react-router-dom'
+import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material"
 import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { UserProfile } from "@/components/content/users";
+import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
 export default function ViewUser() {
   const { username } = useParams()
+
+  const navigate = useNavigate()
 
   const isAllowedReadProduct = usePermission({
     key: "product-permissions",
@@ -21,11 +24,24 @@ export default function ViewUser() {
     queryFn: getProductPermissionsFn
   })
 
+  const handleBack= (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(-1)
+  }
+
+
   return (
     <>
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item>
+            <Tooltip arrow placeholder="top" title="go back">
+              <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={handleBack}>
+                <ArrowBackTwoToneIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+
           <Grid item>
             <Typography variant="h3" component="h3" gutterBottom>User profile</Typography>
             <Typography variant="subtitle2" gutterBottom>

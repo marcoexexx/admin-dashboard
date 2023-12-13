@@ -17,18 +17,27 @@ export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pag
 
 export async function getProductFn(opt: QueryOptionArgs, { productId }: { productId: string | undefined}) {
   if (!productId) return
-  const { data } = await authApi.get<ProductResponse>("/products/detail", {
-    params: {
-      productId
-    },
+  const { data } = await authApi.get<ProductResponse>(`/products/detail/${productId}?include[specification]=true&include[_count]=true&include[likedUsers]=true&include[brand]=true&include[categories][include][category]=true&include[salesCategory][include][salesCategory]=true`, {
     ...opt,
   })
   return data
 }
 
 
-export async function createMultiProductsFn(brand: CreateProductInput[]) {
-  const { data } = await authApi.post<HttpResponse>("/products/multi", brand)
+export async function likeProductByUserFn({ userId, productId }: { userId: string, productId: string }) {
+  const { data } = await authApi.patch<ProductResponse>(`/products/like/${productId}`, { userId })
+  return data
+}
+
+
+export async function unLikeProductByUserFn({ userId, productId }: { userId: string, productId: string }) {
+  const { data } = await authApi.patch<HttpResponse>(`/products/unlike/${productId}`, { userId })
+  return data
+}
+
+
+export async function createMultiProductsFn(product: CreateProductInput[]) {
+  const { data } = await authApi.post<HttpResponse>("/products/multi", product)
   return data
 }
 

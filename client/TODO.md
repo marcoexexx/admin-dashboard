@@ -16,6 +16,9 @@
  - [x] date param state
 
  - [x] back key
+ - [x] back key -> detail pages
+ - [ ] MuiButton for loading :: LoadinButton and i18n 
+ - [ ] profile -> detail/ move
  - [ ] select :: emum, product type
 
  - [ ] backend product.controller.ts -> many to many update

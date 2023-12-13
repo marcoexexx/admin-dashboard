@@ -26,8 +26,10 @@ const updateProductSchema = object({
     .min(2).max(128),
   title: string({ required_error: "Brand is required" })
     .min(2).max(128),
-  specification: string({ required_error: "Brand is required" })
-    .min(2).max(5000),
+  specification: object({
+    name: string({ required_error: "Specification name is required" }),
+    value: string({ required_error: "Specification value is required" }),
+  }).array(),
   overview: string({ required_error: "Brand is required" })
     .min(2).max(5000),
   features: string({ required_error: "Features is required" })

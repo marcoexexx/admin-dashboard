@@ -11,7 +11,7 @@ import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import { getProductPermissionsFn } from "@/services/permissionsApi";
-import { RenderBrandLabel, RenderImageLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
+import { RenderBrandLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
 import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLabel";
 
 
@@ -295,7 +295,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
                     if (key === "categories") return row.categories.map(({category}, idx) => <RenderCategoryLabel key={idx} category={category} />)
                     if (key === "salesCategory") return row.salesCategory.map(({salesCategory}, idx) => <RenderSalesCategoryLabel key={idx} salesCategory={salesCategory} />)
                     if (key === "brand") return <RenderBrandLabel brand={row.brand} />
-                    return row[key]
+                    if (key === "title") return <RenderProductLabel product={row} />
+                    if (key === "specification") return "Coming soon"
+                    return row[key] as string
                   }
 
                   return (

@@ -1,6 +1,6 @@
 import { Box, TextField, Typography, styled } from "@mui/material";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
-import { MuiButton } from "../ui";
+import { MuiButton } from "@/components/ui";
 
 
 const FormWrapper = styled(Box)(({theme}) => ({
