@@ -4,6 +4,7 @@ import { MuiButton, Text } from '@/components/ui'
 import ThumbUpAltTwoToneIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUp';
 import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
+import ProductRelationshipTable from "./ProductRelationshipTable";
 
 import ProductSpecificationTable from "./ProductSpecificationTable"
 import { useMutation } from "@tanstack/react-query";
@@ -112,6 +113,11 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         <div dangerouslySetInnerHTML={{ __html: product.description }} />
         <div dangerouslySetInnerHTML={{ __html: product.features }} />
         <ProductSpecificationTable specs={product.specification} />
+        <ProductRelationshipTable
+          brand={product.brand}
+          categories={product.categories}
+          salesCategories={product.salesCategory}
+        />
       </Box>
 
       <Divider />

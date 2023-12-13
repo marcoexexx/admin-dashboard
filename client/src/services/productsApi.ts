@@ -17,7 +17,7 @@ export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pag
 
 export async function getProductFn(opt: QueryOptionArgs, { productId }: { productId: string | undefined}) {
   if (!productId) return
-  const { data } = await authApi.get<ProductResponse>(`/products/detail/${productId}?include[specification]=true&include[_count]=true&include[likedUsers]=true`, {
+  const { data } = await authApi.get<ProductResponse>(`/products/detail/${productId}?include[specification]=true&include[_count]=true&include[likedUsers]=true&include[brand]=true&include[categories][include][category]=true&include[salesCategory][include][salesCategory]=true`, {
     ...opt,
   })
   return data
