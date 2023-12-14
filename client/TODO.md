@@ -11,6 +11,16 @@
 
 # TODO
  - ## IMPORTANT
+ - [ ] schema user
+       ```prisma
+       model User {
+         createdProducts,
+         boughtProducts,
+       }
+       ```
+       ```ts
+       create boughtProducts by role based `boughtPermission`
+       ```
 
  - ## NORMAL
 
