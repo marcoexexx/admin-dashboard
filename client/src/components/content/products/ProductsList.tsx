@@ -6,6 +6,46 @@ import { createMultiProductsFn, deleteMultiProductsFn, deleteProductFn, getProdu
 import { ProductsListTable } from ".";
 import { CreateProductInput } from "./forms";
 
+
+interface ProductStatusContext {
+  requestReview: () => ProductStatus
+  approve: () => ProductStatus
+  makeDraft: () => ProductStatus
+}
+
+type ProductStatusHandler = () => ProductStatusContext
+
+const handleDraftProductStatus: ProductStatusHandler = () => ({
+  requestReview: () => "Pending",
+  approve: () => { throw new Error("Can not publish Draft status.") },
+  makeDraft: () => { throw new Error("Product already Draft status.") },
+})
+
+const handlePendingProductStatus: ProductStatusHandler = () => ({
+  requestReview: () => { throw new Error("Product already Pending status.") },
+  approve: () => "Published",
+  makeDraft: () => "Draft",
+})
+
+const handlePublishedProductStatus: ProductStatusHandler = () => ({
+  requestReview: () => { throw new Error("Published product can not be Pending status.") },
+  approve: () => { throw new Error("Product already in Published status.") },
+  makeDraft: () => "Draft",
+})
+
+const getProductStatusContext: Record<ProductStatus, "approve" | "requestReview" | "makeDraft"> = {
+  Draft: "makeDraft",
+  Pending: "requestReview",
+  Published: "approve"
+}
+
+const getProductStatusConcrate: Record<ProductStatus, (status: ProductStatus) => ProductStatus> = ({
+  Draft: (status) => handleDraftProductStatus()[getProductStatusContext[status]](),
+  Pending: (status) => handlePendingProductStatus()[getProductStatusContext[status]](),
+  Published: (status) => handlePublishedProductStatus()[getProductStatusContext[status]]()
+})
+
+
 export function ProductsList() {
   const { state: {productFilter}, dispatch } = useStore()
 
@@ -89,7 +129,7 @@ export function ProductsList() {
   })
 
   const {
-    mutate: publishedProduct
+    mutate: statusChangeProduct,
   } = useMutation({
     mutationFn: updateProductFn,
     onError(err: any) {
@@ -110,10 +150,6 @@ export function ProductsList() {
     }
   })
 
-  if (isError && error) return <h1>ERROR: {error.message}</h1>
-
-  if (!data || isLoading) return <SuspenseLoader />
-
   function handleCreateManyProducts(data: CreateProductInput[]) {
     createProducts(data)
   }
@@ -126,36 +162,37 @@ export function ProductsList() {
     deleteProducts(ids)
   }
 
-  function handlePublishedProduct(product: IProduct) {
-    publishedProduct({ 
-      id: product.id, 
-      product: {
-        price: product.price,
-        brandId: product.brandId,
-        title: product.title,
-        specification: product.specification,
-        overview: product.overview,
-        features: product.features,
-        warranty: product.warranty,
-        colors: product.colors,
-        instockStatus: product.instockStatus,
-        description: product.description,
-        type: product.type,
-        dealerPrice: product.dealerPrice,
-        marketPrice: product.marketPrice,
-        discount: product.discount,
-        priceUnit: product.priceUnit,
+  function handleChangeStatusProduct(product: IProduct, status: ProductStatus) {
+    try {
+      const safedStatus = getProductStatusConcrate[product.status](status)
+
+      statusChangeProduct({ id: product.id, product: {
+        ...product,
+        status: safedStatus,
         salesCategory: product.salesCategory.map(x => x.salesCategoryId),
         categories: product.categories.map(x => x.categoryId),
-        quantity: product.quantity,
-        status: "Published"
-      }
-    })
+      } })
+    } catch (err: any) {
+      const message = err instanceof Error ? err.message : "unknown error"
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message,
+          severity: "warning"
+        }
+      })
+    }
   }
+
+
+  if (isError && error) return <h1>ERROR: {error.message}</h1>
+
+  if (!data || isLoading) return <SuspenseLoader />
+
 
   return <Card>
     <ProductsListTable
-      onPublished={handlePublishedProduct}
+      onStatusChange={handleChangeStatusProduct}
       products={data.results} 
       count={data.count} 
       onCreateManyProducts={handleCreateManyProducts} 

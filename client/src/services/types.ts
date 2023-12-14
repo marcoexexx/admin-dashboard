@@ -95,7 +95,7 @@ interface IProduct {
   dealerPrice: number;
   marketPrice: number;
   discount: number;
-  status: string;
+  status: ProductStatus;
   priceUnit: PriceUnit;
   quantity: number;
   createdAt: string; // Assuming it's a string representation of a date
@@ -157,7 +157,7 @@ interface ISettings {
 }
 
 
-type Status = "all" | "draft" | "pending" | "published"
+type ProductStatus = "Draft" | "Pending" | "Published"
 
 type HttpResponse = {
   status: number,
