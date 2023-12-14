@@ -92,8 +92,8 @@ export function CreateProductForm() {
     queryKey: ["exchanges", "latest", methods.getValues("priceUnit")],
     queryFn: args => getExchangesFn(args, {
       filter: {
-        from: methods.getValues("priceUnit"),
-        to: "MMK",
+        from: "MMK",
+        to: methods.getValues("priceUnit"),
       },
       orderBy: {
         updatedAt: "asc"
