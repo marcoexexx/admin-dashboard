@@ -10,6 +10,12 @@
 
 
 # TODO
+ - ## IMPORTANT
+ - [ ] exchange -> exchanges
+ - [ ] MuiButton for loading :: LoadinButton and i18n 
+ - [ ] readonly after publish state
+
+ - ## NORMAL
  - [x] header menu design fix
  - [x] product on create request-review PENDING
  - [x] fetch exchange rate from create product
@@ -17,8 +23,6 @@
 
  - [x] back key
  - [x] back key -> detail pages
- - [ ] MuiButton for loading :: LoadinButton and i18n 
- - [ ] readonly after publish state
  - [ ] profile -> detail/ move
  - [ ] select :: emum, product type
 

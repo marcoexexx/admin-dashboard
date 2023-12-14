@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Box, Collapse, List, ListItem, ListSubheader, alpha, styled } from "@mui/material"
+import { MuiButton } from '@/components/ui'
+import { useNavigate } from 'react-router-dom'
 import { useStore } from "@/hooks"
-import { Box, Button, Collapse, List, ListItem, ListSubheader, alpha, styled } from "@mui/material"
-import { NavLink as Link } from 'react-router-dom'
+import clsx from "clsx";
 
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
@@ -157,20 +159,40 @@ type ExpandMenu = {
     | "categories"
     | "brands"
     | "sales-categories"
-    | "exchange"
+    | "exchanges"
     | "users"
   state: boolean
 }
 
+type PageMenu = 
+  | "overview"
+  | "inventory"
+  | "sales"
+
+type ExculdeWildcard<T extends string> = T extends "*" ? never : T
+type MenuPath<T extends string> = `/${T}`
+type ExpandableMenu<T extends string> = T | `${T}/list` | `${T}/create`
+
+type SlideMenue = 
+  | MenuPath<PageMenu>
+  | MenuPath<ExpandableMenu<ExculdeWildcard<ExpandMenu["id"]>>>
+
+
 export default function SlidebarMenu() {
   const { dispatch } = useStore()
 
+  const navigate = useNavigate()
+
+  const [currentMenu, setCurrentMenu] = useState<SlideMenue>("/overview")
   const [isExpandMenu, setIsExpandMenu] = useState<ExpandMenu>({
     id: "*",
     state: false
   })
 
-  const handleCloseSlidebar = () => {
+
+  const handleOpenMenu = (menue: SlideMenue) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    setCurrentMenu(menue)
+    navigate(menue)
     dispatch({
       type: "CLOSE_SLIDEBAR"
     })
@@ -200,15 +222,13 @@ export default function SlidebarMenu() {
           <SubMenuWrapper>
             <List component="div">
               <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={Link}
-                  onClick={handleCloseSlidebar}
-                  to="/overview"
+                <MuiButton
+                  className={clsx({"active": currentMenu === "/overview" })}
+                  onClick={handleOpenMenu("/overview")}
                   startIcon={<DesignServicesTwoToneIcon />}
                 >
                   Overview
-                </Button>
+                </MuiButton>
               </ListItem>
             </List>
           </SubMenuWrapper>
@@ -225,24 +245,22 @@ export default function SlidebarMenu() {
           <SubMenuWrapper>
             <List component="div">
               <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={Link}
-                  to="/inventory"
+                <MuiButton
+                  className={clsx({"active": currentMenu === "/inventory" })}
+                  onClick={handleOpenMenu("/inventory")}
                   startIcon={<InventoryIcon />}
                 >
                   Inventory
-                </Button>
+                </MuiButton>
               </ListItem>
               <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={Link}
-                  to="/sales"
+                <MuiButton
+                  className={clsx({"active": currentMenu === "/sales" })}
+                  onClick={handleOpenMenu("/sales")}
                   startIcon={<LocalOfferIcon />}
                 >
                   Sales
-                </Button>
+                </MuiButton>
               </ListItem>
             </List>
           </SubMenuWrapper>
@@ -260,8 +278,7 @@ export default function SlidebarMenu() {
             <List component="div">
               {/* User Menues */}
               <ListItem component="div">
-                <Button
-                  disableRipple
+                <MuiButton
                   onClick={handleToggleExpandMenu("users")}
                   startIcon={<PeopleIcon />}
                   endIcon={getStateCurrentExpandMenu("users")
@@ -270,71 +287,63 @@ export default function SlidebarMenu() {
                   }
                 >
                   Users
-                </Button>
+                </MuiButton>
               </ListItem>
 
               <Collapse in={getStateCurrentExpandMenu("users")}>
                 <List component="div" disablePadding>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/users/list"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/users/list" })}
+                      onClick={handleOpenMenu("/users/list")}
                     >
                       <DotWrapper />
                       List
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                 </List>
               </Collapse>
 
               {/* Exchange Menues */}
               <ListItem component="div">
-                <Button
-                  disableRipple
-                  onClick={handleToggleExpandMenu("exchange")}
+                <MuiButton
+                  onClick={handleToggleExpandMenu("exchanges")}
                   startIcon={<AttachMoneyIcon />}
-                  endIcon={getStateCurrentExpandMenu("exchange")
+                  endIcon={getStateCurrentExpandMenu("exchanges")
                     ? <ExpandLessIcon />
                     : <ExpandMoreIcon />
                   }
                 >
                   Exchange
-                </Button>
+                </MuiButton>
               </ListItem>
 
-              <Collapse in={getStateCurrentExpandMenu("exchange")}>
+              <Collapse in={getStateCurrentExpandMenu("exchanges")}>
                 <List component="div" disablePadding>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/exchanges/list"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/exchanges/list" })}
+                      onClick={handleOpenMenu("/exchanges/list")}
                     >
                       <DotWrapper />
                       List
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/exchanges/create"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/exchanges/create" })}
+                      onClick={handleOpenMenu("/exchanges/create")}
                     >
                       <DotWrapper />
                       Create
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                 </List>
               </Collapse>
 
               {/* Products Menues */}
               <ListItem component="div">
-                <Button
-                  disableRipple
+                <MuiButton
                   onClick={handleToggleExpandMenu("products")}
                   startIcon={<ShoppingCartIcon />}
                   endIcon={getStateCurrentExpandMenu("products")
@@ -343,40 +352,35 @@ export default function SlidebarMenu() {
                   }
                 >
                   Products
-                </Button>
+                </MuiButton>
               </ListItem>
 
               <Collapse in={getStateCurrentExpandMenu("products")}>
                 <List component="div" disablePadding>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/products/list"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/products/list" })}
+                      onClick={handleOpenMenu("/products/list")}
                     >
                       <DotWrapper />
                       List
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/products/create"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/products/create" })}
+                      onClick={handleOpenMenu("/products/create")}
                     >
                       <DotWrapper />
                       Create
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                 </List>
               </Collapse>
 
               {/* Brand Menues */}
               <ListItem component="div">
-                <Button
-                  disableRipple
+                <MuiButton
                   onClick={handleToggleExpandMenu("brands")}
                   startIcon={<SellIcon />}
                   endIcon={getStateCurrentExpandMenu("brands")
@@ -385,40 +389,35 @@ export default function SlidebarMenu() {
                   }
                 >
                   Brands
-                </Button>
+                </MuiButton>
               </ListItem>
 
               <Collapse in={getStateCurrentExpandMenu("brands")}>
                 <List component="div" disablePadding>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/brands/list"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/brands/list" })}
+                      onClick={handleOpenMenu("/brands/list")}
                     >
                       <DotWrapper />
                       List
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/brands/create"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/brands/create" })}
+                      onClick={handleOpenMenu("/brands/create")}
                     >
                       <DotWrapper />
                       Create
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                 </List>
               </Collapse>
 
               {/* Categories Menues */}
               <ListItem component="div">
-                <Button
-                  disableRipple
+                <MuiButton
                   onClick={handleToggleExpandMenu("categories")}
                   startIcon={<CategoryIcon />}
                   endIcon={getStateCurrentExpandMenu("categories")
@@ -427,40 +426,35 @@ export default function SlidebarMenu() {
                   }
                 >
                   Categories
-                </Button>
+                </MuiButton>
               </ListItem>
 
               <Collapse in={getStateCurrentExpandMenu("categories")}>
                 <List component="div" disablePadding>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/categories/list"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/categories/list" })}
+                      onClick={handleOpenMenu("/categories/list")}
                     >
                       <DotWrapper />
                       List
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/categories/create"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/categories/create" })}
+                      onClick={handleOpenMenu("/categories/create")}
                     >
                       <DotWrapper />
                       Create
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                 </List>
               </Collapse>
 
               {/* Sales categories Menues */}
               <ListItem component="div">
-                <Button
-                  disableRipple
+                <MuiButton
                   onClick={handleToggleExpandMenu("sales-categories")}
                   startIcon={<LoyaltyIcon />}
                   endIcon={getStateCurrentExpandMenu("sales-categories")
@@ -469,32 +463,28 @@ export default function SlidebarMenu() {
                   }
                 >
                   Sales categories
-                </Button>
+                </MuiButton>
               </ListItem>
 
               <Collapse in={getStateCurrentExpandMenu("sales-categories")}>
                 <List component="div" disablePadding>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      onClick={handleCloseSlidebar}
-                      component={Link}
-                      to="/sales-categories/list"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/sales-categories/list" })}
+                      onClick={handleOpenMenu("/sales-categories/list")}
                     >
                       <DotWrapper />
                       List
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                   <ListItem component="div">
-                    <Button
-                      disableRipple
-                      component={Link}
-                      onClick={handleCloseSlidebar}
-                      to="/sales-categories/create"
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/sales-categories/create" })}
+                      onClick={handleOpenMenu("/sales-categories/create")}
                     >
                       <DotWrapper />
                       Create
-                    </Button>
+                    </MuiButton>
                   </ListItem>
                 </List>
               </Collapse>

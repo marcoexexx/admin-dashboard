@@ -1,4 +1,4 @@
-import { Box, Button, Typography, styled } from "@mui/material";
+import { Box, Typography, styled } from "@mui/material";
 
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import { useStore } from "@/hooks";
@@ -7,7 +7,7 @@ import { MuiButton } from "./ui";
 import { Store } from "@/context/store";
 
 
-const ButtonError = styled(Button)(({theme}) => ({
+const ButtonError = styled(MuiButton)(({theme}) => ({
   background: theme.colors.error.main,
   color: theme.palette.error.contrastText,
 
