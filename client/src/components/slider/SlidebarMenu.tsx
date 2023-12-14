@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Collapse, List, ListItem, ListSubheader, alpha, styled } from "@mui/material"
 import { MuiButton } from '@/components/ui'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from "@/hooks"
 import clsx from "clsx";
 
@@ -182,8 +182,9 @@ export default function SlidebarMenu() {
   const { dispatch } = useStore()
 
   const navigate = useNavigate()
+  const location = useLocation()
+  const currentMenu = location.pathname || "/overview" as SlideMenue
 
-  const [currentMenu, setCurrentMenu] = useState<SlideMenue>("/overview")
   const [isExpandMenu, setIsExpandMenu] = useState<ExpandMenu>({
     id: "*",
     state: false
@@ -191,7 +192,6 @@ export default function SlidebarMenu() {
 
 
   const handleOpenMenu = (menue: SlideMenue) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setCurrentMenu(menue)
     navigate(menue)
     dispatch({
       type: "CLOSE_SLIDEBAR"
