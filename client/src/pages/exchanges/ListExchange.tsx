@@ -1,13 +1,17 @@
 import { PageTitle } from "@/components"
-import { Link } from 'react-router-dom'
-import { Button, Container, Grid, Typography } from "@mui/material"
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { useNavigate } from 'react-router-dom'
+import { Container, Grid, Typography } from "@mui/material"
 import { ExchangesList } from "@/components/content/exchanges";
 import { usePermission } from "@/hooks";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { MuiButton } from "@/components/ui";
+
 
 export default function ListExchange() {
+  const navigate = useNavigate()
+
   const isAllowedReadExchange = usePermission({
     key: "exchange-permissions",
     actions: "read",
@@ -19,6 +23,11 @@ export default function ListExchange() {
     actions: "create",
     queryFn: getExchangePermissionsFn
   })
+
+  const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate("/exchanges/create")
+  }
+
 
   return (
     <>
@@ -34,13 +43,12 @@ export default function ListExchange() {
 
           {isAllowedCreateExchange
           ? <Grid item>
-              <Button
+              <MuiButton
                 sx={{ mt: { xs: 2, md: 0 } }}
                 variant="contained"
                 startIcon={<AddTwoToneIcon fontSize="small" />}
-                component={Link}
-                to="/exchanges/create"
-              >Create new exchange</Button>
+                onClick={handleNavigateCreate}
+              >Create new exchange</MuiButton>
             </Grid>
           : null }
           

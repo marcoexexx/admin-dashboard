@@ -1,13 +1,16 @@
 import { PageTitle } from "@/components"
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { Link } from 'react-router-dom'
-import { Button, Container, Grid, Typography } from "@mui/material"
+import { useNavigate } from 'react-router-dom'
+import { Container, Grid, Typography } from "@mui/material"
 import { usePermission } from "@/hooks";
 import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { SalesCategoriesList } from "@/components/content/sales-categories";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { MuiButton } from "@/components/ui";
 
 export default function ListSalesCategory() {
+  const navigate = useNavigate()
+
   const isAllowedReadSalesCategory = usePermission({
     key: "sales-categor-permissions",
     actions: "read",
@@ -19,6 +22,11 @@ export default function ListSalesCategory() {
     actions: "create",
     queryFn: getSalesCategoryPermissionsFn
   })
+
+  const handleNavigateCreate = () => {
+    navigate("/sales-categories/create")
+  }
+
 
   return (
     <>
@@ -34,13 +42,12 @@ export default function ListSalesCategory() {
 
           {isAllowedCreateSalesCategory
           ? <Grid item>
-              <Button
+              <MuiButton
                 sx={{ mt: { xs: 2, md: 0 } }}
                 variant="contained"
                 startIcon={<AddTwoToneIcon fontSize="small" />}
-                component={Link}
-                to="/sales-categories/create"
-              >Create new sale category</Button>
+                onClick={handleNavigateCreate}
+              >Create new sale category</MuiButton>
             </Grid>
           : null}
           

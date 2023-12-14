@@ -11,49 +11,47 @@
 
 # TODO
  - ## IMPORTANT
- - [ ] exchange -> exchanges
- - [ ] MuiButton for loading :: LoadinButton and i18n 
  - [ ] readonly after publish state
 
  - ## NORMAL
- - [x] header menu design fix
- - [x] product on create request-review PENDING
- - [x] fetch exchange rate from create product
- - [x] date param state
 
- - [x] back key
- - [x] back key -> detail pages
  - [ ] profile -> detail/ move
  - [ ] select :: emum, product type
 
  - [ ] backend product.controller.ts -> many to many update
- - [x] bugs -> all delete products
 
- - [x] product publish -> relation specs bug
  - [ ] filter -> specs products
  - [ ] update product
  - [ ] excel -> multi create products
 
- - [x] permissions update form
-
- - [x] user table image :: acatar
 
  - [ ] status/unauthorized -> redirect
- - [x] register -> login/ 
- - [x] click email link -> _blank 
- - [x] regex for password -> input-fields
- - [x] auth loading button
-
- - [x] modalForm -> update-
-
- - [x] move /tableLabel -> username, etc,..
  - [ ] move /uploaderForm -> productImage, profilePicture, coverPhoto
 
  - [ ] image upload
  - [ ] product image append -> [ + ] in product detail view
  - [ ] product image form -> multi image with create form
- - [x] user table profile picture
 
+ ## DONE
+ - [x] exchange -> exchanges
+ - [x] MuiButton for loading :: LoadinButton and i18n 
+ - [x] header menu design fix
+ - [x] product on create request-review PENDING
+ - [x] fetch exchange rate from create product
+ - [x] date param state
+ - [x] back key
+ - [x] back key -> detail pages
+ - [x] bugs -> all delete products
+ - [x] permissions update form
+ - [x] user table image :: acatar
+ - [x] product publish -> relation specs bug
+ - [x] register -> login/ 
+ - [x] click email link -> _blank 
+ - [x] regex for password -> input-fields
+ - [x] auth loading button
+ - [x] modalForm -> update-
+ - [x] move /tableLabel -> username, etc,..
+ - [x] user table profile picture
  - [x] Bulk action inject permissions
  - [x] autocomplete add button padding
  - [x] exchange crud

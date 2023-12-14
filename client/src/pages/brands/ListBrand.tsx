@@ -1,13 +1,16 @@
 import { PageTitle } from "@/components"
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { Link } from 'react-router-dom'
-import { Button, Container, Grid, Typography } from "@mui/material"
+import { useNavigate } from 'react-router-dom'
+import { Container, Grid, Typography } from "@mui/material"
 import { BrandsList } from "@/components/content/brands";
 import { usePermission } from "@/hooks";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import { MuiButton } from "@/components/ui";
 
 export default function ListBrand() {
+  const navigate = useNavigate()
+
   const isAllowedReadBrand = usePermission({
     key: "brand-permissions",
     actions: "read",
@@ -19,6 +22,11 @@ export default function ListBrand() {
     actions: "create",
     queryFn: getBrandPermissionsFn
   })
+
+  const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate("/brands/create")
+  }
+
 
   return (
     <>
@@ -34,13 +42,12 @@ export default function ListBrand() {
 
           {isAllowedCreateBrand
           ? <Grid item>
-              <Button
+              <MuiButton
                 sx={{ mt: { xs: 2, md: 0 } }}
                 variant="contained"
                 startIcon={<AddTwoToneIcon fontSize="small" />}
-                component={Link}
-                to="/brands/create"
-              >Create new brand</Button>
+                onClick={handleNavigateCreate}
+              >Create new brand</MuiButton>
             </Grid>
           : null}
         </Grid>

@@ -1,13 +1,17 @@
 import { PageTitle } from "@/components"
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { Link } from 'react-router-dom'
-import { Button, Container, Grid, Typography } from "@mui/material"
+import { Container, Grid, Typography } from "@mui/material"
 import { ProductsList } from "@/components/content/products";
 import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import { MuiButton } from "@/components/ui";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { useNavigate } from "react-router-dom";
+
 
 export default function ListProduct() {
+  const navigate = useNavigate()
+
   const isAllowedCreateProduct = usePermission({
     key: "product-permissions",
     actions: "create",
@@ -19,6 +23,11 @@ export default function ListProduct() {
     actions: "read",
     queryFn: getProductPermissionsFn
   })
+
+  const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate("/products/create")
+  }
+
 
   return (
     <>
@@ -34,13 +43,12 @@ export default function ListProduct() {
 
           {isAllowedCreateProduct
           ? <Grid item>
-              <Button
+              <MuiButton
                 sx={{ mt: { xs: 2, md: 0 } }}
                 variant="contained"
                 startIcon={<AddTwoToneIcon fontSize="small" />}
-                component={Link}
-                to="/products/create"
-              >Create new product</Button>
+                onClick={handleNavigateCreate}
+              >Create new product</MuiButton>
             </Grid>
           : null}
         </Grid>

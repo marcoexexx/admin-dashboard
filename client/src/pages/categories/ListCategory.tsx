@@ -1,13 +1,16 @@
+import { useNavigate } from "react-router-dom";
 import { PageTitle } from "@/components"
-import { Link } from 'react-router-dom'
-import { Button, Container, Grid, Typography } from "@mui/material"
+import { Container, Grid, Typography } from "@mui/material"
 import { usePermission } from "@/hooks";
 import { getCategoryPermissionsFn } from "@/services/permissionsApi";
 import { CategoriesList } from "@/components/content/categories";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { MuiButton } from "@/components/ui";
 
 export default function ListCategory() {
+  const navigate = useNavigate()
+
   const isAllowedCreateCategory = usePermission({
     key: "category-permissions",
     actions: "create",
@@ -19,6 +22,11 @@ export default function ListCategory() {
     actions: "read",
     queryFn: getCategoryPermissionsFn
   })
+
+  const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate("/categories/create")
+  }
+
 
   return (
     <>
@@ -34,13 +42,12 @@ export default function ListCategory() {
 
           {isAllowedCreateCategory
           ? <Grid item>
-              <Button
+              <MuiButton
                 sx={{ mt: { xs: 2, md: 0 } }}
                 variant="contained"
                 startIcon={<AddTwoToneIcon fontSize="small" />}
-                component={Link}
-                to="/categories/create"
-              >Create new category</Button>
+                onClick={handleNavigateCreate}
+              >Create new category</MuiButton>
             </Grid>
           : null}
           

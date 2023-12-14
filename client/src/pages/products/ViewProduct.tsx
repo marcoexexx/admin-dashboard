@@ -1,12 +1,14 @@
 import { PageTitle } from "@/components"
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Button, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material"
+import { useNavigate, useParams } from 'react-router-dom'
+import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material"
 import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import { ProductDetail } from "@/components/content/products/detail";
+import { MuiButton } from "@/components/ui";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
-import { ProductDetail } from "@/components/content/products/detail";
+
 
 export default function ViewProduct() {
   const { productId } = useParams()
@@ -27,6 +29,10 @@ export default function ViewProduct() {
 
   const handleBack = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate(-1)
+  }
+
+  const handleUpdate = (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/products/update/${productId}`)
   }
   
 
@@ -52,13 +58,12 @@ export default function ViewProduct() {
 
           {isAllowedUpdateProduct
           ? <Grid item>
-              <Button
+              <MuiButton
                 sx={{ mt: { xs: 2, md: 0 } }}
                 variant="contained"
                 startIcon={<AddTwoToneIcon fontSize="small" />}
-                component={Link}
-                to={"/products/update/" + productId}
-              >Update product</Button>
+                onClick={handleUpdate}
+              >Update product</MuiButton>
             </Grid>
           : null}
         </Grid>
