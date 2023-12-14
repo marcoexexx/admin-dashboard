@@ -60,7 +60,7 @@ export async function updateProductFn(
   }: {
     id: string, 
     product: Partial<
-      Omit<UpdateProductInput, "isPending"> & { status: "Draft" | "Pending" | "Published" }
+      Omit<UpdateProductInput, "isPending"> & { status: ProductStatus }
     >
   }
 ) {

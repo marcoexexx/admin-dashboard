@@ -11,7 +11,6 @@
 
 # TODO
  - ## IMPORTANT
- - [ ] readonly after publish state
 
  - ## NORMAL
 
@@ -56,3 +55,4 @@
  - [x] autocomplete add button padding
  - [x] exchange crud
  - [x] remove slidebar menu
+ - [x] readonly after publish state

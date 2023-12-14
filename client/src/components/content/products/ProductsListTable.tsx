@@ -1,38 +1,40 @@
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { Box, Card, CardContent, Checkbox, Divider, IconButton, MenuItem, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme, Theme } from "@mui/material"
 import { useState } from "react"
-import { MuiButton, MuiLabel } from "@/components/ui";
+import { MuiButton } from "@/components/ui";
 import { BulkActions } from "@/components";
 import { ProductsActions } from ".";
 import { CreateProductInput } from "./forms";
 import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
 import { exportToExcel } from "@/libs/exportToExcel";
 import { FormModal } from "@/components/forms";
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { RenderBrandLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
 import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLabel";
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 
-const getStatusLabel = (status: Omit<Status, "all">): JSX.Element => {
-  const map = {
-    draft: {
-      label: "Drift",
-      color: "error" as const
-    },
-    pending: {
-      label: "Pending",
-      color: "warning" as const
-    }, 
-    published: {
-      label: "Published",
-      color: "success" as const
-    },
+const productStatus: {
+  label: ProductStatus,
+  color: (theme: Theme) => string,
+  schema: "error" | "warning" | "success"
+}[] = [
+  {
+    label: "Draft" as const,
+    color: (theme) => theme.colors.error.main,
+    schema: "error" as const,
+  },
+  {
+    label: "Pending" as const,
+    color: (theme) => theme.colors.warning.main,
+    schema: "warning" as const,
+  }, 
+  {
+    label: "Published" as const,
+    color: (theme) => theme.colors.success.main,
+    schema: "success" as const,
   }
-  const { label, color } = map[status as keyof typeof map]
-  return <MuiLabel color={color}>{label}</MuiLabel>
-}
+]
 
 
 const columnData: TableColumnHeader<IProduct>[] = [
@@ -91,20 +93,19 @@ interface ProductsListTableProps {
   products: IProduct[]
   count: number,
   onDelete: (id: string) => void
-  onPublished: (product: IProduct) => void
+  onStatusChange: (product: IProduct, status: ProductStatus) => void
   onMultiDelete: (ids: string[]) => void
   onCreateManyProducts: (data: CreateProductInput[]) => void
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
-  const { products, count, onDelete, onMultiDelete, onCreateManyProducts, onPublished } = props
+  const { products, count, onDelete, onMultiDelete, onCreateManyProducts, onStatusChange } = props
 
   const theme = useTheme()
   const { state: {productFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
   const [deleteId, setDeleteId] = useState("")
-  const [updateProduct, setUpdateProduct] = useState<IProduct|null>(null)
 
   const selectedBulkActions = selectedRows.length > 0
 
@@ -159,36 +160,15 @@ export function ProductsListTable(props: ProductsListTableProps) {
     })
   }
 
-  const handlePublishedProduct = (product: IProduct) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    if (product.status === "Pending") {
-      setUpdateProduct(product)
-      dispatch({
-        type: "OPEN_MODAL_FORM",
-        payload: "update-product"
-      })
-    } else if (product.status === "Published") {
-      dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message: "Already published",
-          severity: "info"
-        }
-      })
-    } else {
-      dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message: "Cannot published for `Draft` state",
-          severity: "error"
-        }
-      })
-    }
-  }
-
   const handleCloseModal = () => {
     dispatch({
       type: "CLOSE_ALL_MODAL_FORM"
     })
+  }
+
+  const handleChangeProductStatus = (product: IProduct) => (evt: SelectChangeEvent) => {
+    const { value } = evt.target
+    onStatusChange(product, value as ProductStatus)
   }
 
   const selectedAllRows = selectedRows.length === products.length
@@ -215,6 +195,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
     actions: "create",
     queryFn: getProductPermissionsFn,
   })
+
 
   return (
     <Card>
@@ -316,7 +297,29 @@ export function ProductsListTable(props: ProductsListTableProps) {
                 })}
 
                 <TableCell align="right">
-                  {getStatusLabel(row.status.toLowerCase())}
+                  <Select
+                    labelId="product-state"
+                    value={row.status}
+                    onChange={handleChangeProductStatus(row)}
+                    size="small"
+                    color={row.status === "Draft" 
+                      ? productStatus[0].schema
+                      : row.status === "Pending" 
+                      ? productStatus[1].schema
+                      : row.status === "Published" 
+                      ? productStatus[2].schema 
+                      : "primary"}
+                  >
+                    {productStatus.map(status => {
+                      return <MenuItem 
+                        disabled={status.label === "Published" && !onlyAdminAccess} 
+                        key={status.label} 
+                        value={status.label}
+                      >
+                        <Typography color={status.color(theme)}>{status.label}</Typography>
+                      </MenuItem>
+                    })}
+                  </Select>
                 </TableCell>
 
                 {onlyAdminAccess && isAllowedUpdateProduct && isAllowedDeleteProduct
@@ -325,23 +328,6 @@ export function ProductsListTable(props: ProductsListTableProps) {
                     display="flex"
                     flexDirection="row"
                   >
-                    {onlyAdminAccess
-                    ? <Tooltip title="Published product" arrow>
-                        <IconButton
-                          onClick={handlePublishedProduct(row)}
-                          sx={{
-                            '&:hover': {
-                              background: theme.colors.primary.lighter
-                            },
-                            color: theme.palette.primary.main
-                          }}
-                          color="inherit"
-                          size="small"
-                        >
-                          <PublishedWithChangesIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    : null}
                     {isAllowedUpdateProduct
                     ? <Tooltip title="Edit Product" arrow>
                         <IconButton
@@ -416,36 +402,6 @@ export function ProductsListTable(props: ProductsListTableProps) {
                 onClick={() => onDelete(deleteId)}
               >
                 Delete
-              </MuiButton>
-              
-              <MuiButton
-                variant="outlined"
-                onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}
-              >
-                Cancel
-              </MuiButton>
-            </Box>
-          </Box>
-        </FormModal>
-      : null}
-
-      {modalForm.field === "update-product"
-      ? <FormModal
-          field="update-product"
-          title="Update product"
-          onClose={handleCloseModal}
-        >
-          <Box display="flex" flexDirection="column" gap={1}>
-            <Box>
-              <Typography>Are you sure want to update</Typography>
-            </Box>
-            <Box display="flex" flexDirection="row" gap={1}>
-              <MuiButton
-                variant="contained"
-                color="error"
-                onClick={() => updateProduct ? onPublished(updateProduct) : null}
-              >
-                Save
               </MuiButton>
               
               <MuiButton
