@@ -233,20 +233,30 @@ export async function deleteProductHandler(
 
     if (!product) return next(new AppError(404,  `Product not found`))
 
-    logging.log(await db.specification.count())
+    // logging.log(await db.specification.count())
 
+    // remove association data: specifications
     await db.specification.deleteMany({
       where: {
         productId,
       }
     })
 
+    // remove association data: favorites
+    await db.favorites.deleteMany({
+      where: {
+        productId,
+      }
+    })
+
+    // remove association data: productCategory
     await db.productCategory.deleteMany({
       where: {
         productId,
       }
     })
 
+    // remove association data: productSalesCategory
     await db.productSalesCategory.deleteMany({
       where: {
         productId,
@@ -336,7 +346,7 @@ export async function updateProductHandler(
         brandId,
         title,
         specification: {
-          create: specification
+          create: specification.map(spec => ({ name: spec.name, value: spec.value }))
         },
         overview,
         features,

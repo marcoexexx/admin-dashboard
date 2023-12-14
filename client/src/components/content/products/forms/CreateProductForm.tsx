@@ -146,6 +146,9 @@ export function CreateProductForm() {
                 type="number" 
                 placeholder="Price" 
                 error={!!errors.price} 
+                inputProps={{
+                  step: "0.01"
+                }}
                 // helperText={!!errors.price 
                 //   ? errors.price.message 
                 //   : "1 dolla ~ 2098.91 kyat"
