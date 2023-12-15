@@ -11,8 +11,6 @@
 
 # TODO
  - ## IMPORTANT
- - [ ] update queryKey: { id: "" } -> { productId }
- - [ ] all update valid bug :: fetchStatus === "idle"
 
  - ## NORMAL
  - [ ] loading -> update form
@@ -59,3 +57,5 @@
  - [x] exchange crud
  - [x] remove slidebar menu
  - [x] readonly after publish state
+ - [x] all update valid :: cache bug
+ - [x] update queryKey: { id: "" } -> { productId }

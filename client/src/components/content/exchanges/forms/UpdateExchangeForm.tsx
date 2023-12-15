@@ -33,6 +33,7 @@ export function UpdateExchangeForm() {
   const { 
     data: exchange,
     isSuccess: isSuccessFetchExchange,
+    fetchStatus: fetchStatusExchange
   } = useQuery({
     enabled: !!exchangeId,
     queryKey: ["exchanges", { id: exchangeId }],
@@ -71,12 +72,12 @@ export function UpdateExchangeForm() {
   })
 
   useEffect(() => {
-    if (isSuccessFetchExchange && exchange) {
+    if (isSuccessFetchExchange && exchange && fetchStatusExchange === "idle") {
       methods.setValue("to", exchange.to)
       methods.setValue("from", exchange.from)
       methods.setValue("rate", exchange.rate)
     }
-  }, [isSuccessFetchExchange])
+  }, [isSuccessFetchExchange, fetchStatusExchange])
 
   const { handleSubmit, register, formState: { errors } } = methods
 

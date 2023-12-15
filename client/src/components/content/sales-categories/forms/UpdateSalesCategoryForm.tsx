@@ -27,6 +27,7 @@ export function UpdateSalesCategoryForm() {
   const { 
     data: brand,
     isSuccess: isSuccessFetchSalesCategory,
+    fetchStatus: fetchStatusSalesCategory
   } = useQuery({
     enabled: !!salesCategoryId,
     queryKey: ["sales-categories", { id: salesCategoryId }],
@@ -62,8 +63,8 @@ export function UpdateSalesCategoryForm() {
   })
 
   useEffect(() => {
-    if (isSuccessFetchSalesCategory && brand) methods.setValue("name", brand.name)
-  }, [isSuccessFetchSalesCategory])
+    if (isSuccessFetchSalesCategory && brand && fetchStatusSalesCategory === "idle") methods.setValue("name", brand.name)
+  }, [isSuccessFetchSalesCategory, fetchStatusSalesCategory])
 
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods

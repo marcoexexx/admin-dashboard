@@ -27,6 +27,7 @@ export function UpdateBrandForm() {
   const { 
     data: brand,
     isSuccess: isSuccessFetchBrand,
+    fetchStatus: fetchStatusBrand
   } = useQuery({
     enabled: !!brandId,
     queryKey: ["brands", { id: brandId }],
@@ -46,6 +47,7 @@ export function UpdateBrandForm() {
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
+        // queryKey: ["brands", { id: brandId }],
         queryKey: ["brands"]
       })
     },
@@ -62,8 +64,8 @@ export function UpdateBrandForm() {
   })
 
   useEffect(() => {
-    if (isSuccessFetchBrand && brand) methods.setValue("name", brand.name)
-  }, [isSuccessFetchBrand])
+    if (isSuccessFetchBrand && brand && fetchStatusBrand === "idle") methods.setValue("name", brand.name)
+  }, [isSuccessFetchBrand, fetchStatusBrand])
 
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods
