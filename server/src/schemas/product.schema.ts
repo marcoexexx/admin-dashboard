@@ -95,7 +95,7 @@ export const createMultiProductsSchema = object({
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
     discount: number().min(0),
-    priceUnit: z.enum(["MMK", "USD"]),
+    priceUnit: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
     salesCategory: string().array(),
     quantity: number().min(0),
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft")
@@ -137,7 +137,7 @@ export const updateProductSchema = object({
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
     discount: number().min(0),
-    priceUnit: z.enum(["MMK", "USD"]),
+    priceUnit: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
     salesCategory: string().array(),
     quantity: number().min(0),
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft")

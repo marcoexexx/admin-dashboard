@@ -10,6 +10,7 @@ import { FormModal } from "@/components/forms";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { RenderBrandLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
 import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLabel";
+import { useNavigate } from "react-router-dom";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
@@ -101,6 +102,8 @@ interface ProductsListTableProps {
 export function ProductsListTable(props: ProductsListTableProps) {
   const { products, count, onDelete, onMultiDelete, onCreateManyProducts, onStatusChange } = props
 
+  const navigate = useNavigate()
+
   const theme = useTheme()
   const { state: {productFilter, modalForm}, dispatch } = useStore()
 
@@ -122,8 +125,8 @@ export function ProductsListTable(props: ProductsListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handleUpdateProduct = (product: IProduct) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(product)
+  const handleUpdateAction = (productId: IProduct["id"]) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/products/update/${productId}`)
   }
 
   const handleClickDeleteAction = (exchangeId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
@@ -331,7 +334,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
                     {isAllowedUpdateProduct
                     ? <Tooltip title="Edit Product" arrow>
                         <IconButton
-                          onClick={handleUpdateProduct(row)}
+                          onClick={handleUpdateAction(row.id)}
                           sx={{
                             '&:hover': {
                               background: theme.colors.primary.lighter

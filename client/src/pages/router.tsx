@@ -12,7 +12,7 @@ const HomePage = Loader(lazy(() => import("@/pages/home/Home")))
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))
 const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.page")))
 
-// produts
+// exchanges
 const ListExchangePage = Loader(lazy(() => import("@/pages/exchanges/ListExchange")))
 const CreateExchangePage = Loader(lazy(() => import("@/pages/exchanges/CreateExchange")))
 const UpdateExchangePage = Loader(lazy(() => import("@/pages/exchanges/UpdateExchange")))
@@ -27,6 +27,7 @@ const VerifyEmailPage = Loader(lazy(() => import("@/pages/verifyEmail.page")))
 const ListProductPage = Loader(lazy(() => import("@/pages/products/ListProduct")))
 const CreateProductPage = Loader(lazy(() => import("@/pages/products/CreateProduct")))
 const ViewProductPage = Loader(lazy(() => import("@/pages/products/ViewProduct")))
+const UpdateProductPage = Loader(lazy(() => import("@/pages/products/UpdateProduct")))
 
 // users
 const ListUserPage = Loader(lazy(() => import("@/pages/users/ListUser")))
@@ -95,21 +96,15 @@ const routes = createBrowserRouter([
                 Component: ListExchangePage
               },
               {
-                path: "create",
+                path: "",
                 element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
                 children: [
                   {
-                    path: "",
+                    path: "create",
                     Component: CreateExchangePage
-                  }
-                ]
-              },
-              {
-                path: "update/:exchangeId",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
-                children: [
+                  },
                   {
-                    path: "",
+                    path: "update/:exchangeId",
                     Component: UpdateExchangePage
                   }
                 ]
@@ -159,21 +154,15 @@ const routes = createBrowserRouter([
                 Component: ListBrandPage
               },
               {
-                path: "create",
+                path: "",
                 element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
                 children: [
                   {
-                    path: "",
+                    path: "create",
                     Component: CreateBrandPage
-                  }
-                ]
-              },
-              {
-                path: "update/:brandId",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
-                children: [
+                  },
                   {
-                    path: "",
+                    path: "update/:brandId",
                     Component: UpdateBrandPage
                   }
                 ]
@@ -195,21 +184,15 @@ const routes = createBrowserRouter([
                 Component: ListSalesCategoryPage
               },
               {
-                path: "create",
+                path: "",
                 element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
                 children: [
                   {
-                    path: "",
+                    path: "create",
                     Component: CreateSalesCategoryPage
-                  }
-                ]
-              },
-              {
-                path: "update/:salesCategoryId",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
-                children: [
+                  },
                   {
-                    path: "",
+                    path: "update/:salesCategoryId",
                     Component: UpdateSalesCategoryPage
                   }
                 ]
@@ -231,23 +214,17 @@ const routes = createBrowserRouter([
                 Component: ListCategoryPage
               },
               {
-                path: "create",
+                path: "",
                 element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
                 children: [
                   {
-                    path: "",
+                    path: "create",
                     Component: CreateCategoryPage
-                  }
-                ]
-              },
-              {
-                path: "update/:categoryId",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
-                children: [
+                  },
                   {
-                    path: "",
+                    path: "update/:categoryId",
                     Component: UpdateCategoryPage
-                  }
+                  },
                 ]
               },
             ]
@@ -271,12 +248,16 @@ const routes = createBrowserRouter([
                 Component: ViewProductPage
               },
               {
-                path: "create",
+                path: "",
                 element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
                 children: [
                   {
-                    path: "",
+                    path: "create",
                     Component: CreateProductPage
+                  },
+                  {
+                    path: "update/:productId",
+                    Component: UpdateProductPage
                   }
                 ]
               },

@@ -56,6 +56,7 @@ export function ProductDetail(props: ViewProductProps) {
   if (isProductError && productError) return <h1>ERROR: {productError.message}</h1>
   if (!product || isProductLoading) return <SuspenseLoader />
 
+
   return (
     <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
       <Grid item xs={12}>

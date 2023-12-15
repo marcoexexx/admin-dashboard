@@ -1,20 +1,26 @@
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { Controller, useFormContext } from 'react-hook-form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getSalesCategoriesFn } from '@/services/salesCategoryApi';
 import { useStore } from '@/hooks';
 import { MuiButton } from '@/components/ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import filter from 'lodash/filter';
 
 
 const InnerPaper = styled(Paper)(() => ({
   padding: "10px"
 }))
 
-export function SalesCategoryMultiInputField() {
-  const { control, setValue, formState: { errors } } = useFormContext<{ salesCategory: string[] }>()
+
+interface SalesCategoryMultiInputFieldProps {
+  updateField?: boolean
+}
+
+export function SalesCategoryMultiInputField({updateField}: SalesCategoryMultiInputFieldProps) {
+  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ salesCategory: string[] }>()
   const [ selectedCategories, setSelectedCategories ] = useState<Pick<ISalesCategory, "id" | "name">[]>([])
   const [ isOpenOptions, setIsOpenOptions ] = useState(false)
 
@@ -36,6 +42,16 @@ export function SalesCategoryMultiInputField() {
     }),
     select: data => data.results
   })
+
+  const defaultSalesCategoryIds = getValues("salesCategory")
+  const defaultSalesCategories = defaultSalesCategoryIds 
+    ? filter(salesCategory, (category) => defaultSalesCategoryIds.includes(category.id))
+    : []
+
+  useEffect(() => {
+    if (defaultSalesCategories.length && updateField) setSelectedCategories(defaultSalesCategories)
+  }, [defaultSalesCategories.length])
+
 
   const handleSalesCateogyChange = (_: React.SyntheticEvent, value: Pick<ISalesCategory, "id" | "name">[] | null) => {
     if (value) {

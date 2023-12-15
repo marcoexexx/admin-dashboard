@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getBrandsFn } from '@/services/brandsApi';
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
@@ -12,8 +12,13 @@ const InnerPaper = styled(Paper)(() => ({
   padding: "10px"
 }))
 
-export function BrandInputField() {
-  const { control, setValue, formState: { errors } } = useFormContext<{ brandId: string }>()
+
+interface BrandInputFieldProps {
+  updateField?: boolean
+}
+
+export function BrandInputField({updateField = false}: BrandInputFieldProps) {
+  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ brandId: string }>()
   const [ selectedBrand, setSelectedBrand ] = useState<IBrand|null>(null)
   const [ isOpenOptions, setIsOpenOptions ] = useState(false)
 
@@ -35,6 +40,16 @@ export function BrandInputField() {
     }),
     select: data => data.results
   })
+
+  const defaultBrandId = getValues("brandId")
+  const defaultBrand = defaultBrandId
+    ? brands?.find(brand => brand.id === defaultBrandId)
+    : undefined
+
+  useEffect(() => {
+    if (defaultBrand && updateField) setSelectedBrand(defaultBrand)
+  }, [defaultBrand])
+
 
   const handleBrandChange = (_: React.SyntheticEvent, value: IBrand | null) => {
     if (value) {
