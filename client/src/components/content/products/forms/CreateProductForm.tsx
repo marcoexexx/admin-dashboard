@@ -188,7 +188,6 @@ export function CreateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              {/* <EditorInputField fieldName="specification" /> */}
               <SpecificationInputField />
               <CatgoryMultiInputField />
             </Box>

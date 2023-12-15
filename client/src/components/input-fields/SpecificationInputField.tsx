@@ -15,6 +15,8 @@ const FormTitle = styled(Typography)(({theme}) => ({
 }))
 
 
+const PREFIX = "specification"
+
 export function SpecificationInputField() {
   const { control } = useFormContext()
   const { 
@@ -23,7 +25,7 @@ export function SpecificationInputField() {
     remove: specificationRemove
   } = useFieldArray({
     control,
-    name: "specification"
+    name: PREFIX,
   })
 
   return (
@@ -33,7 +35,7 @@ export function SpecificationInputField() {
           <FormTitle>Specifications</FormTitle>
           <Controller
             control={control}
-            name={`specification.${idx}.name`}
+            name={`${PREFIX}.${idx}.name`}
             render={({ field }) => <TextField
               {...field}
               label="specification name"
@@ -43,7 +45,7 @@ export function SpecificationInputField() {
           />
           <Controller
             control={control}
-            name={`specification.${idx}.value`}
+            name={`${PREFIX}.${idx}.value`}
             render={({ field }) => <TextField
               {...field}
               label="specification value"

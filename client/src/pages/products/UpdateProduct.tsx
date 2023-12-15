@@ -1,25 +1,24 @@
 import { PageTitle } from "@/components";
-import { UpdateBrandForm } from "@/components/content/brands/forms";
+import { UpdateProductForm } from "@/components/content/products/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { usePermission } from "@/hooks";
-import { getBrandPermissionsFn } from "@/services/permissionsApi";
+import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 export default function UpdateBrand() {
   const navigate = useNavigate()
 
-  const isAllowedUpdateBrand = usePermission({
-    key: "brand-permissions",
+  const isAllowedUpdateProduct = usePermission({
+    key: "product-permissions",
     actions: "update",
-    queryFn: getBrandPermissionsFn
+    queryFn: getProductPermissionsFn
   })
 
   const handleBack = () => {
     navigate(-1)
   }
-
 
   return (
     <>
@@ -35,7 +34,7 @@ export default function UpdateBrand() {
           </Grid>
 
           <Grid item xs={10}>
-            <Typography variant="h3" component="h3" gutterBottom>Update a brand</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>Update a product</Typography>
             <Typography variant="subtitle2" gutterBottom>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
             </Typography>
@@ -43,22 +42,28 @@ export default function UpdateBrand() {
         </Grid>
       </PageTitle>
 
-      {isAllowedUpdateBrand
+      {isAllowedUpdateProduct
       ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12} md={8}>
-              <Card>
-                <CardContent>
-                  <UpdateBrandForm />
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
+          {/* <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}> */}
+          {/*   <Grid item xs={12} md={4}> */}
+          {/*     <Card> */}
+          {/*       <CardContent> */}
+          {/*         <UploadProductImage /> */}
+          {/*       </CardContent> */}
+          {/*     </Card> */}
+          {/*   </Grid> */}
+
+          <Card>
+            <CardContent>
+              <UpdateProductForm />
+            </CardContent>
+          </Card>
         </Container>
       : <MiniAccessDenied />}
       
     </>
   )
 }
+
 
 

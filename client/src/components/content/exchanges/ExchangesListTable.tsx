@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
 
 
-
 const columnData: TableColumnHeader<IExchange>[] = [
   {
     id: "to",

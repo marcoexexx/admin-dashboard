@@ -11,8 +11,11 @@
 
 # TODO
  - ## IMPORTANT
+ - [ ] update queryKey: { id: "" } -> { productId }
+ - [ ] all update valid bug :: fetchStatus === "idle"
 
  - ## NORMAL
+ - [ ] loading -> update form
 
  - [ ] profile -> detail/ move
  - [ ] select :: emum, product type
