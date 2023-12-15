@@ -1,10 +1,9 @@
 import { useStore } from "@/hooks"
 import { object, z } from "zod"
 import { uploadCoverPhotoFn } from "@/services/usersApi"
-import { styled } from "@mui/material"
+import { Button, styled } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { queryClient } from ".."
-import { MuiButton } from "@/components/ui"
 import UploadTwoToneIcon from '@mui/icons-material/UploadTwoTone'
 
 
@@ -57,12 +56,13 @@ export function UploadCoverPhoto() {
         onChange={handleChangeImage}
       />
       <label htmlFor="change-cover">
-        <MuiButton
+        <Button
           startIcon={<UploadTwoToneIcon />}
           variant="contained"
+          component="span"
         >
           Change cover
-        </MuiButton>
+        </Button>
       </label>
     </form>
   )
