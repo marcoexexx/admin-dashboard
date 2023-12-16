@@ -22,3 +22,7 @@ class CategoryParser(Parser[T]):
                     result.append({"name": i})
             
         return result
+
+    @property
+    def label(self) -> str:
+        return "categories"

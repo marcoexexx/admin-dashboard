@@ -31,5 +31,10 @@ T = TypeVar("T")
 class Parser(Generic[T], ABC):
     """Object parser"""
     @abstractmethod
-    def parse(self, raw: List[T]) -> List[Category]:
+    def parse(self, raw: List[T]) -> List[T]:
         """parser objectABC"""
+
+    @property
+    @abstractmethod
+    def label(self) -> str:
+        """get parser name"""

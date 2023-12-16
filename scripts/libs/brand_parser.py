@@ -23,3 +23,7 @@ class BrandParser(Parser[T]):
             
         return result
 
+    @property
+    def label(self) -> str:
+        return "brands"
+
