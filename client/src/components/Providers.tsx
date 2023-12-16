@@ -6,6 +6,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider } from '.';
+import { HelmetProvider } from 'react-helmet-async';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,15 +30,17 @@ export function Providers(props: ProvidersProps) {
     <StylesProvider injectFirst>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <StoreProvider>
-          <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <ThemeWrapper>
-                {children}
-              </ThemeWrapper>
-            </AuthProvider>
+          <HelmetProvider>
+            <QueryClientProvider client={queryClient}>
+              <AuthProvider>
+                <ThemeWrapper>
+                  {children}
+                </ThemeWrapper>
+              </AuthProvider>
 
-            <ReactQueryDevtools />
-          </QueryClientProvider>
+              <ReactQueryDevtools />
+            </QueryClientProvider>
+          </HelmetProvider>
         </StoreProvider>
       </LocalizationProvider>
     </StylesProvider>

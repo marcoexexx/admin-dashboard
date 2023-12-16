@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
@@ -6,6 +7,10 @@ import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 import { UpdateSalesCategoryForm } from "@/components/content/sales-categories/forms";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 export default function UpdateSalesCategory() {
   const isAllowedUpdateSalesCategory = usePermission({
@@ -16,6 +21,11 @@ export default function UpdateSalesCategory() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | Update sale</title>
+        <meta name="description" content="Effortlessly refine and update your sales data with our user-friendly platform. Seamlessly edit details, track performance, and optimize your sales strategy. Take control of your revenue insights and ensure your sales data stays accurate. Simplify the update process with our intuitive tools. Explore now for hassle-free sales management and enhanced business performance."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">

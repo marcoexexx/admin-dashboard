@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { UpdateProductForm } from "@/components/content/products/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
@@ -6,6 +7,10 @@ import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 export default function UpdateBrand() {
   const navigate = useNavigate()
@@ -22,6 +27,11 @@ export default function UpdateBrand() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | Update product</title>
+        <meta name="description" content="Effortlessly refine and update your products with our user-friendly platform. Seamlessly edit details, pricing, and more for optimal presentation. Take control of your product catalog, ensuring it stays current and engaging. Simplify the update process with our intuitive tools. Explore now for hassle-free product management."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">

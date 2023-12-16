@@ -1,5 +1,5 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { useNavigate } from 'react-router-dom'
 import { Container, Grid, Typography } from "@mui/material"
 import { BrandsList } from "@/components/content/brands";
@@ -7,6 +7,11 @@ import { usePermission } from "@/hooks";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { MuiButton } from "@/components/ui";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 export default function ListBrand() {
   const navigate = useNavigate()
@@ -30,6 +35,11 @@ export default function ListBrand() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | List brands</title>
+        <meta name="description" content="Effortlessly manage and organize your product brands with our intuitive CRUD table list. Create, update, and delete brands seamlessly, ensuring your brand portfolio is always up-to-date. Explore a user-friendly interface that simplifies brand management, making it easy to add new brands, edit existing information, and remove outdated entries. Optimize your business operations and maintain a well-organized brand catalog. Experience the convenience of our CRUD table list for brands."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">

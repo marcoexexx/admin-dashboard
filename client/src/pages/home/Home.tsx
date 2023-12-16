@@ -16,7 +16,7 @@ export default function Home() {
     <div>
       <Helmet>
         <title>{appName} | Dashboard</title>
-        <meta name="description" content="Effortlessly manage your online store with our powerful product management and ordering dashboard. Streamline your business operations, track inventory, and process orders seamlessly. Elevate your shop's efficiency and customer satisfaction with our user-friendly dashboard for shop owners. Take control of your products, inventory, and orders, making business management a breeze. Try it now and experience the simplicity of running a successful online shop.">
+        <meta name="description" content="Effortlessly manage your online store with our powerful product management and ordering dashboard. Streamline your business operations, track inventory, and process orders seamlessly. Elevate your shop's efficiency and customer satisfaction with our user-friendly dashboard for shop owners. Take control of your products, inventory, and orders, making business management a breeze. Try it now and experience the simplicity of running a successful online shop."></meta>
       </Helmet>
 
       <PageTitle>

@@ -1,11 +1,16 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { UpdateExchangeForm } from "@/components/content/exchanges/forms";
 import { usePermission } from "@/hooks";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 export default function UpdateExchange() {
   const isAllowedUpdateExchange = usePermission({
@@ -16,6 +21,11 @@ export default function UpdateExchange() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | Update exchange</title>
+        <meta name="description" content="Refine and secure your cryptocurrency exchange effortlessly. Edit features and settings seamlessly for optimal performance. Keep your exchange innovative with hassle-free updates. Elevate the trading experience for your users."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">
