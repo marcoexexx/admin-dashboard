@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { useNavigate } from 'react-router-dom'
 import { Container, Grid, Typography } from "@mui/material"
@@ -5,8 +6,12 @@ import { usePermission } from "@/hooks";
 import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { SalesCategoriesList } from "@/components/content/sales-categories";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { MuiButton } from "@/components/ui";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 export default function ListSalesCategory() {
   const navigate = useNavigate()
@@ -30,6 +35,11 @@ export default function ListSalesCategory() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | List sales</title>
+        <meta name="description" content="Effortlessly manage your sales data with our intuitive sales table. View, track, and analyze your product sales seamlessly. Stay informed about revenue, quantities sold, and more with our user-friendly interface. Explore the power of efficient sales data management for a clear overview of your business performance."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">

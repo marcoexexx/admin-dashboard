@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { useNavigate } from 'react-router-dom'
 import { Container, Grid, Typography } from "@mui/material"
@@ -5,8 +6,12 @@ import { ExchangesList } from "@/components/content/exchanges";
 import { usePermission } from "@/hooks";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { MuiButton } from "@/components/ui";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 
 export default function ListExchange() {
@@ -31,6 +36,11 @@ export default function ListExchange() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | List exchanges</title>
+        <meta name="description" content="Launch your own exchange effortlessly with our platform. Create a secure and customizable exchange to trade digital assets. Enjoy robust features, easy management, and a seamless user experience. Start your exchange journey now and elevate your cryptocurrency trading platform with our intuitive solutions."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">

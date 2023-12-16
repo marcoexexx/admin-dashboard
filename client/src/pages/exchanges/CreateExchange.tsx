@@ -1,11 +1,16 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { CreateExchangeForm } from "@/components/content/exchanges/forms";
 import { usePermission } from "@/hooks";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 export default function CreateExchange() {
   const isAllowedCreateExchange = usePermission({
@@ -22,6 +27,11 @@ export default function CreateExchange() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | Create a exchange</title>
+        <meta name="description" content="Effortlessly exchange currencies with our user-friendly platform. Get real-time rates, seamless transactions, and a secure experience. Simplify currency exchange and manage your finances with ease. Explore now for quick and hassle-free international transactions."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">

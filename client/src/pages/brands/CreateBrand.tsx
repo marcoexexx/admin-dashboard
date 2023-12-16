@@ -1,11 +1,16 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { CreateBrandForm } from "@/components/content/brands/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { usePermission } from "@/hooks";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 export default function CreateBrand() {
   const isAllowedCreateBrand = usePermission({
@@ -22,6 +27,11 @@ export default function CreateBrand() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | Create brand</title>
+        <meta name="description" content="Build a compelling product brand that resonates with your target audience. Our brand creation services help you establish a unique identity, from crafting a memorable brand name to designing a distinctive logo. Create a brand story that connects emotionally with customers, fostering loyalty and trust. Elevate your business with a strong, cohesive brand that sets you apart in the market. Start building your brand today and leave a lasting impression on your audience."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">

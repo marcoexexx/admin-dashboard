@@ -1,11 +1,16 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { CreateSalesCategoryForm } from "@/components/content/sales-categories/forms";
 import { usePermission } from "@/hooks";
 import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 export default function CreateProduct() {
   const isAllowedCreateSalesCategory = usePermission({
@@ -22,6 +27,11 @@ export default function CreateProduct() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | Create sales for products</title>
+        <meta name="description" content="Launch exciting seasonal sales for your products effortlessly. Create special offers, set discounts, and showcase limited-time deals. Boost your sales and engage customers with our user-friendly platform. Explore now to craft compelling seasonal promotions for your products."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">

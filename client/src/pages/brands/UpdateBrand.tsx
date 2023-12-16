@@ -1,11 +1,16 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { UpdateBrandForm } from "@/components/content/brands/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { usePermission } from "@/hooks";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 export default function UpdateBrand() {
   const navigate = useNavigate()
@@ -23,6 +28,11 @@ export default function UpdateBrand() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | Update brand</title>
+        <meta name="description" content="Effortlessly update and refine your product brand details with our user-friendly brand update page. Seamlessly edit brand names, logos, and other essential information, ensuring your brand identity remains current and compelling. Take control of your brand's image, make instant modifications, and maintain a consistent and polished appearance. Simplify the brand update process with our intuitive tools and keep your business on the cutting edge. Explore the power of effortless brand management today."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">

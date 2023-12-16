@@ -1,6 +1,9 @@
-import getConfig from "@/libs/getConfig";
 import { Box, Typography, styled } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 const MainContent = styled(Box)(({}) => ({
   display: "flex",
@@ -36,7 +39,7 @@ export default function Logo() {
         onClick={handleOnClickLogo}
       />
 
-      <LogoLabel>{getConfig("appName")}</LogoLabel>
+      <LogoLabel>{appName}</LogoLabel>
     </MainContent>
   )
 }

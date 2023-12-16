@@ -1,11 +1,16 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { CreateProductForm } from "@/components/content/products/forms";
 import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 export default function CreateProduct() {
   const isAllowedCreateProduct = usePermission({
@@ -22,6 +27,11 @@ export default function CreateProduct() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | Create a product</title>
+        <meta name="description" content="Create products effortlessly with our user-friendly platform. Streamline customization and showcase your offerings seamlessly. Start crafting your unique products today."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">

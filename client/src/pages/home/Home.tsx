@@ -1,15 +1,24 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { SalesCategoryCard } from "@/components/content/sales-categories/dashboard"
 import { useStore } from "@/hooks"
 import { Avatar, Container, Grid, Typography, useTheme } from "@mui/material"
+import getConfig from "@/libs/getConfig"
 
 export default function Home() {
   const { state: {user} } = useStore()
   const theme = useTheme()
 
+  const appName = getConfig("appName")
+
 
   return (
     <div>
+      <Helmet>
+        <title>{appName} | Dashboard</title>
+        <meta name="description" content="Effortlessly manage your online store with our powerful product management and ordering dashboard. Streamline your business operations, track inventory, and process orders seamlessly. Elevate your shop's efficiency and customer satisfaction with our user-friendly dashboard for shop owners. Take control of your products, inventory, and orders, making business management a breeze. Try it now and experience the simplicity of running a successful online shop."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container alignItems="center">

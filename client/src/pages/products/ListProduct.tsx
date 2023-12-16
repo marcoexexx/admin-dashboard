@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { ProductsList } from "@/components/content/products";
@@ -5,8 +6,12 @@ import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { MuiButton } from "@/components/ui";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { useNavigate } from "react-router-dom";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import getConfig from "@/libs/getConfig";
+
+
+const appName = getConfig("appName")
 
 
 export default function ListProduct() {
@@ -31,6 +36,11 @@ export default function ListProduct() {
 
   return (
     <>
+      <Helmet>
+        <title>{appName} | List products</title>
+        <meta name="description" content="Effortlessly manage your product list with our intuitive CRUD tables. Create, read, update, and delete products seamlessly. Streamline your inventory management, ensuring a well-organized and up-to-date product catalog. Explore user-friendly tables for efficient product list management."></meta>
+      </Helmet>
+
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">
