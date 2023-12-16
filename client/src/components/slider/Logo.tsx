@@ -24,6 +24,8 @@ const Image = styled("img")(({theme}) => ({
 export default function Logo() {
   const navigate = useNavigate()
 
+  const appName = getConfig("appName")
+
   const handleOnClickLogo = () => {
     navigate("/")
   }
@@ -36,7 +38,7 @@ export default function Logo() {
         onClick={handleOnClickLogo}
       />
 
-      <LogoLabel>{getConfig("appName")}</LogoLabel>
+      <LogoLabel>{appName}</LogoLabel>
     </MainContent>
   )
 }
