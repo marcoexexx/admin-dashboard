@@ -10,8 +10,8 @@ class SpecificationBound(TypedDict):
 T = TypeVar("T", bound=SpecificationBound)
 
 @dataclass(frozen=True)
-class SpecificationParser(Parser[T]):
-    def parse(self, raw: List[T]) -> List[Specification]:
+class SpecificationParser(Parser[T, Specification]):
+    def parse_all(self, raw: List[T]) -> List[Specification]:
         result: List[Specification] = []
 
         for obj in raw:
@@ -23,3 +23,11 @@ class SpecificationParser(Parser[T]):
     @property
     def label(self) -> str:
         return "specifications"
+
+    def parse(self, raw: T) -> List[Specification]:
+        specs: List[Specification] = []
+
+        for k, v in raw["specification"].items():
+            specs.append(Specification(name=k, value=v))
+
+        return specs

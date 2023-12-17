@@ -3,15 +3,20 @@
 import logging
 from pathlib import Path
 from typing import Dict, List
+from helpers.get_keys import RawProduct
+from helpers.install_fields import InstallFields
+from libs.category_parser import CategoryParser
+from libs.excel import ExcelHandler
+from libs.sales_catgory_parser import SalesCategoryParser
 
 from libs.serializer import JSONSerializer
+from libs.exporter import Exporter
 from libs.brand_parser import BrandParser
 from libs.specification_parser import SpecificationParser
 
-from helpers.exporter import exporter
-
 
 INPUT_RAW_DATA = Path("./data/laptops.json")
+OUTPUT_RAW_DATA = Path("./products.json")
 
 logging.basicConfig(
     format="[ %(levelname)s::%(asctime)s ] %(message)s",
@@ -19,28 +24,34 @@ logging.basicConfig(
 )
 
 
-def export() -> None:
-    serializer = JSONSerializer[List[Dict]]()
+def fileds_export() -> None:
+    serializer = JSONSerializer[List[RawProduct]]()
+    exporter = Exporter()
 
+    # Parsers
     brand_parser = BrandParser()
-    exporter(serializer, brand_parser, INPUT_RAW_DATA)
+    category_parser = CategoryParser()
+    sales_category_parser = SalesCategoryParser()
+
+    exporter.export(serializer, brand_parser, INPUT_RAW_DATA)
+    exporter.export(serializer, category_parser, INPUT_RAW_DATA)
+    exporter.export(serializer, sales_category_parser, INPUT_RAW_DATA)
 
 
-def print_field() -> None:
-    serializer = JSONSerializer[List[Dict]]()
-    raw_products = serializer.serialize(INPUT_RAW_DATA)
+def product_export() -> None:
+    serializer = JSONSerializer[List[RawProduct]]()
+    installer = InstallFields(INPUT_RAW_DATA)
 
-    brands_parser = BrandParser()
-    brands = brands_parser.parse(raw_products)
+    product = installer.install(serializer)
 
-    specifications_parser = SpecificationParser()
-    specifications = specifications_parser.parse(raw_products[0:1])
+    # excel_handler = ExcelHandler(data=product, save_as=Path(OUTPUT_RAW_DATA.with_suffix(".xlsx")))
+    # excel_handler.export()
 
-    print(brands, specifications)
+    print(product[0:1])
 
 
 def main() -> None:
-    export()
+    product_export()
 
 
 if __name__ == "__main__":

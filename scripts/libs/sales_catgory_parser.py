@@ -10,8 +10,8 @@ class SalesCategoryBound(TypedDict):
 T = TypeVar("T", bound=SalesCategoryBound)
 
 @dataclass(frozen=True)
-class SalesCategoryParser(Parser[T]):
-    def parse(self, raw: List[T]) -> List[SalesCategory]:
+class SalesCategoryParser(Parser[T, SalesCategory]):
+    def parse_all(self, raw: List[T]) -> List[SalesCategory]:
         result: List[SalesCategory] = []
         unique_keys = set()
 
@@ -26,3 +26,11 @@ class SalesCategoryParser(Parser[T]):
     @property
     def label(self) -> str:
         return "sales-categories"
+
+    def parse(self, raw: T) -> List[SalesCategory]:
+        sales: List[SalesCategory] = []
+
+        for i in raw["sales_category"]:
+            sales.append(SalesCategory(name=i))
+
+        return sales
