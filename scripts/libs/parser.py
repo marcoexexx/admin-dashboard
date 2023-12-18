@@ -27,9 +27,19 @@ class Exchange(TypedDict):
 
 
 T = TypeVar("T")
+U = TypeVar("U")
 
-class Parser(Generic[T], ABC):
+class Parser(Generic[T, U], ABC):
     """Object parser"""
     @abstractmethod
-    def parse(self, raw: List[T]) -> List[Category]:
+    def parse_all(self, raw: List[T]) -> List[U]:
         """parser objectABC"""
+
+    @abstractmethod
+    def parse(self, raw: T) -> U | List[U]:
+        """parser objectABC"""
+
+    @property
+    @abstractmethod
+    def label(self) -> str:
+        """get parser name"""

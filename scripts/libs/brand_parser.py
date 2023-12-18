@@ -10,8 +10,8 @@ class BrandBound(TypedDict):
 T = TypeVar("T", bound=BrandBound)
 
 @dataclass(frozen=True)
-class BrandParser(Parser[T]):
-    def parse(self, raw: List[T]) -> List[Brand]:
+class BrandParser(Parser[T, Brand]):
+    def parse_all(self, raw: List[T]) -> List[Brand]:
         result: List[Brand] = []
         unique_keys = set()
 
@@ -23,3 +23,9 @@ class BrandParser(Parser[T]):
             
         return result
 
+    @property
+    def label(self) -> str:
+        return "brands"
+
+    def parse(self, raw: T) -> Brand:
+        return Brand(name=raw["brand"])

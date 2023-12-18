@@ -11,6 +11,9 @@
 
 # TODO
  - ## IMPORTANT
+ - [ ] use $transaction
+ - [ ] use name: { in: [] }
+ - [ ] item cod
 
  - ## NORMAL
  - [ ] loading -> update form
