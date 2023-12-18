@@ -5,7 +5,7 @@ import { Pagination } from "./types";
 export type Role = 
   | "Admin"
   | "User"
-  | "Employee";
+  | "Shopowner";
 
 
 export type UserFilterPagination = {
@@ -64,7 +64,7 @@ export const getUserByUsernameSchema = object({
 export const changeUserRoleSchema = object({
   ...params,
   body: object({
-    role: z.enum(["Admin", "User", "Employee"], { required_error: "User role is required" })
+    role: z.enum(["Admin", "User", "Shopowner"], { required_error: "User role is required" })
   })
 })
 

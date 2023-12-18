@@ -3,7 +3,7 @@ import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { BrandFilterPagination, CreateBrandInput, CreateMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
+import { BrandFilterPagination, CreateBrandInput, CreateMultiBrandsInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
@@ -100,7 +100,7 @@ export async function createBrandHandler(
 ) {
   try {
     const { name } = req.body
-    // TODO: filter
+
     const brand = await db.brand.create({
       data: { name },
     })
@@ -124,9 +124,35 @@ export async function deleteBrandHandler(
 ) {
   try {
     const { brandId } = req.params
+
     await db.brand.delete({
       where: {
         id: brandId
+      }
+    })
+
+    res.status(200).json(HttpResponse(200, "Success deleted"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function deleteMultiBrandsHandler(
+  req: Request<{}, {}, DeleteMultiBrandsInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { brandIds } = req.body
+
+    await db.brand.deleteMany({
+      where: {
+        id: {
+          in: brandIds
+        }
       }
     })
 

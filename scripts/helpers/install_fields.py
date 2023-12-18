@@ -47,7 +47,7 @@ class InstallFields:
                 discount = product["discount"],
                 instockStatus = "AskForStock",
                 dealerPrice = product.get("dealer_price", 0),
-                colors = product["color"],
+                colors = "\n".join(product["color"]),
                 brandName = brand["name"]
             )
 

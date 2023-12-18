@@ -5,7 +5,7 @@ import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { CreateExchangeInput, CreateMultiExchangesInput, ExchangeFilterPagination, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
+import { CreateExchangeInput, CreateMultiExchangesInput, DeleteMultiExchangesInput, ExchangeFilterPagination, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
 
 
 export async function getExchangesHandler(
@@ -166,6 +166,30 @@ export async function deleteExchangeHandler(
     await db.exchange.delete({
       where: {
         id: exchangeId
+      }
+    })
+
+    res.status(200).json(HttpResponse(200, "Success deleted"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function deleteMultiExchangesHandler(
+  req: Request<{}, {}, DeleteMultiExchangesInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { exchangeIds } = req.body
+    await db.exchange.deleteMany({
+      where: {
+        id: {
+          in: exchangeIds
+        }
       }
     })
 

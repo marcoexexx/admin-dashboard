@@ -2,7 +2,7 @@ import { Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, S
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
-import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField, SpecificationInputField } from "@/components/input-fields";
+import { BrandInputField, CatgoryMultiInputField, ColorsInputField, EditorInputField, SalesCategoryMultiInputField, SpecificationInputField } from "@/components/input-fields";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createProductFn } from "@/services/productsApi";
 import { useStore } from "@/hooks";
@@ -16,7 +16,7 @@ import { getExchangesFn } from "@/services/exchangesApi";
 import { useEffect } from "react";
 import { CreateSalesCategoryForm } from "../../sales-categories/forms";
 
-const productTypes = ["Switch", "Accessory", "Router", "Wifi"]
+
 const instockStatus = ["InStock", "OutOfStock", "AskForStock"]
 const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"]
 
@@ -36,12 +36,11 @@ const createProductSchema = object({
     .min(2).max(5000),
   warranty: number({ required_error: "Price is required "}),
   categories: string().array().default([]),
-  colors: string({ required_error: "Brand is required" })
-    .min(2).max(128),
+  colors: string({ required_error: "Color is required" })
+    .min(2).max(128).array(),
   instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]).default("AskForStock"),
   description: string({ required_error: "Brand is required" })
     .min(2).max(5000),
-  type: z.enum(["Switch", "Accessory", "Router", "Wifi"]),
   dealerPrice: number().min(0),
   // images: z.any(),
   marketPrice: number().min(0),
@@ -50,7 +49,11 @@ const createProductSchema = object({
   salesCategory: string().array().default([]),
   quantity: number().min(0),
   isPending: boolean().default(false),
-  status: z.enum(["Draft", "Pending", "Published"]).default("Draft")
+  status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
+
+  itemCode: string().nullable().optional(),
+  type: z.string().nullable().optional(),
+  creatorId: string().nullable().optional(),
 })
 
 export type CreateProductInput = z.infer<typeof createProductSchema>
@@ -133,6 +136,7 @@ export function CreateProductForm() {
     methods.setValue("price", price * rate)
   }
 
+
   return (
     <>
       <FormProvider {...methods}>
@@ -202,7 +206,7 @@ export function CreateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField fullWidth {...register("colors")} label="Color" error={!!errors.colors} helperText={!!errors.colors ? errors.colors.message : ""} />
+              <ColorsInputField />
               <EditorInputField fieldName="description" />
             </Box>
           </Grid>
@@ -230,21 +234,7 @@ export function CreateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("type")} 
-                defaultValue={productTypes[0]}
-                select
-                label="Product Type" 
-                error={!!errors.type} 
-                helperText={!!errors.type ? errors.type.message : ""} 
-              >
-                {productTypes.map(t => (
-                  <MenuItem key={t} value={t}>
-                    {t}
-                  </MenuItem>
-                ))}
-              </TextField>
+              <TextField focused fullWidth {...register("type")} label="Product type" error={!!errors.type} helperText={!!errors.type ? errors.type.message : ""} />
             </Box>
           </Grid>
 

@@ -39,8 +39,15 @@ export const updateSalesCategorySchema = object({
   })
 })
 
+export const deleteMultiSalesCategoriesSchema = object({
+  body: object({
+    salesCategoryIds: string().array()
+  })
+})
+
 
 export type GetSalesCategoryInput = z.infer<typeof getSalesCategorySchema>
 export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>["body"]
 export type CreateMultiSalesCategoriesInput = z.infer<typeof createMultiSalesCategoriesSchema>["body"]
+export type DeleteMultiSalesCategoriesInput = z.infer<typeof deleteMultiSalesCategoriesSchema>["body"]
 export type UpdateSalesCategoryInput = z.infer<typeof updateSalesCategorySchema>

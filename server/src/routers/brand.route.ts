@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validate } from "../middleware/validate";
-import { createBrandSchema, createMultiBrandsSchema, getBrandSchema, updateBrandSchema } from "../schemas/brand.schema";
-import { createBrandHandler, createMultiBrandsHandler, deleteBrandHandler, getBrandHandler, getBrandsHandler, updateBrandHandler } from "../controllers/brand.controller";
+import { createBrandSchema, createMultiBrandsSchema, deleteMultiBrandsSchema, getBrandSchema, updateBrandSchema } from "../schemas/brand.schema";
+import { createBrandHandler, createMultiBrandsHandler, deleteBrandHandler, deleteMultiBrandsHandler, getBrandHandler, getBrandsHandler, updateBrandHandler } from "../controllers/brand.controller";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { permissionUser } from "../middleware/permissionUser";
@@ -31,6 +31,13 @@ router.route("/multi")
     permissionUser("create", brandPermission),
     validate(createMultiBrandsSchema),
     createMultiBrandsHandler
+  )
+  .delete(
+    deserializeUser,
+    requiredUser,
+    permissionUser("delete", brandPermission),
+    validate(deleteMultiBrandsSchema),
+    deleteMultiBrandsHandler
   )
 
 

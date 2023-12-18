@@ -11,13 +11,6 @@ type UserProvider =
   | "Facebook"
 
 
-type ProductType = 
-  | "Switch"
-  | "Router"
-  | "Wifi"
-  | "Accessory"
-
-
 type InstockStatus = 
   | "InStock"
   | "OutOfStock"
@@ -31,6 +24,7 @@ type PriceUnit =
   | "THB"
   | "KRW"
 
+// TODO: user's data
 interface IUser {
   id: string,
   name: string,
@@ -88,16 +82,19 @@ interface IProduct {
   overview: string;
   features: string;
   warranty: number;
-  colors: string;
+  colors: string[];
   instockStatus: InstockStatus;
   description: string;
-  type: ProductType;
+  type?: string;
   dealerPrice: number;
   marketPrice: number;
   discount: number;
   status: ProductStatus;
   priceUnit: PriceUnit;
   quantity: number;
+  creator?: IUser;
+  itemCode?: string;
+  creatorId?: string;
   createdAt: string; // Assuming it's a string representation of a date
   updatedAt: string; // Assuming it's a string representation of a date
 }

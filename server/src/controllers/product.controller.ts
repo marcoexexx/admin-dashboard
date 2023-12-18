@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express'
-import { db } from '../utils/db'
-import AppError from '../utils/appError';
-import { CreateMultiProductsInput, CreateProductInput, GetProductInput, LikeProductByUserInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
-import logging from '../middleware/logging/logging';
+import { CreateMultiProductsInput, CreateProductInput, DeleteMultiProductsInput, GetProductInput, LikeProductByUserInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { db } from '../utils/db'
 import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
+import logging from '../middleware/logging/logging';
+import AppError from '../utils/appError';
 
 
 // TODO: specification filter
@@ -232,12 +232,12 @@ export async function createMultiProductsHandler(
           },
           specification: {
             createMany: {
-              data: product.specification.split("\n").map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
+              data: product.specification.split("\n").filter(Boolean).map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
               skipDuplicates: true
             }
           },
           categories: {
-            create: product.categories.split("\n").map(name => ({
+            create: product.categories.split("\n").filter(Boolean).map(name => ({
               category: {
                 connectOrCreate: {
                   where: { name },
@@ -247,7 +247,7 @@ export async function createMultiProductsHandler(
             }))
           },
           salesCategory: {
-            create: product.salesCategory.split("\n").map(name => ({
+            create: product.salesCategory.split("\n").filter(Boolean).map(name => ({
               salesCategory: {
                 connectOrCreate: {
                   where: { name },
@@ -289,41 +289,92 @@ export async function deleteProductHandler(
 
     if (!product) return next(new AppError(404,  `Product not found`))
 
-    // logging.log(await db.specification.count())
+    await db.$transaction([
+      // remove association data(s)
+      db.specification.deleteMany({
+        where: {
+          productId,
+        }
+      }),
+      db.favorites.deleteMany({
+        where: {
+          productId,
+        }
+      }),
+      db.productCategory.deleteMany({
+        where: {
+          productId,
+        }
+      }),
+      db.productSalesCategory.deleteMany({
+        where: {
+          productId,
+        }
+      }),
 
-    // remove association data: specifications
-    await db.specification.deleteMany({
-      where: {
-        productId,
-      }
-    })
+      // remove real data
+      db.product.delete({
+        where: {
+          id: productId
+        }
+      })
+    ])
 
-    // remove association data: favorites
-    await db.favorites.deleteMany({
-      where: {
-        productId,
-      }
-    })
+    res.status(200).json(HttpResponse(200, "Success delete"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    if (err?.code === "23505") next(new AppError(409, "data already exists"))
+    next(new AppError(500, msg))
+  }
+}
 
-    // remove association data: productCategory
-    await db.productCategory.deleteMany({
-      where: {
-        productId,
-      }
-    })
 
-    // remove association data: productSalesCategory
-    await db.productSalesCategory.deleteMany({
-      where: {
-        productId,
-      }
-    })
+export async function deleteMultiProductHandler(
+  req: Request<{}, {}, DeleteMultiProductsInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productIds } = req.body
 
-    await db.product.delete({
-      where: {
-        id: productId
-      }
-    })
+    await db.$transaction([
+      db.specification.deleteMany({
+        where: {
+          productId: {
+            in: productIds
+          },
+        }
+      }),
+      db.favorites.deleteMany({
+        where: {
+          productId: {
+            in: productIds
+          },
+        }
+      }),
+      db.productCategory.deleteMany({
+        where: {
+          productId: {
+            in: productIds
+          },
+        }
+      }),
+      db.productSalesCategory.deleteMany({
+        where: {
+          productId: {
+            in: productIds
+          },
+        }
+      }),
+      db.product.deleteMany({
+        where: {
+          id: {
+            in: productIds
+          },
+        }
+      })
+    ])
 
     res.status(200).json(HttpResponse(200, "Success delete"))
   } catch (err: any) {
@@ -364,75 +415,73 @@ export async function updateProductHandler(
       status
     } = req.body
 
-    // remove association data: productCategory
-    await db.productCategory.deleteMany({
-      where: {
-        productId,
-      }
-    })
-
-    // remove association data: productSalesCategory
-    await db.productSalesCategory.deleteMany({
-      where: {
-        productId,
-      }
-    })
-
-    // remove association data: specifications
-    await db.product.update({
-      where: {
-        id: productId
-      },
-      data: {
-        specification: {
-          deleteMany: {
-            productId
+    const [_deletedProductCategory, _daletedProductSalesCategory, _deletedProductSpecificationm, product] = await db.$transaction([
+      // remove association data(s)
+      db.productCategory.deleteMany({
+        where: {
+          productId,
+        }
+      }),
+      db.productSalesCategory.deleteMany({
+        where: {
+          productId,
+        }
+      }),
+      db.product.update({
+        where: {
+          id: productId
+        },
+        data: {
+          specification: {
+            deleteMany: {
+              productId
+            }
           }
         }
-      }
-    })
+      }),
 
-    // UPDATE PRODUCT
-    const product = await db.product.update({
-      where: {
-        id: productId
-      },
-      data: {
-        price,
-        brandId,
-        title,
-        specification: {
-          create: specification.map(spec => ({ name: spec.name, value: spec.value }))
+      // Update real
+      db.product.update({
+        where: {
+          id: productId
         },
-        overview,
-        features,
-        warranty,
-        colors,
-        instockStatus,
-        description,
-        type,
-        dealerPrice,
-        marketPrice,
-        discount,
-        status,
-        priceUnit,
-        categories: {
-          create: categories.map(id => ({
-            category: {
-              connect: { id }
-            }
-          }))
-        },
-        salesCategory: {
-          create: salesCategory.map(id => ({
-            salesCategory: {
-              connect: { id }
-            }
-          }))
-        },
-        quantity,
-      }
-    })
+        data: {
+          price,
+          brandId,
+          title,
+          specification: {
+            create: specification.map(spec => ({ name: spec.name, value: spec.value }))
+          },
+          overview,
+          features,
+          warranty,
+          colors,
+          instockStatus,
+          description,
+          type,
+          dealerPrice,
+          marketPrice,
+          discount,
+          status,
+          priceUnit,
+          categories: {
+            create: categories.map(id => ({
+              category: {
+                connect: { id }
+              }
+            }))
+          },
+          salesCategory: {
+            create: salesCategory.map(id => ({
+              salesCategory: {
+                connect: { id }
+              }
+            }))
+          },
+          quantity,
+        }
+      })
+    ])
 
     res.status(200).json(HttpDataResponse({ product }))
   } catch (err) {

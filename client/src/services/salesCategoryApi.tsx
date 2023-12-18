@@ -42,8 +42,8 @@ export async function updateSalesCategoryFn({salesCategoryId, salesCategory}: {s
 
 
 export async function deleteMultiSalesCategoriesFn(categoryIds: DeleteSalesCategoryInput["salesCategoryId"][]) {
-  await Promise.all(categoryIds.map(id => authApi.delete(`/sales-categories/detail/${id}`)))
-  return null
+  const { data } = await authApi.delete<HttpResponse>("/sales-categories/multi", { data: { salesCategoryIds: categoryIds } })
+  return data
 }
 
 

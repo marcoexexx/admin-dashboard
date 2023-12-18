@@ -3,9 +3,9 @@ import { deserializeUser } from "../middleware/deserializeUser"
 import { requiredUser } from "../middleware/requiredUser"
 import { permissionUser } from "../middleware/permissionUser"
 import { categoryPermission } from "../utils/auth/permissions/category.permission"
-import { createCategoryHandler, createMultiCategoriesHandler, deleteCategoryHandler, getCategoriesHandler, getCategoryHandler, updateCategoryHandler } from "../controllers/category.controller"
+import { createCategoryHandler, createMultiCategoriesHandler, deleteCategoryHandler, deleteMultiCategoriesHandler, getCategoriesHandler, getCategoryHandler, updateCategoryHandler } from "../controllers/category.controller"
 import { validate } from "../middleware/validate"
-import { createCategorySchema, createMultiCategoriesSchema, getCategorySchema, updateCategorySchema } from "../schemas/category.schema"
+import { createCategorySchema, createMultiCategoriesSchema, deleteMultiCategoriesSchema, getCategorySchema, updateCategorySchema } from "../schemas/category.schema"
 
 const router = Router()
 
@@ -31,6 +31,13 @@ router.route("/multi")
     permissionUser("create", categoryPermission),
     validate(createMultiCategoriesSchema),
     createMultiCategoriesHandler
+  )
+  .post(
+    deserializeUser,
+    requiredUser,
+    permissionUser("delete", categoryPermission),
+    validate(deleteMultiCategoriesSchema),
+    deleteMultiCategoriesHandler
   )
 
 

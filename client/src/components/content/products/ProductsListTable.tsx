@@ -154,7 +154,8 @@ export function ProductsListTable(props: ProductsListTableProps) {
   const handleOnImport = (data: any[]) => {
     onCreateManyProducts(data.map(product => ({
       ...product,
-      images: product.images.split("\n"),
+      colors: product.colors.split("\n") || [],
+      images: product.images?.split("\n") || [],
       overview: product.overview || "-",
       type: product.type || undefined,
       salesCategory: product.salesCategory || ""

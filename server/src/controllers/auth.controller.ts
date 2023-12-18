@@ -10,10 +10,10 @@ import { getGoogleAuthToken, getGoogleUser } from "../services/googleOAuth.servi
 import { generateRandomUsername } from "../utils/generateRandomUsername";
 import { createVerificationCode } from "../utils/createVeriicationCode";
 import { db } from "../utils/db";
-import AppError from "../utils/appError";
 import redisClient from "../utils/connectRedis";
 import getConfig from "../utils/getConfig";
 import logging from "../middleware/logging/logging";
+import AppError from "../utils/appError";
 import Email from "../utils/email";
 
 const cookieOptions: CookieOptions = {

@@ -42,8 +42,8 @@ export async function updateBrandFn({brandId, brand}: {brandId: string, brand: U
 
 
 export async function deleteMultiBrandsFn(brandIds: DeleteBrandInput["brandId"][]) {
-  await Promise.all(brandIds.map(id => authApi.delete(`/brands/detail/${id}`)))
-  return null
+  const { data } = await authApi.delete<HttpResponse>("/brands/multi", { data: { brandIds } })
+  return data
 }
 
 

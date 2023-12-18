@@ -2,7 +2,7 @@ import { Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, S
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
-import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField, SpecificationInputField } from "@/components/input-fields";
+import { BrandInputField, CatgoryMultiInputField, ColorsInputField, EditorInputField, SalesCategoryMultiInputField, SpecificationInputField } from "@/components/input-fields";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getProductFn, updateProductFn } from "@/services/productsApi";
 import { useStore } from "@/hooks";
@@ -17,7 +17,6 @@ import { useEffect } from "react";
 import { CreateSalesCategoryForm } from "../../sales-categories/forms";
 
 
-const productTypes = ["Switch", "Accessory", "Router", "Wifi"]
 const instockStatus = ["InStock", "OutOfStock", "AskForStock"]
 const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"]
 
@@ -39,11 +38,10 @@ const updateProductSchema = object({
   warranty: number({ required_error: "Price is required "}),
   categories: string().array().default([]),
   colors: string({ required_error: "Brand is required" })
-    .min(2).max(128),
+    .min(2).max(128).array(),
   instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]).default("AskForStock"),
   description: string({ required_error: "Brand is required" })
     .min(2).max(5000),
-  type: z.enum(["Switch", "Accessory", "Router", "Wifi"]),
   dealerPrice: number().min(0),
   // images: z.any(),
   marketPrice: number().min(0),
@@ -52,7 +50,11 @@ const updateProductSchema = object({
   salesCategory: string().array().default([]),
   quantity: number().min(0),
   isPending: boolean().default(false),
-  status: z.enum(["Draft", "Pending", "Published"]).default("Draft")
+  status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
+
+  itemCode: string().nullable().optional(),
+  type: z.string().nullable().optional(),
+  creatorId: string().nullable().optional(),
 })
 
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
@@ -251,7 +253,7 @@ export function UpdateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField focused fullWidth {...register("colors")} label="Color" error={!!errors.colors} helperText={!!errors.colors ? errors.colors.message : ""} />
+              <ColorsInputField />
               <EditorInputField fieldName="description" />
             </Box>
           </Grid>
@@ -280,22 +282,7 @@ export function UpdateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                focused
-                fullWidth 
-                {...register("type")} 
-                defaultValue={product.type}
-                select
-                label="Product Type" 
-                error={!!errors.type} 
-                helperText={!!errors.type ? errors.type.message : ""} 
-              >
-                {productTypes.map(t => (
-                  <MenuItem key={t} value={t}>
-                    {t}
-                  </MenuItem>
-                ))}
-              </TextField>
+              <TextField focused fullWidth {...register("type")} label="Product type" error={!!errors.type} helperText={!!errors.type ? errors.type.message : ""} />
             </Box>
           </Grid>
 

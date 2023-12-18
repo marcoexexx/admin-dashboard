@@ -2,16 +2,13 @@
 CREATE TYPE "Status" AS ENUM ('Draft', 'Pending', 'Published');
 
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('Admin', 'Employee', 'User');
+CREATE TYPE "Role" AS ENUM ('Admin', 'Shopowner', 'User');
 
 -- CreateEnum
 CREATE TYPE "AuthProvider" AS ENUM ('Local', 'Google', 'Facebook');
 
 -- CreateEnum
 CREATE TYPE "InstockStatus" AS ENUM ('InStock', 'OutOfStock', 'AskForStock');
-
--- CreateEnum
-CREATE TYPE "ProductType" AS ENUM ('Switch', 'Accessory', 'Router', 'Wifi');
 
 -- CreateEnum
 CREATE TYPE "PriceUnit" AS ENUM ('MMK', 'USD', 'SGD', 'THB', 'KRW');
@@ -131,16 +128,18 @@ CREATE TABLE "Product" (
     "overview" TEXT NOT NULL,
     "features" TEXT NOT NULL,
     "warranty" INTEGER NOT NULL,
-    "colors" TEXT NOT NULL,
+    "colors" TEXT[],
     "instockStatus" "InstockStatus" NOT NULL DEFAULT 'AskForStock',
     "description" TEXT NOT NULL,
-    "type" "ProductType" NOT NULL,
+    "type" TEXT,
     "dealerPrice" INTEGER NOT NULL,
     "marketPrice" INTEGER NOT NULL,
     "discount" INTEGER NOT NULL,
     "status" "Status" NOT NULL DEFAULT 'Draft',
     "priceUnit" "PriceUnit" NOT NULL DEFAULT 'MMK',
     "quantity" INTEGER NOT NULL,
+    "creatorId" TEXT,
+    "itemCode" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -239,6 +238,9 @@ ALTER TABLE "ProductCategory" ADD CONSTRAINT "ProductCategory_categoryId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "Brand"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Product" ADD CONSTRAINT "Product_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Specification" ADD CONSTRAINT "Specification_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

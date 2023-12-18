@@ -50,8 +50,16 @@ export const getExchangeSchema = object({
   ...params
 })
 
+export const deleteMultiExchangesSchema = object({
+  body: object({
+    exchangeIds: string().array()
+  })
+})
+
+
 export type CreateExchangeInput = z.infer<typeof createExchangeSchema>["body"]
 export type UpdateExchangeInput = z.infer<typeof updateExchangeSchema>
 export type CreateMultiExchangesInput = z.infer<typeof createMultiExchangesSchema>["body"]
+export type DeleteMultiExchangesInput = z.infer<typeof deleteMultiExchangesSchema>["body"]
 export type GetExchangeInput = z.infer<typeof getExchangeSchema>
 

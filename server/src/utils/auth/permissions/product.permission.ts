@@ -2,12 +2,12 @@ import { Role } from "../../../schemas/user.schema";
 import { Permission } from "../rbac";
 
 export const productPermission: Permission<Role> = {
-  createAllowedRoles: () => ["Admin", "Employee"],
+  createAllowedRoles: () => ["Admin", "Shopowner"],
 
   readAllowedRoles: () => ["*"],
 
-  updateAllowedRoles: () => ["Admin", "Employee"],
+  updateAllowedRoles: () => ["Admin", "Shopowner"],
 
-  deleteAllowedRoles: () => ["Admin", "Employee"],
+  deleteAllowedRoles: () => ["Admin", "Shopowner"],
 }
 

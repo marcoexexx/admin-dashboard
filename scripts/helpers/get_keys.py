@@ -14,7 +14,7 @@ class RawProduct(TypedDict):
     image: List[str]
     dealer_price: int
     price_unit: Literal["USD", "SGD", "MMK", "THB", "KRW"]
-    color: str
+    color: List[str]
     brand: str
     specification: Dict
     price: int

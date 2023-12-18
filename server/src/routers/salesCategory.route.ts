@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { permissionUser } from "../middleware/permissionUser";
 import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory.permission";
-import { createMultiSalesCategoriesHandler, createSalesCategoryHandler, deleteSalesCategoryHandler, getSalesCategoriesHandler, getSalesCategoryHandler, updateSalesCategoryHandler } from "../controllers/salesCategory.controller";
+import { createMultiSalesCategoriesHandler, createSalesCategoryHandler, deleteMultiSalesCategoriesHandler, deleteSalesCategoryHandler, getSalesCategoriesHandler, getSalesCategoryHandler, updateSalesCategoryHandler } from "../controllers/salesCategory.controller";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createMultiSalesCategoriesSchema, createSalesCategorySchema, getSalesCategorySchema, updateSalesCategorySchema } from "../schemas/salesCategory.schema";
+import { createMultiSalesCategoriesSchema, createSalesCategorySchema, deleteMultiSalesCategoriesSchema, getSalesCategorySchema, updateSalesCategorySchema } from "../schemas/salesCategory.schema";
 
 const router = Router()
 
@@ -31,6 +31,13 @@ router.route("/multi")
     permissionUser("create", salesCategoryPermission),
     validate(createMultiSalesCategoriesSchema),
     createMultiSalesCategoriesHandler
+  )
+  .delete(
+    deserializeUser,
+    requiredUser,
+    permissionUser("delete", salesCategoryPermission),
+    validate(deleteMultiSalesCategoriesSchema),
+    deleteMultiSalesCategoriesHandler
   )
 
 
