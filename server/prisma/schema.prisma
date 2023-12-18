@@ -164,7 +164,7 @@ model Product {
   colors        String
   instockStatus InstockStatus          @default(AskForStock)
   description   String
-  type          ProductType
+  type          ProductType?
   dealerPrice   Int
   marketPrice   Int
   discount      Int

@@ -138,11 +138,24 @@ export function ProductsListTable(props: ProductsListTableProps) {
   }
 
   const handleOnExport = () => {
-    exportToExcel(products, "Products")
+    const prepare = products.map(product => ({
+      ...product,
+      brandName: product.brand.name,
+      categories: product.categories.map(category => category.category.name).join("\n"),
+      salesCategory: product.salesCategory.map(sale => sale.salesCategory.name).join("\n"),
+      specification: product.specification.map(spec => `${spec.name}: ${spec.value}`).join("\n")
+    }))
+
+    exportToExcel(prepare, "Products")
   }
 
   const handleOnImport = (data: CreateProductInput[]) => {
-    onCreateManyProducts(data)
+    onCreateManyProducts(data.map(product => ({
+      ...product,
+      overview: product.overview || "-",
+      type: product.type || undefined,
+      salesCategory: product.salesCategory || ""
+    })))
   }
 
   const handleChangePagination = (_: any, page: number) => {

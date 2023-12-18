@@ -52,12 +52,12 @@ export const createProductSchema = object({
       .min(2).max(5000),
     warranty: number({ required_error: "Price is required "}),
     categories: string().array().default([]),
-    colors: string({ required_error: "Brand is required" })
+    colors: string({ required_error: "Color is required" })
       .min(2).max(128),
     instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]),
-    description: string({ required_error: "Brand is required" })
+    description: string({ required_error: "Description is required" })
       .min(2).max(5000),
-    type: z.enum(["Switch", "Accessory", "Router", "Wifi"]),
+    type: z.enum(["Switch", "Accessory", "Router", "Wifi"]).optional(),
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
     discount: number().min(0),
@@ -71,32 +71,30 @@ export const createProductSchema = object({
 
 export const createMultiProductsSchema = object({
   body: object({
+    id: string({ required_error: "productId is required" }),
     price: number({ required_error: "Price is required "}),
-    brandId: string({ required_error: "Brand is required" })
-      .min(2).max(128),
+    brandName: string({ required_error: "Brand is required" })
+      .min(1).max(128),
     title: string({ required_error: "Brand is required" })
-      .min(2).max(128),
-    specification: object({
-      name: string({ required_error: "Specification name is required" }),
-      value: string({ required_error: "Specification value is required" }),
-    }).array(),
+      .min(1).max(128),
+    specification: string({ required_error: "Specifications name are required "}),  //  by splitting "\n"
     overview: string({ required_error: "Brand is required" })
-      .min(2).max(5000),
+      .min(1).max(5000),
     features: string({ required_error: "Brand is required" })
-      .min(2).max(5000),
+      .min(1).max(5000),
     warranty: number({ required_error: "Price is required "}),
-    categories: string().array().default([]),
-    colors: string({ required_error: "Brand is required" })
-      .min(2).max(128),
+    categories: string({ required_error: "Categories name are required "}), // by splitting "\n"
+    colors: string({ required_error: "Color is required" })
+      .min(1).max(128),
     instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]),
-    description: string({ required_error: "Brand is required" })
-      .min(2).max(5000),
-    type: z.enum(["Switch", "Accessory", "Router", "Wifi"]),
+    description: string({ required_error: "Description is required" })
+      .min(1).max(5000),
+    type: z.enum(["Switch", "Accessory", "Router", "Wifi"]).optional(),
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
     discount: number().min(0),
     priceUnit: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
-    salesCategory: string().array(),
+    salesCategory: string({ required_error: "Sales and categories name are required"}),  // by splitting "\n"
     quantity: number().min(0),
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft")
   }).array()
@@ -128,10 +126,10 @@ export const updateProductSchema = object({
       .min(2).max(5000),
     warranty: number({ required_error: "Price is required "}),
     categories: string().array().default([]),
-    colors: string({ required_error: "Brand is required" })
+    colors: string({ required_error: "Color is required" })
       .min(2).max(128),
     instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]),
-    description: string({ required_error: "Brand is required" })
+    description: string({ required_error: "Description is required" })
       .min(2).max(5000),
     type: z.enum(["Switch", "Accessory", "Router", "Wifi"]),
     dealerPrice: number().min(0),

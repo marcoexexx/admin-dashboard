@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List
+from uuid import uuid4
 
 from libs.brand_parser import BrandParser
 from libs.category_parser import CategoryParser
@@ -18,6 +19,7 @@ class InstallFields:
         raw = serializer.serialize(self.raw_path)
 
         result: List[Product] = []
+        print(raw[0])
 
         for product in raw:
             brand = BrandParser().parse(product)
@@ -26,26 +28,27 @@ class InstallFields:
             specifications = SpecificationParser().parse(product)
 
             data = Product(
+                id = str(uuid4()),
                 status = "Pending",
                 title = product.get("title", "exportted product"),
-                type_ = product.get("type", 0),
+                type = product.get("type", "").title(),
                 price = product.get("price", 0),
                 overview = product["overview"],
-                feature = product["features"],
+                features = product["features"],
                 marketPrice = product.get("market_price", 0),
-                categories = categories,
+                categories = "\n".join(i["name"] for i in categories),
                 priceUnit = product["price_unit"],
                 images = product["image"],
                 warranty = 0,
                 description = product["desc"],
-                salesCategory = sales_categories,
+                salesCategory = "\n".join(i["name"] for i in sales_categories),
                 quantity = 1,
-                specification = specifications,
+                specification = "\n".join(f"{i['name']}: {i['value']}" for i in specifications),
                 discount = product["discount"],
                 instockStatus = "AskForStock",
                 dealerPrice = product.get("dealer_price", 0),
                 colors = product["color"],
-                brand = brand
+                brandName = brand["name"]
             )
 
             result.append(data)

@@ -1,6 +1,5 @@
 from typing import List, Dict, Literal, TypedDict
 
-from libs.parser import Brand, Category, SalesCategory, Specification
 from libs.serializer import JSONSerializer, Path
 
 
@@ -36,26 +35,27 @@ class RawProduct(TypedDict):
 
 
 class Product(TypedDict):
+    id: str
     status: Literal["Draft", "Pending", "Published"]
     title: str
-    type_: str
+    type: str
     price: float
     overview: str
-    feature: str
+    features: str
     marketPrice: float
-    categories: List[Category]  # id list
+    categories: str  # splitted by "\n"
     priceUnit: Literal["USD", "SGD", "MMK", "THB", "KRW"]
     images: List[str]
     warranty: int  # by year
     description: str
-    salesCategory: List[SalesCategory]  # id list
+    salesCategory: str  #  splitted by "\n"
     quantity: int
-    specification: List[Specification]
+    specification: str  # splitted by "\n" and ": "
     discount: int
     instockStatus: Literal["InStock", "OutOfStock", "AskForStock"]
     dealerPrice: int
     colors: str
-    brand: Brand  # brand name
+    brandName: str
 
 
 def get_json_keys(path: Path) -> List:

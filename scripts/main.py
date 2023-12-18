@@ -2,7 +2,8 @@
 
 import logging
 from pathlib import Path
-from typing import Dict, List
+from typing import List
+
 from helpers.get_keys import RawProduct
 from helpers.install_fields import InstallFields
 from libs.category_parser import CategoryParser
@@ -12,7 +13,6 @@ from libs.sales_catgory_parser import SalesCategoryParser
 from libs.serializer import JSONSerializer
 from libs.exporter import Exporter
 from libs.brand_parser import BrandParser
-from libs.specification_parser import SpecificationParser
 
 
 INPUT_RAW_DATA = Path("./data/laptops.json")
@@ -44,10 +44,8 @@ def product_export() -> None:
 
     product = installer.install(serializer)
 
-    # excel_handler = ExcelHandler(data=product, save_as=Path(OUTPUT_RAW_DATA.with_suffix(".xlsx")))
-    # excel_handler.export()
-
-    print(product[0:1])
+    excel_handler = ExcelHandler(data=product[0:2], save_as=Path(OUTPUT_RAW_DATA.with_suffix(".xlsx")))
+    excel_handler.export()
 
 
 def main() -> None:

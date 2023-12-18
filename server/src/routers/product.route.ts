@@ -3,12 +3,10 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { permissionUser } from "../middleware/permissionUser";
-import { createProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, uploadImagesProductHandler } from "../controllers/product.controller";
-import { createProductSchema, getProductSchema, likeProductByUserSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
+import { createMultiProductsHandler, createProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, uploadImagesProductHandler } from "../controllers/product.controller";
+import { createMultiProductsSchema, createProductSchema, getProductSchema, likeProductByUserSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
 import { productPermission } from "../utils/auth/permissions";
 import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
-import { createMultiExchangesSchema } from "../schemas/exchange.schema";
-import { createMultiExchangesHandler } from "../controllers/exchange.controller";
 
 
 const router = Router()
@@ -33,8 +31,8 @@ router.route("/multi")
     deserializeUser,
     requiredUser,
     permissionUser("create", productPermission),
-    validate(createMultiExchangesSchema),
-    createMultiExchangesHandler
+    validate(createMultiProductsSchema),
+    createMultiProductsHandler
   )
 
 

@@ -200,10 +200,65 @@ export async function createMultiProductsHandler(
 ) {
   try {
     const data = req.body
-    await db.product.createMany({
-      data,
-      skipDuplicates: true
-    })
+
+    await Promise.all(data.map(product => {
+      return db.product.upsert({
+        where: {
+          id: product.id,
+        },
+        create: {
+          id: product.id,
+          price: product.price,
+          title: product.title,
+          overview: product.overview,
+          features: product.features,
+          warranty: product.warranty,
+          colors: product.colors,
+          instockStatus: product.instockStatus,
+          description: product.description,
+          // type: product.type,  // TODO: What is product type??
+          dealerPrice: product.dealerPrice,
+          marketPrice: product.marketPrice,
+          discount: product.discount,
+          status: product.status,
+          priceUnit: product.priceUnit,
+          quantity: product.quantity,
+          brand: {
+            connectOrCreate: {
+              where: { name: product.brandName },
+              create: { name: product.brandName }
+            }
+          },
+          specification: {
+            createMany: {
+              data: product.specification.split("\n").map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
+              skipDuplicates: true
+            }
+          },
+          categories: {
+            create: product.categories.split("\n").map(name => ({
+              category: {
+                connectOrCreate: {
+                  where: { name },
+                  create: { name }
+                }
+              }
+            }))
+          },
+          salesCategory: {
+            create: product.salesCategory.split("\n").map(name => ({
+              salesCategory: {
+                connectOrCreate: {
+                  where: { name },
+                  create: { name }
+                }
+              }
+            }))
+          },
+        },
+        update: {},
+      })
+    }))
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {
