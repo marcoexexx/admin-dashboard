@@ -153,9 +153,9 @@ export const updateProductSchema = object({
     quantity: number().min(0),
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
-    itemCode: string().nullable(),
-    type: z.string().nullable(),
-    creatorId: string().nullable(),
+    itemCode: string().nullable().optional(),
+    type: z.string().nullable().optional(),
+    creatorId: string().nullable().optional(),
   })
 })
 
