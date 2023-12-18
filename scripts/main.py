@@ -44,7 +44,7 @@ def product_export() -> None:
 
     product = installer.install(serializer)
 
-    excel_handler = ExcelHandler(data=product[:2], save_as=Path(OUTPUT_RAW_DATA.with_suffix(".xlsx")))
+    excel_handler = ExcelHandler(data=product, save_as=Path(OUTPUT_RAW_DATA.with_suffix(".xlsx")))
     excel_handler.export()
 
 
