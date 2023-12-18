@@ -4,7 +4,7 @@ import { Permission } from "../rbac";
 export const dashboardPermission: Permission<Role> = {
   createAllowedRoles: () => ["Admin"],
 
-  readAllowedRoles: () => ["Admin", "Employee"],
+  readAllowedRoles: () => ["Admin", "Shopowner"],
 
   updateAllowedRoles: () => ["Admin"],
 

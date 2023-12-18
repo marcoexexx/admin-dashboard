@@ -41,7 +41,7 @@ export function SalesCategoryCard() {
 
   if (isLoading || !data) return <SuspenseLoader />
 
-  const firstSalesCategory = data[0]
+  const firstSalesCategory: ISalesCategory | undefined = data[0]
   const secondSalesCategory = isAllowedCreateSalesCategory
     ? null
     : data[1]
@@ -69,19 +69,21 @@ export function SalesCategoryCard() {
       </Box>
 
       <Grid container spacing={3}>
-        <Grid xs={12} sm={6} item>
-          <Card  sx={{ px: 1 }}>
-            <CardContent>
-              <DashboardCard
-                subtitle="SALES"
-                value={firstSalesCategory.name}
-                isDown={false}
-                percent="12%"
-                helperText="Since last month"
-              />
-            </CardContent>
-          </Card>
-        </Grid>
+        {firstSalesCategory
+        ? <Grid xs={12} sm={6} item>
+            <Card  sx={{ px: 1 }}>
+              <CardContent>
+                <DashboardCard
+                  subtitle="SALES"
+                  value={firstSalesCategory.name}
+                  isDown={false}
+                  percent="12%"
+                  helperText="Since last month"
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+        : null}
 
         <Grid xs={12} sm={6} item>
           {secondSalesCategory

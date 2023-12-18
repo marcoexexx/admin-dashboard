@@ -11,10 +11,10 @@ import { useEffect } from "react";
 import { changeRoleUserFn, getUserFn } from "@/services/usersApi";
 
 
-const userRoles = ["Admin", "User", "Employee"]
+const userRoles = ["Admin", "User", "Shopowner"]
 
 const updateUserSchema = object({
-  role: z.enum(["User", "Admin", "Employee", "*"], {
+  role: z.enum(["User", "Admin", "Shopowner", "*"], {
     required_error: "Role is required"
   }),
 })
@@ -66,7 +66,7 @@ export function ChangeRoleUserForm() {
   })
 
   useEffect(() => {
-    if (isSuccessFetchUser && user) methods.setValue("role", "Employee", { shouldValidate: true })
+    if (isSuccessFetchUser && user) methods.setValue("role", "Shopowner", { shouldValidate: true })
   }, [isSuccessFetchUser])
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods

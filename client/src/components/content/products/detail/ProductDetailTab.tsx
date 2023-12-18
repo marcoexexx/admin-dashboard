@@ -99,9 +99,8 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
   return (
     <Card>
       <CardMedia 
-        sx={{ minHeight: 400 }}
-        // image={product.images[0] || "/pubic/default.jpg"}
-        image="https://martking.ng/wp-content/uploads/2022/07/whole-sliced-green-apples-martking.ng-lagos-online-grocery-store-e1658945818417.jpeg"
+        sx={{ minHeight: 800 }}
+        image={product.images[0] || "/pubic/default.jpg"}
         title={product.title}
       />
 

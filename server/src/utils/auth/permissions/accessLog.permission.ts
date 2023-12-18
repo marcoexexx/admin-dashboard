@@ -2,13 +2,13 @@ import { Role } from "../../../schemas/user.schema";
 import { Permission } from "../rbac";
 
 export const accessLogPermission: Permission<Role> = {
-  createAllowedRoles: () => ["Admin", "Employee", "User"],
+  createAllowedRoles: () => ["Admin", "Shopowner", "User"],
 
   readAllowedRoles: () => ["*"],
 
   updateAllowedRoles: () => [],
 
-  deleteAllowedRoles: () => ["User", "Employee", "Admin"],
+  deleteAllowedRoles: () => ["User", "Shopowner", "Admin"],
 }
 
 

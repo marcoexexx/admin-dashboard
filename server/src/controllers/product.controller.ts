@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express'
-import { db } from '../utils/db'
-import AppError from '../utils/appError';
 import { CreateMultiProductsInput, CreateProductInput, GetProductInput, LikeProductByUserInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
-import logging from '../middleware/logging/logging';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { db } from '../utils/db'
 import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
+import logging from '../middleware/logging/logging';
+import AppError from '../utils/appError';
 
 
 // TODO: specification filter
@@ -232,12 +232,12 @@ export async function createMultiProductsHandler(
           },
           specification: {
             createMany: {
-              data: product.specification.split("\n").map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
+              data: product.specification.split("\n").filter(Boolean).map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
               skipDuplicates: true
             }
           },
           categories: {
-            create: product.categories.split("\n").map(name => ({
+            create: product.categories.split("\n").filter(Boolean).map(name => ({
               category: {
                 connectOrCreate: {
                   where: { name },
@@ -247,7 +247,7 @@ export async function createMultiProductsHandler(
             }))
           },
           salesCategory: {
-            create: product.salesCategory.split("\n").map(name => ({
+            create: product.salesCategory.split("\n").filter(Boolean).map(name => ({
               salesCategory: {
                 connectOrCreate: {
                   where: { name },
@@ -289,41 +289,36 @@ export async function deleteProductHandler(
 
     if (!product) return next(new AppError(404,  `Product not found`))
 
-    // logging.log(await db.specification.count())
+    await db.$transaction([
+      // remove association data(s)
+      db.specification.deleteMany({
+        where: {
+          productId,
+        }
+      }),
+      db.favorites.deleteMany({
+        where: {
+          productId,
+        }
+      }),
+      db.productCategory.deleteMany({
+        where: {
+          productId,
+        }
+      }),
+      db.productSalesCategory.deleteMany({
+        where: {
+          productId,
+        }
+      }),
 
-    // remove association data: specifications
-    await db.specification.deleteMany({
-      where: {
-        productId,
-      }
-    })
-
-    // remove association data: favorites
-    await db.favorites.deleteMany({
-      where: {
-        productId,
-      }
-    })
-
-    // remove association data: productCategory
-    await db.productCategory.deleteMany({
-      where: {
-        productId,
-      }
-    })
-
-    // remove association data: productSalesCategory
-    await db.productSalesCategory.deleteMany({
-      where: {
-        productId,
-      }
-    })
-
-    await db.product.delete({
-      where: {
-        id: productId
-      }
-    })
+      // remove real data
+      db.product.delete({
+        where: {
+          id: productId
+        }
+      })
+    ])
 
     res.status(200).json(HttpResponse(200, "Success delete"))
   } catch (err: any) {

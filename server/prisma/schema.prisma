@@ -18,7 +18,7 @@ enum Status {
 
 enum Role {
   Admin
-  Employee
+  Shopowner
   User
 }
 
@@ -51,6 +51,7 @@ model User {
   verificationCode String?
   provider         AuthProvider @default(Local)
   favorites        Favorites[]
+  createdProducts  Product[]    @relation("CreatedBy")
   orders           Order[]
   reviews          Review[]
   accessLogs       AccessLog[]
@@ -134,13 +135,6 @@ enum InstockStatus {
   AskForStock
 }
 
-enum ProductType {
-  Switch
-  Accessory
-  Router
-  Wifi
-}
-
 enum PriceUnit {
   MMK
   USD
@@ -161,10 +155,10 @@ model Product {
   features      String
   warranty      Int // By years
   categories    ProductCategory[]
-  colors        String
+  colors        String[]
   instockStatus InstockStatus          @default(AskForStock)
   description   String
-  type          ProductType?
+  type          String? // What is Type, Do you really need it?
   dealerPrice   Int
   marketPrice   Int
   discount      Int
@@ -174,6 +168,9 @@ model Product {
   quantity      Int
   reviews       Review[]
   orders        Order[]
+  creator       User?                  @relation("CreatedBy", fields: [creatorId], references: [id])
+  creatorId     String?
+  itemCode      String?
   salesCategory ProductSalesCategory[]
 
   createdAt DateTime @default(now())

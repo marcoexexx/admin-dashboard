@@ -100,7 +100,7 @@ export async function createBrandHandler(
 ) {
   try {
     const { name } = req.body
-    // TODO: filter
+
     const brand = await db.brand.create({
       data: { name },
     })
@@ -124,6 +124,7 @@ export async function deleteBrandHandler(
 ) {
   try {
     const { brandId } = req.params
+
     await db.brand.delete({
       where: {
         id: brandId
