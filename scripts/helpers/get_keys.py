@@ -45,7 +45,7 @@ class Product(TypedDict):
     marketPrice: float
     categories: str  # splitted by "\n"
     priceUnit: Literal["USD", "SGD", "MMK", "THB", "KRW"]
-    images: List[str]
+    images: str  #  splitted by "\n"
     warranty: int  # by year
     description: str
     salesCategory: str  #  splitted by "\n"

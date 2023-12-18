@@ -36,7 +36,8 @@ export async function unLikeProductByUserFn({ userId, productId }: { userId: str
 }
 
 
-export async function createMultiProductsFn(product: CreateProductInput[]) {
+// TODO: multi create product type
+export async function createMultiProductsFn(product: any[]) {
   const { data } = await authApi.post<HttpResponse>("/products/multi", product)
   return data
 }

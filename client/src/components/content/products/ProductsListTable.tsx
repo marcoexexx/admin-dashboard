@@ -141,6 +141,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
     const prepare = products.map(product => ({
       ...product,
       brandName: product.brand.name,
+      images: product.images.join("\n"),
       categories: product.categories.map(category => category.category.name).join("\n"),
       salesCategory: product.salesCategory.map(sale => sale.salesCategory.name).join("\n"),
       specification: product.specification.map(spec => `${spec.name}: ${spec.value}`).join("\n")
@@ -149,9 +150,11 @@ export function ProductsListTable(props: ProductsListTableProps) {
     exportToExcel(prepare, "Products")
   }
 
-  const handleOnImport = (data: CreateProductInput[]) => {
+  // TODO: create multi product
+  const handleOnImport = (data: any[]) => {
     onCreateManyProducts(data.map(product => ({
       ...product,
+      images: product.images.split("\n"),
       overview: product.overview || "-",
       type: product.type || undefined,
       salesCategory: product.salesCategory || ""

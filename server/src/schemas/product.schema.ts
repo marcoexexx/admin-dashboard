@@ -91,6 +91,7 @@ export const createMultiProductsSchema = object({
       .min(1).max(5000),
     type: z.enum(["Switch", "Accessory", "Router", "Wifi"]).optional(),
     dealerPrice: number().min(0),
+    images: string().array(),
     marketPrice: number().min(0),
     discount: number().min(0),
     priceUnit: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),

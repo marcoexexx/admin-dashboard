@@ -38,7 +38,7 @@ class InstallFields:
                 marketPrice = product.get("market_price", 0),
                 categories = "\n".join(i["name"] for i in categories),
                 priceUnit = product["price_unit"],
-                images = product["image"],
+                images = "\n".join(product["image"]),
                 warranty = 0,
                 description = product["desc"],
                 salesCategory = "\n".join(i["name"] for i in sales_categories),

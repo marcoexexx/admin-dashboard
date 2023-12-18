@@ -222,6 +222,7 @@ export async function createMultiProductsHandler(
           discount: product.discount,
           status: product.status,
           priceUnit: product.priceUnit,
+          images: product.images,
           quantity: product.quantity,
           brand: {
             connectOrCreate: {
