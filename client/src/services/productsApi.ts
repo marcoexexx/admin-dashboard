@@ -71,6 +71,8 @@ export async function updateProductFn(
 
 
 export async function deleteMultiProductsFn(productIds: DeleteProductInput["productId"][]) {
-  await Promise.all(productIds.map(id => authApi.delete(`/products/detail/${id}`)))
-  return null
+  const { data } = await authApi.delete<HttpResponse>("/products/multi", {
+    data: { productIds }
+  })
+  return data
 }

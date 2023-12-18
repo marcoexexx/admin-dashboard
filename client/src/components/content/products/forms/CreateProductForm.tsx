@@ -51,9 +51,9 @@ const createProductSchema = object({
   isPending: boolean().default(false),
   status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
-  itemCode: string().optional(),
-  type: z.string().optional(),
-  creatorId: string().optional(),
+  itemCode: string().nullable().optional(),
+  type: z.string().nullable().optional(),
+  creatorId: string().nullable().optional(),
 })
 
 export type CreateProductInput = z.infer<typeof createProductSchema>

@@ -43,8 +43,8 @@ export async function createMultiExchangesFn(exchange: CreateExchangeInput[]) {
 
 
 export async function deleteMultiExchangesFn(exchangeIds: DeleteExchangeInput["exchangeId"][]) {
-  await Promise.all(exchangeIds.map(id => authApi.delete(`/exchanges/detail/${id}`)))
-  return null
+  const { data } = await authApi.delete<HttpResponse>("/exchanges/multi", { data: { exchangeIds } })
+  return data
 }
 
 

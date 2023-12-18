@@ -65,9 +65,16 @@ export const createProductSchema = object({
     quantity: number().min(0),
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
-    itemCode: string().nullable(),
-    type: z.string().nullable(),
-    creatorId: string().nullable(),
+    itemCode: string().nullable().optional(),
+    type: z.string().nullable().optional(),
+    creatorId: string().nullable().optional(),
+  })
+})
+
+
+export const deleteMultiProductsSchema = object({
+  body: object({
+    productIds: string().array(),
   })
 })
 
@@ -101,9 +108,9 @@ export const createMultiProductsSchema = object({
     quantity: number().min(0),
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
-    itemCode: string().nullable(),
-    type: z.string().nullable(),
-    creatorId: string().nullable(),
+    itemCode: string().nullable().optional(),
+    type: z.string().nullable().optional(),
+    creatorId: string().nullable().optional(),
   }).array()
 })
 
@@ -157,5 +164,6 @@ export type GetProductInput = z.infer<typeof getProductSchema>["params"]
 export type CreateProductInput = z.infer<typeof createProductSchema>["body"]
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
 export type CreateMultiProductsInput = z.infer<typeof createMultiProductsSchema>["body"]
+export type DeleteMultiProductsInput = z.infer<typeof deleteMultiProductsSchema>["body"]
 export type UploadImagesProductInput = z.infer<typeof uploadImagesProductSchema>["body"]
 export type LikeProductByUserInput = z.infer<typeof likeProductByUserSchema>

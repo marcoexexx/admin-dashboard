@@ -52,9 +52,9 @@ const updateProductSchema = object({
   isPending: boolean().default(false),
   status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
-  itemCode: string().optional(),
-  type: z.string().optional(),
-  creatorId: string().optional(),
+  itemCode: string().nullable().optional(),
+  type: z.string().nullable().optional(),
+  creatorId: string().nullable().optional(),
 })
 
 export type UpdateProductInput = z.infer<typeof updateProductSchema>

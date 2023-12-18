@@ -41,7 +41,14 @@ export const updateBrandSchema = object({
   })
 })
 
+export const deleteMultiBrandsSchema = object({
+  body: object({
+    brandIds: string().array()
+  })
+})
+
 export type CreateBrandInput = z.infer<typeof createBrandSchema>["body"]
 export type CreateMultiBrandsInput = z.infer<typeof createMultiBrandsSchema>["body"]
+export type DeleteMultiBrandsInput = z.infer<typeof deleteMultiBrandsSchema>["body"]
 export type GetBrandInput = z.infer<typeof getBrandSchema>
 export type UpdateBrandInput = z.infer<typeof updateBrandSchema>

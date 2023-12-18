@@ -3,7 +3,7 @@ import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CreateMultiSalesCategoriesInput, CreateSalesCategoryInput, GetSalesCategoryInput, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
+import { CreateMultiSalesCategoriesInput, CreateSalesCategoryInput, DeleteMultiSalesCategoriesInput, GetSalesCategoryInput, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 
@@ -107,6 +107,30 @@ export async function deleteSalesCategoryHandler(
     await db.salesCategory.delete({
       where: {
         id: salesCategoryId
+      }
+    })
+
+    res.status(200).json(HttpResponse(200, "Success deleted"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function deleteMultiSalesCategoriesHandler(
+  req: Request<{}, {}, DeleteMultiSalesCategoriesInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { salesCategoryIds } = req.body
+    await db.salesCategory.deleteMany({
+      where: {
+        id: {
+          in: salesCategoryIds
+        }
       }
     })
 

@@ -3,8 +3,8 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { permissionUser } from "../middleware/permissionUser";
-import { createMultiProductsHandler, createProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, uploadImagesProductHandler } from "../controllers/product.controller";
-import { createMultiProductsSchema, createProductSchema, getProductSchema, likeProductByUserSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
+import { createMultiProductsHandler, createProductHandler, deleteMultiProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, uploadImagesProductHandler } from "../controllers/product.controller";
+import { createMultiProductsSchema, createProductSchema, deleteMultiProductsSchema, getProductSchema, likeProductByUserSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
 import { productPermission } from "../utils/auth/permissions";
 import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
 
@@ -33,6 +33,13 @@ router.route("/multi")
     permissionUser("create", productPermission),
     validate(createMultiProductsSchema),
     createMultiProductsHandler
+  )
+  .delete(
+    deserializeUser,
+    requiredUser,
+    permissionUser("delete", productPermission),
+    validate(deleteMultiProductsSchema),
+    deleteMultiProductHandler,
   )
 
 

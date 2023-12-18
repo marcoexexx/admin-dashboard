@@ -3,7 +3,7 @@ import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CategoryFilterPagination, CreateCategoryInput, CreateMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
+import { CategoryFilterPagination, CreateCategoryInput, CreateMultiCategoriesInput, DeleteMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { convertNumericStrings } from "../utils/convertNumber";
 
@@ -126,6 +126,30 @@ export async function deleteCategoryHandler(
     await db.category.delete({
       where: {
         id: categoryId
+      }
+    })
+
+    res.status(200).json(HttpResponse(200, "Success deleted"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function deleteMultiCategoriesHandler(
+  req: Request<{}, {}, DeleteMultiCategoriesInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { categoryIds } = req.body
+    await db.category.deleteMany({
+      where: {
+        id: {
+          in: categoryIds
+        }
       }
     })
 
