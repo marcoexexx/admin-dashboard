@@ -4,7 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { CategoriesListTable } from "@/components/content/categories";
 import { createMultiCategorisFn, deleteCategoryFn, deleteMultiCategoriesFn, getCategoriesFn } from "@/services/categoryApi";
-import { CreateCategoryInput } from "./forms";
+
 
 export function CategoriesList() {
   const { state: {categoryFilter}, dispatch } = useStore()
@@ -92,8 +92,8 @@ export function CategoriesList() {
 
   if (!data || isLoading) return <SuspenseLoader />
 
-  function handleCreateManyCategories(data: CreateCategoryInput[]) {
-    createCategories(data)
+  function handleCreateManyCategories(buf: ArrayBuffer) {
+    createCategories(buf)
   }
 
   function handleDeleteCategory(id: string) {
