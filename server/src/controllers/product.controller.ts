@@ -215,7 +215,6 @@ export async function createMultiProductsHandler(
         },
         create: {
           id: product.id,
-          price: product.price,
           title: product.title,
           overview: product.overview,
           features: product?.features || "<h1>Product features</h1>",
@@ -224,6 +223,7 @@ export async function createMultiProductsHandler(
           instockStatus: product.instockStatus,
           description: product?.description || "<h1>Product description</h1>",
           // type: product.type,  // TODO: What is product type??
+          price: product.price,
           dealerPrice: product.dealerPrice,
           marketPrice: product.marketPrice,
           discount: product.discount,
@@ -264,7 +264,12 @@ export async function createMultiProductsHandler(
             }))
           },
         },
-        update: {},
+        update: {
+          price: product.price,
+          dealerPrice: product.dealerPrice,
+          marketPrice: product.marketPrice,
+          discount: product.discount,
+        },
       })
     }))
 
