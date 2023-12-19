@@ -5,7 +5,8 @@ import { createMultiSalesCategoriesHandler, createSalesCategoryHandler, deleteMu
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createMultiSalesCategoriesSchema, createSalesCategorySchema, deleteMultiSalesCategoriesSchema, getSalesCategorySchema, updateSalesCategorySchema } from "../schemas/salesCategory.schema";
+import { createSalesCategorySchema, deleteMultiSalesCategoriesSchema, getSalesCategorySchema, updateSalesCategorySchema } from "../schemas/salesCategory.schema";
+import { uploadExcel } from "../upload/excelUpload";
 
 const router = Router()
 
@@ -25,13 +26,6 @@ router.route("")
 
 
 router.route("/multi")
-  .post(
-    deserializeUser,
-    requiredUser,
-    permissionUser("create", salesCategoryPermission),
-    validate(createMultiSalesCategoriesSchema),
-    createMultiSalesCategoriesHandler
-  )
   .delete(
     deserializeUser,
     requiredUser,
@@ -39,6 +33,16 @@ router.route("/multi")
     validate(deleteMultiSalesCategoriesSchema),
     deleteMultiSalesCategoriesHandler
   )
+
+
+// Upload Routes
+router.post("/excel-upload",
+  deserializeUser,
+  requiredUser,
+  permissionUser("create", salesCategoryPermission),
+  uploadExcel,
+  createMultiSalesCategoriesHandler
+)
 
 
 router.route("/detail/:salesCategoryId")
