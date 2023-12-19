@@ -36,8 +36,19 @@ export async function updateExchangeFn({ exchangeId, exchange }: {exchangeId: st
 }
 
 
-export async function createMultiExchangesFn(exchange: CreateExchangeInput[]) {
-  const { data } = await authApi.post<HttpResponse>("/exchanges/multi", exchange)
+export async function createMultiExchangesFn(buf: ArrayBuffer) {
+  const formData = new FormData()
+
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+  formData.append("excel", blob, `Categories_${Date.now()}.xlsx`)
+
+  const { data } = await authApi.post<HttpResponse>("/exchanges/excel-upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  })
+
   return data
 }
 

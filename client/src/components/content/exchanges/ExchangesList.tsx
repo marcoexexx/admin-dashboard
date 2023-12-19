@@ -3,8 +3,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { createMultiExchangesFn, deleteExchangeFn, deleteMultiExchangesFn, getExchangesFn } from "@/services/exchangesApi";
-import { CreateExchangeInput } from "./forms";
 import { ExchangesListTable } from ".";
+
 
 export function ExchangesList() {
   const { state: {exchangeFilter}, dispatch } = useStore()
@@ -94,8 +94,8 @@ export function ExchangesList() {
 
   if (!data || isLoading) return <SuspenseLoader />
 
-  function handleCreateManyExchanges(data: CreateExchangeInput[]) {
-    createExchanges(data)
+  function handleCreateManyExchanges(buf: ArrayBuffer) {
+    createExchanges(buf)
   }
 
   function handleDeleteExchange(id: string) {

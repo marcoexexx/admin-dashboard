@@ -8,7 +8,7 @@ import { FormModal } from "@/components/forms";
 import { usePermission, useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
 import { CreateExchangeInput } from "./forms";
-import { exportToExcel } from "@/libs/exportToExcel";
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { ExchangesActions } from ".";
 import { useNavigate } from "react-router-dom";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
@@ -50,7 +50,7 @@ interface ExchangesListTableProps {
   count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyExchanges: (data: CreateExchangeInput[]) => void
+  onCreateManyExchanges: (buf: ArrayBuffer) => void
 }
 
 export function ExchangesListTable(props: ExchangesListTableProps) {
@@ -97,7 +97,15 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
   }
 
   const handleOnImport = (data: CreateExchangeInput[]) => {
-    onCreateManyExchanges(data)
+    convertToExcel(data, "Brands")
+      .then(excelBuffer => onCreateManyExchanges(excelBuffer))
+      .catch(err => dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: `Failed Excel upload: ${err.message}`,
+          severity: "error"
+        }
+      }))
   }
 
   const handleChangePagination = (_: any, page: number) => {

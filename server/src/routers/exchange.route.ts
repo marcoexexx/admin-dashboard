@@ -4,8 +4,9 @@ import { exchangePermission } from "../utils/auth/permissions/exchange.permissio
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createExchangeSchema, createMultiExchangesSchema, deleteMultiExchangesSchema, getExchangeSchema, updateExchangeSchema } from "../schemas/exchange.schema";
+import { createExchangeSchema, deleteMultiExchangesSchema, getExchangeSchema, updateExchangeSchema } from "../schemas/exchange.schema";
 import { createExchangeHandler, createMultiExchangesHandler, deleteExchangeHandler, deleteMultiExchangesHandler, getExchangeHandler, getExchangesHandler, updateExchangeHandler } from "../controllers/exchange.controller";
+import { uploadExcel } from "../upload/excelUpload";
 
 const router = Router()
 
@@ -27,13 +28,6 @@ router.route("")
 
 
 router.route("/multi")
-  .post(
-    deserializeUser,
-    requiredUser,
-    permissionUser("create", exchangePermission),
-    validate(createMultiExchangesSchema),
-    createMultiExchangesHandler
-  )
   .delete(
     deserializeUser,
     requiredUser,
@@ -41,6 +35,16 @@ router.route("/multi")
     validate(deleteMultiExchangesSchema),
     deleteMultiExchangesHandler
   )
+
+
+// Upload Routes
+router.post("/excel-upload",
+  deserializeUser,
+  requiredUser,
+  permissionUser("create", exchangePermission),
+  uploadExcel,
+  createMultiExchangesHandler
+)
 
 
 router.route("/detail/:exchangeId")
