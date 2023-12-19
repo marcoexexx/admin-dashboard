@@ -124,15 +124,31 @@ export function ProductsListTable(props: ProductsListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handleUpdateAction = (productId: IProduct["id"]) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/products/update/${productId}`)
+  const handleUpdateAction = (product: IProduct) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    if (product.status === "Draft") navigate(`/products/update/${product.id}`)
+    dispatch({
+      type: "OPEN_TOAST",
+      payload: {
+        message: "Warning: only `Draft` state can edit!",
+        severity: "warning"
+      }
+    })
   }
 
-  const handleClickDeleteAction = (exchangeId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteId(exchangeId)
+  const handleClickDeleteAction = (product: IProduct) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    if (product.status === "Draft") {
+      setDeleteId(product.id)
+      dispatch({
+        type: "OPEN_MODAL_FORM",
+        payload: "delete-product"
+      })
+    }
     dispatch({
-      type: "OPEN_MODAL_FORM",
-      payload: "delete-product"
+      type: "OPEN_TOAST",
+      payload: {
+        message: "Warning: only `Draft` state can delete!",
+        severity: "warning"
+      }
     })
   }
 
@@ -353,7 +369,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
                     {isAllowedUpdateProduct
                     ? <Tooltip title="Edit Product" arrow>
                         <IconButton
-                          onClick={handleUpdateAction(row.id)}
+                          onClick={handleUpdateAction(row)}
                           sx={{
                             '&:hover': {
                               background: theme.colors.primary.lighter
@@ -376,7 +392,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
                             },
                             color: theme.palette.error.main
                           }}
-                          onClick={handleClickDeleteAction(row.id)}
+                          onClick={handleClickDeleteAction(row)}
                           color="inherit"
                           size="small"
                         >
