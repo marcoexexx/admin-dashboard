@@ -29,8 +29,18 @@ export async function createCategoryFn(category: CreateCategoryInput) {
 }
 
 
-export async function createMultiCategorisFn(categories: CreateCategoryInput[]) {
-  const { data } = await authApi.post<HttpResponse>("/categories/multi", categories)
+export async function createMultiCategorisFn(buf: ArrayBuffer) {
+  const formData = new FormData()
+
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+  formData.append("excel", blob, `Categories_${Date.now()}.xlsx`)
+
+  const { data } = await authApi.post<HttpResponse>("/categories/excel-upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  })
   return data
 }
 

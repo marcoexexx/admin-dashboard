@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreateExchangeInput, CreateMultiExchangesInput, DeleteMultiExchangesInput, ExchangeFilterPagination, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
+import logging from "../middleware/logging/logging";
+import fs from 'fs'
+import { parseExcel } from "../utils/parseExcel";
 
 
 export async function getExchangesHandler(
@@ -133,12 +135,18 @@ export async function createExchangeHandler(
 
 
 export async function createMultiExchangesHandler(
-  req: Request<{}, {}, CreateMultiExchangesInput>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const data = req.body
+    const excelFile = req.file
+
+    if (!excelFile) return res.status(204)
+
+    const buf = fs.readFileSync(excelFile.path)
+    const data = parseExcel(buf) as CreateMultiExchangesInput
+
     await db.exchange.createMany({
       data,
       skipDuplicates: true

@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CategoryFilterPagination, CreateCategoryInput, CreateMultiCategoriesInput, DeleteMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { convertNumericStrings } from "../utils/convertNumber";
+import logging from "../middleware/logging/logging";
+import fs from 'fs'
+import { parseExcel } from "../utils/parseExcel";
 
 
 export async function getCategoriesHandler(
@@ -92,12 +94,17 @@ export async function createCategoryHandler(
 
 
 export async function createMultiCategoriesHandler(
-  req: Request<{}, {}, CreateMultiCategoriesInput>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const data = req.body
+    const excelFile = req.file
+
+    if (!excelFile) return res.status(204)
+
+    const buf = fs.readFileSync(excelFile.path)
+    const data = parseExcel(buf) as CreateMultiCategoriesInput
 
     await db.category.createMany({
       data,

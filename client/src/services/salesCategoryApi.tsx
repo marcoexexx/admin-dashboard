@@ -29,8 +29,19 @@ export async function createSalesCategoryFn(category: CreateSalesCategoryInput) 
 }
 
 
-export async function createMultiSalesCategorisFn(categories: CreateSalesCategoryInput[]) {
-  const { data } = await authApi.post<HttpResponse>("/sales-categories/multi", categories)
+export async function createMultiSalesCategorisFn(buf: ArrayBuffer) {
+  const formData = new FormData()
+
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+  formData.append("excel", blob, `Products_${Date.now()}.xlsx`)
+
+  const { data } = await authApi.post<HttpResponse>("/sales-categories/excel-upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  })
+
   return data
 }
 

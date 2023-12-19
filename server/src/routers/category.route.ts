@@ -5,7 +5,8 @@ import { permissionUser } from "../middleware/permissionUser"
 import { categoryPermission } from "../utils/auth/permissions/category.permission"
 import { createCategoryHandler, createMultiCategoriesHandler, deleteCategoryHandler, deleteMultiCategoriesHandler, getCategoriesHandler, getCategoryHandler, updateCategoryHandler } from "../controllers/category.controller"
 import { validate } from "../middleware/validate"
-import { createCategorySchema, createMultiCategoriesSchema, deleteMultiCategoriesSchema, getCategorySchema, updateCategorySchema } from "../schemas/category.schema"
+import { createCategorySchema, deleteMultiCategoriesSchema, getCategorySchema, updateCategorySchema } from "../schemas/category.schema"
+import { uploadExcel } from "../upload/excelUpload"
 
 const router = Router()
 
@@ -25,20 +26,23 @@ router.route("")
 
 
 router.route("/multi")
-  .post(
-    deserializeUser,
-    requiredUser,
-    permissionUser("create", categoryPermission),
-    validate(createMultiCategoriesSchema),
-    createMultiCategoriesHandler
-  )
-  .post(
+  .delete(
     deserializeUser,
     requiredUser,
     permissionUser("delete", categoryPermission),
     validate(deleteMultiCategoriesSchema),
     deleteMultiCategoriesHandler
   )
+
+
+// Upload Routes
+router.post("/excel-upload",
+  deserializeUser,
+  requiredUser,
+  permissionUser("create", categoryPermission),
+  uploadExcel,
+  createMultiCategoriesHandler
+)
 
 
 router.route("/detail/:categoryId")

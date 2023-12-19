@@ -5,7 +5,7 @@ import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { FormModal } from "@/components/forms";
-import { exportToExcel } from "@/libs/exportToExcel";
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
 
@@ -36,7 +36,7 @@ interface BrandsListTableProps {
   count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyBrands: (data: CreateBrandInput[]) => void
+  onCreateManyBrands: (buf: ArrayBuffer) => void
 }
 
 export function BrandsListTable(props: BrandsListTableProps) {
@@ -83,7 +83,15 @@ export function BrandsListTable(props: BrandsListTableProps) {
   }
 
   const handleOnImport = (data: CreateBrandInput[]) => {
-    onCreateManyBrands(data)
+    convertToExcel(data, "Brands")
+      .then(excelBuffer => onCreateManyBrands(excelBuffer))
+      .catch(err => dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: `Failed Excel upload: ${err.message}`,
+          severity: "error"
+        }
+      }))
   }
 
   const handleChangePagination = (_: any, page: number) => {

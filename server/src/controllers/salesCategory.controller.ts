@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CreateMultiSalesCategoriesInput, CreateSalesCategoryInput, DeleteMultiSalesCategoriesInput, GetSalesCategoryInput, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import fs from 'fs'
+import logging from "../middleware/logging/logging";
+import { parseExcel } from "../utils/parseExcel";
 
 
 export async function getSalesCategoriesHandler(
@@ -73,12 +75,17 @@ export async function createSalesCategoryHandler(
 
 
 export async function createMultiSalesCategoriesHandler(
-  req: Request<{}, {}, CreateMultiSalesCategoriesInput>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const data = req.body
+    const excelFile = req.file
+
+    if (!excelFile) return res.status(204)
+
+    const buf = fs.readFileSync(excelFile.path)
+    const data = parseExcel(buf) as CreateMultiSalesCategoriesInput
 
     await db.salesCategory.createMany({
       data,

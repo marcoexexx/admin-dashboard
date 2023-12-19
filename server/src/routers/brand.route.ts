@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { validate } from "../middleware/validate";
-import { createBrandSchema, createMultiBrandsSchema, deleteMultiBrandsSchema, getBrandSchema, updateBrandSchema } from "../schemas/brand.schema";
+import { createBrandSchema, deleteMultiBrandsSchema, getBrandSchema, updateBrandSchema } from "../schemas/brand.schema";
 import { createBrandHandler, createMultiBrandsHandler, deleteBrandHandler, deleteMultiBrandsHandler, getBrandHandler, getBrandsHandler, updateBrandHandler } from "../controllers/brand.controller";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { permissionUser } from "../middleware/permissionUser";
 import { brandPermission } from "../utils/auth/permissions/brand.permission";
+import { uploadExcel } from "../upload/excelUpload";
 
 const router = Router()
 
@@ -25,13 +26,6 @@ router.route("")
 
 
 router.route("/multi")
-  .post(
-    deserializeUser,
-    requiredUser,
-    permissionUser("create", brandPermission),
-    validate(createMultiBrandsSchema),
-    createMultiBrandsHandler
-  )
   .delete(
     deserializeUser,
     requiredUser,
@@ -39,6 +33,16 @@ router.route("/multi")
     validate(deleteMultiBrandsSchema),
     deleteMultiBrandsHandler
   )
+
+
+// Upload Routes
+router.post("/excel-upload",
+  deserializeUser,
+  requiredUser,
+  permissionUser("create", brandPermission),
+  uploadExcel,
+  createMultiBrandsHandler,
+)
 
 
 router.route("/detail/:brandId")

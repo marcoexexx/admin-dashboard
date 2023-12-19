@@ -3,8 +3,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { createMultiSalesCategorisFn, deleteMultiSalesCategoriesFn, deleteSalesCategoryFn, getSalesCategoriesFn } from "@/services/salesCategoryApi";
-import { CreateSalesCategoryInput } from "./forms";
 import { SalesCategoriesListTable } from "./SalesCategoriesListTable";
+
 
 export function SalesCategoriesList() {
   const { state: {salesCategoryFilter}, dispatch } = useStore()
@@ -92,8 +92,8 @@ export function SalesCategoriesList() {
 
   if (!data || isLoading) return <SuspenseLoader />
 
-  function handleCreateManySalesCategories(data: CreateSalesCategoryInput[]) {
-    createSalesCategories(data)
+  function handleCreateManySalesCategories(buf: ArrayBuffer) {
+    createSalesCategories(buf)
   }
 
   function handleDeleteBrand(id: string) {
