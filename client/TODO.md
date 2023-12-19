@@ -13,6 +13,7 @@
  - ## IMPORTANT
  - [x] use $transaction
  - [ ] use name: { in: [] }
+ - [ ] with relation in list table view
  - [x] item cod
 
  - ## NORMAL
