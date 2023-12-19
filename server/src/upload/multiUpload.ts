@@ -3,7 +3,7 @@ import logging from '../middleware/logging/logging';
 import AppError from '../utils/appError';
 import sharp from 'sharp';
 import { generateRandomUsername } from '../utils/generateRandomUsername';
-import { imageUploadPath, upload } from '.';
+import { imageUploadPath, imageUploader } from '.';
 import path from 'path';
 import getConfig from '../utils/getConfig';
 
@@ -13,7 +13,7 @@ import getConfig from '../utils/getConfig';
 //   { name: "images", maxCount: 3 },
 // ])
 
-export const uploadProductImage = upload.array("images", 3)
+export const uploadProductImage = imageUploader.array("images", 3)
 
 export async function resizeProductImages(
   req: Request,

@@ -3,12 +3,12 @@ import AppError from '../utils/appError';
 import logging from '../middleware/logging/logging';
 import sharp from 'sharp';
 import { generateRandomUsername } from '../utils/generateRandomUsername';
-import { imageUploadPath, upload } from '.';
+import { imageUploadPath, imageUploader } from '.';
 import path from 'path';
 import getConfig from '../utils/getConfig';
 
 
-export const uploadProfileImage = upload.single("profile")
+export const uploadProfileImage = imageUploader.single("profile")
 
 export async function resizeProfileImage(
   req: Request,

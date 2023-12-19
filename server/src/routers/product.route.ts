@@ -4,9 +4,10 @@ import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { permissionUser } from "../middleware/permissionUser";
 import { createMultiProductsHandler, createProductHandler, deleteMultiProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, uploadImagesProductHandler } from "../controllers/product.controller";
-import { createMultiProductsSchema, createProductSchema, deleteMultiProductsSchema, getProductSchema, likeProductByUserSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
+import { createProductSchema, deleteMultiProductsSchema, getProductSchema, likeProductByUserSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
 import { productPermission } from "../utils/auth/permissions";
 import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
+import { uploadExcel } from "../upload/excelUpload";
 
 
 const router = Router()
@@ -27,13 +28,6 @@ router.route("")
 
 
 router.route("/multi")
-  .post(
-    deserializeUser,
-    requiredUser,
-    permissionUser("create", productPermission),
-    validate(createMultiProductsSchema),
-    createMultiProductsHandler
-  )
   .delete(
     deserializeUser,
     requiredUser,
@@ -41,6 +35,16 @@ router.route("/multi")
     validate(deleteMultiProductsSchema),
     deleteMultiProductHandler,
   )
+
+
+// Upload Routes
+router.post("/excel-upload",
+  deserializeUser,
+  requiredUser,
+  permissionUser("create", productPermission),
+  uploadExcel,
+  createMultiProductsHandler,
+)
 
 
 router.route("/detail/:productId")

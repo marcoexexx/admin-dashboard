@@ -95,12 +95,12 @@ export const createMultiProductsSchema = object({
     warranty: number({ required_error: "Warranty is required "}),
     categories: string({ required_error: "Categories name are required "}), // by splitting "\n"
     colors: string({ required_error: "Color is required" })
-      .min(2).max(128).array(),
+      .min(2).max(128),
     instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]),
     description: string({ required_error: "Description is required" })
       .min(1).max(5000),
     dealerPrice: number().min(0),
-    images: string().array(),
+    images: string(),
     marketPrice: number().min(0),
     discount: number().min(0),
     priceUnit: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),

@@ -23,6 +23,7 @@ router.route("/profile")
 //   .route("/change-password")
 
 
+// TODO: validation
 router.route("/upload/profile-picture")
   .post(
     uploadProfileImage,

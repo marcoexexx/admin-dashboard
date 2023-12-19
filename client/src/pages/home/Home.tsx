@@ -11,6 +11,8 @@ export default function Home() {
 
   const appName = getConfig("appName")
 
+  // if (1 == 1) throw new Error("Some error from Home")
+
 
   return (
     <div>

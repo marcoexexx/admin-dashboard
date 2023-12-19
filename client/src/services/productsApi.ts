@@ -36,9 +36,19 @@ export async function unLikeProductByUserFn({ userId, productId }: { userId: str
 }
 
 
-// TODO: multi create product type
-export async function createMultiProductsFn(product: any[]) {
-  const { data } = await authApi.post<HttpResponse>("/products/multi", product)
+export async function createMultiProductsFn(excelBuffer: ArrayBuffer) {
+  const formData = new FormData()
+
+  const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+  formData.append("excel", excelBlob, `Products_${Date.now()}.xlsx`)
+
+  const { data } = await authApi.post<HttpResponse>("/products/excel-upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  })
+
   return data
 }
 

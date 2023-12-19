@@ -4,7 +4,6 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { createMultiProductsFn, deleteMultiProductsFn, deleteProductFn, getProductsFn, updateProductFn } from "@/services/productsApi";
 import { ProductsListTable } from ".";
-import { CreateProductInput } from "./forms";
 
 
 interface ProductStatusContext {
@@ -150,7 +149,7 @@ export function ProductsList() {
     }
   })
 
-  function handleCreateManyProducts(data: CreateProductInput[]) {
+  function handleCreateManyProducts(data: ArrayBuffer) {
     createProducts(data)
   }
 

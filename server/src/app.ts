@@ -58,9 +58,9 @@ app.use("/img", express.static("public"))
 app.use(helmet())
 
 // Body parser (Build-in middlewares)
-// app.use(express.json({
-//   limit: '400kb' 
-// }))
+app.use(express.json({
+  limit: '10kb' 
+}))
 
 // Cookie parser
 app.use(cookieParser())

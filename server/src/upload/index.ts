@@ -4,8 +4,10 @@ import { generateRandomUsername } from '../utils/generateRandomUsername';
 
 
 export const imageUploadPath = `${__dirname}/../../public/upload`
+export const excelUploadPath = `${__dirname}/../../public/upload/excels`
 
-const multerStorage = multer.diskStorage({
+
+const imageStorage = multer.diskStorage({
   destination(_req, _file, cb) {
     cb(null, imageUploadPath)
   },
@@ -20,7 +22,19 @@ const multerStorage = multer.diskStorage({
   }
 })
 
-function multerFilter(_: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) {
+
+export const excelStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, excelUploadPath)
+  },
+
+  filename: (_req, file, cb) => {
+    cb(null, file.originalname)
+  }
+})
+
+
+function imageFilter(_: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) {
   if (!file.mimetype.startsWith("image/")) {
     return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"))
   }
@@ -28,12 +42,30 @@ function multerFilter(_: Request, file: Express.Multer.File, cb: multer.FileFilt
   cb(null, true)
 }
 
-export const upload = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
+
+function excelFilter(_: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) {
+  if (file.mimetype !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+    return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"))
+  }
+
+  cb(null, true)
+}
+
+
+export const imageUploader = multer({
+  storage: imageStorage,
+  fileFilter: imageFilter,
   limits: {
     fileSize: 1024 * 1024 * 5,
     // files: 1
   }
 })
 
+
+export const excelUploder = multer({
+  storage: excelStorage,
+  fileFilter: excelFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 5,
+  }
+})

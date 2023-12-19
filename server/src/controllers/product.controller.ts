@@ -6,7 +6,9 @@ import { db } from '../utils/db'
 import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 import logging from '../middleware/logging/logging';
+import fs from 'fs'
 import AppError from '../utils/appError';
+import { parseExcel } from '../utils/parseExcel';
 
 
 // TODO: specification filter
@@ -194,35 +196,42 @@ export async function createProductHandler(
 
 
 export async function createMultiProductsHandler(
-  req: Request<{}, {}, CreateMultiProductsInput>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const data = req.body
+    const excelFile = req.file
+
+    if (!excelFile) return res.status(204)
+
+    const buf = fs.readFileSync(excelFile.path)
+    const data = parseExcel(buf) as CreateMultiProductsInput
+
+    console.log(data[0])
 
     await Promise.all(data.map(product => {
       return db.product.upsert({
         where: {
-          id: product.id,
+          id: product.id
         },
         create: {
           id: product.id,
           price: product.price,
           title: product.title,
           overview: product.overview,
-          features: product.features,
+          features: product?.features || "<h1>Product features</h1>",
           warranty: product.warranty,
-          colors: product.colors,
+          colors: product?.colors?.split("\n"),
           instockStatus: product.instockStatus,
-          description: product.description,
+          description: product?.description || "<h1>Product description</h1>",
           // type: product.type,  // TODO: What is product type??
           dealerPrice: product.dealerPrice,
           marketPrice: product.marketPrice,
           discount: product.discount,
           status: product.status,
           priceUnit: product.priceUnit,
-          images: product.images,
+          images: product.images?.split("\n"),
           quantity: product.quantity,
           brand: {
             connectOrCreate: {

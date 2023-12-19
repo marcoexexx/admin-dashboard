@@ -3,9 +3,8 @@ import { useState } from "react"
 import { MuiButton } from "@/components/ui";
 import { BulkActions } from "@/components";
 import { ProductsActions } from ".";
-import { CreateProductInput } from "./forms";
 import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
-import { exportToExcel } from "@/libs/exportToExcel";
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { FormModal } from "@/components/forms";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { RenderBrandLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
@@ -96,7 +95,7 @@ interface ProductsListTableProps {
   onDelete: (id: string) => void
   onStatusChange: (product: IProduct, status: ProductStatus) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyProducts: (data: CreateProductInput[]) => void
+  onCreateManyProducts: (data: ArrayBuffer) => void
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
@@ -150,16 +149,19 @@ export function ProductsListTable(props: ProductsListTableProps) {
     exportToExcel(prepare, "Products")
   }
 
-  // TODO: create multi product
   const handleOnImport = (data: any[]) => {
-    onCreateManyProducts(data.map(product => ({
-      ...product,
-      colors: product.colors?.split("\n") || [],
-      images: product.images?.split("\n") || [],
-      overview: product.overview || "-",
-      type: product.type || undefined,
-      salesCategory: product.salesCategory || ""
-    })))
+    convertToExcel(data.map(product => {
+      return {
+        ...product,
+        colors: product.colors,
+        images: product.images,
+        overview: product.overview || "-",
+        type: product.type || undefined,
+        salesCategory: product.salesCategory || ""
+      }
+    }), "Products")
+      .then(excelBuffer => onCreateManyProducts(excelBuffer))
+      .catch(console.error)
   }
 
   const handleChangePagination = (_: any, page: number) => {
@@ -401,7 +403,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
             ? productFilter.page - 1
             : 0}
           rowsPerPage={productFilter?.limit || 10}
-          rowsPerPageOptions={[5, 10, 25, 30]}
+          rowsPerPageOptions={[5, 10, 25, 30, 100]}
         />
       </Box>
 
