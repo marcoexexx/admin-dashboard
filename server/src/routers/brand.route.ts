@@ -6,6 +6,7 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { permissionUser } from "../middleware/permissionUser";
 import { brandPermission } from "../utils/auth/permissions/brand.permission";
+import { uploadExcel } from "../upload/excelUpload";
 
 const router = Router()
 
@@ -25,13 +26,13 @@ router.route("")
 
 
 router.route("/multi")
-  .post(
-    deserializeUser,
-    requiredUser,
-    permissionUser("create", brandPermission),
-    validate(createMultiBrandsSchema),
-    createMultiBrandsHandler
-  )
+  // .post(
+  //   deserializeUser,
+  //   requiredUser,
+  //   permissionUser("create", brandPermission),
+  //   validate(createMultiBrandsSchema),
+  //   createMultiBrandsHandler
+  // )
   .delete(
     deserializeUser,
     requiredUser,
@@ -39,6 +40,16 @@ router.route("/multi")
     validate(deleteMultiBrandsSchema),
     deleteMultiBrandsHandler
   )
+
+
+// Excel Upload Routes
+router.post("/excel-upload",
+  deserializeUser,
+  requiredUser,
+  permissionUser("create", brandPermission),
+  uploadExcel,
+  createMultiBrandsHandler,
+)
 
 
 router.route("/detail/:brandId")

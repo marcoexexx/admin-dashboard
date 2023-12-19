@@ -4,7 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { BrandsListTable } from "@/components/content/brands";
 import { createMultiBrandsFn, deleteBrandFn, deleteMultiBrandsFn, getBrandsFn } from "@/services/brandsApi";
-import { CreateBrandInput } from "./forms";
+
 
 export function BrandsList() {
   const { state: {brandFilter}, dispatch } = useStore()
@@ -92,8 +92,8 @@ export function BrandsList() {
 
   if (!data || isLoading) return <SuspenseLoader />
 
-  function handleCreateManyBrands(data: CreateBrandInput[]) {
-    createBrands(data)
+  function handleCreateManyBrands(buf: ArrayBuffer) {
+    createBrands(buf)
   }
 
   function handleDeleteBrand(id: string) {

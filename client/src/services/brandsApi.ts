@@ -29,9 +29,21 @@ export async function createBrandFn(brand: CreateBrandInput) {
 }
 
 
-export async function createMultiBrandsFn(brand: CreateBrandInput[]) {
-  const { data } = await authApi.post<HttpResponse>("/brands/multi", brand)
+export async function createMultiBrandsFn(buf: ArrayBuffer) {
+  const formData = new FormData()
+
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+  formData.append("excel", blob, `Brands_${Date.now()}.xlsx`)
+
+  const { data } = await authApi.post<HttpResponse>("/brands/excel-upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  })
+
   return data
+
 }
 
 

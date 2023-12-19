@@ -177,7 +177,13 @@ export function ProductsListTable(props: ProductsListTableProps) {
       }
     }), "Products")
       .then(excelBuffer => onCreateManyProducts(excelBuffer))
-      .catch(console.error)
+      .catch(err => dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: `Failed Excel upload: ${err.message}`,
+          severity: "error"
+        }
+      }))
   }
 
   const handleChangePagination = (_: any, page: number) => {
