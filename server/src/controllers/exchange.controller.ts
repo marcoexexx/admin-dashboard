@@ -149,7 +149,7 @@ export async function createMultiExchangesHandler(
 
     await db.exchange.createMany({
       data,
-      skipDuplicates: true
+      // skipDuplicates: true
     })
 
     res.status(201).json(HttpResponse(201, "Success"))

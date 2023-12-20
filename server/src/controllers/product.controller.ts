@@ -240,7 +240,7 @@ export async function createMultiProductsHandler(
           specification: {
             createMany: {
               data: product.specification.split("\n").filter(Boolean).map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
-              skipDuplicates: true
+              // skipDuplicates: true
             }
           },
           categories: {

@@ -87,10 +87,16 @@ export async function createMultiSalesCategoriesHandler(
     const buf = fs.readFileSync(excelFile.path)
     const data = parseExcel(buf) as CreateMultiSalesCategoriesInput
 
-    await db.salesCategory.createMany({
-      data,
-      skipDuplicates: true
-    })
+    // Update not affected
+    await Promise.all(data.map(salesCategory => db.salesCategory.upsert({
+      where: {
+        name: salesCategory.name
+      },
+      create: {
+        name: salesCategory.name,
+      },
+      update: {}
+    })))
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {
