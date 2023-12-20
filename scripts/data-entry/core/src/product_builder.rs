@@ -60,6 +60,13 @@ impl ProductBuilder {
         self
     }
 
+    // price_unit
+    // images
+    // warranty
+    // description
+    // sales_category
+    // quantity
+
     pub fn set_specification(&mut self, specs: &[&str]) -> &mut Self {
         self.specification = Some(specs.join("\n "));
         self
