@@ -308,7 +308,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
 
                 <TableCell align="left">
                   <RenderImageLabel
-                    src={row.images[0] || "/public/default.jpg"}
+                    src={row.images[0] || "/default.jpg"}
                     alt={row.title} 
                   />
                 </TableCell>

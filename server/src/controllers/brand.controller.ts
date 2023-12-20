@@ -84,10 +84,16 @@ export async function createMultiBrandsHandler(
     const buf = fs.readFileSync(excelFile.path)
     const data = parseExcel(buf) as CreateMultiBrandsInput
 
-    await db.brand.createMany({
-      data,
-      skipDuplicates: true
-    })
+    // Update not affected
+    await Promise.all(data.map(brand => db.brand.upsert({
+      where: {
+        name: brand.name
+      },
+      create: {
+        name: brand.name
+      },
+      update: {}
+    })))
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {

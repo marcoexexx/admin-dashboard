@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List
-from uuid import uuid4
+from secrets import token_hex
 
 from libs.brand_parser import BrandParser
 from libs.category_parser import CategoryParser
@@ -28,7 +28,7 @@ class InstallFields:
             specifications = SpecificationParser().parse(product)
 
             data = Product(
-                id = str(uuid4()),
+                id = token_hex(24 // 2),
                 status = "Pending",
                 title = product.get("title", "exportted product"),
                 type = product.get("type", "").title(),

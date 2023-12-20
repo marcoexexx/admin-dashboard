@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -29,7 +29,7 @@ enum AuthProvider {
 }
 
 model Exchange {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String    @id @default(uuid())
   from      PriceUnit
   to        PriceUnit
   rate      Float
@@ -39,9 +39,9 @@ model Exchange {
 }
 
 model User {
-  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  id               String       @id @default(uuid())
   name             String
-  email            String
+  email            String       @unique
   username         String       @unique
   password         String
   role             Role         @default(User)
@@ -60,11 +60,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([email])
+  @@index([email])
 }
 
 model Address {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  id          String  @id @default(uuid())
   isDefault   Boolean
   name        String
   phone       String
@@ -72,7 +72,7 @@ model Address {
   township    String
   fullAddress String
   user        User    @relation(fields: [userId], references: [id])
-  userId      String  @db.ObjectId
+  userId      String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -81,15 +81,14 @@ model Address {
 model Favorites {
   user      User    @relation(fields: [userId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
-  userId    String  @db.ObjectId
-  productId String  @db.ObjectId
+  userId    String
+  productId String
 
-  // @@id([userId, productId])
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  @@id([userId, productId])
 }
 
 model Brand {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String    @id @default(uuid())
   name      String    @unique
   products  Product[]
   createdAt DateTime  @default(now())
@@ -97,7 +96,7 @@ model Brand {
 }
 
 model Category {
-  id        String            @id @default(auto()) @map("_id") @db.ObjectId
+  id        String            @id @default(uuid())
   name      String            @unique
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
@@ -105,7 +104,7 @@ model Category {
 }
 
 model SalesCategory {
-  id        String                 @id @default(auto()) @map("_id") @db.ObjectId
+  id        String                 @id @default(uuid())
   name      String                 @unique
   createdAt DateTime               @default(now())
   updatedAt DateTime               @updatedAt
@@ -115,21 +114,19 @@ model SalesCategory {
 model ProductSalesCategory {
   product         Product       @relation(fields: [productId], references: [id])
   salesCategory   SalesCategory @relation(fields: [salesCategoryId], references: [id])
-  productId       String        @db.ObjectId
-  salesCategoryId String        @db.ObjectId
+  productId       String
+  salesCategoryId String
 
-  // @@id([salesCategoryId, productId])
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  @@id([salesCategoryId, productId])
 }
 
 model ProductCategory {
   product    Product  @relation(fields: [productId], references: [id])
   category   Category @relation(fields: [categoryId], references: [id])
-  productId  String   @db.ObjectId
-  categoryId String   @db.ObjectId
+  productId  String
+  categoryId String
 
-  // @@id([categoryId, productId])
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  @@id([categoryId, productId])
 }
 
 enum InstockStatus {
@@ -147,9 +144,9 @@ enum PriceUnit {
 }
 
 model Product {
-  id            String                 @id @default(auto()) @map("_id") @db.ObjectId
+  id            String                 @id @default(uuid())
   brand         Brand                  @relation(fields: [brandId], references: [id])
-  brandId       String                 @db.ObjectId
+  brandId       String
   title         String
   price         Int
   images        String[]
@@ -172,7 +169,7 @@ model Product {
   reviews       Review[]
   orders        Order[]
   creator       User?                  @relation("CreatedBy", fields: [creatorId], references: [id])
-  creatorId     String?                @db.ObjectId
+  creatorId     String?
   itemCode      String?
   salesCategory ProductSalesCategory[]
 
@@ -181,23 +178,23 @@ model Product {
 }
 
 model Specification {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  id        String  @id @default(uuid())
   name      String
   value     String
   product   Product @relation(fields: [productId], references: [id])
-  productId String  @db.ObjectId
+  productId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Review {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  id        String  @id @default(uuid())
   comment   String
   user      User    @relation(fields: [userId], references: [id])
-  userId    String  @db.ObjectId
+  userId    String
   product   Product @relation(fields: [productId], references: [id])
-  productId String  @db.ObjectId
+  productId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -212,11 +209,11 @@ enum OrderState {
 }
 
 model Order {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  id        String     @id @default(uuid())
   user      User       @relation(fields: [userId], references: [id])
-  userId    String     @db.ObjectId
+  userId    String
   product   Product    @relation(fields: [productId], references: [id])
-  productId String     @db.ObjectId
+  productId String
   state     OrderState @default(Pending)
   quantity  Int
 
@@ -225,9 +222,9 @@ model Order {
 }
 
 model AccessLog {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  id       String   @id @default(uuid())
   user     User     @relation(fields: [userId], references: [id])
-  userId   String   @db.ObjectId
+  userId   String
   browser  String
   ip       String
   platform String

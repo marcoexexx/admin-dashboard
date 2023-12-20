@@ -3,7 +3,11 @@ export const config = {
   nodeEnv: process.env.NODE_ENV,
   logLevel: process.env.LOG_LEVEL,
 
-  postgresConfig: {
+  // postgresConfig: {
+  //   url: process.env.DATABASE_URL
+  // },
+
+  mongoConfig: {
     url: process.env.DATABASE_URL
   },
 

@@ -106,10 +106,16 @@ export async function createMultiCategoriesHandler(
     const buf = fs.readFileSync(excelFile.path)
     const data = parseExcel(buf) as CreateMultiCategoriesInput
 
-    await db.category.createMany({
-      data,
-      skipDuplicates: true
-    })
+    // Update not affected
+    await Promise.all(data.map(category => db.category.upsert({
+      where: {
+        name: category.name
+      },
+      create: {
+        name: category.name
+      },
+      update: {}
+    })))
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {

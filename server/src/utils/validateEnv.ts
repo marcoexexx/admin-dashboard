@@ -8,9 +8,9 @@ const validateEnv = () => {
     LOG_LEVEL: str(),
 
     DATABASE_URL: str(),
-    POSTGRES_USER: str(),
-    POSTGRES_PASSWORD: str(),
-    POSTGRES_DB: str(),
+    // POSTGRES_USER: str(),
+    // POSTGRES_PASSWORD: str(),
+    // POSTGRES_DB: str(),
 
     REDIS_URL: str(),
 
