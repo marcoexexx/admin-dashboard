@@ -208,6 +208,8 @@ export async function createMultiProductsHandler(
     const buf = fs.readFileSync(excelFile.path)
     const data = parseExcel(buf) as CreateMultiProductsInput
 
+    console.log({ data })
+
     await Promise.all(data.map(product => {
       return db.product.upsert({
         where: {
