@@ -33,6 +33,7 @@ import helmet from 'helmet';
 import useragent from 'express-useragent';
 import logging, { loggingMiddleware } from './middleware/logging/logging'
 import { rateLimitMiddleware } from './middleware/rateLimit';
+import { db } from './utils/db';
 
 
 validateEnv()
@@ -129,8 +130,8 @@ if (require.main === module) {
   process.on("SIGINT", () => {
     console.log("\n")
     logging.info("Received SIGINT. Closing server and Redis connection...")
-    server.close(() => {
-      redisClient.quit()
+    server.close(async () => {
+      await redisClient.quit()
       process.exit(0)
     })
   })
