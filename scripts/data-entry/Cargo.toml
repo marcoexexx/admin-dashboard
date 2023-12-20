@@ -1,0 +1,13 @@
+[workspace]
+resolver = '2'
+members = [
+  "core",
+  "gui"
+]
+
+[workspace.package]
+version = "0.1.0"
+authors = ["Aung Koko Lwin <toyko2001@gmail.com>"]
+edition = "2021"
+repository = "https://github.com/alk-neq-me/fortipass"
+license = "MIT"
