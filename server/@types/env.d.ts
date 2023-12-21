@@ -3,6 +3,7 @@ namespace NodeJS {
     PORT: number,
     NODE_ENV: "production" | "development" | "test",
     LOG_LEVEL: "log" | "info" | "debug" | "warn" | "error",
+    ORIGIN: string,
 
     DATABASE_URL: string,
     REDIS_URL: string,

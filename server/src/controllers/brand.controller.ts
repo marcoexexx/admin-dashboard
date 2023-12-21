@@ -8,6 +8,7 @@ import AppError from "../utils/appError";
 import logging from "../middleware/logging/logging";
 import fs from "fs"
 import { parseExcel } from "../utils/parseExcel";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 
 
 export async function getBrandsHandler(
@@ -16,7 +17,8 @@ export async function getBrandsHandler(
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy } = convertNumericStrings(req.query)
+    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
+    const include = convertStringToBoolean(includes) as BrandFilterPagination["include"]
     const {
       id,
       name
@@ -33,6 +35,7 @@ export async function getBrandsHandler(
           id,
           name
         },
+        include,
         orderBy,
         skip: offset,
         take: pageSize,
@@ -49,17 +52,19 @@ export async function getBrandsHandler(
 
 
 export async function getBrandHandler(
-  req: Request<GetBrandInput["params"]>,
+  req: Request<GetBrandInput["params"] & Pick<BrandFilterPagination, "include">>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { brandId } = req.params
+    const { brandId, include: includes } = req.params
+    const include = convertStringToBoolean(includes) as BrandFilterPagination["include"]
 
     const brand = await db.brand.findUnique({
       where: {
         id: brandId
-      }
+      },
+      include
     })
 
     res.status(200).json(HttpDataResponse({ brand }))

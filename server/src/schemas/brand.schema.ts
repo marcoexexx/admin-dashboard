@@ -4,6 +4,10 @@ import { Pagination } from "./types";
 export type BrandFilterPagination = {
   filter?: any,
   pagination?: Pagination,
+  include?: {
+    _count?: boolean
+    products?: boolean
+  }
   orderBy?: Record<
     keyof CreateBrandInput | "createdAt" | "updatedAt", 
     "asc" | "desc">
@@ -30,7 +34,7 @@ export const createMultiBrandsSchema = object({
 })
 
 export const getBrandSchema = object({
-  ...params
+  ...params,
 })
 
 export const updateBrandSchema = object({

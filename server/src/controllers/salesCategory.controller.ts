@@ -2,25 +2,47 @@ import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CreateMultiSalesCategoriesInput, CreateSalesCategoryInput, DeleteMultiSalesCategoriesInput, GetSalesCategoryInput, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
+import { CreateMultiSalesCategoriesInput, CreateSalesCategoryInput, DeleteMultiSalesCategoriesInput, GetSalesCategoryInput, SalesCategoryFilterPagination, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import fs from 'fs'
 import logging from "../middleware/logging/logging";
 import { parseExcel } from "../utils/parseExcel";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+import { convertNumericStrings } from "../utils/convertNumber";
 
 
 export async function getSalesCategoriesHandler(
-  _: Request,
+  req: Request<{}, {}, {}, SalesCategoryFilterPagination>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    // TODO: filter
-    const categories = await db.salesCategory.findMany({
-      where: {}
-    })
+    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
+    const include = convertStringToBoolean(includes) as SalesCategoryFilterPagination["include"]
+    const {
+      id,
+      name
+    } = filter || { status: undefined }
+    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
+      { page: 1, pageSize: 10 }
 
-    res.status(200).json(HttpListResponse(categories))
+    const offset = (page - 1) * pageSize
+
+    const [count, categories] = await db.$transaction([
+      db.salesCategory.count(),
+      db.salesCategory.findMany({
+        where: {
+          id,
+          name
+        },
+        orderBy,
+        skip: offset,
+        take: pageSize,
+        include
+      })
+    ])
+
+    res.status(200).json(HttpListResponse(categories, count))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

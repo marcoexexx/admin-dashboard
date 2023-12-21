@@ -2,9 +2,17 @@ import { object, string, z } from "zod";
 import { Pagination } from "./types";
 import { CreateBrandInput } from "./brand.schema";
 
+
 export type SalesCategoryFilterPagination = {
   filter?: any,
   pagination?: Pagination,
+  include?: {
+    products?: {
+      include?: {
+        product?: boolean
+      }
+    }
+  },
   orderBy?: Record<
     keyof CreateBrandInput | "createdAt" | "updatedAt", 
     "asc" | "desc">

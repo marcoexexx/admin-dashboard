@@ -8,6 +8,7 @@ import { convertNumericStrings } from "../utils/convertNumber";
 import logging from "../middleware/logging/logging";
 import fs from 'fs'
 import { parseExcel } from "../utils/parseExcel";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 
 
 export async function getCategoriesHandler(
@@ -16,7 +17,8 @@ export async function getCategoriesHandler(
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy } = convertNumericStrings(req.query)
+    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
+    const include = convertStringToBoolean(includes) as CategoryFilterPagination["include"]
     const {
       id,
       name
@@ -36,6 +38,7 @@ export async function getCategoriesHandler(
         orderBy,
         skip: offset,
         take: pageSize,
+        include
       })
     ])
 
@@ -49,16 +52,18 @@ export async function getCategoriesHandler(
 
 
 export async function getCategoryHandler(
-  req: Request<GetCategoryInput["params"]>,
+  req: Request<GetCategoryInput["params"] & Pick<CategoryFilterPagination, "include">>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { categoryId } = req.params
+    const { categoryId, include: includes } = req.params
+    const include = convertStringToBoolean(includes) as CategoryFilterPagination["include"]
     const category = await db.category.findUnique({
       where: {
         id: categoryId
-      }
+      },
+      include
     })
 
     res.status(200).json(HttpDataResponse({ category }))

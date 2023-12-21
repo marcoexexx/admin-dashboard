@@ -19,7 +19,7 @@ export async function getProductsHandler(
 ) {
   try {
     const { filter = {}, pagination, include: includes, orderBy } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes)
+    const include = convertStringToBoolean(includes) as ProductFilterPagination["include"]
     const {
       id,
       brand,
@@ -75,7 +75,6 @@ export async function getProductsHandler(
         orderBy,
         skip: offset,
         take: pageSize,
-        // @ts-ignore
         include
       })
     ])
@@ -98,13 +97,12 @@ export async function getProductHandler(
     const { productId } = req.params
 
     const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes)
+    const include = convertStringToBoolean(includes) as ProductFilterPagination["include"]
 
     const product = await db.product.findUnique({
       where: {
         id: productId
       },
-      // @ts-ignore
       include
     })
 

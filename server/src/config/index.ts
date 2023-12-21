@@ -1,8 +1,6 @@
 export * from './custom-env'
 
 export default {
-  origin: "http://localhost:5173" as const,
-
   appName: "Rangoon" as const,
   emailFrom: "toyko2001@gmail.com" as const,
 

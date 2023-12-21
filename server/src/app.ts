@@ -33,7 +33,6 @@ import helmet from 'helmet';
 import useragent from 'express-useragent';
 import logging, { loggingMiddleware } from './middleware/logging/logging'
 import { rateLimitMiddleware } from './middleware/rateLimit';
-import { db } from './utils/db';
 
 
 validateEnv()
@@ -124,6 +123,7 @@ const port = getConfig("port") || 8000;
 
 if (require.main === module) {
   const server = app.listen(port, () => {
+    logging.info(`a ${getConfig("nodeEnv")} deplyoment.`)
     logging.log("Server is running on port", port)
   })
 

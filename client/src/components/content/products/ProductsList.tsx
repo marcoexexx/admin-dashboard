@@ -56,7 +56,20 @@ export function ProductsList() {
         page: productFilter?.page || 1,
         pageSize: productFilter?.limit || 10
       },
-      include: productFilter?.include
+      include: {
+        specification: false,
+        brand: true,
+        categories: {
+          include: {
+            category: true,
+          }
+        },
+        salesCategory: {
+          include: {
+            salesCategory: true
+          }
+        },
+      }
     }),
     select: data => data
   })

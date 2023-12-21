@@ -5,6 +5,14 @@ import { CreateBrandInput } from "./brand.schema";
 export type CategoryFilterPagination = {
   filter?: any,
   pagination?: Pagination,
+  include?: {
+    _count?: boolean,
+    products: {
+      include?: {
+        product?: boolean
+      }
+    }
+  },
   orderBy?: Record<
     keyof CreateBrandInput | "createdAt" | "updatedAt", 
     "asc" | "desc">

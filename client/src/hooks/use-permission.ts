@@ -42,16 +42,16 @@ export function usePermission({key, actions, queryFn}: Args) {
   }
 
   if (actions === "create" 
-    && (permissions?.permissions.createAllowedRoles.includes(role) || permissions?.permissions.createAllowedRoles.includes("*"))
+    && (permissions?.permissions?.createAllowedRoles?.includes(role) || permissions?.permissions?.createAllowedRoles?.includes("*"))
   ) return true
   if (actions === "read" 
-    && (permissions?.permissions.readAllowedRoles.includes(role) || permissions?.permissions.readAllowedRoles.includes("*"))
+    && (permissions?.permissions?.readAllowedRoles?.includes(role) || permissions?.permissions?.readAllowedRoles?.includes("*"))
   ) return true
   if (actions === "update" 
-    && (permissions?.permissions.updateAllowedRoles.includes(role) || permissions?.permissions.updateAllowedRoles.includes("*"))
+    && (permissions?.permissions?.updateAllowedRoles?.includes(role) || permissions?.permissions?.updateAllowedRoles?.includes("*"))
   ) return true
   if (actions === "delete" 
-    && (permissions?.permissions.deleteAllowedRoles.includes(role) || permissions?.permissions.deleteAllowedRoles.includes("*"))
+    && (permissions?.permissions?.deleteAllowedRoles?.includes(role) || permissions?.permissions?.deleteAllowedRoles?.includes("*"))
   ) return true
 
   return false
