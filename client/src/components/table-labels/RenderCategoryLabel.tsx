@@ -5,7 +5,11 @@ export function RenderCategoryLabel({category}: {category: ICategory}) {
   const navigate = useNavigate()
   const to = "/category/detail/" + category.id
 
-  return <LinkLabel onClick={() => navigate(to)}>
+  const handleNavigate = () => {
+    navigate(to)
+  }
+
+  return <LinkLabel onClick={handleNavigate}>
     {category.name}
   </LinkLabel>
 }

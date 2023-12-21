@@ -5,7 +5,11 @@ export function RenderBrandLabel({brand}: {brand: IBrand}) {
   const navigate = useNavigate()
   const to = "/brands/detail/" + brand.id
 
-  return <LinkLabel onClick={() => navigate(to)}>
+  const handleNavigate = () => {
+    navigate(to)
+  }
+
+  return <LinkLabel onClick={handleNavigate}>
     {brand.name}
   </LinkLabel>
 }

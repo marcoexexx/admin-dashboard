@@ -14,7 +14,10 @@
  - [x] use $transaction
  - [ ] use name: { in: [] }
  - [ ] with relation in list table view
- - [x] item cod
+ - [ ] item code
+
+ - [ ] user detail :: relation
+ - [ ] product list & detail :: relation
 
  - ## NORMAL
  - [ ] loading -> update form

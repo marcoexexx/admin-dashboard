@@ -5,7 +5,11 @@ export function RenderSalesCategoryLabel({salesCategory}: {salesCategory: ISales
   const navigate = useNavigate()
   const to = "/sales-categories/detail/" + salesCategory.id
 
-  return <LinkLabel onClick={() => navigate(to)}>
+  const handleNavigate = () => {
+    navigate(to)
+  }
+
+  return <LinkLabel onClick={handleNavigate}>
     {salesCategory.name}
   </LinkLabel>
 }

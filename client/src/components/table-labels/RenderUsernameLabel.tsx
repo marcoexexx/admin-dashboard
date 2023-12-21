@@ -7,7 +7,11 @@ export function RenderUsernameLabel({user, me}: {user: IUser, me: IUser}) {
     ? "/profile/detail/" + user.username
     : "/me"
 
-  return <LinkLabel onClick={() => navigate(to)}>
+  const handleNavigate = () => {
+    navigate(to)
+  }
+
+  return <LinkLabel onClick={handleNavigate}>
     {user.name}
   </LinkLabel>
 }

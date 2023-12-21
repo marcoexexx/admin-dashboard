@@ -6,10 +6,22 @@ export type ProductFilterPagination = {
   filter?: any,
   pagination?: Pagination,
   include?: {
-    likedUsers?: boolean,
+    likedUsers?: {
+      include?: {
+        user?: boolean
+      }
+    },
     brand?: boolean,
-    categories?: boolean,
-    salesCategory?: boolean,
+    categories?: {
+      include: {
+        category?: boolean
+      }
+    },
+    salesCategory?: {
+      include?: {
+        salesCategory?: boolean
+      }
+    },
     reviews?: boolean,
   },
   orderBy?: Record<

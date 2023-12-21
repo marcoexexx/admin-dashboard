@@ -228,7 +228,7 @@ const initialState: Store = {
     limit: 10,
     mode: "default",
     include: {
-      specification: true,
+      specification: false,
       brand: true,
       categories: {
         include: {

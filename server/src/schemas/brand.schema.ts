@@ -34,7 +34,7 @@ export const createMultiBrandsSchema = object({
 })
 
 export const getBrandSchema = object({
-  ...params
+  ...params,
 })
 
 export const updateBrandSchema = object({
