@@ -22,6 +22,8 @@ export type ProductFilterPagination = {
         salesCategory?: boolean
       }
     },
+    productRecommendations?: boolean,
+    specification?: boolean,
     reviews?: boolean,
   },
   orderBy?: Record<
@@ -58,6 +60,7 @@ export const createProductSchema = object({
       name: string({ required_error: "Specification name is required" }),
       value: string({ required_error: "Specification value is required" }),
     }).array(),
+    productRecommendations: string().array(),
     overview: string({ required_error: "Overview is required" })
       .min(1).max(5000),
     features: string({ required_error: "Features is required" })
@@ -78,7 +81,6 @@ export const createProductSchema = object({
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
     itemCode: string().nullable().optional(),
-    type: z.string().nullable().optional(),
     creatorId: string().nullable().optional(),
   })
 })
@@ -97,6 +99,7 @@ export const createMultiProductsSchema = object({
     price: number({ required_error: "Price is required "}),
     brandName: string({ required_error: "Brand is required" })
       .min(1).max(128),
+    productRecommendations: string().array(),
     title: string({ required_error: "Title is required" })
       .min(1).max(128),
     specification: string({ required_error: "Specifications name are required "}),  //  by splitting "\n"
@@ -121,7 +124,6 @@ export const createMultiProductsSchema = object({
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
     itemCode: string().nullable().optional(),
-    type: z.string().nullable().optional(),
     creatorId: string().nullable().optional(),
   }).array()
 })
@@ -140,6 +142,7 @@ export const updateProductSchema = object({
     price: number({ required_error: "Price is required "}),
     brandId: string({ required_error: "Brand is required" })
       .min(1).max(128),
+    productRecommendations: string().array(),
     title: string({ required_error: "Title is required" })
       .min(1).max(128),
     specification: object({
@@ -166,7 +169,6 @@ export const updateProductSchema = object({
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
     itemCode: string().nullable().optional(),
-    type: z.string().nullable().optional(),
     creatorId: string().nullable().optional(),
   })
 })
