@@ -1,0 +1,372 @@
+[{
+  "_id": {
+    "$oid": "6475a586d17eb3372c35388e"
+  },
+  "brand": "REMAX",
+  "type": "flashdrive",
+  "title": "REMAX 64GB Flash Drive with Key Chain(USB 3.0)",
+  "price": 42500,
+  "image": [
+    "https://64.media.tumblr.com/3134cd2c7dfb79db903d7d2302e0cada/53bc4932b79cd982-10/s1280x1920/62829cfd82bfc30f87b7b9de50a7f57492ded8f9.pnj",
+    "https://64.media.tumblr.com/dc0e6c41ce228a761acf5d5b652678bf/53bc4932b79cd982-c8/s1280x1920/b1646f6a456368490c364038770dd7d48ed5c71e.pnj",
+    "https://64.media.tumblr.com/875420baadc578ed99ad1c9060766abe/53bc4932b79cd982-63/s1280x1920/8d282df9ee444992c2c65a9188a674d0420d1f58.pnj"
+  ],
+  "specification": {
+    "Brand     ": "Remax",
+    "Capacity": "64GB",
+    "Disk chip": "Samsung made in Taiwan",
+    "Material ": "Metal and plastics",
+    "Transmission version": "3.0 ",
+    "Writing Speed": "17MByte/s",
+    "Verifying Speed": "34MByte/s",
+    "Working temperature": "0 - 60 Deg.C",
+    "Storage temperature": "-20 - 85 Deg.C",
+    "Package included": "1 x Flash Drive 1 x Lanyard"
+  },
+  "overview": "",
+  "features": "",
+  "warranty": "5 Years",
+  "category": [
+    "coupon"
+  ],
+  "color": [
+    "Black"
+  ],
+  "instock": "In-Stock",
+  "desc": "Support system: Win 2000 / XP / VISTA / 7, Mac, OS  Made of metal alloy, nice touch feeling, not easy to be broken  Key chain design, looks cool, gives you pleasure  Beautiful package, perfect gift, your friends would like it  Plug and play, no need to install drivers  Free sling, easy to carry",
+  "discount_item": true,
+  "discount": 22,
+  "dealer_price": 0,
+  "market_price": 54500,
+  "coupon_percent": 20,
+  "createdAt": {
+    "$date": "2023-05-30T07:28:06.439Z"
+  },
+  "updatedAt": {
+    "$date": "2023-12-06T04:33:28.248Z"
+  },
+  "__v": 0,
+  "display": true,
+  "price_unit": "MMK",
+  "sales_category": [
+    "thadingyut"
+  ],
+  "itemCode": []
+},
+{
+  "_id": {
+    "$oid": "6475a7c8d17eb3372c3538a0"
+  },
+  "brand": "REMAX",
+  "type": "flashdrive",
+  "title": "REMAX RX-801 Mini Key Chain  High Speed USB Flash Drive 128GB USB 3.0",
+  "price": 69500,
+  "image": [
+    "https://64.media.tumblr.com/3134cd2c7dfb79db903d7d2302e0cada/884b254c56bdcd96-5b/s1280x1920/8dde43a5fb01990b969e10b599bdc9e582c19ced.pnj",
+    "https://64.media.tumblr.com/86923ee9ecaeeef82f9cfe8c8465752e/884b254c56bdcd96-d1/s1280x1920/544e342a0a72de75439c0a647f4ed058c0f31109.pnj",
+    "https://64.media.tumblr.com/41547ac55f966bb3605ffb4065ff156b/884b254c56bdcd96-b9/s1280x1920/59f574647967d146361c28e2e23fc4eba5b51aa5.pnj"
+  ],
+  "specification": {
+    "Capacity": "128GB",
+    "Disk chip: ": "Samsung made in Taiwan",
+    "Material": "Metal and plastics",
+    "Transmission version": "3.0",
+    "Writing Speed ": "20MByte/s",
+    "Verifying Speed": "70MByte/s",
+    "Working temperature": "0 - 60 Deg.C",
+    "Storage temperature ": "-20 - 85 Deg.C",
+    "Package included": "1 x Flash Drive 1 x Lanyard",
+    "Brand": "Remax"
+  },
+  "overview": "",
+  "features": "",
+  "warranty": "5 Years",
+  "category": [
+    "coupon"
+  ],
+  "color": [
+    "Black"
+  ],
+  "instock": "In-Stock",
+  "desc": "Support system: Win 2000 / XP / VISTA / 7, Mac, OS  Made of metal alloy, nice touch feeling, not easy to be broken  Key chain design, looks cool, gives you pleasure  Beautiful package, perfect gift, your friends would like it  Plug and play, no need to install drivers  Free sling, easy to carry",
+  "discount_item": true,
+  "dealer_price": 0,
+  "market_price": 92000,
+  "coupon_percent": 20,
+  "createdAt": {
+    "$date": "2023-05-30T07:37:44.160Z"
+  },
+  "updatedAt": {
+    "$date": "2023-12-06T04:33:37.091Z"
+  },
+  "__v": 0,
+  "discount": 24,
+  "display": true,
+  "price_unit": "MMK",
+  "sales_category": [
+    "thadingyut"
+  ],
+  "itemCode": []
+},
+{
+  "_id": {
+    "$oid": "6475acc6d17eb3372c3538b2"
+  },
+  "brand": "REMAX",
+  "type": "memorystick",
+  "title": "REMAX RX-813 USB 2.0 Memory Stick 64GB ",
+  "price": 15700,
+  "image": [
+    "https://64.media.tumblr.com/ee7574ae05b2708aff2b844acd6b7ec0/586280f2da0bf3ef-29/s1280x1920/9a116ced2c0a86c74312ec1140ff631cd4113697.pnj",
+    "https://64.media.tumblr.com/71b94366f838009bea917f2c30947b2c/586280f2da0bf3ef-46/s1280x1920/eb4ebfa6f9f77bc5eac878d1199250f1a8c2dddf.pnj",
+    "https://64.media.tumblr.com/5a9bbcc98c433e2cdbbe1541d9d4cf8e/586280f2da0bf3ef-8c/s1280x1920/ad5ad0d120611c1cba8760e1a771c80244771fbd.pnj"
+  ],
+  "specification": {
+    "Model ": "RX-813",
+    "USB Version": "2.0",
+    "Memory": "64GB",
+    "Recording speed ": "7.25MB/s",
+    "Reading speed ": "21.3MB/s",
+    "Brand": "Remax"
+  },
+  "overview": "",
+  "features": "",
+  "warranty": "-",
+  "category": [
+    "coupon"
+  ],
+  "color": [
+    "White"
+  ],
+  "instock": "In-Stock",
+  "desc": "-",
+  "discount_item": true,
+  "dealer_price": 0,
+  "market_price": 22500,
+  "coupon_percent": 20,
+  "createdAt": {
+    "$date": "2023-05-30T07:59:02.448Z"
+  },
+  "updatedAt": {
+    "$date": "2023-12-06T04:33:16.707Z"
+  },
+  "__v": 0,
+  "discount": 30,
+  "display": true,
+  "price_unit": "MMK",
+  "sales_category": [
+    "thadingyut"
+  ],
+  "itemCode": [
+    "-"
+  ]
+},
+{
+  "_id": {
+    "$oid": "6475aedad17eb3372c3538c4"
+  },
+  "brand": "REMAX",
+  "type": "memorystick",
+  "title": "REMAX RX-813 USB 2.0 Memory Stick 128GB ",
+  "price": 36500,
+  "image": [
+    "https://64.media.tumblr.com/68e6999c6fdb3f800e3f12d5522ff123/0968e03261b8af10-8f/s1280x1920/3266e0fbd42c5dd476a57ce63749d6bd7e129d17.pnj",
+    "https://64.media.tumblr.com/b2d14f98e739468878803abccc12faa6/0968e03261b8af10-8a/s1280x1920/7f30d1a53115055376d2934b060a5272364cf74c.pnj",
+    "https://64.media.tumblr.com/c9ad74e4018a90bb4931f432571e4d0b/0968e03261b8af10-e1/s1280x1920/7621125c1374892d938a06fcf47510a389c27964.pnj"
+  ],
+  "specification": {
+    "Model ": "RX-813",
+    "USB Version": "2.0",
+    "Memory": "128GB",
+    "Recording speed": "7.25MB/s",
+    "Reading speed": "21.3MB/s"
+  },
+  "overview": "",
+  "features": "",
+  "warranty": "5 Years",
+  "category": [
+    "coupon"
+  ],
+  "color": [
+    "White"
+  ],
+  "instock": "In-Stock",
+  "desc": "-",
+  "discount_item": true,
+  "dealer_price": 0,
+  "market_price": 52500,
+  "coupon_percent": 20,
+  "createdAt": {
+    "$date": "2023-05-30T08:07:54.176Z"
+  },
+  "updatedAt": {
+    "$date": "2023-12-06T04:33:06.431Z"
+  },
+  "__v": 0,
+  "discount": 30,
+  "display": true,
+  "price_unit": "MMK",
+  "sales_category": [
+    "thadingyut"
+  ],
+  "itemCode": [
+    "01170046BK"
+  ]
+},
+{
+  "_id": {
+    "$oid": "648aa3d68e884b268a2d1afc"
+  },
+  "brand": "REMAX",
+  "type": "coolingfan",
+  "title": "T PRO TP-PF 1 Portable Fan 2400Mah, Portable Fan, Cooling Fan",
+  "price": 39500,
+  "image": [
+    "https://64.media.tumblr.com/ec1c44f6c72e4529cd689d336c61fadd/32964901ae35af3a-3e/s640x960/71bcccc7a587d295d01cb8d47a3eae9f07f63765.pnj",
+    "https://cdn.shopify.com/s/files/1/2957/8646/products/WeChatScreenshot_20220609152436_e97b044d-2676-4da8-97e0-aa7595e3e58f.png?v=1664821740",
+    "https://cdn.shopify.com/s/files/1/2957/8646/products/WeChatScreenshot_20220609152515_28ee5c24-3641-4a1a-aad6-81120459c086.png?v=1664821740"
+  ],
+  "specification": {
+    "Model": "T PRO TP-PF 1 PORTABLE FAN "
+  },
+  "overview": "-",
+  "features": "-",
+  "warranty": "-",
+  "category": [
+    "coupon"
+  ],
+  "color": [
+    "-"
+  ],
+  "instock": "Out of Stock",
+  "desc": "-",
+  "discount_item": false,
+  "discount": 0,
+  "dealer_price": 0,
+  "market_price": 39500,
+  "coupon_percent": 20,
+  "createdAt": {
+    "$date": "2023-06-15T05:38:30.839Z"
+  },
+  "updatedAt": {
+    "$date": "2023-11-01T07:47:39.277Z"
+  },
+  "__v": 0,
+  "display": false,
+  "price_unit": "MMK",
+  "sales_category": [
+    "thadingyut"
+  ],
+  "itemCode": [
+    "-"
+  ]
+},
+{
+  "_id": {
+    "$oid": "649bf610d8950ba197d3560e"
+  },
+  "brand": "Redmi",
+  "type": "Tablet",
+  "title": "Redmi Pad Wi-Fi (4GB/ 128GB), Global, Graphite Gray, Mint Green, 1 Year Warranty",
+  "price": 552500,
+  "image": [
+    "https://64.media.tumblr.com/6ba192124a8e676b1c83c83f5510eee8/7e1a34229d826b56-a0/s500x750/27fd36c88477dd3e151a8d80b58b788a501f3ad4.pnj",
+    "https://64.media.tumblr.com/c357948a7b69b9d9197ac4faf972c1d3/96ba8d7d8a8ea6c4-50/s1280x1920/dd4c1824cdad5a6ac9744003764700b2fd95d43a.jpg",
+    "https://64.media.tumblr.com/c357948a7b69b9d9197ac4faf972c1d3/96ba8d7d8a8ea6c4-50/s1280x1920/dd4c1824cdad5a6ac9744003764700b2fd95d43a.jpg"
+  ],
+  "specification": {
+    "Display ": "Size: 10.61\" display, Resolution: 1200 x 2000, Refresh rate: 90Hz, Brightness : 400nits (typ), Over 1 billion colors",
+    "Processor": "MediaTek Helio G99, Up to 2.2GHz, 6nm process",
+    "Camera": "Rear camera: 8MP, Front camera: 8MP, 105° FOV with FocusFrame",
+    "Speaker": "4 speakers , Dolby Atmos® supported",
+    "Storage & RAM": "4GB+128GB, LPDDR4X RAM + UFS 2.2 storage",
+    "Battery & Charging": "8000mAh (typ), 18W fast charging",
+    "Connectivity": "Bluetooth 5.3, Wi-Fi 5 2.4GHz/5GHz, USB-C",
+    "Operating System": "MIUI for Pad",
+    "Package contents": "Redmi Pad / Adapter / USB Type-C Cable / SD Card Eject Tool / Quick Start Guide / Warranty Card",
+    "Colour": " Graphite Gray, Mint Green"
+  },
+  "overview": "-",
+  "features": "",
+  "warranty": "1 Year",
+  "category": [
+    "coupon"
+  ],
+  "color": [
+    "Moonlight Silver"
+  ],
+  "instock": "IN-STOCK",
+  "desc": "-",
+  "discount_item": true,
+  "dealer_price": 1,
+  "market_price": 615000,
+  "coupon_percent": 3,
+  "display": true,
+  "createdAt": {
+    "$date": "2023-06-28T08:57:52.717Z"
+  },
+  "updatedAt": {
+    "$date": "2023-11-10T09:20:51.211Z"
+  },
+  "__v": 0,
+  "discount": 10,
+  "price_unit": "MMK",
+  "sales_category": [
+    "11.11"
+  ],
+  "itemCode": []
+},
+{
+  "_id": {
+    "$oid": "64d343204a339f932e083760"
+  },
+  "brand": "VIAVI",
+  "type": "Power Meter",
+  "title": "SmartPocket V2 Broadband Power Meters (OLP-35V2)",
+  "price": 1590000,
+  "image": [
+    "https://64.media.tumblr.com/b20b693ad6833310d4651a98c23b7fbc/2cec599a0a0c59f1-d3/s500x750/25da91e8f74e625992d67f3b3d782e5e909fbd32.pnj",
+    "https://64.media.tumblr.com/a84e127cbbe6ff85db21f5e8795eb97e/f67700a62acfedb9-dd/s500x750/169be07d84a703d3f4a91dbea88951418336f6da.pnj",
+    "https://64.media.tumblr.com/968efa8f77e61e33d5b95307b396b14f/281d76bc9b9043b7-6b/s1280x1920/7dc583dccedee409f312e6d8e01e37c505e7f675.pnj"
+  ],
+  "specification": {
+    "Model": "OLP-35V2",
+    "Photo Diode": "InGaAs ",
+    "Wavelength Range ": "800…1650 nm",
+    "Display Range ": "800…1650 nm, step size 1 nm",
+    "Resolution ": "0.01 dB, 0.001 μW",
+    "Power Range ": "-65…+10 dBm ",
+    "Measurement Uncertainty": "± 0.2 dB (± 5%) at ref. conditions",
+    "Number of Calibrated Wavelengths": "8 (850, 980, 1310, 1490, 1550, 1577, 1625, 1650 nm)",
+    "Tone Detection ": "270 Hz, 330 Hz, 1 kHz, 2 kHz",
+    "Power Supply Alkaline Battery": "3AA 1.5V Batteries",
+    "max. Power Level": "+16 dBm "
+  },
+  "overview": "VIAVI Solutions new OLP-3xV2 Broadband Power Meters quickly, easily, and conveniently measure optical power levels and loss in fiber networks and fit\nperfectly in your pocket. Easy-to-use for technicians at any skill level SmartPocket V2 Broadband Power Meters (PM) complement VIAVI optical light sources (OLS) for insertion loss and continuity testing in both multimode and single-mode networks in all environments. They offer a dedicated and cost-\noptimized solution for testing and troubleshooting fiber in the field. The smart and rugged OLP-3xV2 also includes unprecedented data storage capacity supported by result downloads to a PC or upload to the cloud.",
+  "features": "",
+  "warranty": "1 Year",
+  "category": [
+    "coupon"
+  ],
+  "color": [
+    "0"
+  ],
+  "instock": "IN-STOCK",
+  "desc": "-",
+  "discount_item": true,
+  "discount": 10,
+  "dealer_price": 1,
+  "market_price": 1766000,
+  "coupon_percent": 0,
+  "display": true,
+  "createdAt": {
+    "$date": "2023-08-09T07:41:20.335Z"
+  },
+  "updatedAt": {
+    "$date": "2023-10-17T04:11:36.142Z"
+  },
+  "__v": 0,
+  "price_unit": "MMK",
+  "sales_category": [],
+  "itemCode": []
+}]
