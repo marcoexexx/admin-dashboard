@@ -45,7 +45,7 @@ export function RegisterForm() {
         message: "Success create an acount: check your email",
         severity: "success"
       } })
-      console.log({ _devOnly: { redirectUrl: data.redirectUrl } })
+      if (import.meta.env.MODE === "development") console.log({ _devOnly: { redirectUrl: data.redirectUrl } })
       navigate(from)
     },
     onError: () => {
