@@ -2,6 +2,7 @@ export const config = {
   port: process.env.PORT,
   nodeEnv: process.env.NODE_ENV,
   logLevel: process.env.LOG_LEVEL,
+  origin: process.env.ORIGIN,
 
   // postgresConfig: {
   //   url: process.env.DATABASE_URL
