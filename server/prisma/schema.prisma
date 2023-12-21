@@ -185,7 +185,7 @@ model ProductRecommendation {
   images      String[]
   totalPrice  Int
   description String
-  Product     Product? @relation(fields: [productId], references: [id])
+  product     Product? @relation(fields: [productId], references: [id])
   productId   String?  @db.ObjectId
 
   createdAt DateTime @default(now())
