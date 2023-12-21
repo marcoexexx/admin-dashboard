@@ -170,6 +170,8 @@ type PageMenu =
   | "overview"
   | "inventory"
   | "sales"
+  | "orders"
+  | "settings"
 
 type ExculdeWildcard<T extends string> = T extends "*" ? never : T
 type MenuPath<T extends string> = `/${T}`
@@ -267,7 +269,7 @@ export default function SlidebarMenu() {
               <ListItem component="div">
                 <MuiButton
                   className={clsx({"active": currentMenu === "/orders" })}
-                  onClick={handleOpenMenu("/sales")}
+                  onClick={handleOpenMenu("/orders")}
                   startIcon={<GradingIcon />}
                 >
                   Orders
@@ -276,7 +278,7 @@ export default function SlidebarMenu() {
               <ListItem component="div">
                 <MuiButton
                   className={clsx({"active": currentMenu === "/settings" })}
-                  onClick={handleOpenMenu("/sales")}
+                  onClick={handleOpenMenu("/settings")}
                   startIcon={<SettingsIcon />}
                 >
                   Settings
