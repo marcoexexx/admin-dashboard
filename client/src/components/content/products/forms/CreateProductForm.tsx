@@ -52,7 +52,6 @@ const createProductSchema = object({
   status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
   itemCode: string().nullable().optional(),
-  type: z.string().nullable().optional(),
   creatorId: string().nullable().optional(),
 })
 
@@ -234,13 +233,8 @@ export function CreateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField focused fullWidth {...register("type")} label="Product type" error={!!errors.type} helperText={!!errors.type ? errors.type.message : ""} />
-            </Box>
-          </Grid>
-
-          <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <BrandInputField />
+              <TextField fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
             </Box>
           </Grid>
 
@@ -254,7 +248,6 @@ export function CreateProductForm() {
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <SalesCategoryMultiInputField />
-              <TextField fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
             </Box>
           </Grid>
 

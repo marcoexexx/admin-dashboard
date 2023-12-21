@@ -53,7 +53,6 @@ const updateProductSchema = object({
   status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
   itemCode: string().nullable().optional(),
-  type: z.string().nullable().optional(),
   creatorId: string().nullable().optional(),
 })
 
@@ -66,7 +65,6 @@ const toUpdateFields: (keyof UpdateProductInput)[] = [
   "categories", "marketPrice", 
   "colors", "instockStatus", 
   "description", "features", 
-  "type", "brandId", 
   "quantity", "salesCategory", 
   "discount", "dealerPrice",
   "isPending"
@@ -282,13 +280,8 @@ export function UpdateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField focused fullWidth {...register("type")} label="Product type" error={!!errors.type} helperText={!!errors.type ? errors.type.message : ""} />
-            </Box>
-          </Grid>
-
-          <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <BrandInputField updateField />
+              <TextField focused fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
             </Box>
           </Grid>
 
@@ -302,7 +295,6 @@ export function UpdateProductForm() {
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <SalesCategoryMultiInputField updateField />
-              <TextField focused fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
             </Box>
           </Grid>
 

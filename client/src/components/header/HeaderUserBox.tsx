@@ -2,14 +2,16 @@ import { useStore } from "@/hooks"
 import { Avatar, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
 import { useRef, useState } from "react"
 import { MuiButton } from "@/components/ui"
-import InboxTwoToneIcon from '@mui/icons-material/InboxTwoTone'
-import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone'
-import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone'
-import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone'
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { getMeFn, logoutUserFn } from "@/services/authApi"
 import { queryClient } from ".."
 import { useNavigate } from "react-router-dom"
+import InboxTwoToneIcon from '@mui/icons-material/InboxTwoTone'
+import SecurityIcon from '@mui/icons-material/Security';
+import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone'
+import GradingIcon from '@mui/icons-material/Grading';
+import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone'
+import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone'
 
 const UserBoxButton = styled(Button)(({theme}) => ({
   padding: theme.spacing(1),
@@ -139,11 +141,25 @@ export default function HeaderUserBox() {
             <ListItemText primary="My Profile" />
           </ListItemButton>
 
-          <ListItemButton onClick={handleNavigate("#")}>
+          <ListItemButton onClick={handleNavigate("#manager")}>
             <ListItemIcon>
               <InboxTwoToneIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText primary="Manager" />
+          </ListItemButton>
+
+          <ListItemButton onClick={handleNavigate("#access-logs")}>
+            <ListItemIcon>
+              <SecurityIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Access logs" />
+          </ListItemButton>
+
+          <ListItemButton onClick={handleNavigate("#orders-logs")}>
+            <ListItemIcon>
+              <GradingIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Orders" />
           </ListItemButton>
         </List>
 

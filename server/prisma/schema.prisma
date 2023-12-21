@@ -147,34 +147,46 @@ enum PriceUnit {
 }
 
 model Product {
-  id            String                 @id @default(auto()) @map("_id") @db.ObjectId
-  brand         Brand                  @relation(fields: [brandId], references: [id])
-  brandId       String                 @db.ObjectId
-  title         String
-  price         Int
-  images        String[]
-  overview      String
-  specification Specification[]
-  features      String
-  warranty      Int // By years
-  categories    ProductCategory[]
-  colors        String[]
-  instockStatus InstockStatus          @default(AskForStock)
-  description   String
-  type          String? // What is Type, Do you really need it?
-  dealerPrice   Int
-  marketPrice   Int
-  discount      Int
-  status        Status                 @default(Draft)
-  priceUnit     PriceUnit              @default(MMK)
-  likedUsers    Favorites[]
-  quantity      Int
-  reviews       Review[]
-  orders        Order[]
-  creator       User?                  @relation("CreatedBy", fields: [creatorId], references: [id])
-  creatorId     String?                @db.ObjectId
-  itemCode      String?
-  salesCategory ProductSalesCategory[]
+  id                     String                  @id @default(auto()) @map("_id") @db.ObjectId
+  brand                  Brand                   @relation(fields: [brandId], references: [id])
+  brandId                String                  @db.ObjectId
+  title                  String
+  price                  Int
+  images                 String[]
+  overview               String
+  specification          Specification[]
+  features               String
+  warranty               Int // By years
+  categories             ProductCategory[]
+  colors                 String[]
+  instockStatus          InstockStatus           @default(AskForStock)
+  description            String
+  dealerPrice            Int
+  marketPrice            Int
+  discount               Int
+  status                 Status                  @default(Draft)
+  priceUnit              PriceUnit               @default(MMK)
+  likedUsers             Favorites[]
+  quantity               Int
+  reviews                Review[]
+  orders                 Order[]
+  creator                User?                   @relation("CreatedBy", fields: [creatorId], references: [id])
+  creatorId              String?                 @db.ObjectId
+  itemCode               String?
+  salesCategory          ProductSalesCategory[]
+  productRecommendations ProductRecommendation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductRecommendation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  images      String[]
+  totalPrice  Int
+  description String
+  product     Product? @relation(fields: [productId], references: [id])
+  productId   String?  @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

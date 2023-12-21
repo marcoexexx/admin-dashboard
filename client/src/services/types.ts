@@ -53,6 +53,18 @@ type ProductSpecification = {
   updatedAt: string | Date
 }
 
+type ProductRecommendations = {
+  id: string
+  images: string[]
+  totalPrice: number
+  description: string
+  product: IProduct
+  productId: string
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
 interface IProduct {
   id: string;
   brandId: string;
@@ -82,10 +94,10 @@ interface IProduct {
   overview: string;
   features: string;
   warranty: number;
+  productRecommendations: ProductRecommendations;
   colors: string[];
   instockStatus: InstockStatus;
   description: string;
-  type?: string;
   dealerPrice: number;
   marketPrice: number;
   discount: number;

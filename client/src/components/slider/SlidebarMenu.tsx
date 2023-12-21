@@ -11,6 +11,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import GradingIcon from '@mui/icons-material/Grading';
+import SettingsIcon from '@mui/icons-material/Settings';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -168,6 +170,8 @@ type PageMenu =
   | "overview"
   | "inventory"
   | "sales"
+  | "orders"
+  | "settings"
 
 type ExculdeWildcard<T extends string> = T extends "*" ? never : T
 type MenuPath<T extends string> = `/${T}`
@@ -260,6 +264,24 @@ export default function SlidebarMenu() {
                   startIcon={<LocalOfferIcon />}
                 >
                   Sales
+                </MuiButton>
+              </ListItem>
+              <ListItem component="div">
+                <MuiButton
+                  className={clsx({"active": currentMenu === "/orders" })}
+                  onClick={handleOpenMenu("/orders")}
+                  startIcon={<GradingIcon />}
+                >
+                  Orders
+                </MuiButton>
+              </ListItem>
+              <ListItem component="div">
+                <MuiButton
+                  className={clsx({"active": currentMenu === "/settings" })}
+                  onClick={handleOpenMenu("/settings")}
+                  startIcon={<SettingsIcon />}
+                >
+                  Settings
                 </MuiButton>
               </ListItem>
             </List>
