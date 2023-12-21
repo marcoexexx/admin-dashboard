@@ -16,7 +16,7 @@ from libs.brand_parser import BrandParser
 
 
 INPUT_RAW_DATA = Path("./data/laptops.json")
-OUTPUT_RAW_DATA = Path("./products[:2].json")
+OUTPUT_RAW_DATA = Path("./products.json")
 
 logging.basicConfig(
     format="[ %(levelname)s::%(asctime)s ] %(message)s",
@@ -44,7 +44,7 @@ def product_export() -> None:
 
     product = installer.install(serializer)
 
-    excel_handler = ExcelHandler(data=product[:2], save_as=Path(OUTPUT_RAW_DATA.with_suffix(".xlsx")))
+    excel_handler = ExcelHandler(data=product, save_as=Path(OUTPUT_RAW_DATA.with_suffix(".xlsx")))
     excel_handler.export()
 
 
