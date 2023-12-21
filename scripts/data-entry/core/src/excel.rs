@@ -1,10 +1,12 @@
-use std::{io::Cursor, fs::File};
+use std::io::Cursor;
+use std::fs::{self, File};
+use std::path::Path;
 
 use polars::io::{json::JsonReader, SerReader, csv::CsvWriter, SerWriter};
 use serde::Serialize;
 
 
-pub fn export_excel<T>(products: &Vec<T>) 
+pub fn export_excel<T>(products: &Vec<T>, path: &Path) 
 where
     T: Serialize
 {
@@ -15,7 +17,11 @@ where
 
     println!("{}", df);
 
-    let mut file = File::create("some.csv").expect("Failed: could not create csv");
+    let dir = path.parent().expect("Failed: must provide output dir.");
+
+    if !dir.is_dir() { fs::create_dir(Path::new(dir)).expect("Failed: could not create dir."); }
+
+    let mut file = File::create(path).expect("Failed: could not create csv");
 
     CsvWriter::new(&mut file).finish(&mut df).expect("Faield: could not write csv");
 }

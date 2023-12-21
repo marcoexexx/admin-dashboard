@@ -2,7 +2,8 @@
 resolver = '2'
 members = [
   "core",
-  "gui"
+  "gui",
+  "web"
 ]
 
 [workspace.package]

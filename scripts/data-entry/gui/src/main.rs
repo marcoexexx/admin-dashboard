@@ -1,4 +1,10 @@
+use std::path::Path;
+
 use data_entry::{excel::export_excel, product::Product, price_unit::PriceUnit};
+
+
+const OUTPUT_DIR: &str = "cvs_files";
+
 
 fn main() {
     let p1 = Product::builder()
@@ -12,5 +18,8 @@ fn main() {
 
     let products = vec![p1];
 
-    export_excel(&products);
+    let mut file = Path::new(OUTPUT_DIR).join("products");
+    file.set_extension("csv");
+
+    export_excel(&products, &file);
 }
