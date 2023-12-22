@@ -21,6 +21,7 @@ jobs:
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_SERVER: ${{ secrets.SSH_SERVER }}
+          SSH_PUB_KEY: ${{ secrets.SSH_PUB_KEY }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh/
@@ -32,4 +33,4 @@ jobs:
 
       - name: copy builds to server
         run: |
-          ssh ${{ secrets.SERVER }} "bash -s" < "./deploy.sh"
+          ssh ${SSH_SERVER} "bash -s" < "./deploy.sh"
