@@ -6,7 +6,7 @@
   "scripts": {
     "start:dev": "NODE_ENV=development ts-node-dev --respawn --transpile-only --exit-child src/app.ts",
     "test": "NODE_ENV=test mocha --exit -r ts-node/register ./tests/**/*.test.ts",
-    "start:prod": "pnpm run build && NODE_ENV=production ts-node-dev --respawn --transpile-only --exit-child src/app.ts",
+    "start:prod": "pnpm run build && NODE_ENV=production pm2 start ./dist/app.js",
     "build": "tsc"
   },
   "keywords": [],

@@ -85,8 +85,9 @@ app.get("/ping", async (_req: Request, res: Response, _next: NextFunction) => {
 })
 
 app.get("/healthcheck", async (_: Request, res: Response, next: NextFunction) => {
+  let env = process.env.NODE_ENV
   await redisClient.get("try")
-    .then((message) => res.status(200).json({ message }))
+    .then((message) => res.status(200).json({ message, env }))
     .catch(errorHandler(500, next));
 })
 

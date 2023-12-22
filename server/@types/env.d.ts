@@ -1,5 +1,6 @@
 namespace NodeJS {
   interface ProcessEnv {
+    HOST: string,
     PORT: number,
     NODE_ENV: "production" | "development" | "test",
     LOG_LEVEL: "log" | "info" | "debug" | "warn" | "error",

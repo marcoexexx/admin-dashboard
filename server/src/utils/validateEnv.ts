@@ -3,6 +3,7 @@ import { cleanEnv, port, str } from "envalid"
 
 const validateEnv = () => {
   cleanEnv(process.env, {
+    HOST: str(),
     PORT: port(),
     NODE_ENV: str(),
     LOG_LEVEL: str(),
