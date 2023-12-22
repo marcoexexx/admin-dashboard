@@ -17,20 +17,14 @@ jobs:
       - name: Checkout 🛎
         uses: actions/checkout@master
 
-      - name: Setup SSH
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_SERVER: ${{ secrets.SSH_SERVER }}
-          SSH_PUB_KEY: ${{ secrets.SSH_PUB_KEY }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh/
-          echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
-          echo "${SSH_PUB_KEY}" > ~/.ssh/id_rsa.pub
-          chmod 600 ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa.pub
-          touch ~/.ssh/known_hosts && chmod 600 ~/.ssh/known_hosts
-          ssh-keyscan -H ${SSH_HOST} >> ~/.ssh/known_hosts
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
+
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       # - name: copy builds to server
       #   run: |
