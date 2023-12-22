@@ -6,9 +6,9 @@ git pull origin main
 cd server
 pnpm dlx prisma generate
 pnpm install
-pnpm run build
+# pnpm run build
 
 # client 
 cd ../client
 pnpm install
-pnpm run build
+# pnpm run build
