@@ -18,13 +18,17 @@ jobs:
         uses: actions/checkout@master
 
       - name: Setup SSH
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_SERVER: ${{ secrets.SSH_SERVER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_PUB_KEY }}" > ~/.ssh/id_rsa.pub
+          echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
+          echo "${SSH_PUB_KEY}" > ~/.ssh/id_rsa.pub
           chmod 600 ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa.pub
-          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${SSH_HOST} >> ~/.ssh/known_hosts
 
       - name: copy builds to server
         run: |
