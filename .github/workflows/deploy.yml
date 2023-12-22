@@ -1,29 +1,25 @@
-# Add this to your .github/workflows/main.yml file
-
-name: CI/CD
+name: Deploy to Remote Server
 
 on:
   push:
     branches:
-      - main
+      - main  # Change this to your main branch name
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa ip >> ~/.ssh/known_hosts
 
-
-      - name: Deploy to SSH server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          scripts: |
-            bash ./deploy.sh
+      - name: Deploy to Remote Server
+        run: |
+          ssh ${{ secrets.SSH_SERVER }} 'bash -s' < deploy.sh
