@@ -29,8 +29,8 @@ jobs:
           echo "${SSH_PUB_KEY}" > ~/.ssh/id_rsa.pub
           chmod 600 ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa.pub
-          ssh-keyscan -H ${SSH_HOST} >> ~/.ssh/known_hosts
+          # ssh-keyscan -H ${SSH_HOST} >> ~/.ssh/known_hosts
 
-      - name: copy builds to server
-        run: |
-          ssh ${SSH_SERVER} "bash -s" < "./deploy.sh"
+      # - name: copy builds to server
+      #   run: |
+      #     ssh ${SSH_SERVER} "bash -s" < "./deploy.sh"
