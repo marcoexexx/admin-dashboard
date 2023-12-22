@@ -24,5 +24,6 @@ jobs:
           SSH_SERVER: ${{ secrets.SSH_SERVER }}
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
         run: |
-          chmod +x ./deploy.sh
-          sshpass -p '$SSH_PASSWORD' ssh "$SSH_SERVER" 'bash -s' < ./deploy.sh
+          # chmod +x ./deploy.sh
+          # sshpass -p '$SSH_PASSWORD' ssh "$SSH_SERVER" 'bash -s' < ./deploy.sh
+          cat ./deploy.sh
