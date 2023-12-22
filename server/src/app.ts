@@ -9,6 +9,9 @@ const path = env === "development"
 dotenv.config({ path })
 
 
+import https from 'https'
+import fs from 'fs'
+
 import express, { NextFunction, Request, Response } from 'express'
 import cors from 'cors'
 
@@ -123,7 +126,15 @@ app.use(
 const port = getConfig("port") || 8000;
 
 if (require.main === module) {
-  const server = app.listen(port, () => {
+  const httpsServer = https.createServer(
+    {
+      key: fs.readFileSync("certificate/key.pem", "utf8"),
+      cert: fs.readFileSync("certificate/cert.pem", "utf8")
+    }, 
+    app
+  )
+
+  const server = httpsServer.listen(port, () => {
     logging.info(`a ${getConfig("nodeEnv")} deplyoment.`)
     logging.log("Server is running on port", port)
   })
