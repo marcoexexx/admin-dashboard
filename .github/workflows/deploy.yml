@@ -1,25 +1,31 @@
-name: Deploy to Remote Server
+name: Deploy
 
 on:
   push:
     branches:
-      - main  # Change this to your main branch name
-
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - name: Checkout 🛎
+        uses: actions/checkout@master
 
       - name: Setup SSH
         run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PUB_KEY }}" > ~/.ssh/id_rsa.pub
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -t rsa ip >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_rsa.pub
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to Remote Server
+      - name: copy builds to server
         run: |
-          ssh ${{ secrets.SSH_SERVER }} 'bash -s' < deploy.sh
+          ssh ${{ secrets.SERVER }} "bash -s" < "./deploy.sh"
