@@ -1,26 +1,26 @@
-name: Deploy to Server
+# Add this to your .github/workflows/main.yml file
+
+name: CI/CD
 
 on:
   push:
     branches:
       - main
 
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check Repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install SSH Key
-        run: |
-          mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -t rsa 192.168.100.253 >> ~/.ssh/known_hosts
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
 
-      - name: Deploy to Server
-        run: |
-          ssh rangoondiscount@192.168.100.253 'bash -s' < deploy.sh
+      - name: Deploy to SSH server
+        env:
+          SSH_SERVER: ${{ secrets.SSH_PASSWORD }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        run: sshpass -p "$SSH_PASSWORD" ssh "$SSH_SERVER" 'bash -s' < ./deploy.sh
+
