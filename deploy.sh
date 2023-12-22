@@ -1,14 +1,23 @@
-cd admin-dashboard
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" 
+
+ cd admin-dashboard
 
 git pull origin main
 
 # server
 cd server
+echo "[ INSTALL ] Installing backend dependencies...\n"
 pnpm dlx prisma generate
 pnpm install
-# pnpm run build
+
+echo "[ BUILD ] building server...\n"
+pnpm run build
 
 # client 
 cd ../client
+echo "[ INSTALL ] Installing backend dependencies...\n"
 pnpm install
-# pnpm run build
+
+echo "[ BUILD ] building client...\n"
+pnpm run build
