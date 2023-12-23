@@ -38,10 +38,36 @@ model Exchange {
   updatedAt DateTime  @updatedAt
 }
 
+model Coupon {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  points    Int
+  dolla     Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @unique @db.ObjectId
+  image     String
+  reward    Reward? @relation(fields: [rewardId], references: [id])
+  rewardId  String? @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reward {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  user    User?
+  points  Int
+  coupons Coupon[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
   id               String       @id @default(auto()) @map("_id") @db.ObjectId
   name             String
   email            String
+  reward           Reward       @relation(fields: [rewardId], references: [id])
+  rewardId         String       @unique @db.ObjectId
   username         String       @unique
   password         String
   role             Role         @default(User)
@@ -175,6 +201,7 @@ model Product {
   itemCode               String?
   salesCategory          ProductSalesCategory[]
   productRecommendations ProductRecommendation[]
+  coupon                 Coupon?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

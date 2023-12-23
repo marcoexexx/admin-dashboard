@@ -58,7 +58,7 @@ export default function Register() {
               <img
                 alt="register"
                 height={360}
-                src="/public/static/reception-desk.jpg"
+                src="/static/reception-desk.jpg"
               />
             </Box>
           </Container>

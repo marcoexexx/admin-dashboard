@@ -53,6 +53,11 @@ export async function registerUserHandler(
       password: hashedPassword,
       role: "User" as Role,
       verified: false,
+      reward: {
+        create: {
+          points: 0,
+        }
+      },
       verificationCode: undefined as undefined | string
     }
 
@@ -65,7 +70,7 @@ export async function registerUserHandler(
     // check user already exists
     const userExists = await db.user.findUnique({ 
       where: {
-        email
+        email,
       }
     })
     if (userExists) return next(new AppError(409, "User already exists")) 
@@ -75,7 +80,9 @@ export async function registerUserHandler(
     data.verificationCode = hashedVerificationCode
     //
     // Crete new user
-    const user = await db.user.create({ data });
+    const user = await db.user.create({
+      data
+    });
     const redirectUrl = `${getConfig('origin')}/verify-email/${verificationCode}`
 
 
@@ -174,6 +181,11 @@ export async function googleOAuthHandler(
       where: { email },
       create: {
         createdAt: new Date(),
+        reward: {
+          create: {
+            points: 0,
+          }
+        },
         name,
         username: generateRandomUsername(12),
         email,
