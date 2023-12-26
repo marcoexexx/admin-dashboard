@@ -45,8 +45,14 @@ export function ExchangesFilterForm() {
         to,
         from,
         rate,
-        startDate: startDate?.toISOString(),
-        endDate: endDate?.toISOString(),
+        startDate: (() => {
+          try { return startDate?.toISOString() }
+          catch (_) { return undefined }
+        })(),
+        endDate: (() => {
+          try { return endDate?.toISOString() }
+          catch (_) { return undefined }
+        })()
       },
     } })
   }

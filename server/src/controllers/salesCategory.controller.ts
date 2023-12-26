@@ -58,10 +58,15 @@ export async function getSalesCategoryHandler(
 ) {
   try {
     const { salesCategoryId } = req.params
+
+    const { include: includes } = convertNumericStrings(req.query)
+    const include = convertStringToBoolean(includes) as SalesCategoryFilterPagination["include"]
+
     const salesCategory = await db.salesCategory.findUnique({
       where: {
         id: salesCategoryId
-      }
+      },
+      include
     })
 
     res.status(200).json(HttpDataResponse({ salesCategory }))

@@ -3,7 +3,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import Loader from "./loader";
 import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
-import { brandPermissionsLoader, categoryPermissionsLoader, exchangePermissionsLoader, productPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
+import { brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, productPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 const HomePage = Loader(lazy(() => import("@/pages/home/Home")))
@@ -11,6 +11,11 @@ const HomePage = Loader(lazy(() => import("@/pages/home/Home")))
 // Status
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))
 const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.page")))
+
+// coupons
+const ListCouponPage = Loader(lazy(() => import("@/pages/coupons/ListCoupon")))
+const CreateCouponPage = Loader(lazy(() => import("@/pages/coupons/CreateCoupon")))
+const UpdateCouponPage = Loader(lazy(() => import("@/pages/coupons/UpdateCoupon")))
 
 // exchanges
 const ListExchangePage = Loader(lazy(() => import("@/pages/exchanges/ListExchange")))
@@ -80,6 +85,36 @@ const routes = createBrowserRouter([
             path: "me",
             loader: meProfileLoader,
             Component: ManagementUserProfilePage
+          },
+
+          /// COUPONS ROUTES
+          {
+            path: "coupons",
+            loader: couponPermissionsLoader,
+            children: [
+              {
+                path: "",
+                element: <Navigate to="/coupons/list" />
+              },
+              {
+                path: "list",
+                Component: ListCouponPage
+              },
+              {
+                path: "",
+                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                children: [
+                  {
+                    path: "create",
+                    Component: CreateCouponPage
+                  },
+                  {
+                    path: "update/:couponId",
+                    Component: UpdateCouponPage
+                  }
+                ]
+              },
+            ]
           },
 
           /// EXCHANGES ROUTES

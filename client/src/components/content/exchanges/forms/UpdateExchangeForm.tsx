@@ -66,13 +66,11 @@ export function UpdateExchangeForm() {
 
   const methods = useForm<UpdateExchangeInput>({
     resolver: zodResolver(updateExchangeSchema),
-    defaultValues: {
-      date: dayjs()
-    }
   })
 
   useEffect(() => {
     if (isSuccessFetchExchange && exchange && fetchStatusExchange === "idle") {
+      methods.setValue("date", dayjs(exchange.date))
       methods.setValue("to", exchange.to)
       methods.setValue("from", exchange.from)
       methods.setValue("rate", exchange.rate)

@@ -11,6 +11,9 @@ type PermissionKey =
   | "sales-categor-permissions"
   | "brand-permissions"
   | "product-permissions"
+  | "orders-permissions"
+  | "access-logs-permissions"
+  | "coupons-permissions"
 
 interface Args {
   key: PermissionKey,

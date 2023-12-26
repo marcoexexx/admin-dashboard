@@ -83,7 +83,7 @@ export function CategoriesListTable(props: CategoriesListTableProps) {
   }
 
   const handleOnImport = (data: CreateCategoryInput[]) => {
-    convertToExcel(data, "Brands")
+    convertToExcel(data, "Categories")
       .then(excelBuffer => onCreateManyCategories(excelBuffer))
       .catch(err => dispatch({
         type: "OPEN_TOAST",

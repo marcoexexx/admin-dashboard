@@ -6,12 +6,12 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { getMeFn, logoutUserFn } from "@/services/authApi"
 import { queryClient } from ".."
 import { useNavigate } from "react-router-dom"
-import InboxTwoToneIcon from '@mui/icons-material/InboxTwoTone'
 import SecurityIcon from '@mui/icons-material/Security';
 import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone'
 import GradingIcon from '@mui/icons-material/Grading';
 import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone'
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone'
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 const UserBoxButton = styled(Button)(({theme}) => ({
   padding: theme.spacing(1),
@@ -141,11 +141,11 @@ export default function HeaderUserBox() {
             <ListItemText primary="My Profile" />
           </ListItemButton>
 
-          <ListItemButton onClick={handleNavigate("#manager")}>
+          <ListItemButton onClick={handleNavigate("#wishlist")}>
             <ListItemIcon>
-              <InboxTwoToneIcon fontSize="small" />
+              <FavoriteIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Manager" />
+            <ListItemText primary="Wishlist" />
           </ListItemButton>
 
           <ListItemButton onClick={handleNavigate("#access-logs")}>

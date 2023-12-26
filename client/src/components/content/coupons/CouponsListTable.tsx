@@ -5,21 +5,41 @@ import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { FormModal } from "@/components/forms";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
-
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
+import { CouponsActions } from ".";
 import { useNavigate } from "react-router-dom";
-import { CreateSalesCategoryInput } from "./forms";
-import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
-import { SalesCategoriesActions } from "./SalesCategoriesActions";
+import { getCouponsPermissionsFn } from "@/services/permissionsApi";
+import { RenderImageLabel, RenderProductLabel } from "@/components/table-labels";
+import { CreateCouponInput } from "./forms";
 
 
-const columnData: TableColumnHeader<IBrand>[] = [
+const columnData: TableColumnHeader<Coupon>[] = [
   {
-    id: "name",
+    id: "label",
     align: "left",
-    name: "Name"
+    name: "Label"
+  },
+  {
+    id: "points",
+    align: "left",
+    name: "Points"
+  },
+  {
+    id: "dolla",
+    align: "left",
+    name: "Dolla"
+  },
+  {
+    id: "product",
+    align: "left",
+    name: "Product"
+  },
+  {
+    id: "isUsed",
+    align: "right",
+    name: "Used"
   },
 ]
 
@@ -31,23 +51,23 @@ const columnHeader = columnData.concat([
   }
 ])
 
-interface SalesCategoriesListTableProps {
-  salesCategoiries: ISalesCategory[]
+interface CouponsListTableProps {
+  coupons: Coupon[]
   count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManySalesCategories: (buf: ArrayBuffer) => void
+  onCreateManyCoupons: (buf: ArrayBuffer) => void
 }
 
-export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
-  const { salesCategoiries, count, onCreateManySalesCategories, onDelete, onMultiDelete } = props
+export function CouponsListTable(props: CouponsListTableProps) {
+  const { coupons, count, onCreateManyCoupons, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
   const navigate = useNavigate()
 
   const theme = useTheme()
-  const { state: {salesCategoryFilter, modalForm}, dispatch } = useStore()
+  const { state: {couponFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -56,7 +76,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
   const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = evt.target
     setSellectedRows(checked
-      ? salesCategoiries.map(e => e.id)
+      ? coupons.map(e => e.id)
       : []
     )
   }
@@ -66,25 +86,25 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handleClickDeleteAction = (salesCategoryId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteId(salesCategoryId)
+  const handleClickUpdateAction = (couponId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/coupons/update/${couponId}`)
+  }
+
+  const handleClickDeleteAction = (couponId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    setDeleteId(couponId)
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: "delete-sales-category"
+      payload: "delete-coupon"
     })
   }
 
-  const handleClickUpdateAction = (salesCategoryId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/sales-categories/update/${salesCategoryId}`)
-  }
-
   const handleOnExport = () => {
-    exportToExcel(salesCategoiries, "SalesCategories")
+    exportToExcel(coupons, "Coupons")
   }
 
-  const handleOnImport = (data: CreateSalesCategoryInput[]) => {
-    convertToExcel(data, "SalesCategories")
-      .then(excelBuffer => onCreateManySalesCategories(excelBuffer))
+  const handleOnImport = (data: CreateCouponInput[]) => {
+    convertToExcel(data, "Coupons")
+      .then(excelBuffer => onCreateManyCoupons(excelBuffer))
       .catch(err => dispatch({
         type: "OPEN_TOAST",
         payload: {
@@ -96,7 +116,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_SALES_CATEGORY_FILTER",
+      type: "SET_COUPON_FILTER",
       payload: {
         page: page += 1
       }
@@ -105,7 +125,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_SALES_CATEGORY_FILTER",
+      type: "SET_COUPON_FILTER",
       payload: {
         limit: parseInt(evt.target.value, 10)
       }
@@ -118,34 +138,34 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
     })
   }
 
-  const isAllowedDeleteSalesCategory = usePermission({
-    key: "sales-categor-permissions",
-    actions: "delete",
-    queryFn: getSalesCategoryPermissionsFn
-  })
-
-  const isAllowedUpdateSalesCategory = usePermission({
-    key: "sales-categor-permissions",
+  const isAllowedUpdateCoupon = usePermission({
+    key: "coupons-permissions",
     actions: "update",
-    queryFn: getSalesCategoryPermissionsFn
+    queryFn: getCouponsPermissionsFn
   })
 
-  const isAllowedCreateSalesCategory = usePermission({
-    key: "sales-categor-permissions",
+  const isAllowedDeleteCoupon = usePermission({
+    key: "coupons-permissions",
+    actions: "delete",
+    queryFn: getCouponsPermissionsFn
+  })
+
+  const isAllowedCreateCoupon = usePermission({
+    key: "coupons-permissions",
     actions: "create",
-    queryFn: getSalesCategoryPermissionsFn
+    queryFn: getCouponsPermissionsFn
   })
 
-  const selectedAllRows = selectedRows.length === salesCategoiries.length
+  const selectedAllRows = selectedRows.length === coupons.length
   const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < salesCategoiries.length
+    selectedRows.length < coupons.length
 
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
-          field="delete-sales-category-multi"
-          isAllowedDelete={isAllowedDeleteSalesCategory}
+          field="delete-coupon-multi"
+          isAllowedDelete={isAllowedDeleteCoupon}
           onDelete={() => onMultiDelete(selectedRows)}
         />
       </Box>}
@@ -153,10 +173,10 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
       <Divider />
 
       <CardContent>
-        <SalesCategoriesActions 
+        <CouponsActions 
           onExport={handleOnExport} 
-          onImport={handleOnImport} 
-          isAllowedImport={isAllowedCreateSalesCategory}
+          onImport={handleOnImport}  
+          isAllowedImport={isAllowedCreateCoupon}
         />
       </CardContent>
 
@@ -173,11 +193,13 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                 />
               </TableCell>
 
+              <TableCell align="left">Image</TableCell>
+
               {columnHeader.map(header => {
                 const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
                 return header.id !== "actions"
                   ? render
-                  : isAllowedUpdateSalesCategory && isAllowedDeleteSalesCategory
+                  : isAllowedUpdateCoupon && isAllowedDeleteCoupon
                   ? render
                   : null
               })}
@@ -185,7 +207,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
           </TableHead>
 
           <TableBody>
-            {salesCategoiries.map(row => {
+            {coupons.map(row => {
               const isSelected = selectedRows.includes(row.id)
               return <TableRow
                 hover
@@ -201,22 +223,42 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                   />
                 </TableCell>
 
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {row.name}
-                  </Typography>
-                </TableCell>)}
+                <TableCell align="left">
+                  <RenderImageLabel
+                    src={row.image || "/default.jpg"}
+                    alt={row.label} 
+                  />
+                </TableCell>
 
-                {isAllowedUpdateSalesCategory && isAllowedDeleteSalesCategory
+                {columnData.map(col => {
+                  const key = col.id as keyof typeof row
+                  const dataRow = row[key]
+
+                  return (
+                    <TableCell align={col.align} key={col.id}>
+                    <Typography
+                      variant="body1"
+                      fontWeight="normal"
+                      color="text.primary"
+                      gutterBottom
+                      noWrap
+                    >
+                      {key === "expiredDate"
+                        ? (new Date(dataRow as string)).toLocaleString()
+                        : key === "isUsed"
+                        ? dataRow ? "Used" : "Un used"
+                        : key === "product" && dataRow
+                        ? <RenderProductLabel product={dataRow as IProduct} /> 
+                        : dataRow as string}
+                    </Typography>
+                  </TableCell>
+                  )
+                })}
+
+                {isAllowedUpdateCoupon && isAllowedDeleteCoupon
                 ? <TableCell align="right">
-                    {isAllowedUpdateSalesCategory
-                    ?  <Tooltip title="Edit Sales category" arrow>
+                    {isAllowedUpdateCoupon
+                    ? <Tooltip title="Edit Product" arrow>
                         <IconButton
                           sx={{
                             '&:hover': {
@@ -224,17 +266,17 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                             },
                             color: theme.palette.primary.main
                           }}
+                          onClick={handleClickUpdateAction(row.id)}
                           color="inherit"
                           size="small"
-                          onClick={handleClickUpdateAction(row.id)}
                         >
                           <EditTwoToneIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
                     : null}
-
-                    {isAllowedDeleteSalesCategory
-                    ? <Tooltip title="Delete Sales category" arrow>
+                    
+                    {isAllowedDeleteCoupon
+                    ? <Tooltip title="Delete Product" arrow>
                         <IconButton
                           sx={{
                             '&:hover': {
@@ -250,6 +292,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                         </IconButton>
                       </Tooltip>
                     : null}
+                    
                   </TableCell>
                 : null}
               </TableRow>
@@ -264,18 +307,18 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={salesCategoryFilter?.page
-            ? salesCategoryFilter.page - 1
+          page={couponFilter?.page
+            ? couponFilter.page - 1
             : 0}
-          rowsPerPage={salesCategoryFilter?.limit || 10}
+          rowsPerPage={couponFilter?.limit || 10}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>
 
-      {modalForm.field === "delete-sales-category"
+      {modalForm.field === "delete-coupon"
       ? <FormModal
-        field="delete-sales-category"
-        title="Delete sales category"
+        field="delete-coupon"
+        title="Delete coupon"
         onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>

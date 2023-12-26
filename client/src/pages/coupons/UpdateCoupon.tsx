@@ -1,24 +1,24 @@
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import { usePermission } from "@/hooks";
+import { getCouponsPermissionsFn } from "@/services/permissionsApi";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
-import { usePermission } from "@/hooks";
-import { getCategoryPermissionsFn } from "@/services/permissionsApi";
-import { UpdateCategoryForm } from "@/components/content/categories/forms";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import getConfig from "@/libs/getConfig";
+import { UpdateCouponForm } from '@/components/content/coupons/forms';
 
 
 const appName = getConfig("appName")
 
-export default function UpdateCategory() {
+export default function UpdateCoupon() {
   const navigate = useNavigate()
 
-  const isAllowedUpdateCategory = usePermission({
-    key: "category-permissions",
+  const isAllowedUpdateCoupon = usePermission({
+    key: "coupons-permissions",
     actions: "update",
-    queryFn: getCategoryPermissionsFn
+    queryFn: getCouponsPermissionsFn
   })
   
   const handleBack = () => {
@@ -29,8 +29,8 @@ export default function UpdateCategory() {
   return (
     <>
       <Helmet>
-        <title>{appName} | Update categoriy</title>
-        <meta name="description" content="Effortlessly refine and manage your product categories with our user-friendly category update page. Seamlessly edit category names, descriptions, and other vital information to keep your product organization precise and up-to-date. Take control of your online store's structure, make instant modifications, and ensure a seamless shopping experience for your customers. Simplify the category update process with our intuitive tools, maintaining a well-organized and user-friendly storefront. Explore the power of hassle-free category management and keep your product listings relevant and engaging."></meta>
+        <title>{appName} | Update coupon</title>
+        <meta name="description" content="Refine and secure your cryptocurrency coupon effortlessly. Edit features and settings seamlessly for optimal performance. Keep your exchange innovative with hassle-free updates. Elevate the trading experience for your users."></meta>
       </Helmet>
 
       <PageTitle>
@@ -45,7 +45,7 @@ export default function UpdateCategory() {
           </Grid>
 
           <Grid item xs={10}>
-            <Typography variant="h3" component="h3" gutterBottom>Update a brand</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>Update a coupon</Typography>
             <Typography variant="subtitle2" gutterBottom>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
             </Typography>
@@ -53,23 +53,21 @@ export default function UpdateCategory() {
         </Grid>
       </PageTitle>
 
-      {isAllowedUpdateCategory
+      {isAllowedUpdateCoupon
       ? <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12} md={8}>
               <Card>
                 <CardContent>
-                  <UpdateCategoryForm />
+                  <UpdateCouponForm />
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
         </Container>
       : <MiniAccessDenied />}
-      
     </>
   )
 }
-
 
 

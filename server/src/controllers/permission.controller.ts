@@ -2,12 +2,14 @@ import { NextFunction, Request, Response } from "express";
 import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import mapValues from "lodash/mapValues";
-import { productPermission, userPermission } from "../utils/auth/permissions";
+import { orderPermission, productPermission, userPermission } from "../utils/auth/permissions";
 import { HttpDataResponse } from "../utils/helper";
 import { brandPermission } from "../utils/auth/permissions/brand.permission";
 import { categoryPermission } from "../utils/auth/permissions/category.permission";
 import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory.permission";
 import { exchangePermission } from "../utils/auth/permissions/exchange.permission";
+import { accessLogPermission } from "../utils/auth/permissions/accessLog.permission";
+import { couponPermission } from "../utils/auth/permissions/coupon.permisson";
 
 
 export async function permissionsUserHandler(
@@ -116,6 +118,63 @@ export async function permissionsSalesCategoriesHandler(
     res
       .status(200)
       .json(HttpDataResponse({ permissions, label: "sales-category" }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function permissionsAccessLogsHandler(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const permissions = mapValues(accessLogPermission, value => value())
+
+    res
+      .status(200)
+      .json(HttpDataResponse({ permissions, label: "access-logs" }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function permissionsOrdersHandler(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const permissions = mapValues(orderPermission, value => value())
+
+    res
+      .status(200)
+      .json(HttpDataResponse({ permissions, label: "orders" }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function permissionsCouponsHandler(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const permissions = mapValues(couponPermission, value => value())
+
+    res
+      .status(200)
+      .json(HttpDataResponse({ permissions, label: "coupons" }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
