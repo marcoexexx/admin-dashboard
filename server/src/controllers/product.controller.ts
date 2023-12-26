@@ -213,17 +213,16 @@ export async function createMultiProductsHandler(
           overview: product.overview,
           features: product?.features || "<h1>Product features</h1>",
           warranty: product.warranty,
-          colors: product?.colors?.split("\n"),
+          colors: (product?.colors || "")?.split("\n"),
           instockStatus: product.instockStatus,
           description: product?.description || "<h1>Product description</h1>",
-          // type: product.type,  // TODO: What is product type??
           price: product.price,
           dealerPrice: product.dealerPrice,
           marketPrice: product.marketPrice,
           discount: product.discount,
           status: product.status,
           priceUnit: product.priceUnit,
-          images: product.images?.split("\n"),
+          images: (product?.images || "")?.split("\n"),
           quantity: product.quantity,
           brand: {
             connectOrCreate: {
@@ -233,12 +232,12 @@ export async function createMultiProductsHandler(
           },
           specification: {
             createMany: {
-              data: product.specification.split("\n").filter(Boolean).map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
+              data: (product.specification || "").split("\n").filter(Boolean).map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
               // skipDuplicates: true
             }
           },
           categories: {
-            create: product.categories.split("\n").filter(Boolean).map(name => ({
+            create: (product.categories || "").split("\n").filter(Boolean).map(name => ({
               category: {
                 connectOrCreate: {
                   where: { name },
@@ -248,7 +247,7 @@ export async function createMultiProductsHandler(
             }))
           },
           salesCategory: {
-            create: product.salesCategory.split("\n").filter(Boolean).map(name => ({
+            create: (product.salesCategory || "").split("\n").filter(Boolean).map(name => ({
               salesCategory: {
                 connectOrCreate: {
                   where: { name },
