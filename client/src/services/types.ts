@@ -11,21 +11,51 @@ type UserProvider =
   | "Facebook"
 
 
-type InstockStatus = 
+type InstockStatus =
   | "InStock"
   | "OutOfStock"
   | "AskForStock"
 
 
-type PriceUnit = 
+type PriceUnit =
   | "MMK"
   | "USD"
   | "SGD"
   | "THB"
   | "KRW"
 
-// TODO: user's data
+
+type Coupon = {
+  id: string,
+  points: number,
+  dolla: number
+  product?: IProduct,
+  expiredDate: string | Date,
+  isUsed: boolean,
+  image: string,
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+type Reward = {
+  id: string,
+  points: number,
+  coupons: Coupon[],
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
 interface IUser {
+  // favorites        Favorites[]
+  // createdProducts  Product[]    @relation("CreatedBy")
+  // orders           Order[]
+  // reviews          Review[]
+  // accessLogs       AccessLog[]
+  // addresses        Address[]
+
   id: string,
   name: string,
   email: string,
@@ -36,6 +66,9 @@ interface IUser {
   coverImage: string
   verified: boolean,
   provider: UserProvider,
+  reward: Reward
+  verificationCode?: string,
+
   createdAt: string | Date
   updatedAt: string | Date
 }
@@ -66,8 +99,8 @@ type ProductRecommendations = {
 }
 
 interface IProduct {
-  id: string;
-  brandId: string;
+  id: string,
+  brandId: string,
   brand: IBrand,
   categories: {
     productId: string,
@@ -106,6 +139,7 @@ interface IProduct {
   quantity: number;
   creator?: IUser;
   itemCode?: string;
+  coupons: Coupon[];
   creatorId?: string;
   createdAt: string; // Assuming it's a string representation of a date
   updatedAt: string; // Assuming it's a string representation of a date
@@ -157,12 +191,12 @@ interface ISalesCategory {
 }
 
 interface ISettings {
-  theme: 
-    | "light" 
-    | "dark",
+  theme:
+  | "light"
+  | "dark",
   local:
-    | "my"
-    | "en"
+  | "my"
+  | "en"
 }
 
 
@@ -181,8 +215,8 @@ type HttpListResponse<T> = {
   error?: string | string[],
 }
 
-type PermissionsResponse = { 
-  status: number, 
+type PermissionsResponse = {
+  status: number,
   permissions: {
     createAllowedRoles: Role[],
     readAllowedRoles: Role[],
@@ -211,7 +245,7 @@ type IAddress = {
   updatedAt: string | Date
 }
 
-type OrderState = 
+type OrderState =
   | "Pending"
   | "Processing"
   | "Shipped"
@@ -248,9 +282,9 @@ type IUserProfile = IUser & {
   }
 }
 
-type LoginResponse = Omit<HttpResponse, "message"> & {accessToken: string};
+type LoginResponse = Omit<HttpResponse, "message"> & { accessToken: string };
 
-type UserResponse = Omit<HttpResponse, "message"> & {user: IUser, redirectUrl: string | undefined };
+type UserResponse = Omit<HttpResponse, "message"> & { user: IUser, redirectUrl: string | undefined };
 
 type UserProfileResponse = Omit<HttpResponse, "message"> & {
   user: IUserProfile
