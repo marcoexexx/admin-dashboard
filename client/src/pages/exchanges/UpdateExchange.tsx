@@ -5,7 +5,7 @@ import { UpdateExchangeForm } from "@/components/content/exchanges/forms";
 import { usePermission } from "@/hooks";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import getConfig from "@/libs/getConfig";
 
@@ -13,11 +13,18 @@ import getConfig from "@/libs/getConfig";
 const appName = getConfig("appName")
 
 export default function UpdateExchange() {
+  const navigate = useNavigate()
+
   const isAllowedUpdateExchange = usePermission({
     key: "exchange-permissions",
     actions: "update",
     queryFn: getExchangePermissionsFn
   })
+  
+  const handleBack = () => {
+    navigate(-1)
+  }
+
 
   return (
     <>
@@ -31,7 +38,7 @@ export default function UpdateExchange() {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Tooltip arrow placeholder="top" title="go back">
-              <IconButton color="primary" sx={{ p: 2, mr: 2 }} component={Link} to="/exchanges">
+              <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={handleBack}>
                 <ArrowBackTwoToneIcon />
               </IconButton>
             </Tooltip>

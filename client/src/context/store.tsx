@@ -15,6 +15,7 @@ export type Store = {
       | "info"
   },
   modalForm: {
+    // TODO: multi create exel modal
     field:
       | "*"
       | "brands"
@@ -37,6 +38,9 @@ export type Store = {
 
       | "delete-exchange"
       | "delete-exchange-multi"
+
+      | "delete-coupon"
+      | "delete-coupon-multi"
     state: boolean
   },
   user?: IUser
@@ -96,6 +100,17 @@ export type Store = {
     limit?: number,
     mode?: "insensitive" | "default"
   },
+  couponFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default"
+  }
+}
+
+interface CouponFilterActions {
+  type: "SET_COUPON_FILTER",
+  payload: Store["couponFilter"]
 }
 
 interface UserFilterActions {
@@ -194,6 +209,7 @@ type Action =
   | ExchangeFilterActions
   | CategoryFilterActions
   | SalesCategoryFilterActions
+  | CouponFilterActions
 
   | ModalFormOpenActions
   | ModalFormCloseActions
@@ -261,6 +277,11 @@ const initialState: Store = {
     page: 1,
     limit: 10,
     mode: "default"
+  },
+  couponFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default"
   }
 }
 
@@ -323,6 +344,13 @@ const stateReducer = (state: Store, action: Action): Store => {
     case "SET_EXCHANGE_FILTER": {
       return { ...state, exchangeFilter: {
         ...state.exchangeFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_COUPON_FILTER": {
+      return { ...state, couponFilter: {
+        ...state.couponFilter,
         ...action.payload
       } }
     }

@@ -25,6 +25,7 @@ import authRouter from './routers/auth.route'
 import meRouter from './routers/me.route'
 import permissionRouter from './routers/permission.route'
 import exchangeRouter from './routers/exchange.route'
+import couponRouter from './routers/coupon.route'
 import userRouter from './routers/user.route'
 import accessLogRouter from './routers/accessLog.route'
 import productRouter from './routers/product.route'
@@ -98,6 +99,7 @@ app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/me", meRouter)
 app.use("/api/v1/permissions", permissionRouter)
 app.use("/api/v1/exchanges", exchangeRouter)
+app.use("/api/v1/coupons", couponRouter)
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/access-logs", accessLogRouter)
 app.use("/api/v1/products", productRouter)

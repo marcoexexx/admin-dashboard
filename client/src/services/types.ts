@@ -29,10 +29,12 @@ type Coupon = {
   id: string,
   points: number,
   dolla: number
+  productId?: string,
   product?: IProduct,
   expiredDate: string | Date,
   isUsed: boolean,
   image: string,
+  label: string,
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -291,6 +293,8 @@ type UserProfileResponse = Omit<HttpResponse, "message"> & {
 };
 
 type CategoryResponse = Omit<HttpResponse, "message"> & { category: ICategory };
+
+type CouponResponse = Omit<HttpResponse, "message"> & { coupon: Coupon };
 
 type SalesCategoryResponse = Omit<HttpResponse, "message"> & { category: ISalesCategory };
 

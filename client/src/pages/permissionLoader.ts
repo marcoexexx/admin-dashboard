@@ -54,3 +54,30 @@ export async function productPermissionsLoader() {
     staleTime: 1000 * 60 * 60 * 60 * 24
   })
 }
+
+export async function orderPermissionsLoader() {
+  return queryClient.fetchQuery({
+    queryKey: ["product-permissions"],
+    queryFn: getProductPermissionsFn,
+
+    staleTime: 1000 * 60 * 60 * 60 * 24
+  })
+}
+
+export async function accessLogsPermissionsLoader() {
+  return queryClient.fetchQuery({
+    queryKey: ["product-permissions"],
+    queryFn: getProductPermissionsFn,
+
+    staleTime: 1000 * 60 * 60 * 60 * 24
+  })
+}
+
+export async function  couponPermissionsLoader() {
+  return queryClient.fetchQuery({
+    queryKey: ["product-permissions"],
+    queryFn: getProductPermissionsFn,
+
+    staleTime: 1000 * 60 * 60 * 60 * 24
+  })
+}

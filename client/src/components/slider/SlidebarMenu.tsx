@@ -18,6 +18,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CategoryIcon from '@mui/icons-material/Category';
 import SellIcon from '@mui/icons-material/Sell';
+import BadgeIcon from '@mui/icons-material/Badge';
 
 
 const DotWrapper = styled(Box)(({theme}) => ({
@@ -163,6 +164,7 @@ type ExpandMenu = {
     | "sales-categories"
     | "exchanges"
     | "users"
+    | "coupons"
   state: boolean
 }
 
@@ -298,6 +300,43 @@ export default function SlidebarMenu() {
         >
           <SubMenuWrapper>
             <List component="div">
+              {/* Coupon Menues */}
+              <ListItem component="div">
+                <MuiButton
+                  onClick={handleToggleExpandMenu("coupons")}
+                  startIcon={<BadgeIcon />}
+                  endIcon={getStateCurrentExpandMenu("coupons")
+                    ? <ExpandLessIcon />
+                    : <ExpandMoreIcon />
+                  }
+                >
+                  Coupons
+                </MuiButton>
+              </ListItem>
+
+              <Collapse in={getStateCurrentExpandMenu("coupons")}>
+                <List component="div" disablePadding>
+                  <ListItem component="div">
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/coupons/list" })}
+                      onClick={handleOpenMenu("/coupons/list")}
+                    >
+                      <DotWrapper />
+                      List
+                    </MuiButton>
+                  </ListItem>
+                  <ListItem component="div">
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/coupons/create" })}
+                      onClick={handleOpenMenu("/coupons/create")}
+                    >
+                      <DotWrapper />
+                      Create
+                    </MuiButton>
+                  </ListItem>
+                </List>
+              </Collapse>
+
               {/* User Menues */}
               <ListItem component="div">
                 <MuiButton

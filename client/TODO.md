@@ -11,7 +11,9 @@
 
 # TODO
  - ## IMPORTANT
+ - [ ] switchable currency
  - [x] use $transaction
+ - [ ] product get with include
  - [ ] use name: { in: [] }
  - [ ] with relation in list table view
  - [ ] item code

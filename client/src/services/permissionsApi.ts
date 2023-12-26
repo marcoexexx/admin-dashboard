@@ -47,3 +47,27 @@ export async function getExchangePermissionsFn(opt: QueryOptionArgs) {
   })
   return data
 }
+
+
+export async function getOrderPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/orders", {
+    ...opt,
+  })
+  return data
+}
+
+
+export async function getAccessLogsPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/access-logs", {
+    ...opt,
+  })
+  return data
+}
+
+
+export async function getCouponsPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/coupons", {
+    ...opt,
+  })
+  return data
+}

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { permissionsBrandsHandler, permissionsCategoriesHandler, permissionsExchangeHandler, permissionsProductsHandler, permissionsSalesCategoriesHandler, permissionsUserHandler } from "../controllers/permission.controller";
+import { permissionsAccessLogsHandler, permissionsBrandsHandler, permissionsCategoriesHandler, permissionsCouponsHandler, permissionsExchangeHandler, permissionsOrdersHandler, permissionsProductsHandler, permissionsSalesCategoriesHandler, permissionsUserHandler } from "../controllers/permission.controller";
 
 const router = Router()
 
@@ -10,6 +10,9 @@ router.get("/products", permissionsProductsHandler)
 router.get("/brands", permissionsBrandsHandler)
 router.get("/category", permissionsCategoriesHandler)
 router.get("/sales-category", permissionsSalesCategoriesHandler)
+router.get("/orders", permissionsOrdersHandler)
+router.get("/access-logs", permissionsAccessLogsHandler)
+router.get("/coupons", permissionsCouponsHandler)
 
 
 export default router

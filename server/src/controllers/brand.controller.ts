@@ -57,7 +57,9 @@ export async function getBrandHandler(
   next: NextFunction
 ) {
   try {
-    const { brandId, include: includes } = req.params
+    const { brandId } = req.params
+
+    const { include: includes } = convertNumericStrings(req.query)
     const include = convertStringToBoolean(includes) as BrandFilterPagination["include"]
 
     const brand = await db.brand.findUnique({

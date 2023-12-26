@@ -57,8 +57,11 @@ export async function getCategoryHandler(
   next: NextFunction
 ) {
   try {
-    const { categoryId, include: includes } = req.params
+    const { categoryId } = req.params
+
+    const { include: includes } = convertNumericStrings(req.query)
     const include = convertStringToBoolean(includes) as CategoryFilterPagination["include"]
+
     const category = await db.category.findUnique({
       where: {
         id: categoryId

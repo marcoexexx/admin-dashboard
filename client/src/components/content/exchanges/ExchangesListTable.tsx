@@ -97,7 +97,7 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
   }
 
   const handleOnImport = (data: CreateExchangeInput[]) => {
-    convertToExcel(data, "Brands")
+    convertToExcel(data, "Exchanges")
       .then(excelBuffer => onCreateManyExchanges(excelBuffer))
       .catch(err => dispatch({
         type: "OPEN_TOAST",
