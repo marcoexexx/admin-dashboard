@@ -1,5 +1,5 @@
 import { useStore } from "@/hooks"
-import { Box, Divider, Drawer, Stack, darken, styled, useTheme } from "@mui/material"
+import { Box, Divider, Drawer, Stack, styled, useTheme } from "@mui/material"
 import Logo from "./Logo"
 import SlidebarMenu from "./SlidebarMenu"
 
@@ -70,9 +70,10 @@ export default function Slider() {
         onClose={onCloseSlidebarHandler}
       >
         <MainContent sx={{
-          background: theme.palette.mode === "dark"
-            ? theme.colors.alpha.white[100]
-            : darken(theme.colors.alpha.black[100], 0.5)
+          // background: theme.palette.mode === "dark"
+          //   ? theme.colors.alpha.white[100]
+          //   : darken(theme.colors.alpha.black[100], 0.5)
+          background: theme.palette.secondary.main,
         }}
         >
           <Stack flexDirection="column">
