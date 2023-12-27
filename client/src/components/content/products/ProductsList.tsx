@@ -4,6 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { createMultiProductsFn, deleteMultiProductsFn, deleteProductFn, getProductsFn, updateProductFn } from "@/services/productsApi";
 import { ProductsListTable } from ".";
+import { getMeFn } from "@/services/authApi";
 
 
 interface ProductStatusContext {
@@ -48,6 +49,12 @@ const getProductStatusConcrate: Record<ProductStatus, (status: ProductStatus) =>
 export function ProductsList() {
   const { state: {productFilter}, dispatch } = useStore()
 
+  const { data: me, isError: isMeError, isLoading: isMeLoading, error: meError } = useQuery({
+    queryKey: ["authUser"],
+    queryFn: getMeFn,
+    select: (data: UserResponse) => data.user,
+  })
+
   const { data, isError, isLoading, error } = useQuery({
     queryKey: ["products", { filter: productFilter } ],
     queryFn: args => getProductsFn(args, { 
@@ -69,6 +76,7 @@ export function ProductsList() {
             salesCategory: true
           }
         },
+        creator: true
       }
     }),
     select: data => data
@@ -198,13 +206,14 @@ export function ProductsList() {
   }
 
 
-  if (isError && error) return <h1>ERROR: {error.message}</h1>
+  if (isError && error && isMeError && meError) return <h1>ERROR: {error.message}</h1>
 
-  if (!data || isLoading) return <SuspenseLoader />
+  if (!data || isLoading || !me || isMeLoading) return <SuspenseLoader />
 
 
   return <Card>
     <ProductsListTable
+      me={me}
       isLoading={isPending}
       onStatusChange={handleChangeStatusProduct}
       products={data.results} 
