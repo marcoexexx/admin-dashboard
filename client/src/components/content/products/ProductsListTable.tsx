@@ -7,7 +7,7 @@ import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { FormModal } from "@/components/forms";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
-import { RenderBrandLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
+import { RenderBrandLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
 import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLabel";
 import { useNavigate } from "react-router-dom";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
@@ -73,6 +73,11 @@ const columnData: TableColumnHeader<IProduct>[] = [
     align: "right",
     name: "PriceUnit"
   },
+  {
+    id: "creator",
+    align: "right",
+    name: "Creator"
+  },
 ]
 
 const columnHeader = columnData.concat([
@@ -93,6 +98,7 @@ interface ProductsListTableProps {
   products: IProduct[]
   isLoading?: boolean
   count: number,
+  me: IUser,
   onDelete: (id: string) => void
   onStatusChange: (product: IProduct, status: ProductStatus) => void
   onMultiDelete: (ids: string[]) => void
@@ -100,7 +106,7 @@ interface ProductsListTableProps {
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
-  const { products, count, isLoading, onDelete, onMultiDelete, onCreateManyProducts, onStatusChange } = props
+  const { products, count, me, isLoading, onDelete, onMultiDelete, onCreateManyProducts, onStatusChange } = props
 
   const navigate = useNavigate()
 
@@ -324,7 +330,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
                     if (key === "salesCategory") return row.salesCategory.map(({salesCategory}, idx) => <RenderSalesCategoryLabel key={idx} salesCategory={salesCategory} />)
                     if (key === "brand") return <RenderBrandLabel brand={row.brand} />
                     if (key === "title") return <RenderProductLabel product={row} />
-                    if (key === "specification") return "Coming soon"
+                    if (key === "creator") return row.creator ? <RenderUsernameLabel user={row.creator} me={me} /> : null
                     return row[key] as string
                   }
 

@@ -73,7 +73,7 @@ export function ProfileCover({user}: ProfileCoverProps) {
     <>
       <Box display="flex" mb={3}>
         <Tooltip arrow placement="top" title="Go back">
-          <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={() => navigate("/")}>
+          <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={() => navigate(-1)}>
             <ArrowBackTwoToneIcon />
           </IconButton>
         </Tooltip>
