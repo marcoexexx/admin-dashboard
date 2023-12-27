@@ -10,8 +10,9 @@ const MainContent = styled(Box)(({theme}) => ({
   color: theme.colors.alpha.trueWhite[70],
   position: "relative",
   zIndex: 7,
+  overflow: "scroll",
   height: "100%",
-  paddingBottom: "68px",
+  paddingBottom: "10px",
 }))
 
 export default function Slider() {
