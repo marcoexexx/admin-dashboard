@@ -1,7 +1,7 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, MenuItem, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme, Theme } from "@mui/material"
 import { useState } from "react"
 import { MuiButton } from "@/components/ui";
-import { BulkActions } from "@/components";
+import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { ProductsActions } from ".";
 import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
@@ -91,6 +91,7 @@ const columnHeader = columnData.concat([
 
 interface ProductsListTableProps {
   products: IProduct[]
+  isLoading?: boolean
   count: number,
   onDelete: (id: string) => void
   onStatusChange: (product: IProduct, status: ProductStatus) => void
@@ -99,7 +100,7 @@ interface ProductsListTableProps {
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
-  const { products, count, onDelete, onMultiDelete, onCreateManyProducts, onStatusChange } = props
+  const { products, count, isLoading, onDelete, onMultiDelete, onCreateManyProducts, onStatusChange } = props
 
   const navigate = useNavigate()
 
@@ -264,7 +265,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
       <Divider />
 
       <TableContainer>
-        <Table>
+        {isLoading
+        ? <LoadingTablePlaceholder />
+        : <Table>
           <TableHead>
             <TableRow>
               <TableCell padding="checkbox">
@@ -412,7 +415,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
               </TableRow>
             })}
           </TableBody>
-        </Table>
+        </Table>}
       </TableContainer>
 
       <Box p={2}>

@@ -75,7 +75,8 @@ export function ProductsList() {
   })
 
   const {
-    mutate: createProducts
+    mutate: createProducts,
+    isPending,
   } = useMutation({
     mutationFn: createMultiProductsFn,
     onError(err: any) {
@@ -204,6 +205,7 @@ export function ProductsList() {
 
   return <Card>
     <ProductsListTable
+      isLoading={isPending}
       onStatusChange={handleChangeStatusProduct}
       products={data.results} 
       count={data.count} 

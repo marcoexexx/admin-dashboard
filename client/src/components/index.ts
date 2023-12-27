@@ -1,4 +1,5 @@
 export * from './Providers'
+export * from './LoadingTablePlaceholder'
 export * from './PageBreadcrumbs'
 export * from './LinkLabel'
 export * from './SuspenseLoader'

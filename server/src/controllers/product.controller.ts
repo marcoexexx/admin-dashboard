@@ -230,32 +230,32 @@ export async function createMultiProductsHandler(
               create: { name: product.brandName }
             }
           },
-          // specification: {
-          //   createMany: {
-          //     data: (product.specification || "").split("\n").filter(Boolean).map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
-          //     // skipDuplicates: true
-          //   }
-          // },
-          // categories: {
-          //   create: (product.categories || "").split("\n").filter(Boolean).map(name => ({
-          //     category: {
-          //       connectOrCreate: {
-          //         where: { name },
-          //         create: { name }
-          //       }
-          //     }
-          //   }))
-          // },
-          // salesCategory: {
-          //   create: (product.salesCategory || "").split("\n").filter(Boolean).map(name => ({
-          //     salesCategory: {
-          //       connectOrCreate: {
-          //         where: { name },
-          //         create: { name }
-          //       }
-          //     }
-          //   }))
-          // },
+          specification: product.specification ? {
+            createMany: {
+              data: product.specification.split("\n").filter(Boolean).map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
+              // skipDuplicates: true
+            }
+          } : undefined,
+          categories: {
+            create: (product.categories || "").split("\n").filter(Boolean).map(name => ({
+              category: {
+                connectOrCreate: {
+                  where: { name },
+                  create: { name }
+                }
+              }
+            }))
+          },
+          salesCategory: {
+            create: (product.salesCategory || "").split("\n").filter(Boolean).map(name => ({
+              salesCategory: {
+                connectOrCreate: {
+                  where: { name },
+                  create: { name }
+                }
+              }
+            }))
+          },
         },
         update: {
           price: product.price,
