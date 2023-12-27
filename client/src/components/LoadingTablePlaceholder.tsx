@@ -15,6 +15,6 @@ export interface LoadingTablePlaceholderProps {
 export function LoadingTablePlaceholder(props: LoadingTablePlaceholderProps) {
   const {} = props
   return <MainContent>
-    <CircularProgress />
+    <CircularProgress disableShrink />
   </MainContent>
 }
