@@ -52,7 +52,6 @@ const createProductSchema = object({
   status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
   itemCode: string().nullable().optional(),
-  creatorId: string().nullable().optional(),
 })
 
 export type CreateProductInput = z.infer<typeof createProductSchema>
@@ -96,9 +95,6 @@ export function CreateProductForm() {
       filter: {
         from: "MMK",
         to: methods.getValues("priceUnit"),
-      },
-      orderBy: {
-        updatedAt: "asc"
       },
       pagination: {
         page: 1,

@@ -8,7 +8,10 @@ export async function getCouponsFn(opt: QueryOptionArgs, { filter, pagination, i
     params: {
       filter,
       pagination,
-      include
+      include,
+      orderBy: {
+        updatedAt: "desc"
+      }
     },
   })
   return data

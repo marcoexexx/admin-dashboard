@@ -53,7 +53,6 @@ const updateProductSchema = object({
   status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
   itemCode: string().nullable().optional(),
-  creatorId: string().nullable().optional(),
 })
 
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
@@ -125,9 +124,6 @@ export function UpdateProductForm() {
       filter: {
         from: methods.getValues("priceUnit"),
         to: "MMK",
-      },
-      orderBy: {
-        updatedAt: "asc"
       },
       pagination: {
         page: 1,

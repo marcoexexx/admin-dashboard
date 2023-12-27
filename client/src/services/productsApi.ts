@@ -8,7 +8,10 @@ export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pag
     params: {
       filter,
       include,
-      pagination
+      pagination,
+      orderBy: {
+        updatedAt: "desc"
+      }
     }
   })
   return data

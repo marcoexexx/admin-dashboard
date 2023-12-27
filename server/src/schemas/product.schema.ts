@@ -10,21 +10,30 @@ export type ProductFilterPagination = {
       include?: {
         user?: boolean
       }
-    },
+    } | boolean,
     brand?: boolean,
     categories?: {
       include: {
         category?: boolean
       }
-    },
+    } | boolean,
     salesCategory?: {
       include?: {
         salesCategory?: boolean
       }
-    },
-    productRecommendations?: boolean,
+    } | boolean,
     specification?: boolean,
     reviews?: boolean,
+    creator?: boolean,
+
+    coupons?: boolean,
+    orderItem?: boolean,
+    availableSets?: {
+      include?: {
+        productSet?: boolean,
+        product?: boolean
+      },
+    } | boolean
   },
   orderBy?: Record<
     keyof CreateProductInput | "createdAt" | "updatedAt", 
@@ -60,7 +69,6 @@ export const createProductSchema = object({
       name: string({ required_error: "Specification name is required" }),
       value: string({ required_error: "Specification value is required" }),
     }).array(),
-    productRecommendations: string().array(),
     overview: string({ required_error: "Overview is required" })
       .min(1).max(5000),
     features: string({ required_error: "Features is required" })
@@ -81,7 +89,6 @@ export const createProductSchema = object({
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
     itemCode: string().nullable().optional(),
-    creatorId: string().nullable().optional(),
   })
 })
 
@@ -99,7 +106,6 @@ export const createMultiProductsSchema = object({
     price: number({ required_error: "Price is required "}),
     brandName: string({ required_error: "Brand is required" })
       .min(1).max(128),
-    productRecommendations: string().array(),
     title: string({ required_error: "Title is required" })
       .min(1).max(128),
     specification: string({ required_error: "Specifications name are required "}),  //  by splitting "\n"
@@ -124,7 +130,6 @@ export const createMultiProductsSchema = object({
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
     itemCode: string().nullable().optional(),
-    creatorId: string().nullable().optional(),
   }).array()
 })
 
@@ -142,13 +147,12 @@ export const updateProductSchema = object({
     price: number({ required_error: "Price is required "}),
     brandId: string({ required_error: "Brand is required" })
       .min(1).max(128),
-    productRecommendations: string().array(),
     title: string({ required_error: "Title is required" })
       .min(1).max(128),
     specification: object({
       name: string({ required_error: "Specification name is required" }),
       value: string({ required_error: "Specification value is required" }),
-    }).array(),
+    }).array().default([]),
     overview: string({ required_error: "Overview is required" })
       .min(1).max(5000),
     features: string({ required_error: "Features is required" })
@@ -169,7 +173,6 @@ export const updateProductSchema = object({
     status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
 
     itemCode: string().nullable().optional(),
-    creatorId: string().nullable().optional(),
   })
 })
 

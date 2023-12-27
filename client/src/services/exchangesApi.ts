@@ -2,13 +2,15 @@ import { CreateExchangeInput, DeleteExchangeInput, UpdateExchangeInput } from "@
 import { authApi } from "./authApi";
 
 
-export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination, orderBy }: { filter: any, pagination: any, orderBy: Partial<Record<keyof IExchange, "asc" | "desc">> }) {
+export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination }: { filter: any, pagination: any }) {
   const { data } = await authApi.get<HttpListResponse<IExchange>>("/exchanges", {
     ...opt,
     params: {
       filter,
       pagination,
-      orderBy
+      orderBy: {
+        updatedAt: "desc"
+      }
     },
   })
   return data

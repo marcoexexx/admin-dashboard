@@ -141,6 +141,12 @@ export async function createProductHandler(
       quantity,
       status
     } = req.body;
+
+    // @ts-ignore  for mocha testing
+    const user = req.user
+
+    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+
     const new_product = await db.product.create({
       data: {
         price,
@@ -175,6 +181,7 @@ export async function createProductHandler(
           }))
         },
         quantity,
+        creatorId: user.id
       }
     })
     res.status(201).json(HttpDataResponse({ product: new_product }))
@@ -195,6 +202,11 @@ export async function createMultiProductsHandler(
   next: NextFunction
 ) {
   try {
+    // @ts-ignore  for mocha testing
+    const user = req.user
+
+    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+
     const excelFile = req.file
 
     if (!excelFile) return res.status(204)
@@ -202,8 +214,8 @@ export async function createMultiProductsHandler(
     const buf = fs.readFileSync(excelFile.path)
     const data = parseExcel(buf) as CreateMultiProductsInput
 
-    await Promise.all(data.map(product => {
-      return db.product.upsert({
+    for (const product of data) {
+      await db.product.upsert({
         where: {
           id: product.id
         },
@@ -213,7 +225,7 @@ export async function createMultiProductsHandler(
           overview: product.overview,
           features: product?.features || "<h1>Product features</h1>",
           warranty: product.warranty,
-          colors: (product?.colors || "")?.split("\n"),
+          colors: (product?.colors || "")?.split("\n").filter(Boolean),
           instockStatus: product.instockStatus,
           description: product?.description || "<h1>Product description</h1>",
           price: product.price,
@@ -222,12 +234,17 @@ export async function createMultiProductsHandler(
           discount: product.discount,
           status: product.status,
           priceUnit: product.priceUnit,
-          images: (product?.images || "")?.split("\n"),
+          images: (product?.images || "")?.split("\n").filter(Boolean),
           quantity: product.quantity,
           brand: {
             connectOrCreate: {
               where: { name: product.brandName },
               create: { name: product.brandName }
+            }
+          },
+          creator: {
+            connect: { 
+              id: user.id 
             }
           },
           specification: product.specification ? {
@@ -264,9 +281,7 @@ export async function createMultiProductsHandler(
           discount: product.discount,
         },
       })
-    }))
-
-    logging.info("DONE")
+    }
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {
@@ -456,7 +471,7 @@ export async function updateProductHandler(
           brandId,
           title,
           specification: {
-            create: specification.map(spec => ({ name: spec.name, value: spec.value }))
+            create: (specification || []).map(spec => ({ name: spec.name, value: spec.value }))
           },
           overview,
           features,

@@ -21,7 +21,7 @@ export async function getMeProfileHandler(
         id: userSession.id
       },
       include: {
-        orders: true,
+        order: true,
         favorites: true,
         addresses: true,
         reviews: true,

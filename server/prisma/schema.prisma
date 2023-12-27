@@ -81,10 +81,10 @@ model User {
   provider         AuthProvider @default(Local)
   favorites        Favorites[]
   createdProducts  Product[]    @relation("CreatedBy")
-  orders           Order[]
   reviews          Review[]
   accessLogs       AccessLog[]
   addresses        Address[]
+  order            Order[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -176,47 +176,57 @@ enum PriceUnit {
 }
 
 model Product {
-  id                     String                  @id @default(auto()) @map("_id") @db.ObjectId
-  brand                  Brand                   @relation(fields: [brandId], references: [id])
-  brandId                String                  @db.ObjectId
-  title                  String
-  price                  Int
-  images                 String[]
-  overview               String
-  specification          Specification[]
-  features               String
-  warranty               Int // By years
-  categories             ProductCategory[]
-  colors                 String[]
-  instockStatus          InstockStatus           @default(AskForStock)
-  description            String
-  dealerPrice            Int
-  marketPrice            Int
-  discount               Int
-  status                 Status                  @default(Draft)
-  priceUnit              PriceUnit               @default(MMK)
-  likedUsers             Favorites[]
-  quantity               Int
-  reviews                Review[]
-  orders                 Order[]
-  creator                User?                   @relation("CreatedBy", fields: [creatorId], references: [id])
-  creatorId              String?                 @db.ObjectId
-  itemCode               String?
-  salesCategory          ProductSalesCategory[]
-  productRecommendations ProductRecommendation[]
-  coupons                Coupon[]
+  id            String                  @id @default(auto()) @map("_id") @db.ObjectId
+  brand         Brand                   @relation(fields: [brandId], references: [id])
+  brandId       String                  @db.ObjectId
+  title         String
+  price         Int
+  images        String[]
+  overview      String
+  specification Specification[]
+  features      String
+  warranty      Int // By years
+  categories    ProductCategory[]
+  colors        String[]
+  instockStatus InstockStatus           @default(AskForStock)
+  description   String
+  dealerPrice   Int
+  marketPrice   Int
+  discount      Int
+  status        Status                  @default(Draft)
+  priceUnit     PriceUnit               @default(MMK)
+  likedUsers    Favorites[]
+  quantity      Int
+  reviews       Review[]
+  creator       User?                   @relation("CreatedBy", fields: [creatorId], references: [id])
+  creatorId     String?                 @db.ObjectId
+  itemCode      String?
+  salesCategory ProductSalesCategory[]
+  coupons       Coupon[]
+  orderItem     OrderItem[]
+  availableSets ProductRecommendation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductSet {
+  id          String                  @id @default(auto()) @map("_id") @db.ObjectId
+  images      String[]
+  totalPrice  Int
+  description String
+  products    ProductRecommendation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model ProductRecommendation {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  images      String[]
-  totalPrice  Int
-  description String
-  product     Product? @relation(fields: [productId], references: [id])
-  productId   String?  @db.ObjectId
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  product      Product    @relation(fields: [productId], references: [id])
+  productId    String     @db.ObjectId
+  productSet   ProductSet @relation(fields: [productSetId], references: [id])
+  productSetId String     @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -253,21 +263,6 @@ enum OrderState {
   Cancelled
 }
 
-model Order {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  user       User       @relation(fields: [userId], references: [id])
-  userId     String     @db.ObjectId
-  product    Product    @relation(fields: [productId], references: [id])
-  productId  String     @db.ObjectId
-  state      OrderState @default(Pending)
-  quantity   Int
-  totalPrice Int
-  shipping   Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model AccessLog {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
   user     User     @relation(fields: [userId], references: [id])
@@ -276,6 +271,30 @@ model AccessLog {
   ip       String
   platform String
   date     DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String      @db.ObjectId
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  price      Int
+  totalPrice Int
+  quantity   Int
+  product    Product @relation(fields: [productId], references: [id])
+  productId  String  @db.ObjectId
+  order      Order?  @relation(fields: [orderId], references: [id])
+  orderId    String? @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

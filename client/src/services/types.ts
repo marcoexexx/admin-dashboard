@@ -271,13 +271,14 @@ type IReview = {
 }
 
 type IUserProfile = IUser & {
-  orders: IOrder[],
+  order: IOrder[],
   favorites: IProduct[],
   addresses: IAddress[],
   reviews: IReview[],
   _count: {
     favorites: number,
-    orders: number,
+    order: number,
+    createdProducts: number
     reviews: number,
     accessLogs: number,
     addresses: number
