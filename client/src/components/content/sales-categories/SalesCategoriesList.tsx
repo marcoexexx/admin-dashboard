@@ -22,7 +22,8 @@ export function SalesCategoriesList() {
   })
 
   const {
-    mutate: createSalesCategories
+    mutate: createSalesCategories,
+    isPending
   } = useMutation({
     mutationFn: createMultiSalesCategorisFn,
     onError(err: any) {
@@ -108,6 +109,7 @@ export function SalesCategoriesList() {
     <SalesCategoriesListTable
       salesCategoiries={data.results} 
       count={data.count} 
+      isLoading={isPending}
       onCreateManySalesCategories={handleCreateManySalesCategories} 
       onDelete={handleDeleteBrand}
       onMultiDelete={handleDeleteMultiSalesCategories}

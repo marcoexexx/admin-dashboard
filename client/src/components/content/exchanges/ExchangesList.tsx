@@ -25,7 +25,8 @@ export function ExchangesList() {
   })
 
   const {
-    mutate: createExchanges
+    mutate: createExchanges,
+    isPending
   } = useMutation({
     mutationFn: createMultiExchangesFn,
     onError(err: any) {
@@ -110,6 +111,7 @@ export function ExchangesList() {
     <ExchangesListTable
       exchanges={data.results} 
       count={data.count} 
+      isLoading={isPending}
       onCreateManyExchanges={handleCreateManyExchanges} 
       onDelete={handleDeleteExchange}
       onMultiDelete={handleDeleteMultiExchanges}

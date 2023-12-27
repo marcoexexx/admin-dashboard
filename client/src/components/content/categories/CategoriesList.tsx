@@ -22,7 +22,8 @@ export function CategoriesList() {
   })
 
   const {
-    mutate: createCategories
+    mutate: createCategories,
+    isPending
   } = useMutation({
     mutationFn: createMultiCategorisFn,
     onError(err: any) {
@@ -108,6 +109,7 @@ export function CategoriesList() {
     <CategoriesListTable 
       categories={data.results} 
       count={data.count} 
+      isLoading={isPending}
       onCreateManyCategories={handleCreateManyCategories} 
       onDelete={handleDeleteCategory}
       onMultiDelete={handleDeleteMultiCategories}

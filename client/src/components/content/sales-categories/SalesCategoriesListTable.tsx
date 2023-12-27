@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
-import { BulkActions } from "@/components";
+import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
@@ -34,13 +34,14 @@ const columnHeader = columnData.concat([
 interface SalesCategoriesListTableProps {
   salesCategoiries: ISalesCategory[]
   count: number
+  isLoading?: boolean
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
   onCreateManySalesCategories: (buf: ArrayBuffer) => void
 }
 
 export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
-  const { salesCategoiries, count, onCreateManySalesCategories, onDelete, onMultiDelete } = props
+  const { salesCategoiries, count, isLoading, onCreateManySalesCategories, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
@@ -161,7 +162,9 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
       </CardContent>
 
       <TableContainer>
-        <Table>
+        {isLoading
+        ? <LoadingTablePlaceholder />
+        : <Table>
           <TableHead>
             <TableRow>
               <TableCell padding="checkbox">
@@ -255,7 +258,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
               </TableRow>
             })}
           </TableBody>
-        </Table>
+        </Table>}
       </TableContainer>
 
       <Box p={2}>

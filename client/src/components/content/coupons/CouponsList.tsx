@@ -25,7 +25,8 @@ export function CouponsList() {
   })
 
   const {
-    mutate: createCoupons
+    mutate: createCoupons,
+    isPending
   } = useMutation({
     mutationFn: createMultiCouponsFn,
     onError(err: any) {
@@ -110,6 +111,7 @@ export function CouponsList() {
     <CouponsListTable
       coupons={data.results} 
       count={data.count} 
+      isLoading={isPending}
       onCreateManyCoupons={handleCreateManyCoupons} 
       onDelete={handleDeleteCoupon}
       onMultiDelete={handleDeleteMultiCoupons}

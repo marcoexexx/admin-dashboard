@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
-import { BulkActions } from "@/components";
+import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
@@ -49,12 +49,13 @@ interface ExchangesListTableProps {
   exchanges: IExchange[]
   count: number
   onDelete: (id: string) => void
+  isLoading?: boolean
   onMultiDelete: (ids: string[]) => void
   onCreateManyExchanges: (buf: ArrayBuffer) => void
 }
 
 export function ExchangesListTable(props: ExchangesListTableProps) {
-  const { exchanges, count, onCreateManyExchanges, onDelete, onMultiDelete } = props
+  const { exchanges, count, isLoading, onCreateManyExchanges, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
@@ -175,7 +176,9 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
       </CardContent>
 
       <TableContainer>
-        <Table>
+        {isLoading
+        ? <LoadingTablePlaceholder />
+        : <Table>
           <TableHead>
             <TableRow>
               <TableCell padding="checkbox">
@@ -279,7 +282,7 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
               </TableRow>
             })}
           </TableBody>
-        </Table>
+        </Table>}
       </TableContainer>
 
       <Box p={2}>

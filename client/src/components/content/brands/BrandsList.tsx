@@ -22,7 +22,8 @@ export function BrandsList() {
   })
 
   const {
-    mutate: createBrands
+    mutate: createBrands,
+    isPending
   } = useMutation({
     mutationFn: createMultiBrandsFn,
     onError(err: any) {
@@ -106,6 +107,7 @@ export function BrandsList() {
 
   return <Card>
     <BrandsListTable 
+      isLoading={isPending}
       brands={data.results} 
       count={data.count} 
       onCreateManyBrands={handleCreateManyBrands} 
