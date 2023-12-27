@@ -17,9 +17,6 @@ export function ExchangesList() {
         page: exchangeFilter?.page || 1,
         pageSize: exchangeFilter?.limit || 10
       },
-      orderBy: {
-        updatedAt: "desc"
-      }
     }),
     select: data => data
   })

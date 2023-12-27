@@ -3,7 +3,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import Loader from "./loader";
 import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
-import { brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, productPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
+import { brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, productPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 const HomePage = Loader(lazy(() => import("@/pages/home/Home")))
@@ -16,6 +16,11 @@ const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.pa
 const ListCouponPage = Loader(lazy(() => import("@/pages/coupons/ListCoupon")))
 const CreateCouponPage = Loader(lazy(() => import("@/pages/coupons/CreateCoupon")))
 const UpdateCouponPage = Loader(lazy(() => import("@/pages/coupons/UpdateCoupon")))
+
+// orders
+const ListOrderPage = Loader(lazy(() => import("@/pages/orders/ListOrder")))
+const CreateOrderPage = Loader(lazy(() => import("@/pages/orders/CreateOrder")))
+const UpdateOrderPage = Loader(lazy(() => import("@/pages/orders/UpdateOrder")))
 
 // exchanges
 const ListExchangePage = Loader(lazy(() => import("@/pages/exchanges/ListExchange")))
@@ -85,6 +90,36 @@ const routes = createBrowserRouter([
             path: "me",
             loader: meProfileLoader,
             Component: ManagementUserProfilePage
+          },
+
+          /// ORDERS ROUTES
+          {
+            path: "orders",
+            loader: orderPermissionsLoader,
+            children: [
+              {
+                path: "",
+                element: <Navigate to="/orders/list" />
+              },
+              {
+                path: "list",
+                Component: ListOrderPage
+              },
+              {
+                path: "",
+                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                children: [
+                  {
+                    path: "create",
+                    Component: CreateOrderPage
+                  },
+                  {
+                    path: "update/:orderId",
+                    Component: UpdateOrderPage
+                  }
+                ]
+              },
+            ]
           },
 
           /// COUPONS ROUTES

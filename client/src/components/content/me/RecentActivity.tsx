@@ -20,10 +20,11 @@ interface RecentActivityProps {
 export function RecentActivity({user}: RecentActivityProps) {
   const theme = useTheme()
 
-  const orderTotal = user._count.orders
-  const orderCancelled = user.orders.filter(order => order.state === "Cancelled").length
+  const orderTotal = user._count.order
+  const orderCancelled = user.order.filter(order => order.state === "Cancelled").length
 
   const favoriteProducts = user._count.favorites
+  const createdProducts = user._count.createdProducts
 
   const reviewTotal = user._count.reviews
 
@@ -86,6 +87,16 @@ export function RecentActivity({user}: RecentActivityProps) {
                 Products
               </Typography>
               <Typography variant="h2" fontWeight={600}>{favoriteProducts}</Typography>
+            </Box>
+            <Box pr={8}>
+              <Typography
+                gutterBottom
+                variant="caption"
+                sx={{ fontSize: `${theme.typography.pxToRem(16)}` }}
+              >
+                Created
+              </Typography>
+              <Typography variant="h2" fontWeight={600}>{createdProducts}</Typography>
             </Box>
           </Box>
         </Box>

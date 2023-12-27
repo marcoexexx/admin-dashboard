@@ -256,7 +256,7 @@ const initialState: Store = {
           salesCategory: true
         }
       },
-    }
+    },
   },
   brandFilter: {
     page: 1,

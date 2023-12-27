@@ -7,7 +7,10 @@ export async function getBrandsFn(opt: QueryOptionArgs, { filter, pagination }: 
     ...opt,
     params: {
       filter,
-      pagination
+      pagination,
+      orderBy: {
+        updatedAt: "desc"
+      }
     },
   })
   return data

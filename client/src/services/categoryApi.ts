@@ -7,7 +7,10 @@ export async function getCategoriesFn(opt: QueryOptionArgs, { filter, pagination
     ...opt,
     params: {
       filter,
-      pagination
+      pagination,
+      orderBy: {
+        updatedAt: "desc"
+      }
     },
   })
   return data

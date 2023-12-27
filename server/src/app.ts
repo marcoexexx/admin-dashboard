@@ -22,6 +22,7 @@ import AppError, { errorHandler } from './utils/appError'
 import redisClient from './utils/connectRedis'
 
 import authRouter from './routers/auth.route'
+import orderRouter from './routers/order.route'
 import meRouter from './routers/me.route'
 import permissionRouter from './routers/permission.route'
 import exchangeRouter from './routers/exchange.route'
@@ -96,6 +97,7 @@ app.get("/healthcheck", async (_: Request, res: Response, next: NextFunction) =>
 })
 
 app.use("/api/v1/auth", authRouter)
+app.use("/api/v1/orders", orderRouter)
 app.use("/api/v1/me", meRouter)
 app.use("/api/v1/permissions", permissionRouter)
 app.use("/api/v1/exchanges", exchangeRouter)
