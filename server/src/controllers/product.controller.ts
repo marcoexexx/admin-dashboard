@@ -214,8 +214,8 @@ export async function createMultiProductsHandler(
     const buf = fs.readFileSync(excelFile.path)
     const data = parseExcel(buf) as CreateMultiProductsInput
 
-    await Promise.all(data.map(product => {
-      return db.product.upsert({
+    for (const product of data) {
+      await db.product.upsert({
         where: {
           id: product.id
         },
@@ -281,7 +281,7 @@ export async function createMultiProductsHandler(
           discount: product.discount,
         },
       })
-    }))
+    }
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {
