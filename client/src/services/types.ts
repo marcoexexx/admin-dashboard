@@ -1,7 +1,7 @@
 type Role =
   | "Admin"
   | "User"
-  | "Employee"
+  | "Shopowner"
   | "*"
 
 

@@ -107,7 +107,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -137,7 +137,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -167,7 +167,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -198,7 +198,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "change-role/:userId",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "",
@@ -225,7 +225,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -255,7 +255,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -285,7 +285,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -319,7 +319,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Employee"]} />,
+                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
