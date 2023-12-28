@@ -17,6 +17,9 @@ export function SalesCategoriesList() {
         page: salesCategoryFilter?.page || 1,
         pageSize: salesCategoryFilter?.limit || 10
       },
+      include: {
+        _count: true
+      }
     }),
     select: data => data
   })

@@ -4,7 +4,7 @@ import { FormModal } from "@/components/forms";
 import { MuiButton } from "@/components/ui";
 import { CreateSalesCategoryInput } from "./forms";
 import { SalesCategoriesActions } from "./SalesCategoriesActions";
-import { Brand, SalesCategory } from "@/services/types";
+import { SalesCategory } from "@/services/types";
 import { useState } from "react"
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
@@ -13,14 +13,35 @@ import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import { RenderCountLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
 
 
-const columnData: TableColumnHeader<Brand>[] = [
+const columnData: TableColumnHeader<SalesCategory>[] = [
   {
     id: "name",
     align: "left",
     name: "Name"
   },
+  {
+    id: "startDate",
+    align: "left",
+    name: "Start date"
+  },
+  {
+    id: "endDate",
+    align: "left",
+    name: "End date"
+  },
+  {
+    id: "isActive",
+    align: "left",
+    name: "Sttus"
+  },
+  {
+    id: "_count",
+    align: "left",
+    name: "Count"
+  }
 ]
 
 const columnHeader = columnData.concat([
@@ -212,7 +233,18 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {row.name}
+                    {col.id === "name"
+                      ? <RenderSalesCategoryLabel salesCategory={row} />
+                      : col.id === "startDate"
+                      ? (new Date(row.startDate)).toLocaleString()
+                      : col.id === "endDate"
+                      ? (new Date(row.endDate)).toLocaleString()
+                      : col.id === "isActive"
+                      ? row.isActive ? "Active" : "UnActive"
+                      : col.id === "_count"
+                      ? <RenderCountLabel _count={row._count} />
+                      : null
+                    }
                   </Typography>
                 </TableCell>)}
 

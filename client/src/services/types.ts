@@ -213,6 +213,10 @@ export type Brand = {
   // relationship
   products?: Product[]
 
+  _count: {
+    products: number
+  }
+
   createdAt: string | Date
   updatedAt: string | Date
 }
@@ -233,6 +237,11 @@ export type Exchange = {
 export type SalesCategory = {
   id: string,
   name: string
+  startDate: string | Date
+  endDate: string | Date
+  discount: number
+  isActive: boolean
+  description?: string
 
   // relationship (MM)
   products?: {
@@ -240,6 +249,10 @@ export type SalesCategory = {
     salesCategoryId: string
     product: Product
   }[]
+
+  _count: {
+    products: number
+  }
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -256,6 +269,10 @@ export type Category = {
     categoryId: string
     product: Product
   }[]
+
+  _count: {
+    products: number
+  }
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -364,7 +381,7 @@ export type CategoryResponse = Omit<HttpResponse, "message"> & { category: Categ
 
 export type CouponResponse = Omit<HttpResponse, "message"> & { coupon: Coupon };
 
-export type SalesCategoryResponse = Omit<HttpResponse, "message"> & { category: SalesCategory };
+export type SalesCategoryResponse = Omit<HttpResponse, "message"> & { salesCategory: SalesCategory };
 
 export type ProductResponse = Omit<HttpResponse, "message"> & { product: Product };
 

@@ -1,21 +1,36 @@
+import dayjs from "dayjs";
 import { Box, Grid, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { MuiButton } from "@/components/ui";
+import { DatePickerField, EditorInputField } from "@/components/input-fields";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { object, string, z } from "zod";
+import { boolean, number, object, string, z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { queryClient } from "@/components";
-import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
 import { getSalesCategoryFn, updateSalesCategoryFn } from "@/services/salesCategoryApi";
 
+
 const updateSalesCategorySchema = object({
-  name: string()
-    .min(0).max(128).optional()
+  name: string({ required_error: "Sales category name is required" })
+    .min(1).max(128),
+  startDate: z.any(),
+  endDate: z.any(),
+  discount: number({ required_error: "discount is required" }).max(100),
+  isActive: boolean().default(true),
+  description: string().optional(),
 })
 
 export type UpdateSalesCategoryInput = z.infer<typeof updateSalesCategorySchema>
+
+const toUpdateFields: (keyof UpdateSalesCategoryInput)[] = [
+  "name", "discount",
+  "startDate", "endDate",
+  "description"
+]
+
 
 export function UpdateSalesCategoryForm() {
   const { state: {modalForm}, dispatch } = useStore()
@@ -25,14 +40,14 @@ export function UpdateSalesCategoryForm() {
   const from = "/sales-categories"
 
   const { 
-    data: brand,
+    data: salesCategory,
     isSuccess: isSuccessFetchSalesCategory,
     fetchStatus: fetchStatusSalesCategory
   } = useQuery({
     enabled: !!salesCategoryId,
     queryKey: ["sales-categories", { id: salesCategoryId }],
     queryFn: args => getSalesCategoryFn(args, { salesCategoryId }),
-    select: data => data?.category
+    select: data => data?.salesCategory
   })
 
   const {
@@ -63,42 +78,64 @@ export function UpdateSalesCategoryForm() {
   })
 
   useEffect(() => {
-    if (isSuccessFetchSalesCategory && brand && fetchStatusSalesCategory === "idle") methods.setValue("name", brand.name)
+    if (isSuccessFetchSalesCategory && salesCategory && fetchStatusSalesCategory === "idle") {
+      for (const field of toUpdateFields) {
+        if (field === "startDate" || field === "endDate") methods.setValue(field, dayjs(salesCategory[field]))
+        else if (field === "description" && !salesCategory.description) methods.setValue("description", undefined)
+        else methods.setValue(field, salesCategory[field])
+      }
+    }
   }, [isSuccessFetchSalesCategory, fetchStatusSalesCategory])
 
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods
-
-  useEffect(() => {
-    setFocus("name")
-  }, [setFocus])
+  const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<UpdateSalesCategoryInput> = (value) => {
     if (salesCategoryId) updateSalesCategory({ salesCategoryId, salesCategory: value })
   }
 
-  return (
-    <>
-      <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
-          <Grid item xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("name")} 
-                label="Name" 
-                error={!!errors.name} 
-                helperText={!!errors.name ? errors.name.message : ""} 
-              />
-            </Box>
-          </Grid>
 
-          <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Save</MuiButton>
-          </Grid>
+  return (
+    <FormProvider {...methods}>
+      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid item xs={12} md={6}>
+          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <TextField focused fullWidth {...register("name")} label="Name" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
+            <DatePickerField fieldName="startDate" required />
+          </Box>
         </Grid>
-      </FormProvider>
-    </>
+
+        <Grid item xs={12} md={6}>
+          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <TextField 
+              focused
+              fullWidth 
+              {...register("discount", {
+                valueAsNumber: true
+              })} 
+              type="number"
+              inputProps={{
+                step: "0.01"
+              }}
+              label="Discount percent" 
+              error={!!errors.discount} 
+              helperText={!!errors.discount ? errors.discount.message : ""} 
+            />
+            <DatePickerField fieldName="endDate" required />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <EditorInputField fieldName="description" />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <MuiButton variant="contained" type="submit">Save</MuiButton>
+        </Grid>
+      </Grid>
+    </FormProvider>
   )
 }
 

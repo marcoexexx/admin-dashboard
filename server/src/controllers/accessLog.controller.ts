@@ -1,9 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import logging from "../middleware/logging/logging";
-import AppError from "../utils/appError";
-import { db } from "../utils/db";
 import { HttpListResponse, HttpResponse } from "../utils/helper";
-import { DeleteAccessLogSchema } from "../schemas/accessLog.schema";
+import { AccessLogFilterPagination, DeleteAccessLogSchema } from "../schemas/accessLog.schema";
+import { db } from "../utils/db";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+import { convertNumericStrings } from "../utils/convertNumber";
+import AppError from "../utils/appError";
+import logging from "../middleware/logging/logging";
+
 
 export async function getAccessLogsHandler(
   req: Request,
@@ -16,15 +19,32 @@ export async function getAccessLogsHandler(
 
     if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
 
+    const { filter = {}, pagination, include: includes } = convertNumericStrings(req.query)
+    const include = convertStringToBoolean(includes) as AccessLogFilterPagination["include"]
+    const {
+      browser,
+      ip,
+      platform,
+      date,
+    } = filter || { status: undefined }
+    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
+      { page: 1, pageSize: 10 }
+
+    const offset = (page - 1) * pageSize
+
     const [count, logs] = await db.$transaction([
       db.accessLog.count(),
       db.accessLog.findMany({
         where: {
-          userId: user.id
+          userId: user.id,
+          browser,
+          ip,
+          platform,
+          date,
         },
-        include: {
-          user: true
-        }
+        include,
+        skip: offset,
+        take: pageSize,
       })
     ])
 

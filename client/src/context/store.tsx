@@ -60,6 +60,7 @@ export type Store = {
     limit?: number,
     mode?: "insensitive" | "default",
     include?: {
+      _count?: boolean
       likedUsers?: boolean,
       brand?: boolean,
       specification?: boolean,
@@ -82,31 +83,46 @@ export type Store = {
     fields?: any,
     page?: number,
     limit?: number,
-    mode?: "insensitive" | "default"
+    mode?: "insensitive" | "default",
+    include?: {
+      _count?: boolean
+    }
   },
   categoryFilter?: {
     fields?: any,
     page?: number,
-    limit?: number,
+    limit?: number
     mode?: "insensitive" | "default"
+    include?: {
+      _count?: boolean
+    }
   },
   brandFilter?: {
     fields?: any,
     page?: number,
     limit?: number,
     mode?: "insensitive" | "default"
+    include?: {
+      _count?: boolean
+    }
   },
   exchangeFilter?: {
     fields?: any,
     page?: number,
     limit?: number,
     mode?: "insensitive" | "default"
+    include?: {
+      _count?: boolean
+    }
   },
   couponFilter?: {
     fields?: any,
     page?: number,
     limit?: number,
     mode?: "insensitive" | "default"
+    include?: {
+      _count?: boolean
+    }
   }
 }
 
@@ -246,6 +262,7 @@ const initialState: Store = {
     limit: 10,
     mode: "default",
     include: {
+      _count: false,
       specification: false,
       brand: true,
       categories: {
@@ -263,26 +280,41 @@ const initialState: Store = {
   brandFilter: {
     page: 1,
     limit: 10,
-    mode: "default"
+    mode: "default",
+    include: {
+      _count: false,
+    },
   },
   categoryFilter: {
     page: 1,
     limit: 10,
+    include: {
+      _count: false,
+    },
     mode: "default"
   },
   salesCategoryFilter: {
     page: 1,
     limit: 10,
+    include: {
+      _count: false,
+    },
     mode: "default"
   },
   exchangeFilter: {
     page: 1,
     limit: 10,
+    include: {
+      _count: false,
+    },
     mode: "default"
   },
   couponFilter: {
     page: 1,
     limit: 10,
+    include: {
+      _count: false,
+    },
     mode: "default"
   }
 }

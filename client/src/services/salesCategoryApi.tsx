@@ -3,7 +3,7 @@ import { CreateSalesCategoryInput, DeleteSalesCategoryInput, UpdateSalesCategory
 import { HttpListResponse, HttpResponse, QueryOptionArgs, SalesCategory, SalesCategoryResponse } from "./types";
 
 
-export async function getSalesCategoriesFn(opt: QueryOptionArgs, { filter, pagination }: { filter: any, pagination: any }) {
+export async function getSalesCategoriesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<SalesCategory>>("/sales-categories", {
     ...opt,
     params: {
@@ -11,7 +11,8 @@ export async function getSalesCategoriesFn(opt: QueryOptionArgs, { filter, pagin
       pagination,
       orderBy: {
         updatedAt: "desc"
-      }
+      },
+      include
     },
   })
   return data

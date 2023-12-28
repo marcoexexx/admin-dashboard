@@ -3,7 +3,7 @@ import { Category, CategoryResponse, HttpListResponse, HttpResponse, QueryOption
 import { authApi } from "./authApi";
 
 
-export async function getCategoriesFn(opt: QueryOptionArgs, { filter, pagination }: { filter: any, pagination: any }) {
+export async function getCategoriesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<Category>>("/categories", {
     ...opt,
     params: {
@@ -11,7 +11,8 @@ export async function getCategoriesFn(opt: QueryOptionArgs, { filter, pagination
       pagination,
       orderBy: {
         updatedAt: "desc"
-      }
+      },
+      include
     },
   })
   return data

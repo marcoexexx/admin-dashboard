@@ -142,6 +142,7 @@ export function UpdateProductForm() {
 
         methods.setValue(key, value)
       })
+      if (product.brandId) methods.setValue("brandId", product.brandId)
     }
   }, [isSuccessFetchProduct, fetchStatusProduct])
 

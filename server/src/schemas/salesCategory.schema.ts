@@ -29,7 +29,7 @@ export const createSalesCategorySchema = object({
     name: string({ required_error: "Category name is required" }),
     startDate: string({ required_error: "startDate is required" }),
     endDate: string({ required_error: "endDate is required" }),
-    discount: number({ required_error: "discount is required" }),
+    discount: number({ required_error: "discount is required" }).max(100),
     isActive: boolean().default(true),
     description: string().optional(),
   })
@@ -40,7 +40,7 @@ export const createMultiSalesCategoriesSchema = object({
     name: string({ required_error: "Category name is required" }),
     startDate: string({ required_error: "startDate is required" }),
     endDate: string({ required_error: "endDate is required" }),
-    discount: number({ required_error: "discount is required" }),
+    discount: number({ required_error: "discount is required" }).max(100),
     isActive: boolean().default(true),
     description: string().optional(),
   }).array()
@@ -56,7 +56,7 @@ export const updateSalesCategorySchema = object({
     name: string({ required_error: "Category name is required" }),
     startDate: string({ required_error: "startDate is required" }),
     endDate: string({ required_error: "endDate is required" }),
-    discount: number({ required_error: "discount is required" }),
+    discount: number({ required_error: "discount is required" }).max(100),
     isActive: boolean().default(true),
     description: string().optional(),
   })

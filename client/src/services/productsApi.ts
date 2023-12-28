@@ -3,7 +3,7 @@ import { CreateProductInput, DeleteProductInput, ProductStatus, UpdateProductInp
 import { HttpListResponse, HttpResponse, Product, ProductResponse, QueryOptionArgs } from "./types";
 
 
-export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pagination }: { filter: any, include: any, pagination: any }) {
+export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pagination }: { filter: any, include?: any, pagination: any }) {
   const { data } = await authApi.get<HttpListResponse<Product>>("/products", {
     ...opt,
     params: {
