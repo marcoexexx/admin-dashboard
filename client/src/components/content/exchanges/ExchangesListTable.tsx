@@ -1,20 +1,21 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { useState } from "react"
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-
 import { FormModal } from "@/components/forms";
-import { usePermission, useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
 import { CreateExchangeInput } from "./forms";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { ExchangesActions } from ".";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react"
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
+import { usePermission, useStore } from "@/hooks";
+import { useNavigate } from "react-router-dom";
+
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import { Exchange } from "@/services/types";
 
 
-const columnData: TableColumnHeader<IExchange>[] = [
+const columnData: TableColumnHeader<Exchange>[] = [
   {
     id: "to",
     align: "left",
@@ -46,7 +47,7 @@ const columnHeader = columnData.concat([
 ])
 
 interface ExchangesListTableProps {
-  exchanges: IExchange[]
+  exchanges: Exchange[]
   count: number
   onDelete: (id: string) => void
   isLoading?: boolean

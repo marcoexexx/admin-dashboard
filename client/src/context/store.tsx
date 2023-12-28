@@ -1,5 +1,7 @@
+import { User } from "@/services/types"
 import { createContext, useReducer } from "react"
 import { i18n, Local } from "@/i18n"
+
 
 export type Store = {
   theme:
@@ -43,7 +45,7 @@ export type Store = {
       | "delete-coupon-multi"
     state: boolean
   },
-  user?: IUser
+  user?: User
   slidebar: boolean
   local: Local
   userFilter?: {

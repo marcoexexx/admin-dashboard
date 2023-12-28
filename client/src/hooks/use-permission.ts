@@ -1,5 +1,6 @@
 import { QueryFunction, useQuery } from "@tanstack/react-query"
 import { useStore } from "."
+import { PermissionsResponse } from "@/services/types"
 
 
 type ExtractPerm<T extends string> = T extends `${infer P}-permissions` ? P : never

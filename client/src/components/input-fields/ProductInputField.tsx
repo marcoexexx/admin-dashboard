@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Autocomplete, Paper, TextField, styled } from '@mui/material';
+import { useStore } from '@/hooks';
+import { getProductsFn } from '@/services/productsApi';
 import { useQuery } from '@tanstack/react-query';
+import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiButton } from '@/components/ui';
-import { useStore } from '@/hooks';
+import { Product } from '@/services/types';
+
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { getProductsFn } from '@/services/productsApi';
 
 
 const InnerPaper = styled(Paper)(() => ({
@@ -20,7 +22,7 @@ interface ProductInputFieldProps {
 
 export function ProductInputField({updateField = false}: ProductInputFieldProps) {
   const { control, setValue, getValues, formState: { errors } } = useFormContext<{ productId: string }>()
-  const [ selectedProduct, setSelectedProduct ] = useState<IProduct|null>(null)
+  const [ selectedProduct, setSelectedProduct ] = useState<Product|null>(null)
   const [ isOpenOptions, setIsOpenOptions ] = useState(false)
 
   const { dispatch } = useStore()
@@ -53,7 +55,7 @@ export function ProductInputField({updateField = false}: ProductInputFieldProps)
   }, [defaultProduct])
 
 
-  const handleProductChange = (_: React.SyntheticEvent, value: IProduct | null) => {
+  const handleProductChange = (_: React.SyntheticEvent, value: Product | null) => {
     if (value) {
       setSelectedProduct(value)
       setValue("productId", value.id)

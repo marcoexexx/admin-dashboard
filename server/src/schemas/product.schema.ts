@@ -2,6 +2,11 @@ import { number, object, string, z } from "zod";
 import { Pagination } from "./types";
 
 
+export const productStockStatus = ["Available", "OutOfStock", "AskForStock", "Discontinued"] as const
+export const productStatus = ["Draft", "Pending", "Published"] as const
+export const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"] as const
+
+
 export type ProductFilterPagination = {
   filter?: any,
   pagination?: Pagination,
@@ -25,7 +30,6 @@ export type ProductFilterPagination = {
     specification?: boolean,
     reviews?: boolean,
     creator?: boolean,
-
     coupons?: boolean,
     orderItem?: boolean,
     availableSets?: {
@@ -71,22 +75,16 @@ export const createProductSchema = object({
     }).array(),
     overview: string({ required_error: "Overview is required" })
       .min(1).max(5000),
-    features: string({ required_error: "Features is required" })
-      .min(1).max(5000),
-    warranty: number({ required_error: "Warranty is required "}),
     categories: string().array().default([]),
-    colors: string({ required_error: "Color is required" })
-      .min(1).max(128).array(),
-    instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]),
+    instockStatus: z.enum(productStockStatus).default("AskForStock"),
     description: string({ required_error: "Description is required" })
       .min(1).max(5000),
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
-    discount: number().min(0),
-    priceUnit: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
+    priceUnit: z.enum(priceUnit),
     salesCategory: string().array(),
     quantity: number().min(0),
-    status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
+    status: z.enum(productStatus).default("Draft"),
 
     itemCode: string().nullable().optional(),
   })
@@ -108,26 +106,20 @@ export const createMultiProductsSchema = object({
       .min(1).max(128),
     title: string({ required_error: "Title is required" })
       .min(1).max(128),
-    specification: string({ required_error: "Specifications name are required "}),  //  by splitting "\n"
+    specification: string().optional(),  //  by splitting "\n"
     overview: string({ required_error: "Overview is required" })
       .min(1).max(5000),
-    features: string({ required_error: "Features is required" })
-      .min(1).max(5000),
-    warranty: number({ required_error: "Warranty is required "}),
-    categories: string({ required_error: "Categories name are required "}), // by splitting "\n"
-    colors: string({ required_error: "Color is required" })
-      .min(2).max(128),
-    instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]),
+    categories: string().optional(), // by splitting "\n"
+    instockStatus: z.enum(productStockStatus).default("AskForStock"),
     description: string({ required_error: "Description is required" })
       .min(1).max(5000),
     dealerPrice: number().min(0),
     images: string(),
     marketPrice: number().min(0),
-    discount: number().min(0),
-    priceUnit: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
-    salesCategory: string({ required_error: "Sales and categories name are required"}),  // by splitting "\n"
+    priceUnit: z.enum(priceUnit).default("MMK"),
+    salesCategory: string().optional(),  // by splitting "\n"
     quantity: number().min(0),
-    status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
+    status: z.enum(productStatus).default("Draft"),
 
     itemCode: string().nullable().optional(),
   }).array()
@@ -155,27 +147,25 @@ export const updateProductSchema = object({
     }).array().default([]),
     overview: string({ required_error: "Overview is required" })
       .min(1).max(5000),
-    features: string({ required_error: "Features is required" })
-      .min(1).max(5000),
-    warranty: number({ required_error: "Warranty is required "}),
     categories: string().array().default([]),
-    colors: string({ required_error: "Color is required" })
-      .min(1).max(128).array(),
-    instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]),
+    instockStatus: z.enum(productStockStatus).default("AskForStock"),
     description: string({ required_error: "Description is required" })
       .min(1).max(5000),
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
-    discount: number().min(0),
-    priceUnit: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),  // enum
+    priceUnit: z.enum(priceUnit).default("MMK"),
     salesCategory: string().array(),
     quantity: number().min(0),
-    status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
+    status: z.enum(productStatus).default("Draft"),
 
     itemCode: string().nullable().optional(),
   })
 })
 
+
+export type ProductStockStatus = typeof productStockStatus[number]
+export type ProductStatus = typeof productStatus[number]
+export type PriceUnit = typeof priceUnit[number]
 
 export type GetProductInput = z.infer<typeof getProductSchema>["params"]
 export type CreateProductInput = z.infer<typeof createProductSchema>["body"]

@@ -1,5 +1,6 @@
 import { RenderBrandLabel, RenderSalesCategoryLabel } from "@/components/table-labels"
 import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLabel"
+import { Brand, Product } from "@/services/types"
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 
 
@@ -22,13 +23,17 @@ const columnHeader: {
 
 
 interface ProductRelationshipTableProps {
-  brand: IBrand,
-  categories: IProduct["categories"]
-  salesCategories: IProduct["salesCategory"]
+  brand: Brand | undefined,
+  categories: Product["categories"]
+  salesCategories: Product["salesCategory"]
 }
 
 export default function ProductRelationshipTable(props: ProductRelationshipTableProps) {
   const { brand, categories, salesCategories } = props
+
+
+  if (!brand) throw new Error("Product should have brand")
+
 
   const rows = [
     { 
@@ -39,12 +44,12 @@ export default function ProductRelationshipTable(props: ProductRelationshipTable
     { 
       id: "2", 
       relative: "categories", 
-      render: () => categories.map(cat => <RenderCategoryLabel key={cat.categoryId} category={cat.category} />)
+      render: () => categories?.map(cat => <RenderCategoryLabel key={cat.categoryId} category={cat.category} />)
     },
     { 
       id: "3", 
       relative: "sales categories", 
-      render: () => salesCategories.map(sale => <RenderSalesCategoryLabel key={sale.salesCategoryId} salesCategory={sale.salesCategory} />)
+      render: () => salesCategories?.map(sale => <RenderSalesCategoryLabel key={sale.salesCategoryId} salesCategory={sale.salesCategory} />)
     },
   ]
 

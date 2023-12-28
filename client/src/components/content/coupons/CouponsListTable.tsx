@@ -1,18 +1,19 @@
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
-import { BulkActions, LoadingTablePlaceholder } from "@/components";
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-
-import { FormModal } from "@/components/forms";
 import { usePermission, useStore } from "@/hooks";
-import { MuiButton } from "@/components/ui";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { CouponsActions } from ".";
 import { useNavigate } from "react-router-dom";
 import { getCouponsPermissionsFn } from "@/services/permissionsApi";
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
+import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { BulkActions, LoadingTablePlaceholder } from "@/components";
+import { FormModal } from "@/components/forms";
+import { MuiButton } from "@/components/ui";
+import { CouponsActions } from ".";
 import { RenderImageLabel, RenderProductLabel } from "@/components/table-labels";
 import { CreateCouponInput } from "./forms";
+import { Coupon, Product } from "@/services/types";
+
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 
 const columnData: TableColumnHeader<Coupon>[] = [
@@ -251,7 +252,7 @@ export function CouponsListTable(props: CouponsListTableProps) {
                         : key === "isUsed"
                         ? dataRow ? "Used" : "Un used"
                         : key === "product" && dataRow
-                        ? <RenderProductLabel product={dataRow as IProduct} /> 
+                        ? <RenderProductLabel product={dataRow as Product} /> 
                         : dataRow as string}
                     </Typography>
                   </TableCell>

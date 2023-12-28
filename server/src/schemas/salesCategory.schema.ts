@@ -1,4 +1,4 @@
-import { object, string, z } from "zod";
+import { boolean, number, object, string, z } from "zod";
 import { Pagination } from "./types";
 import { CreateBrandInput } from "./brand.schema";
 
@@ -26,13 +26,23 @@ const params = {
 
 export const createSalesCategorySchema = object({
   body: object({
-    name: string({ required_error: "Category name is required" })
+    name: string({ required_error: "Category name is required" }),
+    startDate: string({ required_error: "startDate is required" }),
+    endDate: string({ required_error: "endDate is required" }),
+    discount: number({ required_error: "discount is required" }),
+    isActive: boolean().default(true),
+    description: string().optional(),
   })
 })
 
 export const createMultiSalesCategoriesSchema = object({
   body: object({
-    name: string({ required_error: "Category name is required" })
+    name: string({ required_error: "Category name is required" }),
+    startDate: string({ required_error: "startDate is required" }),
+    endDate: string({ required_error: "endDate is required" }),
+    discount: number({ required_error: "discount is required" }),
+    isActive: boolean().default(true),
+    description: string().optional(),
   }).array()
 })
 
@@ -43,7 +53,12 @@ export const getSalesCategorySchema = object({
 export const updateSalesCategorySchema = object({
   ...params,
   body: object({
-    name: string({ required_error: "Category name is required" })
+    name: string({ required_error: "Category name is required" }),
+    startDate: string({ required_error: "startDate is required" }),
+    endDate: string({ required_error: "endDate is required" }),
+    discount: number({ required_error: "discount is required" }),
+    isActive: boolean().default(true),
+    description: string().optional(),
   })
 })
 

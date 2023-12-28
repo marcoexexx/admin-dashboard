@@ -84,9 +84,15 @@ export async function createSalesCategoryHandler(
   next: NextFunction
 ) {
   try {
-    const { name } = req.body
+    const { name, startDate, endDate, discount, description } = req.body
     const category = await db.salesCategory.create({
-      data: { name },
+      data: { 
+        name,
+        startDate,
+        endDate,
+        discount,
+        description
+      },
     })
 
     res.status(201).json(HttpDataResponse({ category }))
@@ -115,12 +121,16 @@ export async function createMultiSalesCategoriesHandler(
     const data = parseExcel(buf) as CreateMultiSalesCategoriesInput
 
     // Update not affected
-    await Promise.all(data.map(salesCategory => db.salesCategory.upsert({
+    await Promise.all(data.map(({name, startDate, endDate, discount, description}) => db.salesCategory.upsert({
       where: {
-        name: salesCategory.name
+        name
       },
       create: {
-        name: salesCategory.name,
+        name,
+        startDate,
+        endDate,
+        discount,
+        description
       },
       update: {}
     })))

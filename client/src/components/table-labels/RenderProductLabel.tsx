@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom"
 import { LinkLabel } from ".."
 import { useStore } from "@/hooks"
+import { Product } from "@/services/types"
 
-export function RenderProductLabel({product}: {product: IProduct}) {
+export function RenderProductLabel({product}: {product: Product}) {
   const navigate = useNavigate()
 
   const { dispatch } = useStore()

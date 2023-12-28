@@ -1,13 +1,16 @@
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { MuiButton } from '@/components/ui';
 import { Controller, useFormContext } from 'react-hook-form';
+import { Category } from '@/services/types';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { getCategoriesFn } from '@/services/categoryApi';
 import { useStore } from '@/hooks';
-import { MuiButton } from '@/components/ui';
+import filter from 'lodash/filter';
+
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import filter from 'lodash/filter';
+
 
 const InnerPaper = styled(Paper)(() => ({
   padding: "10px"
@@ -20,7 +23,7 @@ interface CatgoryMultiInputFieldProps {
 
 export function CatgoryMultiInputField({updateField = false}: CatgoryMultiInputFieldProps) {
   const { control, setValue, getValues, formState: { errors } } = useFormContext<{ categories: string[] }>()
-  const [ selectedCategories, setSelectedCategories ] = useState<Pick<ICategory, "id" | "name">[]>([])
+  const [ selectedCategories, setSelectedCategories ] = useState<Pick<Category, "id" | "name">[]>([])
   const [ isOpenOptions, setIsOpenOptions ] = useState(false)
 
   const { dispatch } = useStore()
@@ -52,7 +55,7 @@ export function CatgoryMultiInputField({updateField = false}: CatgoryMultiInputF
   }, [defaultCategories.length])
 
 
-  const handleCategoryChange = (_: React.SyntheticEvent, value: Pick<ICategory, "id" | "name">[] | null) => {
+  const handleCategoryChange = (_: React.SyntheticEvent, value: Pick<Category, "id" | "name">[] | null) => {
     if (value) {
       setSelectedCategories(value)
       setValue("categories", value.map(v => v.id))

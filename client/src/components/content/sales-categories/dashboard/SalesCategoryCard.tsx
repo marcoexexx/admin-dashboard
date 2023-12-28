@@ -1,13 +1,14 @@
 import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { MuiButton } from "@/components/ui";
 import { AddDashboardCard, DashboardCard, SuspenseLoader } from "@/components";
+import { SalesCategory } from "@/services/types";
 import { useQuery } from "@tanstack/react-query";
 import { getSalesCategoriesFn } from "@/services/salesCategoryApi";
 import { usePermission, useStore } from "@/hooks";
-
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone'
 import { useNavigate } from "react-router-dom";
 import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
+
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone'
 
 
 export function SalesCategoryCard() {
@@ -41,7 +42,7 @@ export function SalesCategoryCard() {
 
   if (isLoading || !data) return <SuspenseLoader />
 
-  const firstSalesCategory: ISalesCategory | undefined = data[0]
+  const firstSalesCategory: SalesCategory | undefined = data[0]
   const secondSalesCategory = isAllowedCreateSalesCategory
     ? null
     : data[1]

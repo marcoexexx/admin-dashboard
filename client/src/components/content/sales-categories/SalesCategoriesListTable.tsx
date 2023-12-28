@@ -1,21 +1,21 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { useState } from "react"
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
+import { FormModal } from "@/components/forms";
+import { MuiButton } from "@/components/ui";
+import { CreateSalesCategoryInput } from "./forms";
+import { SalesCategoriesActions } from "./SalesCategoriesActions";
+import { Brand, SalesCategory } from "@/services/types";
+import { useState } from "react"
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
+import { usePermission, useStore } from "@/hooks";
+import { useNavigate } from "react-router-dom";
+import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
+
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
-import { FormModal } from "@/components/forms";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
-import { MuiButton } from "@/components/ui";
 
-import { useNavigate } from "react-router-dom";
-import { CreateSalesCategoryInput } from "./forms";
-import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
-import { SalesCategoriesActions } from "./SalesCategoriesActions";
-
-
-const columnData: TableColumnHeader<IBrand>[] = [
+const columnData: TableColumnHeader<Brand>[] = [
   {
     id: "name",
     align: "left",
@@ -32,7 +32,7 @@ const columnHeader = columnData.concat([
 ])
 
 interface SalesCategoriesListTableProps {
-  salesCategoiries: ISalesCategory[]
+  salesCategoiries: SalesCategory[]
   count: number
   isLoading?: boolean
   onDelete: (id: string) => void

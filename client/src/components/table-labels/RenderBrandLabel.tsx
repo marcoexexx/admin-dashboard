@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom"
 import { LinkLabel } from ".."
+import { Brand } from "@/services/types"
 
-export function RenderBrandLabel({brand}: {brand: IBrand}) {
+export function RenderBrandLabel({brand}: {brand: Brand}) {
   const navigate = useNavigate()
   const to = "/brands/detail/" + brand.id
 

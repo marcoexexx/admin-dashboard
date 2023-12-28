@@ -1,4 +1,5 @@
 import { CreateCouponInput, DeleteCouponInput, UpdateCouponInput } from "@/components/content/coupons/forms";
+import { Coupon, CouponResponse, HttpListResponse, HttpResponse, QueryOptionArgs } from "./types";
 import { authApi } from "./authApi";
 
 

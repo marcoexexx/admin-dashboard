@@ -1,121 +1,197 @@
-type Role =
+import { OrderStatus } from "@/components/content/orders/forms"
+import { PriceUnit, ProductStatus, ProductStockStatus } from "@/components/content/products/forms"
+
+
+export type Role =
   | "Admin"
   | "User"
   | "Shopowner"
   | "*"
 
 
-type UserProvider =
+export type UserProvider =
   | "Local"
   | "Google"
   | "Facebook"
 
 
-type InstockStatus =
-  | "InStock"
-  | "OutOfStock"
-  | "AskForStock"
-
-
-type PriceUnit =
-  | "MMK"
-  | "USD"
-  | "SGD"
-  | "THB"
-  | "KRW"
-
-
-type Coupon = {
-  id: string,
-  points: number,
+export type Coupon = {
+  id: string
+  points: number
   dolla: number
-  productId?: string,
-  product?: IProduct,
-  expiredDate: string | Date,
-  isUsed: boolean,
-  image: string,
-  label: string,
+  expiredDate: string | Date
+  isUsed: boolean
+  image: string
+  label: string
+
+  // relationship
+  product?: Product
+  productId?: string
+  review?: Review
+  reviewId?: string
 
   createdAt: string | Date
   updatedAt: string | Date
 }
 
 
-type Reward = {
-  id: string,
-  points: number,
-  coupons: Coupon[],
+export type Reward = {
+  id: string
+  points: number
+
+  // relationship
+  coupons?: Coupon[]
 
   createdAt: string | Date
   updatedAt: string | Date
 }
 
-interface IUser {
-  // favorites        Favorites[]
-  // createdProducts  Product[]    @relation("CreatedBy")
-  // orders           Order[]
-  // reviews          Review[]
-  // accessLogs       AccessLog[]
-  // addresses        Address[]
 
-  id: string,
-  name: string,
-  email: string,
-  password: string,
-  username: string,
-  role: Role,
-  image: string,
+export type AccessLog = {
+  id: string
+  browser: string
+  ip: string
+  platform: string
+  date: string | Date
+
+  // relationship
+  user?: User
+  userId?: string
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+export type Order = {
+  id: string
+
+  // relationship
+  userId?: string
+  user?: User
+  // orderItems?: OrderItem[]
+  status?: OrderStatus
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+export type User = {
+  id: string
+  name: string
+  email: string
+  password: string
+  username: string
+  role: Role
+  image: string
   coverImage: string
-  verified: boolean,
-  provider: UserProvider,
-  reward: Reward
-  verificationCode?: string,
+  verified: boolean
+  provider: UserProvider
+  verificationCode?: string
+
+  // relationship
+  review?: Review
+  reviewId?: string
+  createdProducts?: Product[]
+  reviews?: Review
+  accessLogs?: AccessLog[]
+  addresses?: Address[]
+  order?: Order[]
 
   createdAt: string | Date
   updatedAt: string | Date
 }
 
 
-// TODO: order interface
+export type ProductSpecification = {
+  id: string
+  name: string
+  value: string
 
-// TODO: accessLog interface
+  // relationship
+  product?: Product
+  productId?: string
 
-type ProductSpecification = {
-  id: string,
-  name: string,
-  value: string,
   createdAt: string | Date
   updatedAt: string | Date
 }
 
-type ProductRecommendations = {
+
+export type ProductRecommendations = {
   id: string
   images: string[]
   totalPrice: number
   description: string
-  product: IProduct
-  productId: string
+
+  // relationship
+  product?: Product
+  productId?: string
 
   createdAt: string | Date
   updatedAt: string | Date
 }
 
-interface IProduct {
-  id: string,
-  brandId: string,
-  brand: IBrand,
-  categories: {
-    productId: string,
-    categoryId: string,
-    category: ICategory
-  }[],
-  salesCategory: {
-    productId: string,
-    salesCategoryId: string,
-    salesCategory: ISalesCategory
-  }[],
-  title: string;
-  price: number;
+
+export type ProductSet = {
+  id: string
+  images: string[]
+  totalPrice: number
+  description: string
+
+  // relationship (MM)
+  products?: {
+    productId: string
+    productSetId: string
+    product: Product
+  }[]
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+export type Product = {
+  id: string
+  title: string
+  price: number
+  images: string[]
+  overview: string
+  instockStatus: ProductStockStatus
+  description: string
+  dealerPrice: number
+  marketPrice: number
+  status: ProductStatus
+  priceUnit: PriceUnit
+  quantity: number
+  itemCode?: string
+
+
+  // relationship
+  brandId?: string
+  brand?: Brand
+  specification?: ProductSpecification[]
+  coupons: Coupon[]
+  creator?: User
+  creatorId?: string
+
+  // relationship (MM)
+  categories?: {
+    productId: string
+    categoryId: string
+    category: Category
+  }[]
+  salesCategory?: {
+    productId: string
+    salesCategoryId: string
+    salesCategory: SalesCategory
+  }[]
+  availableSets?: {
+    productId: string
+    productSetId: string
+    productSet: ProductSet
+  }[]
+
   _count: {
     specification: number
     categories: number
@@ -124,100 +200,69 @@ interface IProduct {
     salesCategory: number
     reviews: number
   }
-  images: string[]; // Assuming it's an array of image URLs
-  specification: ProductSpecification[];
-  overview: string;
-  features: string;
-  warranty: number;
-  productRecommendations: ProductRecommendations;
-  colors: string[];
-  instockStatus: InstockStatus;
-  description: string;
-  dealerPrice: number;
-  marketPrice: number;
-  discount: number;
-  status: ProductStatus;
-  priceUnit: PriceUnit;
-  quantity: number;
-  creator?: IUser;
-  itemCode?: string;
-  coupons: Coupon[];
-  creatorId?: string;
-  createdAt: string; // Assuming it's a string representation of a date
-  updatedAt: string; // Assuming it's a string representation of a date
-}
 
-
-interface IBrand {
-  id: string,
-  name: string
-  _count: number
   createdAt: string | Date
   updatedAt: string | Date
 }
 
 
-interface IExchange {
+export type Brand = {
   id: string,
-  _count: number
+  name: string
+
+  // relationship
+  products?: Product[]
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+export type Exchange = {
+  id: string,
   from: PriceUnit
   to: PriceUnit
   rate: number
   date: Date | string
+
   createdAt: string | Date
   updatedAt: string | Date
 }
 
 
-interface ISalesCategory {
+export type SalesCategory = {
   id: string,
   name: string
+
+  // relationship (MM)
+  products?: {
+    productId: string
+    salesCategoryId: string
+    product: Product
+  }[]
+
   createdAt: string | Date
   updatedAt: string | Date
 }
 
 
-interface ICategory {
+export type Category = {
   id: string,
   name: string
+
+  // relationship (MM)
+  products?: {
+    productId: string
+    categoryId: string
+    product: Product
+  }[]
+
   createdAt: string | Date
   updatedAt: string | Date
 }
 
 
-interface ISalesCategory {
-  id: string,
-  name: string
-  createdAt: string | Date
-  updatedAt: string | Date
-}
-
-interface ISettings {
-  theme:
-  | "light"
-  | "dark",
-  local:
-  | "my"
-  | "en"
-}
-
-
-type ProductStatus = "Draft" | "Pending" | "Published"
-
-type HttpResponse = {
-  status: number,
-  error?: string | string[],
-  message: string
-}
-
-type HttpListResponse<T> = {
-  status: number,
-  results: Array<T>,
-  count: number,
-  error?: string | string[],
-}
-
-type PermissionsResponse = {
+export type PermissionsResponse = {
   status: number,
   permissions: {
     createAllowedRoles: Role[],
@@ -229,13 +274,7 @@ type PermissionsResponse = {
 }
 
 
-type QueryOptionArgs = {
-  queryKey: any
-  signal: AbortSignal,
-  meta: Record<string, unknown> | undefined
-}
-
-type IAddress = {
+export type Address = {
   id: string,
   isDefault: boolean
   name: string
@@ -243,38 +282,36 @@ type IAddress = {
   state: string
   township: string
   fullAddress: string
+
+  // relationship
+  userId?: string
+  user?: User
+
   createdAt: string | Date
   updatedAt: string | Date
 }
 
-type OrderState =
-  | "Pending"
-  | "Processing"
-  | "Shipped"
-  | "Delivered"
-  | "Cancelled"
-
-
-type IOrder = {
+export type Review = {
   id: string,
-  state: OrderState
-  quantity: number
-  createdAt: string | Date
-  updatedAt: string | Date
-}
-
-type IReview = {
-  id: string,
-  createdAt: string | Date
-  updatedAt: string | Date
   comment: string
+
+  // relationship
+  userId?: string
+  user?: User
+  productId?: string
+  product?: Product
+
+  createdAt: string | Date
+  updatedAt: string | Date
 }
 
-type IUserProfile = IUser & {
-  order: IOrder[],
-  favorites: IProduct[],
-  addresses: IAddress[],
-  reviews: IReview[],
+
+// TODO: User profile
+export type UserProfile = User & {
+  order: Order[],
+  favorites: Product[],
+  addresses: Address[],
+  reviews: Review[],
   _count: {
     favorites: number,
     order: number,
@@ -285,22 +322,52 @@ type IUserProfile = IUser & {
   }
 }
 
-type LoginResponse = Omit<HttpResponse, "message"> & { accessToken: string };
 
-type UserResponse = Omit<HttpResponse, "message"> & { user: IUser, redirectUrl: string | undefined };
+export type Settings = {
+  theme:
+  | "light"
+  | "dark",
+  local:
+  | "my"
+  | "en"
+}
 
-type UserProfileResponse = Omit<HttpResponse, "message"> & {
-  user: IUserProfile
+
+export type HttpResponse = {
+  status: number,
+  error?: string | string[],
+  message: string
+}
+
+export type HttpListResponse<T> = {
+  status: number,
+  results: Array<T>,
+  count: number,
+  error?: string | string[],
+}
+
+
+export type QueryOptionArgs = {
+  queryKey: any
+  signal: AbortSignal,
+  meta: Record<string, unknown> | undefined
+}
+export type LoginResponse = Omit<HttpResponse, "message"> & { accessToken: string };
+
+export type UserResponse = Omit<HttpResponse, "message"> & { user: User, redirectUrl: string | undefined };
+
+export type UserProfileResponse = Omit<HttpResponse, "message"> & {
+  user: UserProfile
 };
 
-type CategoryResponse = Omit<HttpResponse, "message"> & { category: ICategory };
+export type CategoryResponse = Omit<HttpResponse, "message"> & { category: Category };
 
-type CouponResponse = Omit<HttpResponse, "message"> & { coupon: Coupon };
+export type CouponResponse = Omit<HttpResponse, "message"> & { coupon: Coupon };
 
-type SalesCategoryResponse = Omit<HttpResponse, "message"> & { category: ISalesCategory };
+export type SalesCategoryResponse = Omit<HttpResponse, "message"> & { category: SalesCategory };
 
-type ProductResponse = Omit<HttpResponse, "message"> & { product: IProduct };
+export type ProductResponse = Omit<HttpResponse, "message"> & { product: Product };
 
-type BrandResponse = Omit<HttpResponse, "message"> & { brand: IBrand };
+export type BrandResponse = Omit<HttpResponse, "message"> & { brand: Brand };
 
-type ExchangeResponse = Omit<HttpResponse, "message"> & { exchange: IExchange };
+export type ExchangeResponse = Omit<HttpResponse, "message"> & { exchange: Exchange };

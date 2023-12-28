@@ -1,6 +1,8 @@
 import { LoginUserInput, RegisterUserInput } from "@/components/forms/auth";
+import { HttpResponse, LoginResponse, QueryOptionArgs, UserProfileResponse, UserResponse } from "./types";
 import getConfig from "@/libs/getConfig";
 import axios from "axios";
+
 
 const BASE_URL = getConfig("backendEndpoint")
 
@@ -10,6 +12,7 @@ export const authApi = axios.create({
 })
 
 authApi.defaults.headers.common["Content-Type"] = "application/json"
+
 
 export async function refreshAccessTokenFn() {
   const res = await authApi.get<LoginResponse>("auth/refresh");
