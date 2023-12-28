@@ -1,15 +1,18 @@
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, MenuItem, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme, Theme } from "@mui/material"
 import { useState } from "react"
+import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
+import { getProductPermissionsFn } from "@/services/permissionsApi";
+import { useNavigate } from "react-router-dom";
+import { Box, Card, CardContent, Checkbox, Divider, IconButton, MenuItem, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme, Theme } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { ProductsActions } from ".";
-import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { FormModal } from "@/components/forms";
-import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { RenderBrandLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
 import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLabel";
-import { useNavigate } from "react-router-dom";
+import { ProductStatus } from "./forms";
+import { Product, User } from "@/services/types";
+
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
@@ -37,7 +40,7 @@ const productStatus: {
 ]
 
 
-const columnData: TableColumnHeader<IProduct>[] = [
+const columnData: TableColumnHeader<Product>[] = [
   {
     id: "title",
     align: "left",
@@ -95,12 +98,12 @@ const columnHeader = columnData.concat([
 
 
 interface ProductsListTableProps {
-  products: IProduct[]
+  products: Product[]
   isLoading?: boolean
   count: number,
-  me: IUser,
+  me: User,
   onDelete: (id: string) => void
-  onStatusChange: (product: IProduct, status: ProductStatus) => void
+  onStatusChange: (product: Product, status: ProductStatus) => void
   onMultiDelete: (ids: string[]) => void
   onCreateManyProducts: (data: ArrayBuffer) => void
 }
@@ -131,9 +134,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handleUpdateAction = (product: IProduct) => (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUpdateAction = (product: Product) => (_: React.MouseEvent<HTMLButtonElement>) => {
     if (product.status === "Draft") navigate(`/products/update/${product.id}`)
-    dispatch({
+    else dispatch({
       type: "OPEN_TOAST",
       payload: {
         message: "Warning: only `Draft` state can edit!",
@@ -142,7 +145,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
     })
   }
 
-  const handleClickDeleteAction = (product: IProduct) => (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClickDeleteAction = (product: Product) => (_: React.MouseEvent<HTMLButtonElement>) => {
     if (product.status === "Draft") {
       setDeleteId(product.id)
       dispatch({
@@ -150,7 +153,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
         payload: "delete-product"
       })
     }
-    dispatch({
+    else dispatch({
       type: "OPEN_TOAST",
       payload: {
         message: "Warning: only `Draft` state can delete!",
@@ -162,11 +165,11 @@ export function ProductsListTable(props: ProductsListTableProps) {
   const handleOnExport = () => {
     const prepare = products.map(product => ({
       ...product,
-      brandName: product.brand.name,
+      brandName: product.brand!.name,
       images: product.images.join("\n"),
-      categories: product.categories.map(category => category.category.name).join("\n"),
-      salesCategory: product.salesCategory.map(sale => sale.salesCategory.name).join("\n"),
-      specification: product.specification.map(spec => `${spec.name}: ${spec.value}`).join("\n")
+      categories: product.categories?.map(category => category.category.name).join("\n"),
+      salesCategory: product.salesCategory?.map(sale => sale.salesCategory.name).join("\n"),
+      specification: product.specification?.map(spec => `${spec.name}: ${spec.value}`).join("\n")
     }))
 
     exportToExcel(prepare, "Products")
@@ -217,7 +220,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
     })
   }
 
-  const handleChangeProductStatus = (product: IProduct) => (evt: SelectChangeEvent) => {
+  const handleChangeProductStatus = (product: Product) => (evt: SelectChangeEvent) => {
     const { value } = evt.target
     onStatusChange(product, value as ProductStatus)
   }
@@ -326,9 +329,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
                   const key = col.id as keyof typeof row
 
                   const getRow = (key: keyof typeof row) => {
-                    if (key === "categories") return row.categories.map(({category}, idx) => <RenderCategoryLabel key={idx} category={category} />)
-                    if (key === "salesCategory") return row.salesCategory.map(({salesCategory}, idx) => <RenderSalesCategoryLabel key={idx} salesCategory={salesCategory} />)
-                    if (key === "brand") return <RenderBrandLabel brand={row.brand} />
+                    if (key === "categories" && row.categories) return row.categories.map(({category}, idx) => <RenderCategoryLabel key={idx} category={category} />)
+                    if (key === "salesCategory" && row.salesCategory) return row.salesCategory.map(({salesCategory}, idx) => <RenderSalesCategoryLabel key={idx} salesCategory={salesCategory} />)
+                    if (key === "brand" && row.brand) return <RenderBrandLabel brand={row.brand} />
                     if (key === "title") return <RenderProductLabel product={row} />
                     if (key === "creator") return row.creator ? <RenderUsernameLabel user={row.creator} me={me} /> : null
                     return row[key] as string

@@ -1,16 +1,18 @@
-import { CreateSalesCategoryInput, DeleteSalesCategoryInput, UpdateSalesCategoryInput } from "@/components/content/sales-categories/forms";
 import { authApi } from "./authApi";
+import { CreateSalesCategoryInput, DeleteSalesCategoryInput, UpdateSalesCategoryInput } from "@/components/content/sales-categories/forms";
+import { HttpListResponse, HttpResponse, QueryOptionArgs, SalesCategory, SalesCategoryResponse } from "./types";
 
 
-export async function getSalesCategoriesFn(opt: QueryOptionArgs, { filter, pagination }: { filter: any, pagination: any }) {
-  const { data } = await authApi.get<HttpListResponse<ISalesCategory>>("/sales-categories", {
+export async function getSalesCategoriesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+  const { data } = await authApi.get<HttpListResponse<SalesCategory>>("/sales-categories", {
     ...opt,
     params: {
       filter,
       pagination,
       orderBy: {
         updatedAt: "desc"
-      }
+      },
+      include
     },
   })
   return data

@@ -28,10 +28,11 @@ const orderItem = object({
 
 export const createOrderSchema = object({
   body: object({
-    orderItems: orderItem
+    orderItems: orderItem.array()
   })
 })
 
+// // WARN: Impossible excel upload!
 // export const createMultiOrdersSchema = object({
 //   body: object({
 //     orderItems: orderItem.array()

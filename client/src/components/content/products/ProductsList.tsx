@@ -1,10 +1,13 @@
-import { Card } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
-import { SuspenseLoader, queryClient } from "@/components";
 import { createMultiProductsFn, deleteMultiProductsFn, deleteProductFn, getProductsFn, updateProductFn } from "@/services/productsApi";
-import { ProductsListTable } from ".";
 import { getMeFn } from "@/services/authApi";
+import { Card } from "@mui/material";
+import { SuspenseLoader, queryClient } from "@/components";
+import { ProductsListTable } from ".";
+
+import { ProductStatus } from "./forms";
+import { Product, UserResponse } from "@/services/types";
 
 
 interface ProductStatusContext {
@@ -183,15 +186,15 @@ export function ProductsList() {
     deleteProducts(ids)
   }
 
-  function handleChangeStatusProduct(product: IProduct, status: ProductStatus) {
+  function handleChangeStatusProduct(product: Product, status: ProductStatus) {
     try {
       const safedStatus = getProductStatusConcrate[product.status](status)
 
       statusChangeProduct({ id: product.id, product: {
         ...product,
         status: safedStatus,
-        salesCategory: product.salesCategory.map(x => x.salesCategoryId),
-        categories: product.categories.map(x => x.categoryId),
+        salesCategory: product.salesCategory?.map(x => x.salesCategoryId),
+        categories: product.categories?.map(x => x.categoryId),
       } })
     } catch (err: any) {
       const message = err instanceof Error ? err.message : "unknown error"

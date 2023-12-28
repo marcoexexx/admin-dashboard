@@ -1,6 +1,8 @@
 import { getMeFn } from "@/services/authApi";
 import { useQuery } from "@tanstack/react-query"
+import { Role } from "@/services/types";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+
 
 interface PermissionProps {
   allowedRoles: Role[]

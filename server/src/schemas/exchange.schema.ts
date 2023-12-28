@@ -1,5 +1,7 @@
 import { number, object, string, z } from "zod";
 import { Pagination } from "./types";
+import { priceUnit } from "./product.schema";
+
 
 export type ExchangeFilterPagination = {
   filter?: any,
@@ -17,8 +19,8 @@ const params = {
 
 export const createExchangeSchema = object({
   body: object({
-    from: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
-    to: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
+    from: z.enum(priceUnit).default("MMK"),
+    to: z.enum(priceUnit).default("USD"),
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" })
@@ -28,8 +30,8 @@ export const createExchangeSchema = object({
 export const updateExchangeSchema = object({
   ...params,
   body: object({
-    from: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
-    to: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
+    from: z.enum(priceUnit).default("MMK"),
+    to: z.enum(priceUnit).default("USD"),
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" })
@@ -38,8 +40,8 @@ export const updateExchangeSchema = object({
 
 export const createMultiExchangesSchema = object({
   body: object({
-    from: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
-    to: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
+    from: z.enum(priceUnit).default("MMK"),
+    to: z.enum(priceUnit).default("USD"),
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" })

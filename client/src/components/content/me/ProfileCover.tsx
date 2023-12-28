@@ -1,8 +1,10 @@
 import { Avatar, Box, Card, CardMedia, IconButton, Tooltip, Typography, styled } from "@mui/material"
 import { MuiButton } from "@/components/ui"
 import { UploadCoverPhoto, UploadProfilePicture } from "@/components/image-uploader"
-import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone"
+import { UserProfile } from "@/services/types";
 import { useNavigate } from "react-router-dom";
+import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone"
+
 
 const AvatarWrapper = styled(Card)(({ theme }) => ({
   position: "relative",
@@ -55,7 +57,7 @@ const CardCoverAction = styled(Box)(({theme}) => ({
 
 
 interface ProfileCoverProps {
-  user: IUserProfile
+  user: UserProfile
 }
 
 export function ProfileCover({user}: ProfileCoverProps) {

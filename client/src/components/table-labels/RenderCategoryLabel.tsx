@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom"
 import { LinkLabel } from "@/components";
+import { Category } from "@/services/types";
 
-export function RenderCategoryLabel({category}: {category: ICategory}) {
+export function RenderCategoryLabel({category}: {category: Category}) {
   const navigate = useNavigate()
   const to = "/category/detail/" + category.id
 

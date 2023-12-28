@@ -10,11 +10,11 @@ import { MuiButton } from "@/components/ui";
 import { createExchangeFn } from "@/services/exchangesApi";
 import { DatePickerField } from "@/components/input-fields";
 
+import { priceUnit } from '@/components/content/products/forms'
 
-export const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"]
 
 const createExchangeSchema = object({
-  from: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
+  from: z.enum(priceUnit).default("MMK"),
   to: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
   rate: number({ required_error: "rate is required" })
     .min(0),

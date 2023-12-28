@@ -1,16 +1,16 @@
 import { Box, Card, CardContent, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { UsersActions } from ".";
+import { RenderProileAvatar, RenderUsernameLabel } from "@/components/table-labels";
+import { User } from "@/services/types";
 
 import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
-
 import { useNavigate } from "react-router-dom";
-import { UsersActions } from ".";
 import { getUserPermissionsFn } from "@/services/permissionsApi";
-import { RenderProileAvatar, RenderUsernameLabel } from "@/components/table-labels";
 
 
-const columnData: TableColumnHeader<IUser>[] = [
+const columnData: TableColumnHeader<User>[] = [
   {
     id: "name",
     align: "left",
@@ -32,9 +32,9 @@ const columnHeader = columnData.concat([
 ])
 
 interface UsersListTableProps {
-  users: IUser[]
+  users: User[]
   count: number
-  me: IUser
+  me: User
 }
 
 export function UsersListTable(props: UsersListTableProps) {

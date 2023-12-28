@@ -1,18 +1,19 @@
-import { MuiButton } from "@/components/ui";
+import dayjs from "dayjs";
 import { useStore } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Grid, MenuItem, TextField } from "@mui/material";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { number, object, z } from "zod";
-import { priceUnit } from "./forms";
+import { MuiButton } from "@/components/ui";
+import { Box, Grid, MenuItem, TextField } from "@mui/material";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { DatePickerField } from "@/components/input-fields";
-import dayjs from "dayjs";
+
+import { priceUnit } from "../products/forms";
 
 
 const filterExchangesSchema = object({
-  from: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]).optional(),
-  to: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]).optional(),
+  from: z.enum(priceUnit).optional(),
+  to: z.enum(priceUnit).optional(),
   rate: number().optional(),
   startDate: z.any(),
   endDate: z.any(),

@@ -1,26 +1,47 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { useState } from "react"
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-
 import { FormModal } from "@/components/forms";
+import { MuiButton } from "@/components/ui";
+import { CreateSalesCategoryInput } from "./forms";
+import { SalesCategoriesActions } from "./SalesCategoriesActions";
+import { SalesCategory } from "@/services/types";
+import { useState } from "react"
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
-import { MuiButton } from "@/components/ui";
-
 import { useNavigate } from "react-router-dom";
-import { CreateSalesCategoryInput } from "./forms";
 import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
-import { SalesCategoriesActions } from "./SalesCategoriesActions";
+
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import { RenderCountLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
 
 
-const columnData: TableColumnHeader<IBrand>[] = [
+const columnData: TableColumnHeader<SalesCategory>[] = [
   {
     id: "name",
     align: "left",
     name: "Name"
   },
+  {
+    id: "startDate",
+    align: "left",
+    name: "Start date"
+  },
+  {
+    id: "endDate",
+    align: "left",
+    name: "End date"
+  },
+  {
+    id: "isActive",
+    align: "left",
+    name: "Sttus"
+  },
+  {
+    id: "_count",
+    align: "left",
+    name: "Count"
+  }
 ]
 
 const columnHeader = columnData.concat([
@@ -32,7 +53,7 @@ const columnHeader = columnData.concat([
 ])
 
 interface SalesCategoriesListTableProps {
-  salesCategoiries: ISalesCategory[]
+  salesCategoiries: SalesCategory[]
   count: number
   isLoading?: boolean
   onDelete: (id: string) => void
@@ -212,7 +233,18 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {row.name}
+                    {col.id === "name"
+                      ? <RenderSalesCategoryLabel salesCategory={row} />
+                      : col.id === "startDate"
+                      ? (new Date(row.startDate)).toLocaleString()
+                      : col.id === "endDate"
+                      ? (new Date(row.endDate)).toLocaleString()
+                      : col.id === "isActive"
+                      ? row.isActive ? "Active" : "UnActive"
+                      : col.id === "_count"
+                      ? <RenderCountLabel _count={row._count} />
+                      : null
+                    }
                   </Typography>
                 </TableCell>)}
 

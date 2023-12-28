@@ -5,6 +5,8 @@ import { getUsersFn } from "@/services/usersApi";
 import { SuspenseLoader } from "@/components";
 import { UsersListTable } from ".";
 import { getMeFn } from "@/services/authApi";
+import { UserResponse } from "@/services/types";
+
 
 export function UsersList() {
   const { state: {userFilter} } = useStore()

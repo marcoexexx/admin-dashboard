@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { getBrandsFn } from '@/services/brandsApi';
-import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
+import { useStore } from '@/hooks';
+import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiButton } from '@/components/ui';
-import { useStore } from '@/hooks';
+import { Brand } from '@/services/types';
+
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+
 
 const InnerPaper = styled(Paper)(() => ({
   padding: "10px"
@@ -19,7 +22,7 @@ interface BrandInputFieldProps {
 
 export function BrandInputField({updateField = false}: BrandInputFieldProps) {
   const { control, setValue, getValues, formState: { errors } } = useFormContext<{ brandId: string }>()
-  const [ selectedBrand, setSelectedBrand ] = useState<IBrand|null>(null)
+  const [ selectedBrand, setSelectedBrand ] = useState<Brand|null>(null)
   const [ isOpenOptions, setIsOpenOptions ] = useState(false)
 
   const { dispatch } = useStore()
@@ -47,11 +50,12 @@ export function BrandInputField({updateField = false}: BrandInputFieldProps) {
     : undefined
 
   useEffect(() => {
+    console.log(defaultBrandId)
     if (defaultBrand && updateField) setSelectedBrand(defaultBrand)
   }, [defaultBrand])
 
 
-  const handleBrandChange = (_: React.SyntheticEvent, value: IBrand | null) => {
+  const handleBrandChange = (_: React.SyntheticEvent, value: Brand | null) => {
     if (value) {
       setSelectedBrand(value)
       setValue("brandId", value.id)
@@ -75,6 +79,7 @@ export function BrandInputField({updateField = false}: BrandInputFieldProps) {
         helperText={error?.message}
       />}
     />
+
 
   return <>
     <Controller

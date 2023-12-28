@@ -1,21 +1,22 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { useState } from "react"
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
+import { MuiButton } from "@/components/ui";
+import { FormModal } from "@/components/forms";
+import { CategoriesActions } from ".";
+import { CreateCategoryInput } from "./forms";
+import { useState } from "react"
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
+import { usePermission, useStore } from "@/hooks";
+import { useNavigate } from "react-router-dom";
+import { getCategoryPermissionsFn } from "@/services/permissionsApi";
+
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
-import { FormModal } from "@/components/forms";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
-import { MuiButton } from "@/components/ui";
-
-import { CategoriesActions } from ".";
-import { useNavigate } from "react-router-dom";
-import { getCategoryPermissionsFn } from "@/services/permissionsApi";
-import { CreateCategoryInput } from "./forms";
+import { Category } from "@/services/types";
 
 
-const columnData: TableColumnHeader<ICategory>[] = [
+const columnData: TableColumnHeader<Category>[] = [
   {
     id: "name",
     align: "left",
@@ -32,7 +33,7 @@ const columnHeader = columnData.concat([
 ])
 
 interface CategoriesListTableProps {
-  categories: ICategory[]
+  categories: Category[]
   count: number
   isLoading?: boolean
   onDelete: (id: string) => void

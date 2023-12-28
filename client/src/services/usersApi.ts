@@ -1,9 +1,10 @@
-import { UploadProfilePictureInput } from "@/components/image-uploader";
 import { authApi } from "./authApi";
+import { UploadProfilePictureInput } from "@/components/image-uploader";
+import { HttpListResponse, QueryOptionArgs, Role, User, UserResponse } from "./types";
 
 
 export async function getUsersFn(opt: QueryOptionArgs, { filter, pagination }: { filter: any, pagination: any }) {
-  const { data } = await authApi.get<HttpListResponse<IUser>>("/users", {
+  const { data } = await authApi.get<HttpListResponse<User>>("/users", {
     ...opt,
     params: {
       filter,

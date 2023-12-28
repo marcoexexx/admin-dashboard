@@ -1,8 +1,9 @@
 import { CreateCouponInput, DeleteCouponInput, UpdateCouponInput } from "@/components/content/coupons/forms";
+import { Coupon, CouponResponse, HttpListResponse, HttpResponse, QueryOptionArgs } from "./types";
 import { authApi } from "./authApi";
 
 
-export async function getCouponsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include: any }) {
+export async function getCouponsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<Coupon>>("/coupons", {
     ...opt,
     params: {

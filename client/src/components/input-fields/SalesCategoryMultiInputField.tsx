@@ -1,13 +1,15 @@
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
 import { Controller, useFormContext } from 'react-hook-form';
+import { MuiButton } from '@/components/ui';
+import { SalesCategory } from '@/services/types';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { getSalesCategoriesFn } from '@/services/salesCategoryApi';
 import { useStore } from '@/hooks';
-import { MuiButton } from '@/components/ui';
+import filter from 'lodash/filter';
+
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import filter from 'lodash/filter';
 
 
 const InnerPaper = styled(Paper)(() => ({
@@ -21,7 +23,7 @@ interface SalesCategoryMultiInputFieldProps {
 
 export function SalesCategoryMultiInputField({updateField}: SalesCategoryMultiInputFieldProps) {
   const { control, setValue, getValues, formState: { errors } } = useFormContext<{ salesCategory: string[] }>()
-  const [ selectedCategories, setSelectedCategories ] = useState<Pick<ISalesCategory, "id" | "name">[]>([])
+  const [ selectedCategories, setSelectedCategories ] = useState<Pick<SalesCategory, "id" | "name">[]>([])
   const [ isOpenOptions, setIsOpenOptions ] = useState(false)
 
   const { dispatch } = useStore()
@@ -53,7 +55,7 @@ export function SalesCategoryMultiInputField({updateField}: SalesCategoryMultiIn
   }, [defaultSalesCategories.length])
 
 
-  const handleSalesCateogyChange = (_: React.SyntheticEvent, value: Pick<ISalesCategory, "id" | "name">[] | null) => {
+  const handleSalesCateogyChange = (_: React.SyntheticEvent, value: Pick<SalesCategory, "id" | "name">[] | null) => {
     if (value) {
       setSelectedCategories(value)
       setValue("salesCategory", value.map(v => v.id))

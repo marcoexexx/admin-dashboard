@@ -1,21 +1,22 @@
+import dayjs from "dayjs";
 import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { MuiButton } from "@/components/ui";
+import { DatePickerField } from "@/components/input-fields";
+import { getExchangeFn, updateExchangeFn } from "@/services/exchangesApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { queryClient } from "@/components";
-import { MuiButton } from "@/components/ui";
-import { getExchangeFn, updateExchangeFn } from "@/services/exchangesApi";
-import { DatePickerField } from "@/components/input-fields";
 import { useEffect } from "react";
-import { priceUnit } from ".";
-import dayjs from "dayjs";
+import { priceUnit } from "../../products/forms";
+
 
 const updateExchangeSchema = object({
-  from: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
-  to: z.enum(["MMK", "USD", "SGD", "THB", "KRW"]),
+  from: z.enum(priceUnit),
+  to: z.enum(priceUnit),
   rate: number({ required_error: "rate is required" })
     .min(0),
   date: z.any()

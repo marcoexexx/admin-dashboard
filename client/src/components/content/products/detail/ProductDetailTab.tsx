@@ -1,16 +1,16 @@
 import { Box, Card, CardActions, CardMedia, Divider, Typography, styled } from "@mui/material"
 import { MuiButton, Text } from '@/components/ui'
-
-import ThumbUpAltTwoToneIcon from '@mui/icons-material/ThumbUpOffAlt';
-import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUp';
-import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
-import ProductRelationshipTable from "./ProductRelationshipTable";
-
-import ProductSpecificationTable from "./ProductSpecificationTable"
+import { Product } from "@/services/types";
 import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { queryClient } from "@/components";
 import { likeProductByUserFn, unLikeProductByUserFn } from "@/services/productsApi";
+
+import ProductRelationshipTable from "./ProductRelationshipTable";
+import ProductSpecificationTable from "./ProductSpecificationTable"
+import ThumbUpAltTwoToneIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUp';
+import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
 
 
 const CardActionsWrapper = styled(CardActions)(({theme}) => ({
@@ -20,7 +20,7 @@ const CardActionsWrapper = styled(CardActions)(({theme}) => ({
 
 
 interface ProductDetailTabProps {
-  product: IProduct
+  product: Product
 }
 
 export default function ProductDetailTab(props: ProductDetailTabProps) {
@@ -91,7 +91,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
     if (state.user) unLikeProduct({ productId: product.id, userId: state.user.id })
   }
 
-  const isLiked = (product as IProduct & {likedUsers: { productId: string, userId: string }[]} ).likedUsers.find(fav => fav.userId === state.user?.id) 
+  const isLiked = (product as Product & {likedUsers: { productId: string, userId: string }[]} ).likedUsers.find(fav => fav.userId === state.user?.id) 
     ? true 
     : false
 
@@ -110,8 +110,11 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
 
       <Box p={3}>
         <div dangerouslySetInnerHTML={{ __html: product.description }} />
-        <div dangerouslySetInnerHTML={{ __html: product.features }} />
-        <ProductSpecificationTable specs={product.specification} />
+
+        {product.specification
+        ? <ProductSpecificationTable specs={product.specification} />
+        : "There is no specifications"}
+
         <ProductRelationshipTable
           brand={product.brand}
           categories={product.categories}

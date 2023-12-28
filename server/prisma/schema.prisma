@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Status {
+enum ProductStatus {
   Draft
   Pending
   Published
@@ -134,11 +134,18 @@ model Category {
 }
 
 model SalesCategory {
-  id        String                 @id @default(auto()) @map("_id") @db.ObjectId
-  name      String                 @unique
-  createdAt DateTime               @default(now())
-  updatedAt DateTime               @updatedAt
-  products  ProductSalesCategory[]
+  id          String                 @id @default(auto()) @map("_id") @db.ObjectId
+  name        String                 @unique
+  startDate   DateTime
+  image       String?
+  endDate     DateTime
+  discount    Float
+  isActive    Boolean                @default(true)
+  description String?
+  products    ProductSalesCategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ProductSalesCategory {
@@ -161,10 +168,11 @@ model ProductCategory {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 }
 
-enum InstockStatus {
-  InStock
+enum ProductStockStatus {
+  Available
   OutOfStock
   AskForStock
+  Discontinued
 }
 
 enum PriceUnit {
@@ -182,18 +190,11 @@ model Product {
   title         String
   price         Int
   images        String[]
-  overview      String
   specification Specification[]
-  features      String
-  warranty      Int // By years
-  categories    ProductCategory[]
-  colors        String[]
-  instockStatus InstockStatus           @default(AskForStock)
-  description   String
+  instockStatus ProductStockStatus      @default(AskForStock)
   dealerPrice   Int
   marketPrice   Int
-  discount      Int
-  status        Status                  @default(Draft)
+  status        ProductStatus           @default(Draft)
   priceUnit     PriceUnit               @default(MMK)
   likedUsers    Favorites[]
   quantity      Int
@@ -201,10 +202,14 @@ model Product {
   creator       User?                   @relation("CreatedBy", fields: [creatorId], references: [id])
   creatorId     String?                 @db.ObjectId
   itemCode      String?
+  categories    ProductCategory[]
   salesCategory ProductSalesCategory[]
   coupons       Coupon[]
   orderItem     OrderItem[]
   availableSets ProductRecommendation[]
+
+  overview    String?
+  description String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -281,6 +286,7 @@ model Order {
   user       User        @relation(fields: [userId], references: [id])
   userId     String      @db.ObjectId
   orderItems OrderItem[]
+  status     OrderState  @default(Pending)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

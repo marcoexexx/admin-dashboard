@@ -2,10 +2,7 @@ import { object, string, z } from "zod";
 import { Pagination } from "./types";
 
 
-export type Role = 
-  | "Admin"
-  | "User"
-  | "Shopowner";
+export const userRole = ["Admin", "User", "Shopowner"] as const
 
 
 export type UserFilterPagination = {
@@ -64,7 +61,7 @@ export const getUserByUsernameSchema = object({
 export const changeUserRoleSchema = object({
   ...params,
   body: object({
-    role: z.enum(["Admin", "User", "Shopowner"], { required_error: "User role is required" })
+    role: z.enum(userRole).default("User")
   })
 })
 
@@ -80,6 +77,8 @@ export const veriffyEmailSchema = object({
   })
 })
 
+
+export type Role = typeof userRole[number]
 
 export type CreateUserInput = z.infer<typeof createUserSchema>["body"]
 export type LoginUserInput = z.infer<typeof loginUserSchema>["body"]

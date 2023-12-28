@@ -14,8 +14,10 @@ import { BrandsActions } from ".";
 import { useNavigate } from "react-router-dom";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
 
+import { Brand } from "@/services/types";
 
-const columnData: TableColumnHeader<IBrand>[] = [
+
+const columnData: TableColumnHeader<Brand>[] = [
   {
     id: "name",
     align: "left",
@@ -32,7 +34,7 @@ const columnHeader = columnData.concat([
 ])
 
 interface BrandsListTableProps {
-  brands: IBrand[]
+  brands: Brand[]
   isLoading?: boolean
   count: number
   onDelete: (id: string) => void

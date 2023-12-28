@@ -1,24 +1,21 @@
 import { Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, Switch, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { boolean, number, object, string, z } from "zod";
-import { BrandInputField, CatgoryMultiInputField, ColorsInputField, EditorInputField, SalesCategoryMultiInputField, SpecificationInputField } from "@/components/input-fields";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getProductFn, updateProductFn } from "@/services/productsApi";
-import { useStore } from "@/hooks";
-import { useNavigate, useParams } from "react-router-dom";
+import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField, SpecificationInputField } from "@/components/input-fields";
 import { SuspenseLoader, queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
 import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
+import { CreateSalesCategoryForm } from "../../sales-categories/forms";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { boolean, number, object, string, z } from "zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getProductFn, updateProductFn } from "@/services/productsApi";
+import { useStore } from "@/hooks";
+import { useNavigate, useParams } from "react-router-dom";
 import { getExchangesFn } from "@/services/exchangesApi";
 import { useEffect } from "react";
-import { CreateSalesCategoryForm } from "../../sales-categories/forms";
-
-
-const instockStatus = ["InStock", "OutOfStock", "AskForStock"]
-const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"]
+import { priceUnit, productStatus, productStockStatus } from ".";
 
 
 const updateProductSchema = object({
@@ -33,24 +30,17 @@ const updateProductSchema = object({
   }).array(),
   overview: string({ required_error: "Brand is required" })
     .min(2).max(5000),
-  features: string({ required_error: "Features is required" })
-    .min(2).max(5000),
-  warranty: number({ required_error: "Price is required "}),
   categories: string().array().default([]),
-  colors: string({ required_error: "Brand is required" })
-    .min(2).max(128).array(),
-  instockStatus: z.enum(["InStock", "OutOfStock", "AskForStock"]).default("AskForStock"),
+  instockStatus: z.enum(productStockStatus).default("AskForStock"),
   description: string({ required_error: "Brand is required" })
     .min(2).max(5000),
   dealerPrice: number().min(0),
-  // images: z.any(),
   marketPrice: number().min(0),
-  discount: number().min(0),
-  priceUnit: z.enum(["MMK", "USD", "THB", "SGD", "KRW"]),
+  priceUnit: z.enum(priceUnit).default("MMK"),
   salesCategory: string().array().default([]),
   quantity: number().min(0),
   isPending: boolean().default(false),
-  status: z.enum(["Draft", "Pending", "Published"]).default("Draft"),
+  status: z.enum(productStatus).default("Draft"),
 
   itemCode: string().nullable().optional(),
 })
@@ -59,13 +49,13 @@ export type UpdateProductInput = z.infer<typeof updateProductSchema>
 
 const toUpdateFields: (keyof UpdateProductInput)[] = [
   "title", "priceUnit", 
-  "price", "warranty", 
+  "price",
   "specification", "overview", 
   "categories", "marketPrice", 
-  "colors", "instockStatus", 
-  "description", "features", 
+  "instockStatus", 
+  "description",
   "quantity", "salesCategory", 
-  "discount", "dealerPrice",
+  "dealerPrice",
   "isPending"
 ]
 
@@ -145,13 +135,14 @@ export function UpdateProductForm() {
         const value = key === "isPending" 
           ? product.status === "Pending"
           : key ==="categories"
-          ? product[key].map(({category: {id}}) => id)
+          ? product[key]?.map(({category: {id}}) => id)
           : key ==="salesCategory"
-          ? product[key].map(({salesCategory: {id}}) => id)
+          ? product[key]?.map(({salesCategory: {id}}) => id)
           : product[key]
 
         methods.setValue(key, value)
       })
+      if (product.brandId) methods.setValue("brandId", product.brandId)
     }
   }, [isSuccessFetchProduct, fetchStatusProduct])
 
@@ -227,7 +218,6 @@ export function UpdateProductForm() {
                   </MenuItem>
                 ))}
               </TextField>
-              <TextField focused fullWidth type="number" {...register("warranty", { valueAsNumber: true })} label="Warranty" error={!!errors.warranty} helperText={!!errors.warranty ? errors.warranty.message : ""} />
             </Box>
           </Grid>
 
@@ -247,7 +237,6 @@ export function UpdateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <ColorsInputField />
               <EditorInputField fieldName="description" />
             </Box>
           </Grid>
@@ -258,19 +247,18 @@ export function UpdateProductForm() {
                 focused
                 fullWidth 
                 {...register("instockStatus")} 
-                defaultValue={instockStatus[2]}
+                defaultValue={productStockStatus[2]}
                 select
                 label="Instock Status" 
                 error={!!errors.instockStatus} 
                 helperText={!!errors.instockStatus ? errors.instockStatus.message : ""} 
               >
-                {instockStatus.map(status => (
+                {productStockStatus.map(status => (
                   <MenuItem key={status} value={status}>
                     {status}
                   </MenuItem>
                 ))}
               </TextField>
-              <EditorInputField fieldName="features" />
             </Box>
           </Grid>
 
@@ -284,7 +272,6 @@ export function UpdateProductForm() {
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField focused fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
-              <TextField focused fullWidth {...register("discount", { valueAsNumber: true })} label="Discount" type="number" error={!!errors.discount} helperText={!!errors.discount ? errors.discount.message : ""} />
             </Box>
           </Grid>
 

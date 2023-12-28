@@ -1,3 +1,7 @@
+import fs from 'fs'
+import logging from '../middleware/logging/logging';
+import AppError from '../utils/appError';
+
 import { Request, Response, NextFunction } from 'express'
 import { CreateMultiProductsInput, CreateProductInput, DeleteMultiProductsInput, GetProductInput, LikeProductByUserInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
@@ -5,9 +9,6 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { db } from '../utils/db'
 import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
-import logging from '../middleware/logging/logging';
-import fs from 'fs'
-import AppError from '../utils/appError';
 import { parseExcel } from '../utils/parseExcel';
 
 
@@ -27,15 +28,11 @@ export async function getProductsHandler(
       title,
       price,
       overview,
-      features,
-      warranty,
       categories,
-      colors,
       instockStatus,
       description,
       dealerPrice,
       marketPrice,
-      discount,
       status,
       priceUnit,
       salesCategory,
@@ -56,15 +53,11 @@ export async function getProductsHandler(
           title,
           price,
           overview,
-          features,
-          warranty,
           categories,
-          colors,
           instockStatus,
           description,
           dealerPrice,
           marketPrice,
-          discount,
           status,
           priceUnit,
           salesCategory,
@@ -127,14 +120,10 @@ export async function createProductHandler(
       title,
       specification,
       overview,
-      features,
-      warranty,
-      colors,
       instockStatus,
       description,
       dealerPrice,
       marketPrice,
-      discount,
       priceUnit,
       salesCategory,
       categories,
@@ -156,14 +145,10 @@ export async function createProductHandler(
           create: specification
         },
         overview,
-        features,
-        warranty,
-        colors,
         instockStatus,
         description,
         dealerPrice,
         marketPrice,
-        discount,
         status,
         priceUnit,
         categories: {
@@ -223,15 +208,11 @@ export async function createMultiProductsHandler(
           id: product.id,
           title: product.title,
           overview: product.overview,
-          features: product?.features || "<h1>Product features</h1>",
-          warranty: product.warranty,
-          colors: (product?.colors || "")?.split("\n").filter(Boolean),
           instockStatus: product.instockStatus,
           description: product?.description || "<h1>Product description</h1>",
           price: product.price,
           dealerPrice: product.dealerPrice,
           marketPrice: product.marketPrice,
-          discount: product.discount,
           status: product.status,
           priceUnit: product.priceUnit,
           images: (product?.images || "")?.split("\n").filter(Boolean),
@@ -250,7 +231,6 @@ export async function createMultiProductsHandler(
           specification: product.specification ? {
             createMany: {
               data: product.specification.split("\n").filter(Boolean).map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
-              // skipDuplicates: true
             }
           } : undefined,
           categories: {
@@ -263,22 +243,11 @@ export async function createMultiProductsHandler(
               }
             }))
           },
-          salesCategory: {
-            create: (product.salesCategory || "").split("\n").filter(Boolean).map(name => ({
-              salesCategory: {
-                connectOrCreate: {
-                  where: { name },
-                  create: { name }
-                }
-              }
-            }))
-          },
         },
         update: {
           price: product.price,
           dealerPrice: product.dealerPrice,
           marketPrice: product.marketPrice,
-          discount: product.discount,
         },
       })
     }
@@ -421,14 +390,10 @@ export async function updateProductHandler(
       title,
       specification,
       overview,
-      features,
-      warranty,
-      colors,
       instockStatus,
       description,
       dealerPrice,
       marketPrice,
-      discount,
       priceUnit,
       salesCategory,
       categories,
@@ -474,14 +439,10 @@ export async function updateProductHandler(
             create: (specification || []).map(spec => ({ name: spec.name, value: spec.value }))
           },
           overview,
-          features,
-          warranty,
-          colors,
           instockStatus,
           description,
           dealerPrice,
           marketPrice,
-          discount,
           status,
           priceUnit,
           categories: {
