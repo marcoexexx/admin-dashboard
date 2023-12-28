@@ -136,7 +136,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
 
   const handleUpdateAction = (product: Product) => (_: React.MouseEvent<HTMLButtonElement>) => {
     if (product.status === "Draft") navigate(`/products/update/${product.id}`)
-    dispatch({
+    else dispatch({
       type: "OPEN_TOAST",
       payload: {
         message: "Warning: only `Draft` state can edit!",
@@ -153,7 +153,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
         payload: "delete-product"
       })
     }
-    dispatch({
+    else dispatch({
       type: "OPEN_TOAST",
       payload: {
         message: "Warning: only `Draft` state can delete!",
