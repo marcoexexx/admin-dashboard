@@ -58,6 +58,7 @@ export async function createMultiProductsFn(excelBuffer: ArrayBuffer) {
 
 
 export async function createProductFn(product: CreateProductInput) {
+  // TODO: services -> create::product
   const { data } = await authApi.post<ProductResponse>("/products", product)
   return data
 }

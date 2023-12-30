@@ -46,6 +46,15 @@ const createProductSchema = object({
   marketPrice: number().min(0),
   priceUnit: z.enum(priceUnit).default("MMK"),
   salesCategory: string().array().default([]),
+  // /** Example: How salesCategory work
+  //  * sale: { name: "11.11", startDate, endDate, isActivate }
+  //  * product,
+  //  * discount: 13  // by percent
+  //  **/
+  // salesCategory: object({
+  //   salesCategory: string(), // by id
+  //   discount: number().max(100)
+  // }).array().default([]),
   quantity: number().min(0),
   isPending: boolean().default(false),
   status: z.enum(productStatus).default("Draft"),

@@ -1,4 +1,4 @@
-import { boolean, number, object, string, z } from "zod";
+import { boolean, string, z } from "zod";
 import { Pagination } from "./types";
 import { CreateBrandInput } from "./brand.schema";
 
