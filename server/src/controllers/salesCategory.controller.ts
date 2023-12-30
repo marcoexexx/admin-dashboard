@@ -11,6 +11,7 @@ import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 
 
+// TODO: sales-categories filter
 export async function getSalesCategoriesHandler(
   req: Request<{}, {}, {}, SalesCategoryFilterPagination>,
   res: Response,
@@ -84,13 +85,12 @@ export async function createSalesCategoryHandler(
   next: NextFunction
 ) {
   try {
-    const { name, startDate, endDate, discount, description } = req.body
+    const { name, startDate, endDate, description } = req.body
     const category = await db.salesCategory.create({
       data: { 
         name,
         startDate,
         endDate,
-        discount,
         description
       },
     })
@@ -121,7 +121,7 @@ export async function createMultiSalesCategoriesHandler(
     const data = parseExcel(buf) as CreateMultiSalesCategoriesInput
 
     // Update not affected
-    await Promise.all(data.map(({name, startDate, endDate, discount, description}) => db.salesCategory.upsert({
+    await Promise.all(data.map(({name, startDate, endDate, description}) => db.salesCategory.upsert({
       where: {
         name
       },
@@ -129,7 +129,6 @@ export async function createMultiSalesCategoriesHandler(
         name,
         startDate,
         endDate,
-        discount,
         description
       },
       update: {}
