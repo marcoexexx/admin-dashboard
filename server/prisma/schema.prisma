@@ -139,7 +139,6 @@ model SalesCategory {
   startDate   DateTime
   image       String?
   endDate     DateTime
-  discount    Float
   isActive    Boolean                @default(true)
   description String?
   products    ProductSalesCategory[]
@@ -153,6 +152,7 @@ model ProductSalesCategory {
   salesCategory   SalesCategory @relation(fields: [salesCategoryId], references: [id])
   productId       String        @db.ObjectId
   salesCategoryId String        @db.ObjectId
+  discount        Float
 
   // @@id([salesCategoryId, productId])
   id String @id @default(auto()) @map("_id") @db.ObjectId
