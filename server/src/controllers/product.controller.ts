@@ -159,10 +159,9 @@ export async function createProductHandler(
           }))
         },
         salesCategory: {
-          create: salesCategory.map(id => ({
-            salesCategory: {
-              connect: { id }
-            }
+          create: salesCategory.map(({ salesCategory: salesCategoryId, discount }) => ({
+            salesCategory: { connect: { id: salesCategoryId } },
+            discount
           }))
         },
         quantity,
@@ -453,10 +452,9 @@ export async function updateProductHandler(
             }))
           },
           salesCategory: {
-            create: salesCategory.map(id => ({
-              salesCategory: {
-                connect: { id }
-              }
+            create: salesCategory.map(({ salesCategory: salesCategoryId, discount }) => ({
+              salesCategory: { connect: { id: salesCategoryId } },
+              discount
             }))
           },
           quantity,

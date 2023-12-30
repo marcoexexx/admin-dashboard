@@ -82,7 +82,15 @@ export const createProductSchema = object({
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
     priceUnit: z.enum(priceUnit),
-    salesCategory: string().array(),
+    /** Example: How salesCategory work
+     * sale: { name: "11.11", startDate, endDate, isActivate }
+     * product,
+     * discount: 13  // by percent
+     **/
+    salesCategory: object({
+      salesCategory: string(), // by id
+      discount: number().max(100)
+    }).array(),
     quantity: number().min(0),
     status: z.enum(productStatus).default("Draft"),
 
@@ -117,7 +125,11 @@ export const createMultiProductsSchema = object({
     images: string(),
     marketPrice: number().min(0),
     priceUnit: z.enum(priceUnit).default("MMK"),
-    salesCategory: string().optional(),  // by splitting "\n"
+    /**
+     * Currently not support!
+     * salesCategory in create multi product with excel upload
+     */
+    // salesCategory: string().optional(),  // by splitting "\n"
     quantity: number().min(0),
     status: z.enum(productStatus).default("Draft"),
 
@@ -154,7 +166,15 @@ export const updateProductSchema = object({
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
     priceUnit: z.enum(priceUnit).default("MMK"),
-    salesCategory: string().array(),
+    /** Example: How salesCategory work
+     * sale: { name: "11.11", startDate, endDate, isActivate }
+     * product,
+     * discount: 13  // by percent
+     **/
+    salesCategory: object({
+      salesCategory: string(), // by id
+      discount: number().max(100)
+    }).array(),
     quantity: number().min(0),
     status: z.enum(productStatus).default("Draft"),
 
