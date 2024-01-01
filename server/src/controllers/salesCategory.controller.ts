@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CreateMultiSalesCategoriesInput, CreateSalesCategoryInput, DeleteMultiSalesCategoriesInput, GetSalesCategoryInput, SalesCategoryFilterPagination, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
+import { CreateMultiSalesCategoriesInput, CreateProductSalesCategoryInput, CreateSalesCategoryInput, DeleteMultiSalesCategoriesInput, GetSalesCategoryInput, SalesCategoryFilterPagination, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import fs from 'fs'
 import logging from "../middleware/logging/logging";
@@ -52,6 +52,32 @@ export async function getSalesCategoriesHandler(
 }
 
 
+export async function getSalesCategoriesInProductHandler(
+  req: Request<CreateProductSalesCategoryInput["params"], {}, {}, SalesCategoryFilterPagination>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productId } = req.params
+
+    const categories = await db.productSalesCategory.findMany({
+      where: {
+        productId
+      },
+      include: {
+        salesCategory: true,
+      }
+    })
+
+    res.status(200).json(HttpListResponse(categories))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
 export async function getSalesCategoryHandler(
   req: Request<GetSalesCategoryInput["params"]>,
   res: Response,
@@ -92,6 +118,35 @@ export async function createSalesCategoryHandler(
         startDate,
         endDate,
         description
+      },
+    })
+
+    res.status(201).json(HttpDataResponse({ category }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Sales category already exists"))
+
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function createSaleCategoryForProductHandler(
+  req: Request<CreateProductSalesCategoryInput["params"], {}, CreateProductSalesCategoryInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productId } = req.params
+    const { discount, salesCategoryId } = req.body
+
+    const category = await db.productSalesCategory.create({
+      data: { 
+        salesCategoryId,
+        productId,
+        discount
       },
     })
 

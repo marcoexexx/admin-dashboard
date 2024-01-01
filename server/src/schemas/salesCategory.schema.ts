@@ -1,4 +1,4 @@
-import { boolean, string, z } from "zod";
+import { boolean, number, object, string, z } from "zod";
 import { Pagination } from "./types";
 import { CreateBrandInput } from "./brand.schema";
 
@@ -8,8 +8,8 @@ export type SalesCategoryFilterPagination = {
   pagination?: Pagination,
   include?: {
     products?: {
-      include?: {
         product?: boolean
+      include?: {
       }
     }
   },
@@ -33,6 +33,27 @@ export const createSalesCategorySchema = object({
     description: string().optional(),
   })
 })
+
+export const createProductSalesCategorySchema = object({
+  params: object({
+    productId: string()
+  }),
+  body: object({
+    salesCategoryId: string(),
+    discount: number().max(100).default(0)
+  })
+})
+
+
+export const updateProductSaleCategorySchema = object({
+  params: object({
+    productSaleCategoryId: string()
+  }),
+  body: object({
+    discount: number()
+  })
+})
+
 
 export const createMultiSalesCategoriesSchema = object({
   body: object({
@@ -69,5 +90,7 @@ export const deleteMultiSalesCategoriesSchema = object({
 export type GetSalesCategoryInput = z.infer<typeof getSalesCategorySchema>
 export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>["body"]
 export type CreateMultiSalesCategoriesInput = z.infer<typeof createMultiSalesCategoriesSchema>["body"]
+export type CreateProductSalesCategoryInput = z.infer<typeof createProductSalesCategorySchema>
 export type DeleteMultiSalesCategoriesInput = z.infer<typeof deleteMultiSalesCategoriesSchema>["body"]
 export type UpdateSalesCategoryInput = z.infer<typeof updateSalesCategorySchema>
+export type UpdateProductSaleCategoryInput = z.infer<typeof updateProductSaleCategorySchema>

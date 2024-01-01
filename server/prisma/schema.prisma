@@ -207,6 +207,7 @@ model Product {
   coupons       Coupon[]
   orderItem     OrderItem[]
   availableSets ProductRecommendation[]
+  discount      Float                   @default(0.0)
 
   overview    String?
   description String?

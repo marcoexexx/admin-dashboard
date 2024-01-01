@@ -1,15 +1,14 @@
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useStore } from '@/hooks';
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiButton } from '@/components/ui';
-import { SalesCategory } from '@/services/types';
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { getSalesCategoriesFn } from '@/services/salesCategoryApi';
-import { useStore } from '@/hooks';
-import filter from 'lodash/filter';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { SalesCategory } from '@/services/types';
+import { getSalesCategoriesFn } from '@/services/salesCategoryApi';
 
 
 const InnerPaper = styled(Paper)(() => ({
@@ -17,25 +16,25 @@ const InnerPaper = styled(Paper)(() => ({
 }))
 
 
-interface SalesCategoryMultiInputFieldProps {
+interface SalesCategoriesInputFieldProps {
   updateField?: boolean
 }
 
-export function SalesCategoryMultiInputField({updateField}: SalesCategoryMultiInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ salesCategory: string[] }>()
-  const [ selectedCategories, setSelectedCategories ] = useState<Pick<SalesCategory, "id" | "name">[]>([])
+export function SalesCategoriesInputField({updateField = false}: SalesCategoriesInputFieldProps) {
+  const { control, setValue, getValues, formState: { errors }, watch } = useFormContext<{ salesCategoryId: string }>()
+  const [ selectedSaleCategory, setSelectedSaleCategory ] = useState<SalesCategory|null>(null)
   const [ isOpenOptions, setIsOpenOptions ] = useState(false)
 
   const { dispatch } = useStore()
 
   const {
-    data: salesCategory,
+    data: sales,
     isLoading,
     isError,
     error
   } = useQuery({
     queryKey: ["sales-categories"],
-    queryFn: args => getSalesCategoriesFn(args, { 
+    queryFn: args => getSalesCategoriesFn(args, {
       filter: {},
       pagination: {
         page: 1,
@@ -45,20 +44,20 @@ export function SalesCategoryMultiInputField({updateField}: SalesCategoryMultiIn
     select: data => data.results
   })
 
-  const defaultSalesCategoryIds = getValues("salesCategory")
-  const defaultSalesCategories = defaultSalesCategoryIds 
-    ? filter(salesCategory, (category) => defaultSalesCategoryIds.includes(category.id))
-    : []
+  const defaultSalesCategoryId = getValues("salesCategoryId")
+  const defaultSalesCategory = defaultSalesCategoryId
+    ? sales?.find(sale => sale.id === defaultSalesCategoryId)
+    : undefined
 
   useEffect(() => {
-    if (defaultSalesCategories.length && updateField) setSelectedCategories(defaultSalesCategories)
-  }, [defaultSalesCategories.length])
+    if (defaultSalesCategory && updateField) setSelectedSaleCategory(defaultSalesCategory)
+  }, [defaultSalesCategory, watch("salesCategoryId")])
 
 
-  const handleSalesCateogyChange = (_: React.SyntheticEvent, value: Pick<SalesCategory, "id" | "name">[] | null) => {
+  const handleSaleCategoryChange = (_: React.SyntheticEvent, value: SalesCategory | null) => {
     if (value) {
-      setSelectedCategories(value)
-      setValue("salesCategory", value.map(v => v.id))
+      setSelectedSaleCategory(value)
+      setValue("salesCategoryId", value.id)
     }
   }
 
@@ -74,15 +73,16 @@ export function SalesCategoryMultiInputField({updateField}: SalesCategoryMultiIn
       renderInput={params => <TextField 
         {...params}
         error={true}
-        label="Failed sales category autocomplete"
+        label="Failed brand autocomplete"
         fullWidth
         helperText={error?.message}
       />}
     />
 
+
   return <>
     <Controller
-      name="salesCategory"
+      name="salesCategoryId"
       control={control}
       render={({field}) => (
         <Autocomplete
@@ -90,9 +90,8 @@ export function SalesCategoryMultiInputField({updateField}: SalesCategoryMultiIn
           open={isOpenOptions}
           onOpen={() => setIsOpenOptions(true)}
           onClose={handleOnCloseOptions}
-          multiple
-          value={selectedCategories}
-          options={salesCategory || []}
+          value={selectedSaleCategory}
+          options={sales || []}
           isOptionEqualToValue={(option, value) => option.id === value.id}
           getOptionLabel={option => option.name || ""}
           loading={isLoading}
@@ -114,9 +113,10 @@ export function SalesCategoryMultiInputField({updateField}: SalesCategoryMultiIn
           </InnerPaper>}
           renderInput={params => <TextField
             {...params}
-            error={!!errors.salesCategory}
-            helperText={errors.salesCategory?.message || ""}
-            label="Sales Category"
+            error={!!errors.salesCategoryId}
+            helperText={errors.salesCategoryId?.message || ""}
+            disabled={updateField}
+            label="Sale"
             InputProps={{
               ...params.InputProps,
               endAdornment: <>
@@ -125,7 +125,7 @@ export function SalesCategoryMultiInputField({updateField}: SalesCategoryMultiIn
               </>
             }}
           />}
-          onChange={handleSalesCateogyChange}
+          onChange={handleSaleCategoryChange}
         />
       )}
     />

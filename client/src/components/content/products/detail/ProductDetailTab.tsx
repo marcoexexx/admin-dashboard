@@ -122,6 +122,11 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         />
       </Box>
 
+      <Box p={3}>
+        <Typography variant="h2">Discount and Sales</Typography>
+        <Typography>Original discount: {product.discount}%</Typography>
+      </Box>
+
       <Divider />
 
       <CardActionsWrapper

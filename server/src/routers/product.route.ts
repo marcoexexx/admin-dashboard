@@ -3,11 +3,13 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { permissionUser } from "../middleware/permissionUser";
-import { createMultiProductsHandler, createProductHandler, deleteMultiProductHandler, deleteProductHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, uploadImagesProductHandler } from "../controllers/product.controller";
-import { createProductSchema, deleteMultiProductsSchema, getProductSchema, likeProductByUserSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
-import { productPermission } from "../utils/auth/permissions";
+import { createMultiProductsHandler, createProductHandler, deleteMultiProductHandler, deleteProductHandler, deleteProductSaleCategoryHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, updateProductSalesCategoryHandler, uploadImagesProductHandler } from "../controllers/product.controller";
+import { createProductSchema, deleteMultiProductsSchema, getProductSaleCategorySchema, getProductSchema, likeProductByUserSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
+import { productPermission, salesCategoryPermission } from "../utils/auth/permissions";
 import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
 import { uploadExcel } from "../upload/excelUpload";
+import { createSaleCategoryForProductHandler, getSalesCategoriesInProductHandler } from "../controllers/salesCategory.controller";
+import { createProductSalesCategorySchema, updateProductSaleCategorySchema } from "../schemas/salesCategory.schema";
 
 
 const router = Router()
@@ -65,6 +67,41 @@ router.route("/detail/:productId")
     permissionUser("update", productPermission),
     validate(updateProductSchema), 
     updateProductHandler
+  )
+
+
+router.route("/detail/:productId/sales")
+  .get(
+    permissionUser("read", salesCategoryPermission),
+    getSalesCategoriesInProductHandler
+  )
+  .post(
+    deserializeUser, 
+    requiredUser, 
+    permissionUser("create", salesCategoryPermission),
+    validate(createProductSalesCategorySchema),
+    createSaleCategoryForProductHandler
+  )
+
+
+router.route("/detail/:productId/sales/detail/:productSaleCategoryId")
+  // .get(
+  //   validate(getProductSchema), 
+  //   getProductHandler
+  // )
+  .delete(
+    deserializeUser, 
+    requiredUser, 
+    permissionUser("update", productPermission),
+    validate(getProductSaleCategorySchema), 
+    deleteProductSaleCategoryHandler
+  )
+  .patch(
+    deserializeUser, 
+    requiredUser, 
+    permissionUser("update", productPermission),
+    validate(updateProductSaleCategorySchema), 
+    updateProductSalesCategoryHandler
   )
 
 

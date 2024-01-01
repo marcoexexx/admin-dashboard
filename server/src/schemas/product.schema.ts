@@ -54,6 +54,13 @@ export const getProductSchema = object({
   ...params
 })
 
+export const getProductSaleCategorySchema = object({
+  params: object({
+    productId: string(),
+    productSaleCategoryId: string()
+  })
+})
+
 
 export const likeProductByUserSchema = object({
   ...params,
@@ -87,9 +94,10 @@ export const createProductSchema = object({
      * product,
      * discount: 13  // by percent
      **/
+    discount: number().max(100).default(0),
     salesCategory: object({
       salesCategory: string(), // by id
-      discount: number().max(100)
+      discount: number().max(100).default(0)
     }).array(),
     quantity: number().min(0),
     status: z.enum(productStatus).default("Draft"),
@@ -125,6 +133,7 @@ export const createMultiProductsSchema = object({
     images: string(),
     marketPrice: number().min(0),
     priceUnit: z.enum(priceUnit).default("MMK"),
+    discount: number().max(100).default(0),
     /**
      * Currently not support!
      * salesCategory in create multi product with excel upload
@@ -150,13 +159,14 @@ export const updateProductSchema = object({
   body: object({
     price: number({ required_error: "Price is required "}),
     brandId: string({ required_error: "Brand is required" })
+      .min(1).max(128)
       .min(1).max(128),
-    title: string({ required_error: "Title is required" })
-      .min(1).max(128),
+    title: string({ required_error: "Title is required" }),
     specification: object({
       name: string({ required_error: "Specification name is required" }),
       value: string({ required_error: "Specification value is required" }),
     }).array().default([]),
+    discount: number().max(100).default(0),
     overview: string({ required_error: "Overview is required" })
       .min(1).max(5000),
     categories: string().array().default([]),
@@ -171,10 +181,10 @@ export const updateProductSchema = object({
      * product,
      * discount: 13  // by percent
      **/
-    salesCategory: object({
-      salesCategory: string(), // by id
-      discount: number().max(100)
-    }).array(),
+    // salesCategory: object({
+    //   salesCategory: string(), // by id
+    //   discount: number().max(100).default(0)
+    // }).array().default([]),
     quantity: number().min(0),
     status: z.enum(productStatus).default("Draft"),
 
@@ -188,6 +198,7 @@ export type ProductStatus = typeof productStatus[number]
 export type PriceUnit = typeof priceUnit[number]
 
 export type GetProductInput = z.infer<typeof getProductSchema>["params"]
+export type GetProductSaleCategoryInput = z.infer<typeof getProductSaleCategorySchema>
 export type CreateProductInput = z.infer<typeof createProductSchema>["body"]
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
 export type CreateMultiProductsInput = z.infer<typeof createMultiProductsSchema>["body"]

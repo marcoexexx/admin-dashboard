@@ -43,6 +43,8 @@ export type Store = {
 
       | "delete-coupon"
       | "delete-coupon-multi"
+
+      | "delete-product-sale"
     state: boolean
   },
   user?: User

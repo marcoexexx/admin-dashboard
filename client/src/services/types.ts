@@ -165,6 +165,7 @@ export type Product = {
   priceUnit: PriceUnit
   quantity: number
   itemCode?: string
+  discount: number
 
 
   // relationship
@@ -182,7 +183,9 @@ export type Product = {
     category: Category
   }[]
   salesCategory?: {
+    id: string
     productId: string
+    discount: number
     salesCategoryId: string
     salesCategory: SalesCategory
   }[]
@@ -239,7 +242,6 @@ export type SalesCategory = {
   name: string
   startDate: string | Date
   endDate: string | Date
-  discount: number
   isActive: boolean
   description?: string
 
@@ -384,6 +386,8 @@ export type CouponResponse = Omit<HttpResponse, "message"> & { coupon: Coupon };
 export type SalesCategoryResponse = Omit<HttpResponse, "message"> & { salesCategory: SalesCategory };
 
 export type ProductResponse = Omit<HttpResponse, "message"> & { product: Product };
+
+export type ProductSalesCategoriesResponse = { id: string, salesCategoryId: string,  productId: string, discount: number, salesCategory: SalesCategory };
 
 export type BrandResponse = Omit<HttpResponse, "message"> & { brand: Brand };
 

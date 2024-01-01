@@ -1,6 +1,6 @@
 import { authApi } from "./authApi";
 import { CreateProductInput, DeleteProductInput, ProductStatus, UpdateProductInput } from "@/components/content/products/forms";
-import { HttpListResponse, HttpResponse, Product, ProductResponse, QueryOptionArgs } from "./types";
+import { HttpListResponse, HttpResponse, Product, ProductResponse, ProductSalesCategoriesResponse, QueryOptionArgs } from "./types";
 
 
 export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pagination }: { filter: any, include?: any, pagination: any }) {
@@ -21,9 +21,40 @@ export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pag
 
 export async function getProductFn(opt: QueryOptionArgs, { productId }: { productId: string | undefined}) {
   if (!productId) return
+  // TODO: service :: query and filter from ReactQuery
   const { data } = await authApi.get<ProductResponse>(`/products/detail/${productId}?include[specification]=true&include[_count]=true&include[likedUsers]=true&include[brand]=true&include[categories][include][category]=true&include[salesCategory][include][salesCategory]=true`, {
     ...opt,
   })
+  return data
+}
+
+
+export async function getProductSaleCategories(opt: QueryOptionArgs, { productId }: { productId: string | undefined }) {
+  if (!productId) return
+  const { data } = await authApi.get<HttpListResponse<ProductSalesCategoriesResponse>>(`/products/detail/${productId}/sales`, {
+    ...opt,
+  })
+  return data
+}
+
+
+export async function createProductSaleCategory({ productId, salesCategoryId, discount }: { productId: string, salesCategoryId: string, discount: number }) {
+  if (!productId && !salesCategoryId) return
+  const res = await authApi.post(`/products/detail/${productId}/sales`, { salesCategoryId, discount })
+  return res.data
+}
+
+
+export async function deleteProductSaleCategory({ productId, productSaleCategoryId }: { productId: string, productSaleCategoryId: string }) {
+  if (!productId) return
+  const data = await authApi.delete(`/products/detail/${productId}/sales/detail/${productSaleCategoryId}`)
+  return data
+}
+
+
+export async function updateProductSaleCategoryFn({ productId, productSaleCategoryId, discount }: { productId: string, productSaleCategoryId: string, discount: number }) {
+  if (!productId && !productSaleCategoryId) return
+  const data = await authApi.patch(`/products/detail/${productId}/sales/detail/${productSaleCategoryId}`, { discount })
   return data
 }
 

@@ -41,12 +41,13 @@ interface DashboardCardProps {
   helperText: string
   isDown: boolean
   percent: string
+  actions?: JSX.Element
 }
 
 export function DashboardCard(props: DashboardCardProps) {
   const theme = useTheme()
 
-  const { subtitle, value, helperText, isDown, percent } = props
+  const { subtitle, value, helperText, isDown, percent, actions } = props
 
   return (
     <Box
@@ -76,7 +77,10 @@ export function DashboardCard(props: DashboardCardProps) {
           
           <Typography>{percent}</Typography>
         </Box>
+
         <Typography color={theme.colors.alpha.black[70]}>{helperText}</Typography>
+
+        {actions}
       </HelperContentWrapper>
     </Box>
   )
