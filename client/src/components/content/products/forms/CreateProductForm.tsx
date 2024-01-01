@@ -4,8 +4,7 @@ import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
 import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
-import { CreateSalesCategoryForm } from "../../sales-categories/forms";
-import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField, SpecificationInputField } from "@/components/input-fields";
+import { BrandInputField, CatgoryMultiInputField, EditorInputField, SpecificationInputField } from "@/components/input-fields";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -45,7 +44,8 @@ const createProductSchema = object({
   dealerPrice: number().min(0),
   marketPrice: number().min(0),
   priceUnit: z.enum(priceUnit).default("MMK"),
-  salesCategory: string().array().default([]),
+  salesCategory: object({}).array().default([]),
+  discount: number().max(100).default(0),
   quantity: number().min(0),
   isPending: boolean().default(false),
   status: z.enum(productStatus).default("Draft"),
@@ -120,7 +120,8 @@ export function CreateProductForm() {
       ...value,
       status: value.isPending 
         ? "Pending" 
-        : "Draft"
+        : "Draft",
+      salesCategory: []
     })
   }
 
@@ -151,6 +152,9 @@ export function CreateProductForm() {
                 //   ? errors.price.message 
                 //   : "1 dolla ~ 2098.91 kyat"
                 // } 
+                sx={{
+                  my: 1
+                }}
                 endAdornment={
                   <InputAdornment position="end">
                     <MuiButton onClick={handleOnCalculate} variant="outlined" size="small">
@@ -161,6 +165,7 @@ export function CreateProductForm() {
               />
             </Box>
           </Grid>
+
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
@@ -180,24 +185,29 @@ export function CreateProductForm() {
                   </MenuItem>
                 ))}
               </TextField>
+              <TextField fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <SpecificationInputField />
-              <CatgoryMultiInputField />
-            </Box>
-          </Grid>
-
-          <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <EditorInputField fieldName="overview" />
               <TextField fullWidth {...register("marketPrice", { valueAsNumber: true })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <CatgoryMultiInputField />
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <EditorInputField fieldName="overview" />
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <EditorInputField fieldName="description" />
             </Box>
@@ -220,25 +230,28 @@ export function CreateProductForm() {
                   </MenuItem>
                 ))}
               </TextField>
-            </Box>
-          </Grid>
-
-          <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <BrandInputField />
-              <TextField fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
-            </Box>
-          </Grid>
-
-          <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
+              <TextField 
+                fullWidth 
+                type="number" 
+                {...register("discount", { valueAsNumber: true })} 
+                inputProps={{
+                  step: "0.01"
+                }}
+                label="Discount" error={!!errors.discount} helperText={!!errors.discount ? errors.discount.message : ""} />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <SalesCategoryMultiInputField />
+              {/* Image upload */}
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <SpecificationInputField />
             </Box>
           </Grid>
 
@@ -267,12 +280,6 @@ export function CreateProductForm() {
       {modalForm.field === "categories"
       ? <FormModal field='categories' title='Create new category' onClose={handleOnCloseModalForm}>
         <CreateCategoryForm />
-      </FormModal>
-      : null}
-
-      {modalForm.field === "sales-categories"
-      ? <FormModal field='sales-categories' title='Create new sales category' onClose={handleOnCloseModalForm}>
-        <CreateSalesCategoryForm />
       </FormModal>
       : null}
     </>

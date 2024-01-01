@@ -193,7 +193,6 @@ export function ProductsList() {
       statusChangeProduct({ id: product.id, product: {
         ...product,
         status: safedStatus,
-        salesCategory: product.salesCategory?.map(x => x.salesCategoryId),
         categories: product.categories?.map(x => x.categoryId),
       } })
     } catch (err: any) {

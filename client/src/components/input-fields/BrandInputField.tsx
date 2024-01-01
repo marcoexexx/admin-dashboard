@@ -50,7 +50,6 @@ export function BrandInputField({updateField = false}: BrandInputFieldProps) {
     : undefined
 
   useEffect(() => {
-    console.log(defaultBrandId)
     if (defaultBrand && updateField) setSelectedBrand(defaultBrand)
   }, [defaultBrand])
 

@@ -4,7 +4,7 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { MuiButton } from "@/components/ui";
 import { DatePickerField, EditorInputField } from "@/components/input-fields";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { boolean, number, object, string, z } from "zod";
+import { boolean, object, string, z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,7 +18,6 @@ const updateSalesCategorySchema = object({
     .min(1).max(128),
   startDate: z.any(),
   endDate: z.any(),
-  discount: number({ required_error: "discount is required" }).max(100),
   isActive: boolean().default(true),
   description: string().optional(),
 })
@@ -26,7 +25,7 @@ const updateSalesCategorySchema = object({
 export type UpdateSalesCategoryInput = z.infer<typeof updateSalesCategorySchema>
 
 const toUpdateFields: (keyof UpdateSalesCategoryInput)[] = [
-  "name", "discount",
+  "name",
   "startDate", "endDate",
   "description"
 ]
@@ -68,8 +67,7 @@ export function UpdateSalesCategoryForm() {
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
+        severity: "error" } })
     },
   })
 
@@ -98,30 +96,21 @@ export function UpdateSalesCategoryForm() {
   return (
     <FormProvider {...methods}>
       <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField focused fullWidth {...register("name")} label="Name" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
-            <DatePickerField fieldName="startDate" required />
+            <TextField fullWidth {...register("name")} label="Name" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
           </Box>
         </Grid>
 
         <Grid item xs={12} md={6}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField 
-              focused
-              fullWidth 
-              {...register("discount", {
-                valueAsNumber: true
-              })} 
-              type="number"
-              inputProps={{
-                step: "0.01"
-              }}
-              label="Discount percent" 
-              error={!!errors.discount} 
-              helperText={!!errors.discount ? errors.discount.message : ""} 
-            />
             <DatePickerField fieldName="endDate" required />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <DatePickerField fieldName="startDate" required />
           </Box>
         </Grid>
 
@@ -132,7 +121,7 @@ export function UpdateSalesCategoryForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit">Save</MuiButton>
+          <MuiButton variant="contained" type="submit">Create</MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

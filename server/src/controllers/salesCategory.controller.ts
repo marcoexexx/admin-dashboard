@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CreateMultiSalesCategoriesInput, CreateSalesCategoryInput, DeleteMultiSalesCategoriesInput, GetSalesCategoryInput, SalesCategoryFilterPagination, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
+import { CreateMultiSalesCategoriesInput, CreateProductSalesCategoryInput, CreateSalesCategoryInput, DeleteMultiSalesCategoriesInput, GetSalesCategoryInput, SalesCategoryFilterPagination, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import fs from 'fs'
 import logging from "../middleware/logging/logging";
@@ -11,6 +11,7 @@ import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 
 
+// TODO: sales-categories filter
 export async function getSalesCategoriesHandler(
   req: Request<{}, {}, {}, SalesCategoryFilterPagination>,
   res: Response,
@@ -43,6 +44,32 @@ export async function getSalesCategoriesHandler(
     ])
 
     res.status(200).json(HttpListResponse(categories, count))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function getSalesCategoriesInProductHandler(
+  req: Request<CreateProductSalesCategoryInput["params"], {}, {}, SalesCategoryFilterPagination>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productId } = req.params
+
+    const categories = await db.productSalesCategory.findMany({
+      where: {
+        productId
+      },
+      include: {
+        salesCategory: true,
+      }
+    })
+
+    res.status(200).json(HttpListResponse(categories))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
@@ -84,14 +111,42 @@ export async function createSalesCategoryHandler(
   next: NextFunction
 ) {
   try {
-    const { name, startDate, endDate, discount, description } = req.body
+    const { name, startDate, endDate, description } = req.body
     const category = await db.salesCategory.create({
       data: { 
         name,
         startDate,
         endDate,
-        discount,
         description
+      },
+    })
+
+    res.status(201).json(HttpDataResponse({ category }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Sales category already exists"))
+
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function createSaleCategoryForProductHandler(
+  req: Request<CreateProductSalesCategoryInput["params"], {}, CreateProductSalesCategoryInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productId } = req.params
+    const { discount, salesCategoryId } = req.body
+
+    const category = await db.productSalesCategory.create({
+      data: { 
+        salesCategoryId,
+        productId,
+        discount
       },
     })
 
@@ -121,7 +176,7 @@ export async function createMultiSalesCategoriesHandler(
     const data = parseExcel(buf) as CreateMultiSalesCategoriesInput
 
     // Update not affected
-    await Promise.all(data.map(({name, startDate, endDate, discount, description}) => db.salesCategory.upsert({
+    await Promise.all(data.map(({name, startDate, endDate, description}) => db.salesCategory.upsert({
       where: {
         name
       },
@@ -129,7 +184,6 @@ export async function createMultiSalesCategoriesHandler(
         name,
         startDate,
         endDate,
-        discount,
         description
       },
       update: {}

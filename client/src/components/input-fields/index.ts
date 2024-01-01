@@ -1,6 +1,6 @@
 export * from './BrandInputField'
 export * from './CategoryMultiInputField'
-export * from './SalesCategoryMultiInputField'
+export * from './SalesCategoryInputField'
 export * from './EditorInputField'
 export * from './DatePickerField'
 export * from './PasswordInputField'

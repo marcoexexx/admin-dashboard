@@ -3,13 +3,14 @@ import logging from '../middleware/logging/logging';
 import AppError from '../utils/appError';
 
 import { Request, Response, NextFunction } from 'express'
-import { CreateMultiProductsInput, CreateProductInput, DeleteMultiProductsInput, GetProductInput, LikeProductByUserInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
+import { CreateMultiProductsInput, CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { db } from '../utils/db'
 import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 import { parseExcel } from '../utils/parseExcel';
+import { UpdateProductSaleCategoryInput } from '../schemas/salesCategory.schema';
 
 
 // TODO: specification filter
@@ -31,6 +32,7 @@ export async function getProductsHandler(
       categories,
       instockStatus,
       description,
+      discount,
       dealerPrice,
       marketPrice,
       status,
@@ -61,6 +63,7 @@ export async function getProductsHandler(
           status,
           priceUnit,
           salesCategory,
+          discount,
           likedUsers,
         },
         orderBy,
@@ -128,6 +131,7 @@ export async function createProductHandler(
       salesCategory,
       categories,
       quantity,
+      discount,
       status
     } = req.body;
 
@@ -159,13 +163,13 @@ export async function createProductHandler(
           }))
         },
         salesCategory: {
-          create: salesCategory.map(id => ({
-            salesCategory: {
-              connect: { id }
-            }
+          create: (salesCategory || []).map(({ salesCategory: salesCategoryId, discount }) => ({
+            salesCategory: { connect: { id: salesCategoryId } },
+            discount
           }))
         },
         quantity,
+        discount,
         creatorId: user.id
       }
     })
@@ -217,6 +221,7 @@ export async function createMultiProductsHandler(
           priceUnit: product.priceUnit,
           images: (product?.images || "")?.split("\n").filter(Boolean),
           quantity: product.quantity,
+          discount: product.discount,
           brand: {
             connectOrCreate: {
               where: { name: product.brandName },
@@ -259,6 +264,62 @@ export async function createMultiProductsHandler(
 
     if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Exchange already exists"))
 
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function deleteProductSaleCategoryHandler(
+  req: Request<GetProductSaleCategoryInput["params"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productId, productSaleCategoryId } = req.params
+
+    await db.productSalesCategory.delete({
+      where: {
+        id: productSaleCategoryId,
+        productId
+      }
+    })
+
+    res.status(200).json(HttpResponse(200, "Success delete"))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    if (err?.code === "23505") next(new AppError(409, "data already exists"))
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function updateProductSalesCategoryHandler(
+  req: Request<UpdateProductSaleCategoryInput["params"], {}, UpdateProductSaleCategoryInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { productSaleCategoryId } = req.params
+    const { discount } = req.body
+
+    const productSalesCategory = await db.productSalesCategory.update({
+      where: {
+        id: productSaleCategoryId
+      },
+      data: {
+        discount
+      },
+      include: {
+        salesCategory: true
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ productSalesCategory }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    if (err?.code === "23505") next(new AppError(409, "data already exists"))
     next(new AppError(500, msg))
   }
 }
@@ -395,7 +456,7 @@ export async function updateProductHandler(
       dealerPrice,
       marketPrice,
       priceUnit,
-      salesCategory,
+      // salesCategory,
       categories,
       quantity,
       status
@@ -452,13 +513,13 @@ export async function updateProductHandler(
               }
             }))
           },
-          salesCategory: {
-            create: salesCategory.map(id => ({
-              salesCategory: {
-                connect: { id }
-              }
-            }))
-          },
+          // // Not support yet!
+          // salesCategory: {
+          //   create: (salesCategory || []).map(({ salesCategory: salesCategoryId, discount }) => ({
+          //     salesCategory: { connect: { id: salesCategoryId } },
+          //     discount
+          //   }))
+          // },
           quantity,
         }
       })

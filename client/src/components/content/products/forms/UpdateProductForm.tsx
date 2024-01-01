@@ -1,12 +1,11 @@
 import { Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, Switch, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { BrandInputField, CatgoryMultiInputField, EditorInputField, SalesCategoryMultiInputField, SpecificationInputField } from "@/components/input-fields";
+import { BrandInputField, CatgoryMultiInputField, EditorInputField, SpecificationInputField } from "@/components/input-fields";
 import { SuspenseLoader, queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
 import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
-import { CreateSalesCategoryForm } from "../../sales-categories/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -31,13 +30,13 @@ const updateProductSchema = object({
   overview: string({ required_error: "Brand is required" })
     .min(2).max(5000),
   categories: string().array().default([]),
+  discount: number().max(100).default(0),
   instockStatus: z.enum(productStockStatus).default("AskForStock"),
   description: string({ required_error: "Brand is required" })
     .min(2).max(5000),
   dealerPrice: number().min(0),
   marketPrice: number().min(0),
   priceUnit: z.enum(priceUnit).default("MMK"),
-  salesCategory: string().array().default([]),
   quantity: number().min(0),
   isPending: boolean().default(false),
   status: z.enum(productStatus).default("Draft"),
@@ -54,7 +53,7 @@ const toUpdateFields: (keyof UpdateProductInput)[] = [
   "categories", "marketPrice", 
   "instockStatus", 
   "description",
-  "quantity", "salesCategory", 
+  "quantity",
   "dealerPrice",
   "isPending"
 ]
@@ -136,8 +135,6 @@ export function UpdateProductForm() {
           ? product.status === "Pending"
           : key ==="categories"
           ? product[key]?.map(({category: {id}}) => id)
-          : key ==="salesCategory"
-          ? product[key]?.map(({salesCategory: {id}}) => id)
           : product[key]
 
         methods.setValue(key, value)
@@ -177,17 +174,23 @@ export function UpdateProductForm() {
         <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField focused fullWidth {...register("title")} label="Title" error={!!errors.title} helperText={!!errors.title ? errors.title.message : ""} />
+              <TextField fullWidth {...register("title")} label="Title" error={!!errors.title} helperText={!!errors.title ? errors.title.message : ""} />
               <OutlinedInput 
                 fullWidth 
                 {...register("price", { valueAsNumber: true })} 
                 type="number" 
                 placeholder="Price" 
                 error={!!errors.price} 
+                inputProps={{
+                  step: "0.01"
+                }}
                 // helperText={!!errors.price 
                 //   ? errors.price.message 
                 //   : "1 dolla ~ 2098.91 kyat"
                 // } 
+                sx={{
+                  my: 1
+                }}
                 endAdornment={
                   <InputAdornment position="end">
                     <MuiButton onClick={handleOnCalculate} variant="outlined" size="small">
@@ -199,12 +202,12 @@ export function UpdateProductForm() {
             </Box>
           </Grid>
 
+
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField 
                 {...register("priceUnit")} 
-                focused
-                defaultValue={product.priceUnit}
+                defaultValue={priceUnit[0]}
                 name="priceUnit"
                 label="Price unit" 
                 select
@@ -218,24 +221,29 @@ export function UpdateProductForm() {
                   </MenuItem>
                 ))}
               </TextField>
+              <TextField fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <SpecificationInputField />
-              <CatgoryMultiInputField updateField />
+              <TextField fullWidth {...register("marketPrice", { valueAsNumber: true })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <CatgoryMultiInputField />
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <EditorInputField fieldName="overview" />
-              <TextField focused fullWidth {...register("marketPrice", { valueAsNumber: true })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
             </Box>
           </Grid>
 
-          <Grid item md={6} xs={12}>
+          <Grid item xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <EditorInputField fieldName="description" />
             </Box>
@@ -244,7 +252,6 @@ export function UpdateProductForm() {
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField 
-                focused
                 fullWidth 
                 {...register("instockStatus")} 
                 defaultValue={productStockStatus[2]}
@@ -259,41 +266,42 @@ export function UpdateProductForm() {
                   </MenuItem>
                 ))}
               </TextField>
+              <BrandInputField />
+              <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
+              <TextField 
+                fullWidth 
+                type="number" 
+                {...register("discount", { valueAsNumber: true })} 
+                inputProps={{
+                  step: "0.01"
+                }}
+                label="Discount" error={!!errors.discount} helperText={!!errors.discount ? errors.discount.message : ""} />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <BrandInputField updateField />
-              <TextField focused fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
+              {/* Image upload */}
             </Box>
           </Grid>
 
-          <Grid item md={6} xs={12}>
+          <Grid item xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField focused fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
-            </Box>
-          </Grid>
-
-          <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <SalesCategoryMultiInputField updateField />
+              <SpecificationInputField />
             </Box>
           </Grid>
 
           <Grid item xs={12}>
             <FormControlLabel
-              disabled
-              checked={product.status === "Pending"}
               label="Request review"
-              control={<Switch
+              control={<Switch 
                 {...register("isPending")}
               />}
             />
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Save</MuiButton>
+            <MuiButton variant="contained" type="submit">Create</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>
@@ -308,12 +316,6 @@ export function UpdateProductForm() {
       {modalForm.field === "categories"
       ? <FormModal field='categories' title='Create new category' onClose={handleOnCloseModalForm}>
         <CreateCategoryForm />
-      </FormModal>
-      : null}
-
-      {modalForm.field === "sales-categories"
-      ? <FormModal field='sales-categories' title='Create new sales category' onClose={handleOnCloseModalForm}>
-        <CreateSalesCategoryForm />
       </FormModal>
       : null}
     </>

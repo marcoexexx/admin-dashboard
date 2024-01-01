@@ -11,6 +11,13 @@ const MainContent = styled(Box)(({theme}) => ({
   position: "relative",
   zIndex: 7,
   overflow: "scroll",
+  scrollbarWidth: "none",  // Hide the scrollbar for firefox
+  "&::-webkit-scrollbar": {   // Hide the scrollbar for WebKit browsers (Chrome, Safari, Edge, etc.)
+    display: "none"
+  },
+  "&-ms-overflow-style": {  //  Hide the scrollbar for IE
+    display: "none"
+  },
   height: "100%",
   paddingBottom: "10px",
 }))

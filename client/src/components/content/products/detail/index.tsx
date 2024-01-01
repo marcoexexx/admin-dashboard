@@ -75,7 +75,7 @@ export function ProductDetail(props: ViewProductProps) {
 
       <Grid item xs={12}>
         {currentTab === "detail" && <ProductDetailTab product={product} />}
-        {currentTab === "sales" && <ProductSalesTab />}
+        {currentTab === "sales" && productId && <ProductSalesTab productId={productId} />}
       </Grid>
     </Grid>
   )
