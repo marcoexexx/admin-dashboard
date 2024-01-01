@@ -125,6 +125,11 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       <Box p={3}>
         <Typography variant="h2">Discount and Sales</Typography>
         <Typography>Original discount: {product.discount}%</Typography>
+
+        <Typography>Sales discounts</Typography>
+        {product.salesCategory?.map(sale => (
+          <Typography key={sale.id}>{sale.salesCategory.name} {"->"} {sale.discount}% :: {sale.salesCategory.isActive ? "Active" : "Unactive"}</Typography>
+        ))}
       </Box>
 
       <Divider />
