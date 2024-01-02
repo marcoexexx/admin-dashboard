@@ -48,7 +48,7 @@ export type UpdateProductInput = z.infer<typeof updateProductSchema>
 
 const toUpdateFields: (keyof UpdateProductInput)[] = [
   "title", "priceUnit", 
-  "price",
+  "price", "discount",
   "specification", "overview", 
   "categories", "marketPrice", 
   "instockStatus", 
@@ -130,6 +130,7 @@ export function UpdateProductForm() {
 
   useEffect(() => {
     if (isSuccessFetchProduct && product && fetchStatusProduct === "idle") {
+      console.log(toUpdateFields)
       toUpdateFields.forEach(key => {
         const value = key === "isPending" 
           ? product.status === "Pending"
@@ -233,7 +234,7 @@ export function UpdateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <CatgoryMultiInputField />
+              <CatgoryMultiInputField updateField />
             </Box>
           </Grid>
 
@@ -266,7 +267,7 @@ export function UpdateProductForm() {
                   </MenuItem>
                 ))}
               </TextField>
-              <BrandInputField />
+              <BrandInputField updateField />
               <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
               <TextField 
                 fullWidth 
