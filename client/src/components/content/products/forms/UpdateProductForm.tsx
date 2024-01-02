@@ -130,7 +130,6 @@ export function UpdateProductForm() {
 
   useEffect(() => {
     if (isSuccessFetchProduct && product && fetchStatusProduct === "idle") {
-      console.log(toUpdateFields)
       toUpdateFields.forEach(key => {
         const value = key === "isPending" 
           ? product.status === "Pending"
