@@ -223,7 +223,7 @@ export async function createMultiProductsHandler(
           title: product.title,
           overview: product.overview,
           instockStatus: product.instockStatus,
-          description: product?.description || "<h1>Product description</h1>",
+          description: product.description,
           price: product.price,
           dealerPrice: product.dealerPrice,
           marketPrice: product.marketPrice,
