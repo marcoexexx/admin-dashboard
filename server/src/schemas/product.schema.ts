@@ -1,4 +1,4 @@
-import { number, object, string, z } from "zod";
+import { boolean, number, object, string, z } from "zod";
 import { Pagination } from "./types";
 
 
@@ -80,21 +80,18 @@ export const createProductSchema = object({
       name: string({ required_error: "Specification name is required" }),
       value: string({ required_error: "Specification value is required" }),
     }).array(),
-    overview: string({ required_error: "Overview is required" })
-      .min(1).max(5000),
+    overview: string().max(5000).optional(),
+    description: string().max(5000).optional(),
     categories: string().array().default([]),
     instockStatus: z.enum(productStockStatus).default("AskForStock"),
-    description: string({ required_error: "Description is required" })
-      .min(1).max(5000),
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
     priceUnit: z.enum(priceUnit),
+    discount: number().max(100).default(0),
     /** Example: How salesCategory work
      * sale: { name: "11.11", startDate, endDate, isActivate }
      * product,
-     * discount: 13  // by percent
      **/
-    discount: number().max(100).default(0),
     salesCategory: object({
       salesCategory: string(), // by id
       discount: number().max(100).default(0)
@@ -116,31 +113,31 @@ export const deleteMultiProductsSchema = object({
 
 export const createMultiProductsSchema = object({
   body: object({
-    id: string({ required_error: "productId is required" }),
+    id: string().optional(),   //  id is optional because, dont known new product old product.
     price: number({ required_error: "Price is required "}),
     brandName: string({ required_error: "Brand is required" })
       .min(1).max(128),
     title: string({ required_error: "Title is required" })
       .min(1).max(128),
     specification: string().optional(),  //  by splitting "\n"
-    overview: string({ required_error: "Overview is required" })
-      .min(1).max(5000),
+    overview: string().max(5000).optional(),
+    description: string().max(5000).optional(),
     categories: string().optional(), // by splitting "\n"
     instockStatus: z.enum(productStockStatus).default("AskForStock"),
-    description: string({ required_error: "Description is required" })
-      .min(1).max(5000),
     dealerPrice: number().min(0),
     images: string(),
     marketPrice: number().min(0),
     priceUnit: z.enum(priceUnit).default("MMK"),
     discount: number().max(100).default(0),
-    /**
-     * Currently not support!
-     * salesCategory in create multi product with excel upload
-     */
-    // salesCategory: string().optional(),  // by splitting "\n"
     quantity: number().min(0),
     status: z.enum(productStatus).default("Draft"),
+
+    "sales.name": string().optional(),
+    "sales.startDate": string().optional(),
+    "sales.endDate": string().optional(),
+    "sales.isActive": boolean().optional(),
+    "sales.discount": number().optional(),
+    "sales.description": string().optional(),
 
     itemCode: string().nullable().optional(),
   }).array()
@@ -167,12 +164,10 @@ export const updateProductSchema = object({
       value: string({ required_error: "Specification value is required" }),
     }).array().default([]),
     discount: number().max(100).default(0),
-    overview: string({ required_error: "Overview is required" })
-      .min(1).max(5000),
+    overview: string().max(5000).optional(),
+    description: string().max(5000).optional(),
     categories: string().array().default([]),
     instockStatus: z.enum(productStockStatus).default("AskForStock"),
-    description: string({ required_error: "Description is required" })
-      .min(1).max(5000),
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
     priceUnit: z.enum(priceUnit).default("MMK"),

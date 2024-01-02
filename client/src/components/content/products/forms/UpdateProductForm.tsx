@@ -27,13 +27,11 @@ const updateProductSchema = object({
     name: string({ required_error: "Specification name is required" }),
     value: string({ required_error: "Specification value is required" }),
   }).array(),
-  overview: string({ required_error: "Brand is required" })
-    .min(2).max(5000),
+  overview: string().max(5000).optional(),
+  description: string().max(5000).optional(),
   categories: string().array().default([]),
   discount: number().max(100).default(0),
   instockStatus: z.enum(productStockStatus).default("AskForStock"),
-  description: string({ required_error: "Brand is required" })
-    .min(2).max(5000),
   dealerPrice: number().min(0),
   marketPrice: number().min(0),
   priceUnit: z.enum(priceUnit).default("MMK"),

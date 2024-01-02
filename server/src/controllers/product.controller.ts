@@ -11,6 +11,7 @@ import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 import { parseExcel } from '../utils/parseExcel';
 import { UpdateProductSaleCategoryInput } from '../schemas/salesCategory.schema';
+import { generateUuid } from '../utils/generateUuid';
 
 
 // TODO: specification filter
@@ -203,13 +204,22 @@ export async function createMultiProductsHandler(
     const buf = fs.readFileSync(excelFile.path)
     const data = parseExcel(buf) as CreateMultiProductsInput
 
+
     for (const product of data) {
+      const sale = (product["sales.name"] && product["sales.discount"]) ? {
+        name: product["sales.name"].toString(),
+        startDate: product["sales.startDate"] || new Date(),
+        get endDate() { return product["sales.endDate"] || new Date(new Date(this.startDate).getTime() + 1000 * 60 * 60 * 24 * 5) }, // default: 5 days
+        discount: product["sales.discount"],
+        isActive: product["sales.isActive"] || true,
+        description: product["sales.description"],
+      } : null
+
       await db.product.upsert({
         where: {
-          id: product.id
+          id: product.id || generateUuid()
         },
         create: {
-          id: product.id,
           title: product.title,
           overview: product.overview,
           instockStatus: product.instockStatus,
@@ -233,6 +243,23 @@ export async function createMultiProductsHandler(
               id: user.id 
             }
           },
+          salesCategory: {
+            create: sale ? {
+              salesCategory: { 
+                connectOrCreate: {
+                  where: { name: sale.name },
+                  create: { 
+                    name: sale.name, 
+                    startDate: sale.startDate, 
+                    endDate: sale.endDate,
+                    isActive: sale.isActive,
+                    description: sale.description
+                  }
+                } 
+              },
+              discount: sale.discount,
+            } : undefined,
+          },
           specification: product.specification ? {
             createMany: {
               data: product.specification.split("\n").filter(Boolean).map(spec => ({ name: spec.split(": ")[0], value: spec.split(": ")[1] })),
@@ -253,6 +280,23 @@ export async function createMultiProductsHandler(
           price: product.price,
           dealerPrice: product.dealerPrice,
           marketPrice: product.marketPrice,
+          salesCategory: {
+            create: sale ? {
+              salesCategory: { 
+                connectOrCreate: {
+                  where: { name: sale.name },
+                  create: { 
+                    name: sale.name, 
+                    startDate: sale.startDate, 
+                    endDate: sale.endDate,
+                    isActive: sale.isActive,
+                    description: sale.description
+                  }
+                } 
+              },
+              discount: sale.discount,
+            } : undefined,
+          },
         },
       })
     }

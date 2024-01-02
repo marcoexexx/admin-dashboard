@@ -176,16 +176,8 @@ export function ProductsListTable(props: ProductsListTableProps) {
   }
 
   const handleOnImport = (data: any[]) => {
-    convertToExcel(data.map(product => {
-      return {
-        ...product,
-        colors: product.colors,
-        images: product.images,
-        overview: product.overview || "-",
-        type: product.type || undefined,
-        salesCategory: product.salesCategory || ""
-      }
-    }), "Products")
+    console.log(data)
+    convertToExcel(data, "Products")
       .then(excelBuffer => onCreateManyProducts(excelBuffer))
       .catch(err => dispatch({
         type: "OPEN_TOAST",
