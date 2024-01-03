@@ -165,7 +165,6 @@ export function UpdateProductForm() {
   if (isErrorProduct && errorProduct) return <h1>{errorProduct.message}</h1>
   if (isLoadingProduct || !product) return <SuspenseLoader />
 
-
   return (
     <>
       <FormProvider {...methods}>

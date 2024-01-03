@@ -163,14 +163,37 @@ export function ProductsListTable(props: ProductsListTableProps) {
   }
 
   const handleOnExport = () => {
-    const prepare = products.map(product => ({
-      ...product,
-      brandName: product.brand!.name,
-      images: product.images.join("\n"),
-      categories: product.categories?.map(category => category.category.name).join("\n"),
-      salesCategory: product.salesCategory?.map(sale => sale.salesCategory.name).join("\n"),
-      specification: product.specification?.map(spec => `${spec.name}: ${spec.value}`).join("\n")
-    }))
+    console.log(products)
+
+    const prepare = products.map(product => {
+      const activeSale = product.salesCategory.find(sale => sale.salesCategory.isActive)
+
+      const toExport = {
+        id: product.id,
+        title: product.title,
+        status: product.status,
+        instockStatus: product.instockStatus,
+        priceUnit: product.priceUnit,
+        images: product.images.join("\n"),
+        quantity: product.quantity,
+        price: product.price,
+        marketPrice: product.marketPrice,
+        dealerPrice: product.dealerPrice,
+        discount: product.discount,
+        brandName: product.brand.name
+      }
+
+      if (activeSale) {
+        toExport["sales.name"] = activeSale.salesCategory.name
+        toExport["sales.startDate"] = activeSale.salesCategory.startDate
+        toExport["sales.endDate"] = activeSale.salesCategory.endDate
+        toExport["sales.isActive"] = activeSale.salesCategory.isActive
+        toExport["sales.discount"] = activeSale.discount
+        toExport["sales.description"] = activeSale.salesCategory.description
+      }
+
+      return toExport
+    })
 
     exportToExcel(prepare, "Products")
   }
