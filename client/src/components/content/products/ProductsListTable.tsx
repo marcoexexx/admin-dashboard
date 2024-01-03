@@ -164,7 +164,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
 
   const handleOnExport = () => {
     const prepare = products.map(product => {
-      const activeSale = product.salesCategory.find(sale => sale.salesCategory.isActive)
+      const activeSale = product.salesCategory?.find(sale => sale.salesCategory.isActive)
 
       const toExport = {
         id: product.id,
@@ -178,10 +178,10 @@ export function ProductsListTable(props: ProductsListTableProps) {
         marketPrice: product.marketPrice,
         dealerPrice: product.dealerPrice,
         discount: product.discount,
-        brandName: product.brand.name
-      }
+        brandName: product.brand!.name
+      } as Record<string, string | number | boolean | Date | undefined>
 
-      if (activeSale) {
+      if (activeSale?.salesCategory) {
         toExport["sales.name"] = activeSale.salesCategory.name
         toExport["sales.startDate"] = activeSale.salesCategory.startDate
         toExport["sales.endDate"] = activeSale.salesCategory.endDate
