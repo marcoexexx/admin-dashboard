@@ -11,31 +11,13 @@
 
 # TODO
  - ## IMPORTANT
- - [ ] switchable currency
- - [x] use $transaction
- - [ ] product get with include
- - [ ] use name: { in: [] }
- - [ ] with relation in list table view
  - [ ] item code
 
  - [ ] user detail :: relation
  - [ ] product list & detail :: relation
 
  - ## NORMAL
- - [ ] loading -> update form
-
- - [ ] profile -> detail/ move
- - [ ] select :: emum, product type
-
- - [ ] backend product.controller.ts -> many to many update
-
  - [ ] filter -> specs products
- - [ ] update product
- - [ ] excel -> multi create products
-
-
- - [ ] status/unauthorized -> redirect
- - [ ] move /uploaderForm -> productImage, profilePicture, coverPhoto
 
  - [ ] image upload
  - [ ] product image append -> [ + ] in product detail view
@@ -68,3 +50,7 @@
  - [x] readonly after publish state
  - [x] all update valid :: cache bug
  - [x] update queryKey: { id: "" } -> { productId }
+ - [x] use $transaction
+ - [x] product get with include
+ - [x] use name: { in: [] }
+ - [x] loading -> update form

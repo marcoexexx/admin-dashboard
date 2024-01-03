@@ -163,8 +163,6 @@ export function ProductsListTable(props: ProductsListTableProps) {
   }
 
   const handleOnExport = () => {
-    console.log(products)
-
     const prepare = products.map(product => {
       const activeSale = product.salesCategory.find(sale => sale.salesCategory.isActive)
 
@@ -199,7 +197,6 @@ export function ProductsListTable(props: ProductsListTableProps) {
   }
 
   const handleOnImport = (data: any[]) => {
-    console.log(data)
     convertToExcel(data, "Products")
       .then(excelBuffer => onCreateManyProducts(excelBuffer))
       .catch(err => dispatch({
