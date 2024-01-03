@@ -1,4 +1,5 @@
 export const config = {
+  host: process.env.HOST,
   port: process.env.PORT,
   nodeEnv: process.env.NODE_ENV,
   logLevel: process.env.LOG_LEVEL,

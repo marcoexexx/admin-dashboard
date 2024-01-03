@@ -53,6 +53,7 @@ export async function getGoogleAuthToken(code: string): Promise<GoogleOAuthToken
 
 export async function getGoogleUser(args: Pick<GoogleOAuthToken, "access_token" | "id_token">): Promise<GoogleUserResult> {
   const { id_token, access_token } = args
+
   try {
     const url = `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`
     const { data } = await axios.get<GoogleUserResult>(url, {
