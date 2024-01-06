@@ -3,39 +3,39 @@ import { PageTitle } from "@/components"
 import { useNavigate } from 'react-router-dom'
 import { Container, Grid, Typography } from "@mui/material"
 import { usePermission } from "@/hooks";
+import { getRegionPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { MuiButton } from "@/components/ui";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import getConfig from "@/libs/getConfig";
-import { getOrderPermissionsFn } from '@/services/permissionsApi';
 
 
 const appName = getConfig("appName")
 
-export default function ListOrder() {
+export default function ListRegion() {
   const navigate = useNavigate()
 
-  const isAllowedReadOrder = usePermission({
-    key: "order-permissions",
+  const isAllowedReadRegion = usePermission({
+    key: "region-permissions",
     actions: "read",
-    queryFn: getOrderPermissionsFn
+    queryFn: getRegionPermissionsFn
   })
 
-  const isAllowedCreatOrder = usePermission({
-    key: "order-permissions",
+  const isAllowedCreateRegion = usePermission({
+    key: "region-permissions",
     actions: "create",
-    queryFn: getOrderPermissionsFn
+    queryFn: getRegionPermissionsFn
   })
 
-  const handleNavigateCreate = () => {
-    navigate("/orders/create")
+  const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate("/regions/create")
   }
 
 
   return (
     <>
       <Helmet>
-        <title>{appName} | List orders</title>
+        <title>{appName} | List regions</title>
         <meta name="description" content=""></meta>
       </Helmet>
 
@@ -43,36 +43,34 @@ export default function ListOrder() {
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <Typography variant="h3" component="h3" gutterBottom>Order List</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>Regions List</Typography>
             <Typography variant="subtitle2" gutterBottom>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
             </Typography>
           </Grid>
 
-          {isAllowedCreatOrder
+          {isAllowedCreateRegion
           ? <Grid item>
               <MuiButton
                 sx={{ mt: { xs: 2, md: 0 } }}
                 variant="contained"
                 startIcon={<AddTwoToneIcon fontSize="small" />}
                 onClick={handleNavigateCreate}
-              >Create new order</MuiButton>
+              >Create new region</MuiButton>
             </Grid>
           : null}
-          
         </Grid>
       </PageTitle>
 
-      {isAllowedReadOrder
-      ? <Container maxWidth="lg">
+      {isAllowedReadRegion
+      ?  <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>
-              {"<OrdersList />"}
+              {/* <RegionsList /> */}
             </Grid>
           </Grid>
         </Container>
       : <MiniAccessDenied />}
-      
     </>
   )
 }

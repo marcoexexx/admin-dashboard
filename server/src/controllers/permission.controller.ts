@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import mapValues from "lodash/mapValues";
-import { orderPermission, productPermission, userPermission } from "../utils/auth/permissions";
+import { orderPermission, productPermission, regionPermission, userPermission } from "../utils/auth/permissions";
 import { HttpDataResponse } from "../utils/helper";
 import { brandPermission } from "../utils/auth/permissions/brand.permission";
 import { categoryPermission } from "../utils/auth/permissions/category.permission";
@@ -156,6 +156,25 @@ export async function permissionsOrdersHandler(
     res
       .status(200)
       .json(HttpDataResponse({ permissions, label: "orders" }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function permissionsRegionsHandler(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const permissions = mapValues(regionPermission, value => value())
+
+    res
+      .status(200)
+      .json(HttpDataResponse({ permissions, label: "regions" }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

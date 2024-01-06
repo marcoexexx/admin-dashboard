@@ -160,6 +160,7 @@ type ExpandMenu = {
   id:
     | "*"
     | "products"
+    | "cities"
     | "regions"
     | "categories"
     | "brands"

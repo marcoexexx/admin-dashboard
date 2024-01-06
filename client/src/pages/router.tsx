@@ -3,7 +3,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import Loader from "./loader";
 import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
-import { brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, productPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
+import { brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 const HomePage = Loader(lazy(() => import("@/pages/home/Home")))
@@ -11,6 +11,11 @@ const HomePage = Loader(lazy(() => import("@/pages/home/Home")))
 // Status
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))
 const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.page")))
+
+// regions
+const ListRegionPage = Loader(lazy(() => import("@/pages/regions/ListRegion")))
+const CreateRegionPage = Loader(lazy(() => import("@/pages/regions/CreateRegion")))
+const UpdateRegionPage = Loader(lazy(() => import("@/pages/regions/UpdateRegion")))
 
 // coupons
 const ListCouponPage = Loader(lazy(() => import("@/pages/coupons/ListCoupon")))
@@ -90,6 +95,36 @@ const routes = createBrowserRouter([
             path: "me",
             loader: meProfileLoader,
             Component: ManagementUserProfilePage
+          },
+
+          /// REGIONS ROUTES
+          {
+            path: "regions",
+            loader: regionPermissionsLoader,
+            children: [
+              {
+                path: "",
+                element: <Navigate to="/regions/list" />
+              },
+              {
+                path: "list",
+                Component: ListRegionPage
+              },
+              {
+                path: "",
+                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
+                children: [
+                  {
+                    path: "create",
+                    Component: CreateRegionPage
+                  },
+                  {
+                    path: "update/:regionId",
+                    Component: UpdateRegionPage
+                  }
+                ]
+              },
+            ]
           },
 
           /// ORDERS ROUTES
