@@ -24,6 +24,7 @@ export type Store = {
       | "products"
       | "categories"
       | "sales-categories"
+      | "cities"
 
       | "update-product"  // Only for on publish product
       | "delete-product"
@@ -43,6 +44,12 @@ export type Store = {
 
       | "delete-coupon"
       | "delete-coupon-multi"
+
+      | "delete-city"
+      | "delete-city-multi"
+
+      | "delete-region"
+      | "delete-region-multi"
 
       | "delete-product-sale"
     state: boolean
@@ -108,6 +115,24 @@ export type Store = {
       _count?: boolean
     }
   },
+  cityFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default"
+    include?: {
+      _count?: boolean
+    }
+  },
+  regionFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default"
+    include?: {
+      _count?: boolean
+    }
+  },
   exchangeFilter?: {
     fields?: any,
     page?: number,
@@ -128,6 +153,11 @@ export type Store = {
   }
 }
 
+interface CityFilterActions {
+  type: "SET_CITY_FILTER",
+  payload: Store["cityFilter"]
+}
+
 interface CouponFilterActions {
   type: "SET_COUPON_FILTER",
   payload: Store["couponFilter"]
@@ -146,6 +176,11 @@ interface ProductFilterActions {
 interface BrandFilterActions {
   type: "SET_BRAND_FILTER",
   payload: Store["brandFilter"]
+}
+
+interface RegionFilterActions {
+  type: "SET_REGION_FILTER",
+  payload: Store["regionFilter"]
 }
 
 interface ExchangeFilterActions {
@@ -223,6 +258,7 @@ type Action =
   | SlidebarToggleActions
   | SlidebarCloseActions
 
+  | CityFilterActions
   | UserFilterActions
   | ProductFilterActions
   | BrandFilterActions
@@ -230,6 +266,7 @@ type Action =
   | CategoryFilterActions
   | SalesCategoryFilterActions
   | CouponFilterActions
+  | RegionFilterActions
 
   | ModalFormOpenActions
   | ModalFormCloseActions
@@ -277,6 +314,22 @@ const initialState: Store = {
           salesCategory: true
         }
       },
+    },
+  },
+  cityFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default",
+    include: {
+      _count: false,
+    },
+  },
+  regionFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default",
+    include: {
+      _count: false,
     },
   },
   brandFilter: {
@@ -408,6 +461,20 @@ const stateReducer = (state: Store, action: Action): Store => {
     case "SET_BRAND_FILTER": {
       return { ...state, brandFilter: {
         ...state.brandFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_CITY_FILTER": {
+      return { ...state, cityFilter: {
+        ...state.cityFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_REGION_FILTER": {
+      return { ...state, regionFilter: {
+        ...state.regionFilter,
         ...action.payload
       } }
     }

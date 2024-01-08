@@ -141,19 +141,19 @@ export function CouponsListTable(props: CouponsListTableProps) {
   }
 
   const isAllowedUpdateCoupon = usePermission({
-    key: "coupons-permissions",
+    key: "coupon-permissions",
     actions: "update",
     queryFn: getCouponsPermissionsFn
   })
 
   const isAllowedDeleteCoupon = usePermission({
-    key: "coupons-permissions",
+    key: "coupon-permissions",
     actions: "delete",
     queryFn: getCouponsPermissionsFn
   })
 
   const isAllowedCreateCoupon = usePermission({
-    key: "coupons-permissions",
+    key: "coupon-permissions",
     actions: "create",
     queryFn: getCouponsPermissionsFn
   })

@@ -306,3 +306,23 @@ model OrderItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model CityFees {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  city     String  @unique
+  fees     Float
+  region   Region? @relation(fields: [regionId], references: [id])
+  regionId String? @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Region {
+  id     String     @id @default(auto()) @map("_id") @db.ObjectId
+  name   String     @unique
+  cities CityFees[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -15,7 +15,7 @@ export default function UpdateOrder() {
   const navigate = useNavigate()
 
   const isAllowedUpdateOrder = usePermission({
-    key: "orders-permissions",
+    key: "order-permissions",
     actions: "update",
     queryFn: getOrderPermissionsFn
   })

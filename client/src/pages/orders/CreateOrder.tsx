@@ -13,7 +13,7 @@ const appName = getConfig("appName")
 
 export default function CreateOrder() {
   const isAllowedCreateOrder = usePermission({
-    key: "orders-permissions",
+    key: "order-permissions",
     actions: "create",
     queryFn: getOrderPermissionsFn
   })

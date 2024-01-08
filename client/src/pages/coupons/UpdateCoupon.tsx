@@ -16,7 +16,7 @@ export default function UpdateCoupon() {
   const navigate = useNavigate()
 
   const isAllowedUpdateCoupon = usePermission({
-    key: "coupons-permissions",
+    key: "coupon-permissions",
     actions: "update",
     queryFn: getCouponsPermissionsFn
   })

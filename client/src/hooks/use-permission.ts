@@ -9,12 +9,14 @@ type PermissionKey =
   | "user-permissions"
   | "exchange-permissions"
   | "category-permissions"
-  | "sales-categor-permissions"
+  | "sales-category-permissions"
   | "brand-permissions"
   | "product-permissions"
-  | "orders-permissions"
-  | "access-logs-permissions"
-  | "coupons-permissions"
+  | "order-permissions"
+  | "access-log-permissions"
+  | "coupon-permissions"
+  | "region-permissions"
+  | "city-permissions"
 
 interface Args {
   key: PermissionKey,

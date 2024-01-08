@@ -67,7 +67,7 @@ export function BulkActions(props: BulkActionsProps) {
 
       <FormModal
         field={field}
-        title="Delete brand"
+        title="Delete seleted"
         onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>

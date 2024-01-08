@@ -10,6 +10,14 @@ export async function getUserPermissionsFn(opt: QueryOptionArgs) {
 }
 
 
+export async function getRegionPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/regions", {
+    ...opt,
+  })
+  return data
+}
+
+
 export async function getProductPermissionsFn(opt: QueryOptionArgs) {
   const { data } = await authApi.get<PermissionsResponse>("/permissions/products", {
     ...opt,
@@ -28,6 +36,14 @@ export async function getCategoryPermissionsFn(opt: QueryOptionArgs) {
 
 export async function getSalesCategoryPermissionsFn(opt: QueryOptionArgs) {
   const { data } = await authApi.get<PermissionsResponse>("/permissions/sales-category", {
+    ...opt,
+  })
+  return data
+}
+
+
+export async function getCityPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/cities", {
     ...opt,
   })
   return data

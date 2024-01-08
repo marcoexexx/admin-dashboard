@@ -16,13 +16,13 @@ export default function ListOrder() {
   const navigate = useNavigate()
 
   const isAllowedReadOrder = usePermission({
-    key: "orders-permissions",
+    key: "order-permissions",
     actions: "read",
     queryFn: getOrderPermissionsFn
   })
 
   const isAllowedCreatOrder = usePermission({
-    key: "orders-permissions",
+    key: "order-permissions",
     actions: "create",
     queryFn: getOrderPermissionsFn
   })

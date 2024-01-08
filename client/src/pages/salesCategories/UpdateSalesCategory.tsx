@@ -16,7 +16,7 @@ export default function UpdateSalesCategory() {
   const navigate = useNavigate()
 
   const isAllowedUpdateSalesCategory = usePermission({
-    key: "sales-categor-permissions",
+    key: "sales-category-permissions",
     actions: "update",
     queryFn: getSalesCategoryPermissionsFn
   })

@@ -1,6 +1,5 @@
 import { number, object, string, z } from "zod";
 import { Pagination } from "./types";
-import { CreateBrandInput } from "./brand.schema";
 
 
 export type OrderFilterPagination = {
@@ -9,7 +8,7 @@ export type OrderFilterPagination = {
   include?: {
   },
   orderBy?: Record<
-    keyof CreateBrandInput | "createdAt" | "updatedAt", 
+    keyof CreateOrderInput | "createdAt" | "updatedAt", 
     "asc" | "desc">
 }
 

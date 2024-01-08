@@ -1,6 +1,5 @@
 import { boolean, number, object, string, z } from "zod";
 import { Pagination } from "./types";
-import { CreateBrandInput } from "./brand.schema";
 
 
 export type SalesCategoryFilterPagination = {
@@ -14,7 +13,7 @@ export type SalesCategoryFilterPagination = {
     }
   },
   orderBy?: Record<
-    keyof CreateBrandInput | "createdAt" | "updatedAt", 
+    keyof CreateSalesCategoryInput | "createdAt" | "updatedAt", 
     "asc" | "desc">
 }
 

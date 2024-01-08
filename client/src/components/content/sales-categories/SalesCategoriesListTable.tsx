@@ -141,19 +141,19 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
   }
 
   const isAllowedDeleteSalesCategory = usePermission({
-    key: "sales-categor-permissions",
+    key: "sales-category-permissions",
     actions: "delete",
     queryFn: getSalesCategoryPermissionsFn
   })
 
   const isAllowedUpdateSalesCategory = usePermission({
-    key: "sales-categor-permissions",
+    key: "sales-category-permissions",
     actions: "update",
     queryFn: getSalesCategoryPermissionsFn
   })
 
   const isAllowedCreateSalesCategory = usePermission({
-    key: "sales-categor-permissions",
+    key: "sales-category-permissions",
     actions: "create",
     queryFn: getSalesCategoryPermissionsFn
   })

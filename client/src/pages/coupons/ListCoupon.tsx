@@ -18,13 +18,13 @@ export default function ListCoupon() {
   const navigate = useNavigate()
 
   const isAllowedReadCoupons = usePermission({
-    key: "coupons-permissions",
+    key: "coupon-permissions",
     actions: "read",
     queryFn: getCouponsPermissionsFn
   })
 
   const isAllowedCreateCoupons = usePermission({
-    key: "coupons-permissions",
+    key: "coupon-permissions",
     actions: "create",
     queryFn: getCouponsPermissionsFn
   })

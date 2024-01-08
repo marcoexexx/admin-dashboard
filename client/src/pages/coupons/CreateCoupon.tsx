@@ -14,7 +14,7 @@ const appName = getConfig("appName")
 
 export default function CreateCoupon() {
   const isAllowedCreateCoupon = usePermission({
-    key: "coupons-permissions",
+    key: "coupon-permissions",
     actions: "create",
     queryFn: getCouponsPermissionsFn
   })

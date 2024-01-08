@@ -281,6 +281,32 @@ export type Category = {
 }
 
 
+export type CityFees = {
+  id: string,
+  city: string,
+  fees: number, // float
+
+  // relationship
+  region?: Region,
+  regionId?: string,
+  
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+export type Region = {
+  id: string,
+  name: string
+
+  // relationship
+  cities?: CityFees[]
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
 export type PermissionsResponse = {
   status: number,
   permissions: {
@@ -390,5 +416,9 @@ export type ProductResponse = Omit<HttpResponse, "message"> & { product: Product
 export type ProductSalesCategoriesResponse = { id: string, salesCategoryId: string,  productId: string, discount: number, salesCategory: SalesCategory };
 
 export type BrandResponse = Omit<HttpResponse, "message"> & { brand: Brand };
+
+export type CityResponse = Omit<HttpResponse, "message"> & { city: CityFees };
+
+export type RegionResponse = Omit<HttpResponse, "message"> & { region: Region };
 
 export type ExchangeResponse = Omit<HttpResponse, "message"> & { exchange: Exchange };
