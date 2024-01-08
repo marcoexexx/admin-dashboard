@@ -2,30 +2,30 @@ import { Card } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
-import { createMultiRegionsFn, deleteMultiRegionsFn, deleteRegionFn, getRegionsFn } from "@/services/regionsApi";
-import { RegionsListTable } from ".";
+import { createMultiCitiesFn, deleteCityFn, deleteMultiCitiesFn, getCitiesFn } from "@/services/citiesApi";
+import { CitiesListTable } from ".";
 
 
-export function RegionsList() {
-  const { state: {regionFilter}, dispatch } = useStore()
+export function CitiesList() {
+  const { state: {cityFilter}, dispatch } = useStore()
 
   const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["regions", { filter: regionFilter } ],
-    queryFn: args => getRegionsFn(args, { 
-      filter: regionFilter?.fields,
+    queryKey: ["cities", { filter: cityFilter } ],
+    queryFn: args => getCitiesFn(args, { 
+      filter: cityFilter?.fields,
       pagination: {
-        page: regionFilter?.page || 1,
-        pageSize: regionFilter?.limit || 10
+        page: cityFilter?.page || 1,
+        pageSize: cityFilter?.limit || 10
       },
     }),
     select: data => data
   })
 
   const {
-    mutate: createRegions,
+    mutate: createCities,
     isPending
   } = useMutation({
-    mutationFn: createMultiRegionsFn,
+    mutationFn: createMultiCitiesFn,
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
@@ -34,20 +34,20 @@ export function RegionsList() {
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created new brands.",
+        message: "Success created new cities.",
         severity: "success"
       } })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["regions"]
+        queryKey: ["cities"]
       })
     }
   })
 
   const {
-    mutate: deleteRegion
+    mutate: deleteCity
   } = useMutation({
-    mutationFn: deleteRegionFn,
+    mutationFn: deleteCityFn,
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
@@ -56,20 +56,20 @@ export function RegionsList() {
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a brand.",
+        message: "Success delete a city.",
         severity: "success"
       } })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["regions"]
+        queryKey: ["cities"]
       })
     }
   })
 
   const {
-    mutate: deleteRegions
+    mutate: deleteCities
   } = useMutation({
-    mutationFn: deleteMultiRegionsFn,
+    mutationFn: deleteMultiCitiesFn,
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
@@ -78,41 +78,41 @@ export function RegionsList() {
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete multi brands.",
+        message: "Success delete multi cities.",
         severity: "success"
       } })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["regions"]
+        queryKey: ["cities"]
       })
     }
   })
 
 
-  if (isError && error) return <h1>ERROR: {JSON.stringify(error)}</h1>
+  if (isError && error) return <h1>ERROR: {error.message}</h1>
 
   if (!data || isLoading) return <SuspenseLoader />
 
-  function handleCreateManyRegions(buf: ArrayBuffer) {
-    createRegions(buf)
+  function handleCreateManyCities(buf: ArrayBuffer) {
+    createCities(buf)
   }
 
-  function handleDeleteRegion(id: string) {
-    deleteRegion(id)
+  function handleDeleteCity(id: string) {
+    deleteCity(id)
   }
 
-  function handleDeleteMultiRegions(ids: string[]) {
-    deleteRegions(ids)
+  function handleDeleteMultiCities(ids: string[]) {
+    deleteCities(ids)
   }
 
   return <Card>
-    <RegionsListTable
+    <CitiesListTable
       isLoading={isPending}
-      regions={data.results} 
+      cities={data.results} 
       count={data.count} 
-      onCreateManyRegions={handleCreateManyRegions} 
-      onDelete={handleDeleteRegion}
-      onMultiDelete={handleDeleteMultiRegions}
+      onCreateManyCities={handleCreateManyCities} 
+      onDelete={handleDeleteCity}
+      onMultiDelete={handleDeleteMultiCities}
     />
   </Card>
 }

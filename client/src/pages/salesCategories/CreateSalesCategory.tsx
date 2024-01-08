@@ -14,7 +14,7 @@ const appName = getConfig("appName")
 
 export default function CreateProduct() {
   const isAllowedCreateSalesCategory = usePermission({
-    key: "sales-categor-permissions",
+    key: "sales-category-permissions",
     actions: "create",
     queryFn: getSalesCategoryPermissionsFn
   })

@@ -3,78 +3,76 @@ import { PageTitle } from "@/components"
 import { useNavigate } from 'react-router-dom'
 import { Container, Grid, Typography } from "@mui/material"
 import { usePermission } from "@/hooks";
-import { getCouponsPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { MuiButton } from "@/components/ui";
+
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import getConfig from "@/libs/getConfig";
-import { CouponsList } from '@/components/content/coupons';
+import { getCityPermissionsFn } from '@/services/permissionsApi';
+import { CitiesList } from '@/components/content/cities';
 
 
 const appName = getConfig("appName")
 
-
-export default function ListCoupon() {
+export default function ListBrand() {
   const navigate = useNavigate()
 
-  const isAllowedReadCoupons = usePermission({
-    key: "coupon-permissions",
+  const isAllowedReadCity = usePermission({
+    key: "city-permissions",
     actions: "read",
-    queryFn: getCouponsPermissionsFn
+    queryFn: getCityPermissionsFn
   })
 
-  const isAllowedCreateCoupons = usePermission({
-    key: "coupon-permissions",
+  const isAllowedCreateCity = usePermission({
+    key: "city-permissions",
     actions: "create",
-    queryFn: getCouponsPermissionsFn
+    queryFn: getCityPermissionsFn
   })
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate("/coupons/create")
+    navigate("/cities/create")
   }
 
 
   return (
     <>
       <Helmet>
-        <title>{appName} | List coupons</title>
-        <meta name="description" content="Launch your own exchange effortlessly with our platform. Create a secure and customizable coupon to trade digital assets. Enjoy robust features, easy management, and a seamless user experience. Start your exchange journey now and elevate your cryptocurrency trading platform with our intuitive solutions."></meta>
+        <title>{appName} | List Cities</title>
+        <meta name="description" content=""></meta>
       </Helmet>
 
       <PageTitle>
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <Typography variant="h3" component="h3" gutterBottom>Coupons List</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>Cities List</Typography>
             <Typography variant="subtitle2" gutterBottom>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
             </Typography>
           </Grid>
 
-          {isAllowedCreateCoupons
+          {isAllowedCreateCity
           ? <Grid item>
               <MuiButton
                 sx={{ mt: { xs: 2, md: 0 } }}
                 variant="contained"
                 startIcon={<AddTwoToneIcon fontSize="small" />}
                 onClick={handleNavigateCreate}
-              >Create new coupon</MuiButton>
+              >Create new city</MuiButton>
             </Grid>
-          : null }
-          
+          : null}
         </Grid>
       </PageTitle>
 
-      {isAllowedReadCoupons
-      ? <Container maxWidth="lg">
+      {isAllowedReadCity
+      ?  <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>
-              <CouponsList />
+              <CitiesList />
             </Grid>
           </Grid>
         </Container>
       : <MiniAccessDenied />}
-      
     </>
   )
 }

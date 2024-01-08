@@ -110,7 +110,7 @@ export async function createMultiRegionsHandler(
     const msg = err?.message || "internal server error"
     logging.error(msg)
 
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Brand already exists"))
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Region already exists"))
 
     next(new AppError(500, msg))
   }
@@ -189,7 +189,7 @@ export async function deleteMultilRegionsHandler(
 }
 
 
-export async function updateRegionandler(
+export async function updateRegionHandler(
   req: Request<UpdateRegionInput["params"], {}, UpdateRegionInput["body"]>,
   res: Response,
   next: NextFunction

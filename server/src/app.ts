@@ -34,6 +34,7 @@ import brandRouter from './routers/brand.route'
 import categoryRouter from './routers/category.route'
 import salesCategoryRouter from './routers/salesCategory.route'
 import regionRouter from './routers/region.route'
+import cityRouter from './routers/city.route'
 
 import helmet from 'helmet';
 import useragent from 'express-useragent';
@@ -110,6 +111,7 @@ app.use("/api/v1/brands", brandRouter)
 app.use("/api/v1/categories", categoryRouter)
 app.use("/api/v1/sales-categories", salesCategoryRouter)
 app.use("/api/v1/regions", regionRouter)
+app.use("/api/v1/cities", cityRouter)
 
 
 // Unhandled Route

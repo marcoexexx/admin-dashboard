@@ -6,7 +6,7 @@ import { permissionUser } from "../middleware/permissionUser";
 import { uploadExcel } from "../upload/excelUpload";
 import { regionPermission } from "../utils/auth/permissions";
 import { createRegionSchema, deleteMultiRegionsSchema, getRegionSchema, updateRegionSchema } from "../schemas/region.schema";
-import { createMultiRegionsHandler, createRegionHandler, deleteMultilRegionsHandler, deleteRegionHandler, getRegionHandler, getRegionsHandler, updateRegionandler } from "../controllers/region.controller";
+import { createMultiRegionsHandler, createRegionHandler, deleteMultilRegionsHandler, deleteRegionHandler, getRegionHandler, getRegionsHandler, updateRegionHandler } from "../controllers/region.controller";
 
 const router = Router()
 
@@ -56,7 +56,7 @@ router.route("/detail/:regionId")
     requiredUser, 
     permissionUser("update", regionPermission),
     validate(updateRegionSchema), 
-    updateRegionandler
+    updateRegionHandler
   )
   .delete(
     deserializeUser,

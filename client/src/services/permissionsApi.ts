@@ -42,6 +42,14 @@ export async function getSalesCategoryPermissionsFn(opt: QueryOptionArgs) {
 }
 
 
+export async function getCityPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/cities", {
+    ...opt,
+  })
+  return data
+}
+
+
 export async function getBrandPermissionsFn(opt: QueryOptionArgs) {
   const { data } = await authApi.get<PermissionsResponse>("/permissions/brands", {
     ...opt,

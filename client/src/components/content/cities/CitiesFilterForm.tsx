@@ -7,30 +7,30 @@ import { useSearchParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
 
 
-const filterRegionsSchema = object({
+const filterBrandsSchema = object({
   name: string().min(0).max(128).optional(),
   insensitive: boolean().optional().default(false),
 })
 
-export type FilterRegionsInput = z.infer<typeof filterRegionsSchema>
+export type FilterBrandsInput = z.infer<typeof filterBrandsSchema>
 
-export function RegionsFilterForm() {
+export function BrandsFilterForm() {
   const { dispatch } = useStore()
 
   const [filterQuery, setFilterQuery] = useSearchParams()
 
-  const methods = useForm<FilterRegionsInput>({
-    resolver: zodResolver(filterRegionsSchema)
+  const methods = useForm<FilterBrandsInput>({
+    resolver: zodResolver(filterBrandsSchema)
   })
 
   const { handleSubmit, register, formState: { errors }, setValue } = methods
 
-  const onSubmit: SubmitHandler<FilterRegionsInput> = (value) => {
+  const onSubmit: SubmitHandler<FilterBrandsInput> = (value) => {
     const { name, insensitive } = value
 
     setFilterQuery(prev => ({ ...prev, ...value }))
 
-    dispatch({ type: "SET_REGION_FILTER", payload: {
+    dispatch({ type: "SET_BRAND_FILTER", payload: {
       fields: {
         name: {
           contains: name || undefined,
@@ -44,7 +44,7 @@ export function RegionsFilterForm() {
     setFilterQuery({})
     setValue("name", undefined)
     setValue("insensitive", false)
-    dispatch({ type: "SET_REGION_FILTER", payload: {
+    dispatch({ type: "SET_BRAND_FILTER", payload: {
       fields: undefined
     } })
   }

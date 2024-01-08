@@ -115,6 +115,7 @@ export const createMultiProductsSchema = object({
   body: object({
     id: string().optional(),   //  id is optional because, dont known new product old product.
     price: number({ required_error: "Price is required "}),
+    // TODO: change field name "brand.name"
     brandName: string({ required_error: "Brand is required" })
       .min(1).max(128),
     title: string({ required_error: "Title is required" })

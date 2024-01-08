@@ -1,13 +1,13 @@
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
-import { UpdateBrandForm } from "@/components/content/brands/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
-import { getBrandPermissionsFn } from "@/services/permissionsApi";
+import { getRegionPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import getConfig from "@/libs/getConfig";
+import { UpdateRegionForm } from '@/components/content/regions/forms/UpdateRegionForm';
 
 
 const appName = getConfig("appName")
@@ -15,10 +15,10 @@ const appName = getConfig("appName")
 export default function UpdateRegion() {
   const navigate = useNavigate()
 
-  const isAllowedUpdateBrand = usePermission({
-    key: "brand-permissions",
+  const isAllowedUpdateRegion = usePermission({
+    key: "region-permissions",
     actions: "update",
-    queryFn: getBrandPermissionsFn
+    queryFn: getRegionPermissionsFn
   })
 
   const handleBack = () => {
@@ -29,8 +29,8 @@ export default function UpdateRegion() {
   return (
     <>
       <Helmet>
-        <title>{appName} | Update brand</title>
-        <meta name="description" content="Effortlessly update and refine your product brand details with our user-friendly brand update page. Seamlessly edit brand names, logos, and other essential information, ensuring your brand identity remains current and compelling. Take control of your brand's image, make instant modifications, and maintain a consistent and polished appearance. Simplify the brand update process with our intuitive tools and keep your business on the cutting edge. Explore the power of effortless brand management today."></meta>
+        <title>{appName} | Update region</title>
+        <meta name="description" content=""></meta>
       </Helmet>
 
       <PageTitle>
@@ -45,7 +45,7 @@ export default function UpdateRegion() {
           </Grid>
 
           <Grid item xs={10}>
-            <Typography variant="h3" component="h3" gutterBottom>Update a brand</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>Update a region</Typography>
             <Typography variant="subtitle2" gutterBottom>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
             </Typography>
@@ -53,13 +53,13 @@ export default function UpdateRegion() {
         </Grid>
       </PageTitle>
 
-      {isAllowedUpdateBrand
+      {isAllowedUpdateRegion
       ? <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12} md={8}>
               <Card>
                 <CardContent>
-                  <UpdateBrandForm />
+                  <UpdateRegionForm />
                 </CardContent>
               </Card>
             </Grid>

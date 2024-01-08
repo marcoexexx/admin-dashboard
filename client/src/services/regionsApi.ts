@@ -1,9 +1,11 @@
+import { CreateRegionInput } from "@/components/content/regions/forms/CreateRegionForm";
 import { authApi } from "./authApi";
 import { HttpListResponse, HttpResponse, QueryOptionArgs, Region, RegionResponse } from "./types";
+import { UpdateRegionInput } from "@/components/content/regions/forms/UpdateRegionForm";
 
 
 export async function getRegionsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
-  const { data } = await authApi.get<HttpListResponse<Region>>("/brands", {
+  const { data } = await authApi.get<HttpListResponse<Region>>("/regions", {
     ...opt,
     params: {
       filter,
@@ -57,13 +59,13 @@ export async function updateRegionFn({regionId, region}: {regionId: string, regi
 }
 
 
-export async function deleteMultiRegionsFn(regionIds: DeleteRegionInput["regionId"][]) {
+export async function deleteMultiRegionsFn(regionIds: string[]) {
   const { data } = await authApi.delete<HttpResponse>("/regions/multi", { data: { regionIds } })
   return data
 }
 
 
-export async function deleteRegionFn(regionId: DeleteRegionInput["regionId"]) {
+export async function deleteRegionFn(regionId: string) {
   const { data } = await authApi.delete<HttpResponse>(`/regions/detail/${regionId}`)
   return data
 }

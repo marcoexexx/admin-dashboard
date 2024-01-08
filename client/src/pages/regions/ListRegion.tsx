@@ -4,10 +4,9 @@ import { useNavigate } from 'react-router-dom'
 import { Container, Grid, Typography } from "@mui/material"
 import { usePermission } from "@/hooks";
 import { getRegionPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import { MuiButton } from "@/components/ui";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { MiniAccessDenied } from "@/components/MiniAccessDenied"; import { MuiButton } from "@/components/ui"; import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import getConfig from "@/libs/getConfig";
+import { RegionsList } from '@/components/content/regions';
 
 
 const appName = getConfig("appName")
@@ -66,7 +65,7 @@ export default function ListRegion() {
       ?  <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>
-              {/* <RegionsList /> */}
+              <RegionsList />
             </Grid>
           </Grid>
         </Container>

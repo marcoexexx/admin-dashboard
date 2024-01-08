@@ -1,26 +1,27 @@
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
-import { UpdateSalesCategoryForm } from "@/components/content/sales-categories/forms";
-import { useNavigate } from 'react-router-dom';
+
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import getConfig from "@/libs/getConfig";
+import { getCityPermissionsFn } from '@/services/permissionsApi';
+import { UpdateCityForm } from '@/components/content/cities/forms';
 
 
 const appName = getConfig("appName")
 
-export default function UpdateSalesCategory() {
+export default function UpdateCity() {
   const navigate = useNavigate()
 
-  const isAllowedUpdateSalesCategory = usePermission({
-    key: "sales-category-permissions",
+  const isAllowedUpdateCity = usePermission({
+    key: "city-permissions",
     actions: "update",
-    queryFn: getSalesCategoryPermissionsFn
+    queryFn: getCityPermissionsFn
   })
-  
+
   const handleBack = () => {
     navigate(-1)
   }
@@ -29,8 +30,8 @@ export default function UpdateSalesCategory() {
   return (
     <>
       <Helmet>
-        <title>{appName} | Update sale</title>
-        <meta name="description" content="Effortlessly refine and update your sales data with our user-friendly platform. Seamlessly edit details, track performance, and optimize your sales strategy. Take control of your revenue insights and ensure your sales data stays accurate. Simplify the update process with our intuitive tools. Explore now for hassle-free sales management and enhanced business performance."></meta>
+        <title>{appName} | Update city</title>
+        <meta name="description" content=""></meta>
       </Helmet>
 
       <PageTitle>
@@ -45,7 +46,7 @@ export default function UpdateSalesCategory() {
           </Grid>
 
           <Grid item xs={10}>
-            <Typography variant="h3" component="h3" gutterBottom>Update a sales category</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>Update a city</Typography>
             <Typography variant="subtitle2" gutterBottom>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
             </Typography>
@@ -53,13 +54,13 @@ export default function UpdateSalesCategory() {
         </Grid>
       </PageTitle>
 
-      {isAllowedUpdateSalesCategory
+      {isAllowedUpdateCity
       ? <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12} md={8}>
               <Card>
                 <CardContent>
-                  <UpdateSalesCategoryForm />
+                  <UpdateCityForm />
                 </CardContent>
               </Card>
             </Grid>

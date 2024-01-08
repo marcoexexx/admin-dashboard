@@ -1,47 +1,32 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { BulkActions, LoadingTablePlaceholder } from "@/components";
-import { FormModal } from "@/components/forms";
-import { MuiButton } from "@/components/ui";
-import { CreateSalesCategoryInput } from "./forms";
-import { SalesCategoriesActions } from "./SalesCategoriesActions";
-import { SalesCategory } from "@/services/types";
 import { useState } from "react"
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
-
+import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { RenderCountLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
+
+import { FormModal } from "@/components/forms";
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
+import { usePermission, useStore } from "@/hooks";
+import { MuiButton } from "@/components/ui";
+
+import { useNavigate } from "react-router-dom";
+import { getCityPermissionsFn } from "@/services/permissionsApi";
+import { CityFees } from "@/services/types";
+import { CitiesActions } from ".";
+import { CreateCityInput } from "./forms";
 
 
-const columnData: TableColumnHeader<SalesCategory>[] = [
+const columnData: TableColumnHeader<CityFees>[] = [
   {
-    id: "name",
+    id: "city",
     align: "left",
     name: "Name"
   },
   {
-    id: "startDate",
+    id: "fees",
     align: "left",
-    name: "Start date"
+    name: "Fees"
   },
-  {
-    id: "endDate",
-    align: "left",
-    name: "End date"
-  },
-  {
-    id: "isActive",
-    align: "left",
-    name: "Sttus"
-  },
-  {
-    id: "_count",
-    align: "left",
-    name: "Count"
-  }
 ]
 
 const columnHeader = columnData.concat([
@@ -52,24 +37,24 @@ const columnHeader = columnData.concat([
   }
 ])
 
-interface SalesCategoriesListTableProps {
-  salesCategoiries: SalesCategory[]
-  count: number
+interface CitisListTableProps {
+  cities: CityFees[]
   isLoading?: boolean
+  count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManySalesCategories: (buf: ArrayBuffer) => void
+  onCreateManyCities: (buf: ArrayBuffer) => void
 }
 
-export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
-  const { salesCategoiries, count, isLoading, onCreateManySalesCategories, onDelete, onMultiDelete } = props
+export function CitiesListTable(props: CitisListTableProps) {
+  const { cities, count, isLoading, onCreateManyCities, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
   const navigate = useNavigate()
 
   const theme = useTheme()
-  const { state: {salesCategoryFilter, modalForm}, dispatch } = useStore()
+  const { state: {cityFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -78,7 +63,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
   const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = evt.target
     setSellectedRows(checked
-      ? salesCategoiries.map(e => e.id)
+      ? cities.map(e => e.id)
       : []
     )
   }
@@ -88,25 +73,25 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handleClickDeleteAction = (salesCategoryId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteId(salesCategoryId)
+  const handleClickDeleteAction = (cityId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    setDeleteId(cityId)
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: "delete-sales-category"
+      payload: "delete-city"
     })
   }
 
-  const handleClickUpdateAction = (salesCategoryId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/sales-categories/update/${salesCategoryId}`)
+  const handleClickUpdateAction = (cityId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/cities/update/${cityId}`)
   }
 
   const handleOnExport = () => {
-    exportToExcel(salesCategoiries, "SalesCategories")
+    exportToExcel(cities, "Cities")
   }
 
-  const handleOnImport = (data: CreateSalesCategoryInput[]) => {
-    convertToExcel(data, "SalesCategories")
-      .then(excelBuffer => onCreateManySalesCategories(excelBuffer))
+  const handleOnImport = (data: CreateCityInput[]) => {
+    convertToExcel(data, "Cities")
+      .then(excelBuffer => onCreateManyCities(excelBuffer))
       .catch(err => dispatch({
         type: "OPEN_TOAST",
         payload: {
@@ -118,7 +103,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_SALES_CATEGORY_FILTER",
+      type: "SET_CITY_FILTER",
       payload: {
         page: page += 1
       }
@@ -127,7 +112,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_SALES_CATEGORY_FILTER",
+      type: "SET_CITY_FILTER",
       payload: {
         limit: parseInt(evt.target.value, 10)
       }
@@ -140,34 +125,34 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
     })
   }
 
-  const isAllowedDeleteSalesCategory = usePermission({
-    key: "sales-category-permissions",
+  const isAllowedDeleteCity = usePermission({
+    key: "city-permissions",
     actions: "delete",
-    queryFn: getSalesCategoryPermissionsFn
+    queryFn: getCityPermissionsFn
   })
 
-  const isAllowedUpdateSalesCategory = usePermission({
-    key: "sales-category-permissions",
+  const isAllowedUpdateCity = usePermission({
+    key: "city-permissions",
     actions: "update",
-    queryFn: getSalesCategoryPermissionsFn
+    queryFn: getCityPermissionsFn
   })
 
-  const isAllowedCreateSalesCategory = usePermission({
-    key: "sales-category-permissions",
+  const isAllowedCreateCity = usePermission({
+    key: "city-permissions",
     actions: "create",
-    queryFn: getSalesCategoryPermissionsFn
+    queryFn: getCityPermissionsFn
   })
 
-  const selectedAllRows = selectedRows.length === salesCategoiries.length
+  const selectedAllRows = selectedRows.length === cities.length
   const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < salesCategoiries.length
+    selectedRows.length < cities.length
 
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
-          field="delete-sales-category-multi"
-          isAllowedDelete={isAllowedDeleteSalesCategory}
+          field="delete-city-multi"
+          isAllowedDelete={isAllowedDeleteCity}
           onDelete={() => onMultiDelete(selectedRows)}
         />
       </Box>}
@@ -175,10 +160,10 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
       <Divider />
 
       <CardContent>
-        <SalesCategoriesActions 
+        <CitiesActions 
           onExport={handleOnExport} 
-          onImport={handleOnImport} 
-          isAllowedImport={isAllowedCreateSalesCategory}
+          onImport={handleOnImport}  
+          isAllowedImport={isAllowedCreateCity}
         />
       </CardContent>
 
@@ -201,7 +186,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                 const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
                 return header.id !== "actions"
                   ? render
-                  : isAllowedUpdateSalesCategory && isAllowedDeleteSalesCategory
+                  : isAllowedUpdateCity && isAllowedDeleteCity
                   ? render
                   : null
               })}
@@ -209,7 +194,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
           </TableHead>
 
           <TableBody>
-            {salesCategoiries.map(row => {
+            {cities.map(row => {
               const isSelected = selectedRows.includes(row.id)
               return <TableRow
                 hover
@@ -233,25 +218,16 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {col.id === "name"
-                      ? <RenderSalesCategoryLabel salesCategory={row} />
-                      : col.id === "startDate"
-                      ? (new Date(row.startDate)).toLocaleString()
-                      : col.id === "endDate"
-                      ? (new Date(row.endDate)).toLocaleString()
-                      : col.id === "isActive"
-                      ? row.isActive ? "Active" : "UnActive"
-                      : col.id === "_count"
-                      ? <RenderCountLabel _count={row._count} />
-                      : null
-                    }
+                    {col.id === "city" || col.id === "fees"
+                      ? row[col.id]
+                      : null}
                   </Typography>
                 </TableCell>)}
 
-                {isAllowedUpdateSalesCategory && isAllowedDeleteSalesCategory
+                {isAllowedUpdateCity && isAllowedDeleteCity
                 ? <TableCell align="right">
-                    {isAllowedUpdateSalesCategory
-                    ?  <Tooltip title="Edit Sales category" arrow>
+                    {isAllowedUpdateCity
+                    ? <Tooltip title="Edit City" arrow>
                         <IconButton
                           sx={{
                             '&:hover': {
@@ -268,8 +244,8 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
                       </Tooltip>
                     : null}
 
-                    {isAllowedDeleteSalesCategory
-                    ? <Tooltip title="Delete Sales category" arrow>
+                    {isAllowedDeleteCity
+                    ? <Tooltip title="Delete Product" arrow>
                         <IconButton
                           sx={{
                             '&:hover': {
@@ -299,18 +275,18 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={salesCategoryFilter?.page
-            ? salesCategoryFilter.page - 1
+          page={cityFilter?.page
+            ? cityFilter.page - 1
             : 0}
-          rowsPerPage={salesCategoryFilter?.limit || 10}
+          rowsPerPage={cityFilter?.limit || 10}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>
 
-      {modalForm.field === "delete-sales-category"
+      {modalForm.field === "delete-city"
       ? <FormModal
-        field="delete-sales-category"
-        title="Delete sales category"
+        field="delete-city"
+        title="Delete city"
         onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>

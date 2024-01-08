@@ -1,4 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Typography, styled } from "@mui/material";
+import { BrandsFilterForm } from ".";
 import { useRef, useState } from "react";
 import ExportIcon from '@mui/icons-material/Upgrade';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -6,8 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ImportIcon from '@mui/icons-material/MoveToInbox';
 
 import * as XLSX from 'xlsx'
-import { RegionsFilterForm } from ".";
-import { CreateRegionInput } from "./forms";
+import { CreateCityInput } from "./forms";
 
 
 const MenuActionBox = styled(Box)(({theme}) => ({
@@ -16,13 +16,13 @@ const MenuActionBox = styled(Box)(({theme}) => ({
 }))
 
 
-interface RegionsActionsProps {
+interface CitiesActionsProps {
   onExport: () => void
-  onImport: (data: CreateRegionInput[]) => void
+  onImport: (data: CreateCityInput[]) => void
   isAllowedImport: boolean
 }
 
-export function RegionsActions(props: RegionsActionsProps) {
+export function CitiesActions(props: CitiesActionsProps) {
   const { onExport, onImport, isAllowedImport } = props
 
   const ref = useRef<HTMLButtonElement>(null)
@@ -54,7 +54,7 @@ export function RegionsActions(props: RegionsActionsProps) {
       const wb = XLSX.read(data, { type: "binary" })
       const sheetName = wb.SheetNames[0]
       const sheet = wb.Sheets[sheetName]
-      const parsedData = XLSX.utils.sheet_to_json(sheet) as CreateRegionInput[]
+      const parsedData = XLSX.utils.sheet_to_json(sheet) as CreateCityInput[]
 
       onImport(parsedData)
     }
@@ -76,7 +76,7 @@ export function RegionsActions(props: RegionsActionsProps) {
           <Typography fontSize={20}>Filter</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <RegionsFilterForm />
+          <BrandsFilterForm />
         </AccordionDetails>
       </Accordion>
 

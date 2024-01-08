@@ -17,13 +17,13 @@ export default function ListSalesCategory() {
   const navigate = useNavigate()
 
   const isAllowedReadSalesCategory = usePermission({
-    key: "sales-categor-permissions",
+    key: "sales-category-permissions",
     actions: "read",
     queryFn: getSalesCategoryPermissionsFn
   })
 
   const isAllowedCreateSalesCategory = usePermission({
-    key: "sales-categor-permissions",
+    key: "sales-category-permissions",
     actions: "create",
     queryFn: getSalesCategoryPermissionsFn
   })

@@ -10,6 +10,7 @@ import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory
 import { exchangePermission } from "../utils/auth/permissions/exchange.permission";
 import { accessLogPermission } from "../utils/auth/permissions/accessLog.permission";
 import { couponPermission } from "../utils/auth/permissions/coupon.permisson";
+import { cityPermission } from "../utils/auth/permissions/city.permission";
 
 
 export async function permissionsUserHandler(
@@ -156,6 +157,25 @@ export async function permissionsOrdersHandler(
     res
       .status(200)
       .json(HttpDataResponse({ permissions, label: "orders" }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function permissionsCitiesHandler(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const permissions = mapValues(cityPermission, value => value())
+
+    res
+      .status(200)
+      .json(HttpDataResponse({ permissions, label: "cities" }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

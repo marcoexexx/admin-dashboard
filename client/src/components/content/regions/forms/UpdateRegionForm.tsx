@@ -2,40 +2,54 @@ import { Box, Grid, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { createBrandFn } from "@/services/brandsApi";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
+import { getRegionFn, updateRegionFn } from "@/services/regionsApi";
 
-const createBrandSchema = object({
-  name: string({ required_error: "Brand name is required" })
-    .min(1).max(128)
+
+const updateRegionSchema = object({
+  name: string()
+    .min(0).max(128).optional(),
+  cities: string().array().default([])
 })
 
-export type CreateBrandInput = z.infer<typeof createBrandSchema>
+export type UpdateRegionInput = z.infer<typeof updateRegionSchema>
 
-export function CreateBrandForm() {
+export function UpdateRegionForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/brands"
+  const { regionId } = useParams()
+  const from = "/regions"
+
+  const { 
+    data: region,
+    isSuccess: isSuccessFetchRegion,
+    fetchStatus: fetchStatusRegion
+  } = useQuery({
+    enabled: !!regionId,
+    queryKey: ["region", { id: regionId }],
+    queryFn: args => getRegionFn(args, { regionId }),
+    select: data => data?.region
+  })
 
   const {
-    mutate: createBrand,
+    mutate: updateRegion,
   } = useMutation({
-    mutationFn: createBrandFn,
+    mutationFn: updateRegionFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new brand.",
+        message: "Success updated a region.",
         severity: "success"
       } })
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["brands"]
+        queryKey: ["regions"]
       })
     },
     onError: (err: any) => {
@@ -46,9 +60,14 @@ export function CreateBrandForm() {
     },
   })
 
-  const methods = useForm<CreateBrandInput>({
-    resolver: zodResolver(createBrandSchema)
+  const methods = useForm<UpdateRegionInput>({
+    resolver: zodResolver(updateRegionSchema),
   })
+
+  useEffect(() => {
+    if (isSuccessFetchRegion && region && fetchStatusRegion === "idle") methods.setValue("name", region.name)
+  }, [isSuccessFetchRegion, fetchStatusRegion])
+
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods
 
@@ -56,9 +75,10 @@ export function CreateBrandForm() {
     setFocus("name")
   }, [setFocus])
 
-  const onSubmit: SubmitHandler<CreateBrandInput> = (value) => {
-    createBrand(value)
+  const onSubmit: SubmitHandler<UpdateRegionInput> = (value) => {
+    if (regionId) updateRegion({ regionId, region: value })
   }
+
 
   return (
     <>
@@ -77,11 +97,12 @@ export function CreateBrandForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Create</MuiButton>
+            <MuiButton variant="contained" type="submit">Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>
     </>
   )
 }
+
 

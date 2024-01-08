@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { Region } from "@/services/types";
 import { getRegionPermissionsFn } from "@/services/permissionsApi";
 import { RegionsActions } from ".";
+import { CreateRegionInput } from "./forms/CreateRegionForm";
 
 
 
@@ -107,12 +108,7 @@ export function RegionsListTable(props: RegionsListTableProps) {
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_REGION_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
-    })
-  }
+      type: "SET_REGION_FILTER", payload: { limit: parseInt(evt.target.value, 10) } }) }
 
   const handleCloseDeleteModal = () => {
     dispatch({
@@ -146,7 +142,7 @@ export function RegionsListTable(props: RegionsListTableProps) {
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
-          field="delete-brand-multi"
+          field="delete-region-multi"
           isAllowedDelete={isAllowedDeleteRegion}
           onDelete={() => onMultiDelete(selectedRows)}
         />
@@ -278,8 +274,8 @@ export function RegionsListTable(props: RegionsListTableProps) {
 
       {modalForm.field === "delete-region"
       ? <FormModal
-        field="delete-brand"
-        title="Delete brand"
+        field="delete-region"
+        title="Delete region"
         onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>

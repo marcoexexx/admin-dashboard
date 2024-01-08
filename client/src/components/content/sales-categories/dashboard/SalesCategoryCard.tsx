@@ -29,7 +29,7 @@ export function SalesCategoryCard() {
   })
 
   const isAllowedCreateSalesCategory = usePermission({
-    key: "sales-categor-permissions",
+    key: "sales-category-permissions",
     actions: "create",
     queryFn: getSalesCategoryPermissionsFn
   })
