@@ -6,6 +6,7 @@ export type RegionFilterPagination = {
   filter?: any,
   pagination?: Pagination,
   include?: {
+    cities?: boolean
   },
   orderBy?: Record<
     keyof CreateRegionInput | "createdAt" | "updatedAt", 
@@ -39,7 +40,7 @@ export const updateRegionSchema = object({
 export const createMultiRegionsSchema = object({
   body: object({
     name: string({ required_error: "Region name is required" }),
-    cities: string().array().default([])
+    cities: string().array().default([]),
   }).array()
 })
 

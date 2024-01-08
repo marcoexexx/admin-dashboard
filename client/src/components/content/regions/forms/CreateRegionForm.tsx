@@ -9,7 +9,9 @@ import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { useEffect } from "react";
 import { createRegionFn } from "@/services/regionsApi";
-
+import { CityMultiInputField } from "@/components/input-fields";
+import { FormModal } from "@/components/forms";
+import { CreateCityForm } from "../../cities/forms";
 
 const createRegionSchema = object({
   name: string({ required_error: "Region name is required" })
@@ -26,7 +28,7 @@ export function CreateRegionForm() {
   const from = "/regions"
 
   const {
-    mutate: createBrand,
+    mutate: createRegion,
   } = useMutation({
     mutationFn: createRegionFn,
     onSuccess: () => {
@@ -59,8 +61,13 @@ export function CreateRegionForm() {
   }, [setFocus])
 
   const onSubmit: SubmitHandler<CreateRegionInput> = (value) => {
-    createBrand(value)
+    createRegion(value)
   }
+
+  const handleOnCloseModalForm = () => {
+    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
+  }
+
 
   return (
     <>
@@ -75,16 +82,21 @@ export function CreateRegionForm() {
                 error={!!errors.name} 
                 helperText={!!errors.name ? errors.name.message : ""} 
               />
+              <CityMultiInputField />
             </Box>
           </Grid>
-
-          {/* Multi City InputField */}
 
           <Grid item xs={12}>
             <MuiButton variant="contained" type="submit">Create</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>
+      
+      {modalForm.field === "cities"
+      ? <FormModal field="cities" title='Create new city' onClose={handleOnCloseModalForm}>
+        <CreateCityForm />
+      </FormModal>
+      : null}
     </>
   )
 }

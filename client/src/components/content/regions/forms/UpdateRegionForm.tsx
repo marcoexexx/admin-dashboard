@@ -9,6 +9,9 @@ import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
 import { getRegionFn, updateRegionFn } from "@/services/regionsApi";
+import { CityMultiInputField } from "@/components/input-fields";
+import { FormModal } from "@/components/forms";
+import { CreateCityForm } from "../../cities/forms";
 
 
 const updateRegionSchema = object({
@@ -65,7 +68,10 @@ export function UpdateRegionForm() {
   })
 
   useEffect(() => {
-    if (isSuccessFetchRegion && region && fetchStatusRegion === "idle") methods.setValue("name", region.name)
+    if (isSuccessFetchRegion && region && fetchStatusRegion === "idle") {
+      methods.setValue("name", region.name)
+      if (region.cities) methods.setValue("cities", region.cities.map(city => city.id))
+    }
   }, [isSuccessFetchRegion, fetchStatusRegion])
 
 
@@ -79,6 +85,10 @@ export function UpdateRegionForm() {
     if (regionId) updateRegion({ regionId, region: value })
   }
 
+  const handleOnCloseModalForm = () => {
+    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
+  }
+
 
   return (
     <>
@@ -89,18 +99,26 @@ export function UpdateRegionForm() {
               <TextField 
                 fullWidth 
                 {...register("name")} 
+                focused
                 label="Name" 
                 error={!!errors.name} 
                 helperText={!!errors.name ? errors.name.message : ""} 
               />
+              <CityMultiInputField updateField />
             </Box>
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Save</MuiButton>
+            <MuiButton variant="contained" type="submit">Create</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>
+      
+      {modalForm.field === "cities"
+      ? <FormModal field="cities" title='Create new city' onClose={handleOnCloseModalForm}>
+        <CreateCityForm />
+      </FormModal>
+      : null}
     </>
   )
 }

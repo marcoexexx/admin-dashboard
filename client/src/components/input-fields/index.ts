@@ -6,6 +6,7 @@ export * from './DatePickerField'
 export * from './PasswordInputField'
 export * from './SpecificationInputField'
 export * from './ProductInputField'
+export * from './CityMultiInputField'
 
 // TODO: Necessary Components
 export * from './_ColorsInputField'

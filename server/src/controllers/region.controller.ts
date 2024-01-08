@@ -98,9 +98,6 @@ export async function createMultiRegionsHandler(
       },
       create: {
         name: region.name,
-        cities: {
-          // TODO: Not supprot yet!
-        }
       },
       update: {}
     })))
@@ -123,10 +120,15 @@ export async function createRegionHandler(
   next: NextFunction
 ) {
   try {
-    const { name } = req.body
+    const { name, cities } = req.body
 
     const region = await db.region.create({
-      data: { name },
+      data: {
+        name,
+        cities: {
+          connect: cities.map(cityId => ({ id: cityId }))
+        }
+      },
     })
 
     res.status(201).json(HttpDataResponse({ region }))
@@ -198,25 +200,16 @@ export async function updateRegionHandler(
     const { regionId } = req.params
     const data = req.body
 
-    const [_, region] = await db.$transaction([
-      db.cityFees.deleteMany({
-        where: {
-          regionId
-        }
-      }),
+    const [region] = await db.$transaction([
       db.region.update({
         where: {
           id: regionId,
         },
         data: {
           name: data.name,
-          // // TODO: create many cities
-          // cities: {
-          //   create: data.cities.map(_ => ({ 
-          //     city: "",
-          //     fees: 0.0,
-          //   }))
-          // }
+          cities: {
+            connect: data.cities.map(cityId => ({ id: cityId }))
+          }
         }
       })
     ])

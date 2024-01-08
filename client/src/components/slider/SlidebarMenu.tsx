@@ -20,6 +20,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import SellIcon from '@mui/icons-material/Sell';
 import BadgeIcon from '@mui/icons-material/Badge';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import LocationCityIcon from '@mui/icons-material/LocationCity';
 
 
 const DotWrapper = styled(Box)(({theme}) => ({
@@ -369,6 +370,43 @@ export default function SlidebarMenu() {
                     <MuiButton
                       className={clsx({"active": currentMenu === "/regions/create" })}
                       onClick={handleOpenMenu("/regions/create")}
+                    >
+                      <DotWrapper />
+                      Create
+                    </MuiButton>
+                  </ListItem>
+                </List>
+              </Collapse>
+
+              {/* Cities Menues */}
+              <ListItem component="div">
+                <MuiButton
+                  onClick={handleToggleExpandMenu("cities")}
+                  startIcon={<LocationCityIcon />}
+                  endIcon={getStateCurrentExpandMenu("cities")
+                    ? <ExpandLessIcon />
+                    : <ExpandMoreIcon />
+                  }
+                >
+                  Cities
+                </MuiButton>
+              </ListItem>
+
+              <Collapse in={getStateCurrentExpandMenu("cities")}>
+                <List component="div" disablePadding>
+                  <ListItem component="div">
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/cities/list" })}
+                      onClick={handleOpenMenu("/cities/list")}
+                    >
+                      <DotWrapper />
+                      List
+                    </MuiButton>
+                  </ListItem>
+                  <ListItem component="div">
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/cities/create" })}
+                      onClick={handleOpenMenu("/cities/create")}
                     >
                       <DotWrapper />
                       Create
