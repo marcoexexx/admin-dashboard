@@ -10,7 +10,6 @@ import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import PeopleIcon from '@mui/icons-material/People';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import GradingIcon from '@mui/icons-material/Grading';
 import SettingsIcon from '@mui/icons-material/Settings';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -175,7 +174,6 @@ type ExpandMenu = {
 type PageMenu = 
   | "overview"
   | "inventory"
-  | "sales"
   | "orders"
   | "settings"
 
@@ -261,15 +259,6 @@ export default function SlidebarMenu() {
                   startIcon={<InventoryIcon />}
                 >
                   Inventory
-                </MuiButton>
-              </ListItem>
-              <ListItem component="div">
-                <MuiButton
-                  className={clsx({"active": currentMenu === "/sales" })}
-                  onClick={handleOpenMenu("/sales")}
-                  startIcon={<LocalOfferIcon />}
-                >
-                  Sales
                 </MuiButton>
               </ListItem>
               <ListItem component="div">
