@@ -109,7 +109,7 @@ export function UpdateRegionForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Create</MuiButton>
+            <MuiButton variant="contained" type="submit">Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

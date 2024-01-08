@@ -12,6 +12,8 @@ import GradingIcon from '@mui/icons-material/Grading';
 import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone'
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone'
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+
 
 const UserBoxButton = styled(Button)(({theme}) => ({
   padding: theme.spacing(1),
@@ -139,6 +141,13 @@ export default function HeaderUserBox() {
               <AccountBoxTwoToneIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText primary="My Profile" />
+          </ListItemButton>
+
+          <ListItemButton onClick={handleNavigate("#location")}>
+            <ListItemIcon>
+              <AddLocationAltIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="My locations" />
           </ListItemButton>
 
           <ListItemButton onClick={handleNavigate("#wishlist")}>

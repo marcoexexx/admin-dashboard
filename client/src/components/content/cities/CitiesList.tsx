@@ -17,6 +17,9 @@ export function CitiesList() {
         page: cityFilter?.page || 1,
         pageSize: cityFilter?.limit || 10
       },
+      include: {
+        region: true
+      }
     }),
     select: data => data
   })

@@ -234,8 +234,8 @@ export async function createMultiProductsHandler(
           discount: product.discount,
           brand: {
             connectOrCreate: {
-              where: { name: product.brandName },
-              create: { name: product.brandName }
+              where: { name: product["brand.name"] },
+              create: { name: product["brand.name"] }
             }
           },
           creator: {

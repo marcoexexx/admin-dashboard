@@ -112,10 +112,8 @@ export function UpdateCityForm() {
             </Box>
           </Grid>
 
-          {/* TODO: RegionInputfield */}
-
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Create</MuiButton>
+            <MuiButton variant="contained" type="submit">Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

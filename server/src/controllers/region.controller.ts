@@ -202,16 +202,13 @@ export async function updateRegionHandler(
 
     const [region] = await db.$transaction([
       db.region.update({
-        where: {
-          id: regionId,
-        },
+        where: { id: regionId },
         data: {
-          name: data.name,
           cities: {
-            connect: data.cities.map(cityId => ({ id: cityId }))
+            set: data.cities.map(cityId => ({ id: cityId }))
           }
         }
-      })
+      }),
     ])
 
     res.status(200).json(HttpDataResponse({ region }))

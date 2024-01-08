@@ -178,7 +178,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
         marketPrice: product.marketPrice,
         dealerPrice: product.dealerPrice,
         discount: product.discount,
-        brandName: product.brand!.name
+        "brand.name": product.brand!.name
       } as Record<string, string | number | boolean | Date | undefined>
 
       if (activeSale?.salesCategory) {

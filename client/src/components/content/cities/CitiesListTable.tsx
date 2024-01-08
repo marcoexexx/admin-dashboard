@@ -14,6 +14,7 @@ import { getCityPermissionsFn } from "@/services/permissionsApi";
 import { CityFees } from "@/services/types";
 import { CitiesActions } from ".";
 import { CreateCityInput } from "./forms";
+import { RenderRegionLabel } from "@/components/table-labels";
 
 
 const columnData: TableColumnHeader<CityFees>[] = [
@@ -27,6 +28,11 @@ const columnData: TableColumnHeader<CityFees>[] = [
     align: "left",
     name: "Fees"
   },
+  {
+    id: "region",
+    align: "left",
+    name: "Region"
+  }
 ]
 
 const columnHeader = columnData.concat([
@@ -147,6 +153,7 @@ export function CitiesListTable(props: CitisListTableProps) {
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < cities.length
 
+
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
@@ -218,9 +225,9 @@ export function CitiesListTable(props: CitisListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {col.id === "city" || col.id === "fees"
-                      ? row[col.id]
-                      : null}
+                    {col.id === "city" && row.city}
+                    {col.id === "fees" && row.fees}
+                    {col.id === "region" && row.region && <RenderRegionLabel region={row.region} /> }
                   </Typography>
                 </TableCell>)}
 
