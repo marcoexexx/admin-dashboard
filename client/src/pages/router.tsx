@@ -3,14 +3,23 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import Loader from "./loader";
 import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
-import { brandPermissionsLoader, categoryPermissionsLoader, cityPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
+import { accessLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, cityPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
+
 
 const HomePage = Loader(lazy(() => import("@/pages/home/Home")))
 
 // Status
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))
 const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.page")))
+
+// user-address
+const ListUserAddressPage = Loader(lazy(() => import("@/pages/userAddress/ListUserAddress")))
+const CreateUserAddressPage = Loader(lazy(() => import("@/pages/userAddress/CreateUserAddress")))
+const UpdateUserAddressPage = Loader(lazy(() => import("@/pages/userAddress/UpdateUserAddress")))
+
+
+const ListAccessLogPage = Loader(lazy(() => import("@/pages/accessLogs/ListAccessLogs")))
 
 // cities
 const ListCityPage = Loader(lazy(() => import("@/pages/cities/ListCity")))
@@ -100,6 +109,43 @@ const routes = createBrowserRouter([
             path: "me",
             loader: meProfileLoader,
             Component: ManagementUserProfilePage
+          },
+
+          /// ACCESS LOGS
+          {
+            path: "access-logs",
+            loader: accessLogsPermissionsLoader,
+            Component: ListAccessLogPage
+          },
+
+          /// USER ADDRESS ROUTES
+          {
+            path: "addresses",
+            loader: userAddressPermissionsLoader,
+            children: [
+              {
+                path: "",
+                element: <Navigate to="/addresses/list" />
+              },
+              {
+                path: "list",
+                Component: ListUserAddressPage
+              },
+              {
+                path: "",
+                element: <PagePermission allowedRoles={["Admin", "Shopowner", "User"]} />,
+                children: [
+                  {
+                    path: "create",
+                    Component: CreateUserAddressPage
+                  },
+                  {
+                    path: "update/:userAddressId",
+                    Component: UpdateUserAddressPage
+                  }
+                ]
+              },
+            ]
           },
 
           /// CITIES ROUTES

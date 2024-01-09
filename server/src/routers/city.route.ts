@@ -4,9 +4,9 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { permissionUser } from "../middleware/permissionUser";
 import { uploadExcel } from "../upload/excelUpload";
-import { cityPermission } from "../utils/auth/permissions/city.permission";
 import { createCityHandler, createMultiCitiesHandler, deleteCityHandler, deleteMultilCitiesHandler, getCitiesHandler, getCityHandler, updateCityHandler } from "../controllers/city.controller";
 import { createCitySchema, deleteMultiCitySchema, getCitySchema, updateCitychema } from "../schemas/city.schema";
+import { cityPermission } from "../utils/auth/permissions";
 
 
 const router = Router()

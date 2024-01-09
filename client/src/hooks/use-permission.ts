@@ -17,6 +17,8 @@ type PermissionKey =
   | "coupon-permissions"
   | "region-permissions"
   | "city-permissions"
+  | "address-permissions"
+  | "access-logs-permissions"
 
 interface Args {
   key: PermissionKey,

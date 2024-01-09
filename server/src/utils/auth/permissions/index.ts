@@ -10,6 +10,8 @@ export * from './product.permission'
 export * from './salesCategory.permission'
 export * from './user.permission'
 export * from './region.permission'
+export * from './city.permission'
+export * from './userAddress.permission'
 
 const roleBasedAccess = createRoleBasedAccess<Role>()
 

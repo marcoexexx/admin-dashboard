@@ -143,11 +143,11 @@ export default function HeaderUserBox() {
             <ListItemText primary="My Profile" />
           </ListItemButton>
 
-          <ListItemButton onClick={handleNavigate("#location")}>
+          <ListItemButton onClick={handleNavigate("/addresses")}>
             <ListItemIcon>
               <AddLocationAltIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="My locations" />
+            <ListItemText primary="My addresses" />
           </ListItemButton>
 
           <ListItemButton onClick={handleNavigate("#wishlist")}>
@@ -157,7 +157,7 @@ export default function HeaderUserBox() {
             <ListItemText primary="Wishlist" />
           </ListItemButton>
 
-          <ListItemButton onClick={handleNavigate("#access-logs")}>
+          <ListItemButton onClick={handleNavigate("/access-logs")}>
             <ListItemIcon>
               <SecurityIcon fontSize="small" />
             </ListItemIcon>

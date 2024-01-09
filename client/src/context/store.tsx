@@ -48,6 +48,9 @@ export type Store = {
       | "delete-city"
       | "delete-city-multi"
 
+      | "delete-user-address"
+      | "delete-user-address-multi"
+
       | "delete-region"
       | "delete-region-multi"
 
@@ -57,6 +60,12 @@ export type Store = {
   user?: User
   slidebar: boolean
   local: Local
+  accessLogFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default",
+  },
   userFilter?: {
     fields?: any,
     page?: number,
@@ -151,6 +160,11 @@ export type Store = {
       _count?: boolean
     }
   }
+}
+
+interface AccessLogFilterActions {
+  type: "SET_ACCESS_LOG_FILTER",
+  payload: Store["accessLogFilter"]
 }
 
 interface CityFilterActions {
@@ -259,6 +273,7 @@ type Action =
   | SlidebarCloseActions
 
   | CityFilterActions
+  | AccessLogFilterActions
   | UserFilterActions
   | ProductFilterActions
   | BrandFilterActions
@@ -290,6 +305,11 @@ const initialState: Store = {
   modalForm: {
     field: "*",
     state: false
+  },
+  accessLogFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default",
   },
   userFilter: {
     page: 1,
@@ -426,6 +446,13 @@ const stateReducer = (state: Store, action: Action): Store => {
     case "SET_USER_FILTER": {
       return { ...state, userFilter: {
         ...state.userFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_ACCESS_LOG_FILTER": {
+      return { ...state, accessLogFilter: {
+        ...state.accessLogFilter,
         ...action.payload
       } }
     }

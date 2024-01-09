@@ -1,5 +1,5 @@
 import { queryClient } from "@/components";
-import { getBrandPermissionsFn, getCategoryPermissionsFn, getCityPermissionsFn, getExchangePermissionsFn, getProductPermissionsFn, getRegionPermissionsFn, getSalesCategoryPermissionsFn, getUserPermissionsFn } from "@/services/permissionsApi";
+import { getBrandPermissionsFn, getCategoryPermissionsFn, getCityPermissionsFn, getExchangePermissionsFn, getProductPermissionsFn, getRegionPermissionsFn, getSalesCategoryPermissionsFn, getUserAddressPermissionsFn, getUserPermissionsFn } from "@/services/permissionsApi";
 
 export async function userPermissionsLoader() {
   return queryClient.fetchQuery({
@@ -50,6 +50,15 @@ export async function productPermissionsLoader() {
   return queryClient.fetchQuery({
     queryKey: ["product-permissions"],
     queryFn: getProductPermissionsFn,
+
+    staleTime: 1000 * 60 * 60 * 60 * 24
+  })
+}
+
+export async function userAddressPermissionsLoader() {
+  return queryClient.fetchQuery({
+    queryKey: ["address-permissions"],
+    queryFn: getUserAddressPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
   })

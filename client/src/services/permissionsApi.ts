@@ -42,6 +42,22 @@ export async function getSalesCategoryPermissionsFn(opt: QueryOptionArgs) {
 }
 
 
+export async function accessLogPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/access-logs", {
+    ...opt,
+  })
+  return data
+}
+
+
+export async function getUserAddressPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/user-address", {
+    ...opt,
+  })
+  return data
+}
+
+
 export async function getCityPermissionsFn(opt: QueryOptionArgs) {
   const { data } = await authApi.get<PermissionsResponse>("/permissions/cities", {
     ...opt,
