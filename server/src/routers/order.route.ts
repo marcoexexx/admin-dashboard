@@ -21,7 +21,7 @@ router.route("/")
   .post(
     permissionUser("create", orderPermission),
     validate(createOrderSchema),
-    createOrderHandler
+    // createOrderHandler
   )
 
 

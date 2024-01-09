@@ -81,8 +81,8 @@ export async function getOrderHandler(
 
 
 export async function createOrderHandler(
-  req: Request<{}, {}, CreateOrderInput>,
   res: Response,
+  req: Request<{}, {}, CreateOrderInput>,
   next: NextFunction
 ) {
   try {
@@ -93,16 +93,12 @@ export async function createOrderHandler(
 
     if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
 
-    const order = await db.order.create({
-      data: {
-        orderItems: {
-          createMany: {
-            data: orderItems
-          }
-        },
-        userId: user.id
-      },
-    })
+    // const order = await db.order.create({
+    //   data: {}
+    // })
+
+    // TODO: remove
+    const order = {}
 
     res.status(201).json(HttpDataResponse({ order }))
   } catch (err: any) {
@@ -123,11 +119,20 @@ export async function deleteOrderHandler(
 ) {
   try {
     const { orderId } = req.params
-    await db.order.delete({
-      where: {
-        id: orderId
-      }
-    })
+    
+    await db.$transaction([
+      db.orderItem.deleteMany({
+        where: {
+          orderId
+        }
+      }),
+
+      db.order.delete({
+        where: {
+          id: orderId
+        }
+      })
+    ])
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
   } catch (err: any) {
