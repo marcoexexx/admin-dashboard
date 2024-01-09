@@ -500,7 +500,7 @@ export async function updateProductHandler(
       dealerPrice,
       marketPrice,
       priceUnit,
-      // salesCategory,
+      salesCategory,
       categories,
       quantity,
       status
@@ -557,13 +557,12 @@ export async function updateProductHandler(
               }
             }))
           },
-          // // Not support yet!
-          // salesCategory: {
-          //   create: (salesCategory || []).map(({ salesCategory: salesCategoryId, discount }) => ({
-          //     salesCategory: { connect: { id: salesCategoryId } },
-          //     discount
-          //   }))
-          // },
+          salesCategory: {
+            create: (salesCategory || []).map(({ salesCategory: salesCategoryId, discount }) => ({
+              salesCategory: { connect: { id: salesCategoryId } },
+              discount
+            }))
+          },
           quantity,
         }
       })

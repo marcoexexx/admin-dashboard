@@ -30,6 +30,7 @@ const updateProductSchema = object({
   overview: string().max(5000).optional(),
   description: string().max(5000).optional(),
   categories: string().array().default([]),
+  salesCategory: object({}).array().default([]),
   discount: number().max(100).default(0),
   instockStatus: z.enum(productStockStatus).default("AskForStock"),
   dealerPrice: number().min(0),

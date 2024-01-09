@@ -67,7 +67,7 @@ export function ProductsList() {
         pageSize: productFilter?.limit || 10
       },
       include: {
-        specification: false,
+        specification: true,
         brand: true,
         categories: {
           include: {
@@ -190,10 +190,19 @@ export function ProductsList() {
     try {
       const safedStatus = getProductStatusConcrate[product.status](status)
 
+      console.log({ sp: product.salesCategory })
+
       statusChangeProduct({ id: product.id, product: {
         ...product,
+        overview: product.overview || undefined,
+        description: product.description || undefined,
         status: safedStatus,
         categories: product.categories?.map(x => x.categoryId),
+        salesCategory: product.salesCategory?.map(({salesCategoryId, discount}) => ({
+          salesCategory: salesCategoryId,
+          discount
+        }))
+
       } })
     } catch (err: any) {
       const message = err instanceof Error ? err.message : "unknown error"

@@ -178,10 +178,10 @@ export const updateProductSchema = object({
      * product,
      * discount: 13  // by percent
      **/
-    // salesCategory: object({
-    //   salesCategory: string(), // by id
-    //   discount: number().max(100).default(0)
-    // }).array().default([]),
+    salesCategory: object({
+      salesCategory: string(), // by id
+      discount: number().max(100).default(0)
+    }).array().default([]),
     quantity: number().min(0),
     status: z.enum(productStatus).default("Draft"),
 
