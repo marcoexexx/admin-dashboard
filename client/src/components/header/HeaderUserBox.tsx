@@ -1,5 +1,5 @@
-import { useStore } from "@/hooks"
-import { Avatar, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
+import { useLocalStorage, useStore } from "@/hooks"
+import { Avatar, Badge, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
 import { useRef, useState } from "react"
 import { MuiButton } from "@/components/ui"
 import { useMutation, useQuery } from "@tanstack/react-query"
@@ -13,6 +13,8 @@ import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone'
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone'
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { OrderItem } from "@/services/types"
 
 
 const UserBoxButton = styled(Button)(({theme}) => ({
@@ -43,8 +45,11 @@ const UserBoxDescription = styled(Typography)(({theme}) => ({
 
 export default function HeaderUserBox() {
   const { dispatch } = useStore()
+  const { get } = useLocalStorage()
 
   const navigate = useNavigate()
+
+  const cartsCount = (get<OrderItem[]>("CARTS") ?? []).length
 
   const { data: user, isLoading, isError, error } = useQuery({
     queryKey: ["authUser"],
@@ -82,6 +87,14 @@ export default function HeaderUserBox() {
     navigate(to)
   }
 
+  const handleOpenCart = () => {
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: "cart"
+    })
+  }
+
+
   if (isError) return <>
     <UserBoxButton color="error">
       <UserBoxLabel>Failed: {error.message}</UserBoxLabel>
@@ -93,6 +106,7 @@ export default function HeaderUserBox() {
       <Skeleton variant="rounded" width={200} height={60} />
     </UserBoxButton>
   </>
+
 
   return (
     <>
@@ -136,6 +150,15 @@ export default function HeaderUserBox() {
         <Divider sx={{ mb: 0 }} />
 
         <List sx={{ p: 1 }} component="nav">
+          <ListItemButton onClick={handleOpenCart}>
+            <ListItemIcon>
+              <Badge badgeContent={cartsCount} color="primary">
+                <ShoppingCartIcon fontSize="small" />
+              </Badge>
+            </ListItemIcon>
+            <ListItemText primary="Cart" />
+          </ListItemButton>
+
           <ListItemButton onClick={handleNavigate("/me")}>
             <ListItemIcon>
               <AccountBoxTwoToneIcon fontSize="small" />

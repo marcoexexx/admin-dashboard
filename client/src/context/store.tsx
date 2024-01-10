@@ -20,6 +20,8 @@ export type Store = {
     // TODO: multi create exel modal
     field:
       | "*"
+      | "cart"
+
       | "brands"
       | "products"
       | "categories"
