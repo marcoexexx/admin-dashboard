@@ -14,8 +14,7 @@ import { Region } from "@/services/types";
 import { getRegionPermissionsFn } from "@/services/permissionsApi";
 import { RegionsActions } from ".";
 import { CreateRegionInput } from "./forms/CreateRegionForm";
-import { RenderCityName } from "@/components/table-labels";
-
+import { RenderTownshipName } from "@/components/table-labels";
 
 
 const columnData: TableColumnHeader<Region>[] = [
@@ -25,9 +24,9 @@ const columnData: TableColumnHeader<Region>[] = [
     name: "Name"
   },
   {
-    id: "cities",
+    id: "townships",
     align: "left",
-    name: "Cities"
+    name: "Townships"
   }
 ]
 
@@ -216,7 +215,7 @@ export function RegionsListTable(props: RegionsListTableProps) {
                     noWrap
                   >
                     {col.id === "name" && row.name}
-                    {col.id === "cities" && row.cities && row.cities.map(city => <RenderCityName key={city.id} city={city} />)}
+                    {col.id === "townships" && row.townships && row.townships.map(township => <RenderTownshipName key={township.id} township={township} />)}
                   </Typography>
                 </TableCell>)}
 

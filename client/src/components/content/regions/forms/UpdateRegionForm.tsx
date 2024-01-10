@@ -9,15 +9,15 @@ import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
 import { getRegionFn, updateRegionFn } from "@/services/regionsApi";
-import { CityMultiInputField } from "@/components/input-fields";
 import { FormModal } from "@/components/forms";
-import { CreateCityForm } from "../../cities/forms";
+import { TownshipMultiInputField } from "@/components/input-fields";
+import { CreateTownshipForm } from "../../townships/forms";
 
 
 const updateRegionSchema = object({
   name: string()
     .min(0).max(128).optional(),
-  cities: string().array().default([])
+  townships: string().array().default([])
 })
 
 export type UpdateRegionInput = z.infer<typeof updateRegionSchema>
@@ -70,7 +70,7 @@ export function UpdateRegionForm() {
   useEffect(() => {
     if (isSuccessFetchRegion && region && fetchStatusRegion === "idle") {
       methods.setValue("name", region.name)
-      if (region.cities) methods.setValue("cities", region.cities.map(city => city.id))
+      if (region.townships) methods.setValue("townships", region.townships.map(township => township.id))
     }
   }, [isSuccessFetchRegion, fetchStatusRegion])
 
@@ -104,7 +104,7 @@ export function UpdateRegionForm() {
                 error={!!errors.name} 
                 helperText={!!errors.name ? errors.name.message : ""} 
               />
-              <CityMultiInputField updateField />
+              <TownshipMultiInputField updateField />
             </Box>
           </Grid>
 
@@ -114,9 +114,9 @@ export function UpdateRegionForm() {
         </Grid>
       </FormProvider>
       
-      {modalForm.field === "cities"
-      ? <FormModal field="cities" title='Create new city' onClose={handleOnCloseModalForm}>
-        <CreateCityForm />
+      {modalForm.field === "townships"
+      ? <FormModal field="townships" title='Create new city' onClose={handleOnCloseModalForm}>
+        <CreateTownshipForm />
       </FormModal>
       : null}
     </>

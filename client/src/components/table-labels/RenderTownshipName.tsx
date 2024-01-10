@@ -1,18 +1,18 @@
 import { useNavigate } from "react-router-dom"
 import { LinkLabel } from ".."
-import { CityFees } from "@/services/types"
+import { TownshipFees } from "@/services/types"
 
 
-export function RenderCityName({city}: {city: CityFees}) {
+export function RenderTownshipName({township}: {township: TownshipFees}) {
   const navigate = useNavigate()
-  const to = "/cities/detail/" + city.id
+  const to = "/township/detail/" + township.id
 
   const handleNavigate = () => {
     navigate(to)
   }
 
   return <LinkLabel onClick={handleNavigate}>
-    {city.city}
+    {township.name}
   </LinkLabel>
 }
 
