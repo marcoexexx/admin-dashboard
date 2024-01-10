@@ -24,7 +24,7 @@ const columnData: TableColumnHeader<Address>[] = [
   {
     id: "phone",
     align: "left",
-    name: "Name"
+    name: "Phone"
   },
   {
     id: "email",
@@ -35,6 +35,11 @@ const columnData: TableColumnHeader<Address>[] = [
     id: "fullAddress",
     align: "left",
     name: "Full address"
+  },
+  {
+    id: "isDefault",
+    align: "right",
+    name: "Is default"
   },
 ]
 
@@ -62,7 +67,7 @@ export function UserAddressesListTable(props: UserAddressesListTableProps) {
   const navigate = useNavigate()
 
   const theme = useTheme()
-  const { state: {brandFilter, modalForm}, dispatch } = useStore()
+  const { state: {userAddressFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -85,12 +90,12 @@ export function UserAddressesListTable(props: UserAddressesListTableProps) {
     setDeleteId(brandId)
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: "delete-brand"
+      payload: "delete-user-address"
     })
   }
 
   const handleClickUpdateAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/brands/update/${brandId}`)
+    navigate(`/addresses/update/${brandId}`)
   }
 
   const handleOnExport = () => {
@@ -206,7 +211,11 @@ export function UserAddressesListTable(props: UserAddressesListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {row.username}
+                    {col.id === "username" && row.username}
+                    {col.id === "phone" && row.phone}
+                    {col.id === "email" && row.email}
+                    {col.id === "fullAddress" && row.fullAddress}
+                    {col.id === "isDefault" && (row.isDefault ? "Default" : "No default")}
                   </Typography>
                 </TableCell>)}
 
@@ -261,10 +270,10 @@ export function UserAddressesListTable(props: UserAddressesListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={brandFilter?.page
-            ? brandFilter.page - 1
+          page={userAddressFilter?.page
+            ? userAddressFilter.page - 1
             : 0}
-          rowsPerPage={brandFilter?.limit || 10}
+          rowsPerPage={userAddressFilter?.limit || 10}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

@@ -23,6 +23,7 @@ export async function getTownshipsHandler(
       id,
       name,
       fees,
+      region,
     } = filter
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
       { page: 1, pageSize: 10 }
@@ -36,6 +37,7 @@ export async function getTownshipsHandler(
           id,
           name,
           fees,
+          region
         },
         include,
         orderBy,

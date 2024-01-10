@@ -333,6 +333,7 @@ export type Address = {
   region?: Region
   regionId?: string
   township?: TownshipFees
+  townshipFeesId?: string
 
   createdAt: string | Date
   updatedAt: string | Date

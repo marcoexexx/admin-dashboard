@@ -7,6 +7,8 @@ export * from './PasswordInputField'
 export * from './SpecificationInputField'
 export * from './ProductInputField'
 export * from './TownshipMultiInputField'
+export * from './TownshipByRegionInputField'
+export * from './RegionInputField'
 
 // TODO: Necessary Components
 export * from './_ColorsInputField'

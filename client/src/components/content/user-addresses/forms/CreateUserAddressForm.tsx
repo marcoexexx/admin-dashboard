@@ -1,4 +1,4 @@
-import { Box, Grid, TextField } from "@mui/material";
+import { Box, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, object, string, z } from "zod";
@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { createUserAddressFn } from "@/services/userAddressApi";
+import { useEffect } from "react";
+import { RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
 
 
 const createUserAddressSchema = object({
@@ -23,7 +25,7 @@ const createUserAddressSchema = object({
 export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>
 
 export function CreateUserAddressForm() {
-  const { state: {modalForm}, dispatch } = useStore()
+  const { state: {modalForm, user}, dispatch } = useStore()
 
   const navigate = useNavigate()
   const from = "/addresses"
@@ -55,6 +57,13 @@ export function CreateUserAddressForm() {
     resolver: zodResolver(createUserAddressSchema)
   })
 
+  useEffect(() => {
+    if (!!user) {
+      methods.setValue("username", user.name)
+      methods.setValue("email", user.email)
+    }
+  }, [user])
+
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<CreateUserAddressInput> = (value) => {
@@ -65,7 +74,7 @@ export function CreateUserAddressForm() {
     <>
       <FormProvider {...methods}>
         <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
-          <Grid item xs={12}>
+          <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField 
                 fullWidth 
@@ -74,7 +83,54 @@ export function CreateUserAddressForm() {
                 error={!!errors.username} 
                 helperText={!!errors.username ? errors.username.message : ""} 
               />
+              <RegionInputField />
             </Box>
+          </Grid>
+
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField 
+                fullWidth 
+                {...register("phone")} 
+                label="Phone" 
+                error={!!errors.phone} 
+                helperText={!!errors.phone ? errors.phone.message : ""} 
+              />
+              <TownshipByRegionInputField />
+            </Box>
+          </Grid>
+
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField 
+                fullWidth 
+                {...register("email")} 
+                label="Email" 
+                error={!!errors.email} 
+                helperText={!!errors.email ? errors.email.message : ""} 
+              />
+            </Box>
+          </Grid>
+
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField 
+                fullWidth 
+                {...register("fullAddress")} 
+                label="Full address" 
+                error={!!errors.fullAddress} 
+                helperText={!!errors.fullAddress ? errors.fullAddress.message : ""} 
+              />
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControlLabel
+              label="Set as default address"
+              control={<Switch
+                {...register("isDefault")}
+              />}
+            />
           </Grid>
 
           <Grid item xs={12}>

@@ -18,7 +18,7 @@ export function RegionsList() {
         pageSize: regionFilter?.limit || 10
       },
       include: {
-        cities: true
+        townships: true
       }
     }),
     select: data => data

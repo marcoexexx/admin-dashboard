@@ -24,6 +24,7 @@ export type Store = {
       | "products"
       | "categories"
       | "sales-categories"
+      | "region"
       | "townships"
 
       | "update-product"  // Only for on publish product
