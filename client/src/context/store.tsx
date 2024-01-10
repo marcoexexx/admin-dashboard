@@ -24,7 +24,8 @@ export type Store = {
       | "products"
       | "categories"
       | "sales-categories"
-      | "cities"
+      | "region"
+      | "townships"
 
       | "update-product"  // Only for on publish product
       | "delete-product"
@@ -45,8 +46,11 @@ export type Store = {
       | "delete-coupon"
       | "delete-coupon-multi"
 
-      | "delete-city"
-      | "delete-city-multi"
+      | "delete-township"
+      | "delete-township-multi"
+
+      | "delete-user-address"
+      | "delete-user-address-multi"
 
       | "delete-region"
       | "delete-region-multi"
@@ -57,7 +61,19 @@ export type Store = {
   user?: User
   slidebar: boolean
   local: Local
+  accessLogFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default",
+  },
   userFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default",
+  },
+  userAddressFilter?: {
     fields?: any,
     page?: number,
     limit?: number,
@@ -115,7 +131,7 @@ export type Store = {
       _count?: boolean
     }
   },
-  cityFilter?: {
+  townshipFilter?: {
     fields?: any,
     page?: number,
     limit?: number,
@@ -153,9 +169,19 @@ export type Store = {
   }
 }
 
-interface CityFilterActions {
-  type: "SET_CITY_FILTER",
-  payload: Store["cityFilter"]
+interface UserAddressFilterActions {
+  type: "SET_USER_ADDRESS_FILTER",
+  payload: Store["userAddressFilter"]
+}
+
+interface AccessLogFilterActions {
+  type: "SET_ACCESS_LOG_FILTER",
+  payload: Store["accessLogFilter"]
+}
+
+interface TownshipFilterActions {
+  type: "SET_TOWNSHIP_FILTER",
+  payload: Store["townshipFilter"]
 }
 
 interface CouponFilterActions {
@@ -258,7 +284,9 @@ type Action =
   | SlidebarToggleActions
   | SlidebarCloseActions
 
-  | CityFilterActions
+  | UserAddressFilterActions
+  | TownshipFilterActions
+  | AccessLogFilterActions
   | UserFilterActions
   | ProductFilterActions
   | BrandFilterActions
@@ -291,7 +319,17 @@ const initialState: Store = {
     field: "*",
     state: false
   },
+  accessLogFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default",
+  },
   userFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default",
+  },
+  userAddressFilter: {
     page: 1,
     limit: 10,
     mode: "default",
@@ -316,7 +354,7 @@ const initialState: Store = {
       },
     },
   },
-  cityFilter: {
+  townshipFilter: {
     page: 1,
     limit: 10,
     mode: "default",
@@ -430,6 +468,20 @@ const stateReducer = (state: Store, action: Action): Store => {
       } }
     }
 
+    case "SET_USER_ADDRESS_FILTER": {
+      return { ...state, userAddressFilter: {
+        ...state.userAddressFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_ACCESS_LOG_FILTER": {
+      return { ...state, accessLogFilter: {
+        ...state.accessLogFilter,
+        ...action.payload
+      } }
+    }
+
     case "SET_EXCHANGE_FILTER": {
       return { ...state, exchangeFilter: {
         ...state.exchangeFilter,
@@ -465,9 +517,9 @@ const stateReducer = (state: Store, action: Action): Store => {
       } }
     }
 
-    case "SET_CITY_FILTER": {
-      return { ...state, cityFilter: {
-        ...state.cityFilter,
+    case "SET_TOWNSHIP_FILTER": {
+      return { ...state, townshipFilter: {
+        ...state.townshipFilter,
         ...action.payload
       } }
     }

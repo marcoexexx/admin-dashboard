@@ -22,7 +22,7 @@ export async function getRegionsFn(opt: QueryOptionArgs, { filter, pagination, i
 
 export async function getRegionFn(opt: QueryOptionArgs, { regionId }: { regionId: string | undefined }) {
   if (!regionId) return
-  const { data } = await authApi.get<RegionResponse>(`/regions/detail/${regionId}?include[cities]=true`, {
+  const { data } = await authApi.get<RegionResponse>(`/regions/detail/${regionId}?include[townships]=true`, {
     ...opt,
   })
   return data

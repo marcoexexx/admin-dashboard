@@ -3,3 +3,4 @@
 
 # TODO
 - [ ] to add :: each table refetch icon button
+- [ ] exece upload permission

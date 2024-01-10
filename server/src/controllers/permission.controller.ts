@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import logging from "../middleware/logging/logging";
 import AppError from "../utils/appError";
 import mapValues from "lodash/mapValues";
-import { orderPermission, productPermission, regionPermission, userPermission } from "../utils/auth/permissions";
+import { orderPermission, productPermission, regionPermission, townshipPermission, userAddressPermission, userPermission } from "../utils/auth/permissions";
 import { HttpDataResponse } from "../utils/helper";
 import { brandPermission } from "../utils/auth/permissions/brand.permission";
 import { categoryPermission } from "../utils/auth/permissions/category.permission";
@@ -10,7 +10,6 @@ import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory
 import { exchangePermission } from "../utils/auth/permissions/exchange.permission";
 import { accessLogPermission } from "../utils/auth/permissions/accessLog.permission";
 import { couponPermission } from "../utils/auth/permissions/coupon.permisson";
-import { cityPermission } from "../utils/auth/permissions/city.permission";
 
 
 export async function permissionsUserHandler(
@@ -165,17 +164,36 @@ export async function permissionsOrdersHandler(
 }
 
 
-export async function permissionsCitiesHandler(
+export async function permissionsUserAddressHandler(
   _req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const permissions = mapValues(cityPermission, value => value())
+    const permissions = mapValues(userAddressPermission, value => value())
 
     res
       .status(200)
-      .json(HttpDataResponse({ permissions, label: "cities" }))
+      .json(HttpDataResponse({ permissions, label: "user-address" }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function permissionsTownshipsHandler(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const permissions = mapValues(townshipPermission, value => value())
+
+    res
+      .status(200)
+      .json(HttpDataResponse({ permissions, label: "townships" }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

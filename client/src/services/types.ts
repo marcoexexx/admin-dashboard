@@ -281,9 +281,9 @@ export type Category = {
 }
 
 
-export type CityFees = {
+export type TownshipFees = {
   id: string,
-  city: string,
+  name: string,
   fees: number, // float
 
   // relationship
@@ -300,7 +300,7 @@ export type Region = {
   name: string
 
   // relationship
-  cities?: CityFees[]
+  townships?: TownshipFees[]
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -322,15 +322,18 @@ export type PermissionsResponse = {
 export type Address = {
   id: string,
   isDefault: boolean
-  name: string
+  username: string
   phone: string
-  state: string
-  township: string
+  email: string
   fullAddress: string
 
   // relationship
   userId?: string
   user?: User
+  region?: Region
+  regionId?: string
+  township?: TownshipFees
+  townshipFeesId?: string
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -417,8 +420,10 @@ export type ProductSalesCategoriesResponse = { id: string, salesCategoryId: stri
 
 export type BrandResponse = Omit<HttpResponse, "message"> & { brand: Brand };
 
-export type CityResponse = Omit<HttpResponse, "message"> & { city: CityFees };
+export type TownshipResponse = Omit<HttpResponse, "message"> & { township: TownshipFees };
 
 export type RegionResponse = Omit<HttpResponse, "message"> & { region: Region };
 
 export type ExchangeResponse = Omit<HttpResponse, "message"> & { exchange: Exchange };
+
+export type UserAddressResponse = Omit<HttpResponse, "message"> & { userAddress: Address };

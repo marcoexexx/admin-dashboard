@@ -9,14 +9,15 @@ import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { useEffect } from "react";
 import { createRegionFn } from "@/services/regionsApi";
-import { CityMultiInputField } from "@/components/input-fields";
 import { FormModal } from "@/components/forms";
-import { CreateCityForm } from "../../cities/forms";
+import { TownshipMultiInputField } from "@/components/input-fields";
+import { CreateTownshipForm } from "../../townships/forms";
+
 
 const createRegionSchema = object({
   name: string({ required_error: "Region name is required" })
     .min(1).max(128),
-  cities: string().array().default([])
+  townships: string().array().default([])
 })
 
 export type CreateRegionInput = z.infer<typeof createRegionSchema>
@@ -82,7 +83,7 @@ export function CreateRegionForm() {
                 error={!!errors.name} 
                 helperText={!!errors.name ? errors.name.message : ""} 
               />
-              <CityMultiInputField />
+              <TownshipMultiInputField />
             </Box>
           </Grid>
 
@@ -92,9 +93,9 @@ export function CreateRegionForm() {
         </Grid>
       </FormProvider>
       
-      {modalForm.field === "cities"
-      ? <FormModal field="cities" title='Create new city' onClose={handleOnCloseModalForm}>
-        <CreateCityForm />
+      {modalForm.field === "townships"
+      ? <FormModal field="townships" title='Create new township' onClose={handleOnCloseModalForm}>
+        <CreateTownshipForm />
       </FormModal>
       : null}
     </>

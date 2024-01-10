@@ -120,13 +120,13 @@ export async function createRegionHandler(
   next: NextFunction
 ) {
   try {
-    const { name, cities } = req.body
+    const { name, townships } = req.body
 
     const region = await db.region.create({
       data: {
         name,
-        cities: {
-          connect: cities.map(cityId => ({ id: cityId }))
+        townships: {
+          connect: townships.map(townshipId => ({ id: townshipId }))
         }
       },
     })
@@ -204,8 +204,8 @@ export async function updateRegionHandler(
       db.region.update({
         where: { id: regionId },
         data: {
-          cities: {
-            set: data.cities.map(cityId => ({ id: cityId }))
+          townships: {
+            set: data.townships.map(townshipId => ({ id: townshipId }))
           }
         }
       }),
