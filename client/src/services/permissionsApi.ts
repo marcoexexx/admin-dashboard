@@ -58,8 +58,8 @@ export async function getUserAddressPermissionsFn(opt: QueryOptionArgs) {
 }
 
 
-export async function getCityPermissionsFn(opt: QueryOptionArgs) {
-  const { data } = await authApi.get<PermissionsResponse>("/permissions/cities", {
+export async function getTownshipPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/townships", {
     ...opt,
   })
   return data

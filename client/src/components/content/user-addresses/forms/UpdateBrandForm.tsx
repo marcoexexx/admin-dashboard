@@ -1,45 +1,54 @@
 import { Box, Grid, TextField } from "@mui/material";
-import { MuiButton } from "@/components/ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { queryClient } from "@/components";
+import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
-import { createRegionFn } from "@/services/regionsApi";
-import { CityMultiInputField } from "@/components/input-fields";
-import { FormModal } from "@/components/forms";
-import { CreateCityForm } from "../../cities/forms";
+import { getBrandFn, updateBrandFn } from "@/services/brandsApi";
 
-const createRegionSchema = object({
-  name: string({ required_error: "Region name is required" })
-    .min(1).max(128),
-  townships: string().array().default([])
+const updateBrandSchema = object({
+  name: string()
+    .min(0).max(128).optional()
 })
 
-export type CreateRegionInput = z.infer<typeof createRegionSchema>
+export type UpdateBrandInput = z.infer<typeof updateBrandSchema>
 
-export function CreateRegionForm() {
+export function UpdateBrandForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/regions"
+  const { brandId } = useParams()
+  const from = "/brands"
+
+  const { 
+    data: brand,
+    isSuccess: isSuccessFetchBrand,
+    fetchStatus: fetchStatusBrand
+  } = useQuery({
+    enabled: !!brandId,
+    queryKey: ["brands", { id: brandId }],
+    queryFn: args => getBrandFn(args, { brandId }),
+    select: data => data?.brand
+  })
 
   const {
-    mutate: createRegion,
+    mutate: updateBrand,
   } = useMutation({
-    mutationFn: createRegionFn,
+    mutationFn: updateBrandFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new brand.",
+        message: "Success updated a brand.",
         severity: "success"
       } })
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["regions"]
+        // queryKey: ["brands", { id: brandId }],
+        queryKey: ["brands"]
       })
     },
     onError: (err: any) => {
@@ -50,9 +59,14 @@ export function CreateRegionForm() {
     },
   })
 
-  const methods = useForm<CreateRegionInput>({
-    resolver: zodResolver(createRegionSchema)
+  const methods = useForm<UpdateBrandInput>({
+    resolver: zodResolver(updateBrandSchema),
   })
+
+  useEffect(() => {
+    if (isSuccessFetchBrand && brand && fetchStatusBrand === "idle") methods.setValue("name", brand.name)
+  }, [isSuccessFetchBrand, fetchStatusBrand])
+
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods
 
@@ -60,14 +74,9 @@ export function CreateRegionForm() {
     setFocus("name")
   }, [setFocus])
 
-  const onSubmit: SubmitHandler<CreateRegionInput> = (value) => {
-    createRegion(value)
+  const onSubmit: SubmitHandler<UpdateBrandInput> = (value) => {
+    if (brandId) updateBrand({ brandId, brand: value })
   }
-
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
-  }
-
 
   return (
     <>
@@ -82,22 +91,16 @@ export function CreateRegionForm() {
                 error={!!errors.name} 
                 helperText={!!errors.name ? errors.name.message : ""} 
               />
-              <TownshipMultiInputField />
             </Box>
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Create</MuiButton>
+            <MuiButton variant="contained" type="submit">Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>
-      
-      {modalForm.field === "cities"
-      ? <FormModal field="cities" title='Create new city' onClose={handleOnCloseModalForm}>
-        <CreateCityForm />
-      </FormModal>
-      : null}
     </>
   )
 }
+
 

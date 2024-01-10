@@ -10,29 +10,15 @@ import { usePermission, useStore } from "@/hooks";
 import { MuiButton } from "@/components/ui";
 
 import { useNavigate } from "react-router-dom";
-import { getCityPermissionsFn } from "@/services/permissionsApi";
-import { CityFees } from "@/services/types";
-import { CitiesActions } from ".";
-import { CreateCityInput } from "./forms";
-import { RenderRegionLabel } from "@/components/table-labels";
+import { Address } from "@/services/types";
 
 
-const columnData: TableColumnHeader<CityFees>[] = [
+const columnData: TableColumnHeader<Address>[] = [
   {
-    id: "city",
+    id: "name",
     align: "left",
     name: "Name"
   },
-  {
-    id: "fees",
-    align: "left",
-    name: "Fees"
-  },
-  {
-    id: "region",
-    align: "left",
-    name: "Region"
-  }
 ]
 
 const columnHeader = columnData.concat([
@@ -43,24 +29,24 @@ const columnHeader = columnData.concat([
   }
 ])
 
-interface CitisListTableProps {
-  cities: CityFees[]
+interface BrandsListTableProps {
+  brands: Brand[]
   isLoading?: boolean
   count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyCities: (buf: ArrayBuffer) => void
+  onCreateManyBrands: (buf: ArrayBuffer) => void
 }
 
-export function CitiesListTable(props: CitisListTableProps) {
-  const { cities, count, isLoading, onCreateManyCities, onDelete, onMultiDelete } = props
+export function BrandsListTable(props: BrandsListTableProps) {
+  const { brands, count, isLoading, onCreateManyBrands, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
   const navigate = useNavigate()
 
   const theme = useTheme()
-  const { state: {cityFilter, modalForm}, dispatch } = useStore()
+  const { state: {brandFilter, modalForm}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -69,7 +55,7 @@ export function CitiesListTable(props: CitisListTableProps) {
   const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = evt.target
     setSellectedRows(checked
-      ? cities.map(e => e.id)
+      ? brands.map(e => e.id)
       : []
     )
   }
@@ -79,25 +65,25 @@ export function CitiesListTable(props: CitisListTableProps) {
     else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
   }
 
-  const handleClickDeleteAction = (cityId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteId(cityId)
+  const handleClickDeleteAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    setDeleteId(brandId)
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: "delete-city"
+      payload: "delete-brand"
     })
   }
 
-  const handleClickUpdateAction = (cityId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/cities/update/${cityId}`)
+  const handleClickUpdateAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/brands/update/${brandId}`)
   }
 
   const handleOnExport = () => {
-    exportToExcel(cities, "Cities")
+    exportToExcel(brands, "Brands")
   }
 
-  const handleOnImport = (data: CreateCityInput[]) => {
-    convertToExcel(data, "Cities")
-      .then(excelBuffer => onCreateManyCities(excelBuffer))
+  const handleOnImport = (data: CreateBrandInput[]) => {
+    convertToExcel(data, "Brands")
+      .then(excelBuffer => onCreateManyBrands(excelBuffer))
       .catch(err => dispatch({
         type: "OPEN_TOAST",
         payload: {
@@ -109,7 +95,7 @@ export function CitiesListTable(props: CitisListTableProps) {
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_CITY_FILTER",
+      type: "SET_BRAND_FILTER",
       payload: {
         page: page += 1
       }
@@ -118,7 +104,7 @@ export function CitiesListTable(props: CitisListTableProps) {
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_CITY_FILTER",
+      type: "SET_BRAND_FILTER",
       payload: {
         limit: parseInt(evt.target.value, 10)
       }
@@ -131,35 +117,34 @@ export function CitiesListTable(props: CitisListTableProps) {
     })
   }
 
-  const isAllowedDeleteCity = usePermission({
-    key: "city-permissions",
+  const isAllowedDeleteBrand = usePermission({
+    key: "brand-permissions",
     actions: "delete",
-    queryFn: getCityPermissionsFn
+    queryFn: getBrandPermissionsFn
   })
 
-  const isAllowedUpdateCity = usePermission({
-    key: "city-permissions",
+  const isAllowedUpdateBrand = usePermission({
+    key: "brand-permissions",
     actions: "update",
-    queryFn: getCityPermissionsFn
+    queryFn: getBrandPermissionsFn
   })
 
-  const isAllowedCreateCity = usePermission({
-    key: "city-permissions",
+  const isAllowedCreateBrand = usePermission({
+    key: "brand-permissions",
     actions: "create",
-    queryFn: getCityPermissionsFn
+    queryFn: getBrandPermissionsFn
   })
 
-  const selectedAllRows = selectedRows.length === cities.length
+  const selectedAllRows = selectedRows.length === brands.length
   const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < cities.length
-
+    selectedRows.length < brands.length
 
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
-          field="delete-city-multi"
-          isAllowedDelete={isAllowedDeleteCity}
+          field="delete-brand-multi"
+          isAllowedDelete={isAllowedDeleteBrand}
           onDelete={() => onMultiDelete(selectedRows)}
         />
       </Box>}
@@ -167,10 +152,10 @@ export function CitiesListTable(props: CitisListTableProps) {
       <Divider />
 
       <CardContent>
-        <CitiesActions 
+        <BrandsActions 
           onExport={handleOnExport} 
           onImport={handleOnImport}  
-          isAllowedImport={isAllowedCreateCity}
+          isAllowedImport={isAllowedCreateBrand}
         />
       </CardContent>
 
@@ -193,7 +178,7 @@ export function CitiesListTable(props: CitisListTableProps) {
                 const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
                 return header.id !== "actions"
                   ? render
-                  : isAllowedUpdateCity && isAllowedDeleteCity
+                  : isAllowedUpdateBrand && isAllowedDeleteBrand
                   ? render
                   : null
               })}
@@ -201,7 +186,7 @@ export function CitiesListTable(props: CitisListTableProps) {
           </TableHead>
 
           <TableBody>
-            {cities.map(row => {
+            {brands.map(row => {
               const isSelected = selectedRows.includes(row.id)
               return <TableRow
                 hover
@@ -225,16 +210,14 @@ export function CitiesListTable(props: CitisListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {col.id === "city" && row.city}
-                    {col.id === "fees" && row.fees}
-                    {col.id === "region" && row.region && <RenderRegionLabel region={row.region} /> }
+                    {row.name}
                   </Typography>
                 </TableCell>)}
 
-                {isAllowedUpdateCity && isAllowedDeleteCity
+                {isAllowedUpdateBrand && isAllowedDeleteBrand
                 ? <TableCell align="right">
-                    {isAllowedUpdateCity
-                    ? <Tooltip title="Edit City" arrow>
+                    {isAllowedUpdateBrand
+                    ? <Tooltip title="Edit Product" arrow>
                         <IconButton
                           sx={{
                             '&:hover': {
@@ -251,7 +234,7 @@ export function CitiesListTable(props: CitisListTableProps) {
                       </Tooltip>
                     : null}
 
-                    {isAllowedDeleteCity
+                    {isAllowedDeleteBrand
                     ? <Tooltip title="Delete Product" arrow>
                         <IconButton
                           sx={{
@@ -282,18 +265,18 @@ export function CitiesListTable(props: CitisListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={cityFilter?.page
-            ? cityFilter.page - 1
+          page={brandFilter?.page
+            ? brandFilter.page - 1
             : 0}
-          rowsPerPage={cityFilter?.limit || 10}
+          rowsPerPage={brandFilter?.limit || 10}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>
 
-      {modalForm.field === "delete-city"
+      {modalForm.field === "delete-brand"
       ? <FormModal
-        field="delete-city"
-        title="Delete city"
+        field="delete-brand"
+        title="Delete brand"
         onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>

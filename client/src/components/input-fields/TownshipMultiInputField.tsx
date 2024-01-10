@@ -1,7 +1,7 @@
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { MuiButton } from '@/components/ui';
 import { Controller, useFormContext } from 'react-hook-form';
-import { CityFees } from '@/services/types';
+import { TownshipFees } from '@/services/types';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useStore } from '@/hooks';
@@ -9,7 +9,7 @@ import filter from 'lodash/filter';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { getCitiesFn } from '@/services/citiesApi';
+import { getTownshipsFn } from '@/services/TownshipsApi';
 
 
 const InnerPaper = styled(Paper)(() => ({
@@ -17,25 +17,25 @@ const InnerPaper = styled(Paper)(() => ({
 }))
 
 
-interface CityMultiInputFieldProps {
+interface TownshipMultiInputFieldProps {
   updateField?: boolean
 }
 
-export function CityMultiInputField({updateField = false}: CityMultiInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ cities: string[] }>()
-  const [ selectedCities, setSelectedCities ] = useState<Pick<CityFees, "id" | "city">[]>([])
+export function TownshipMultiInputField({updateField = false}: TownshipMultiInputFieldProps) {
+  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ townships: string[] }>()
+  const [ selectedTownships, setSelectedTownships ] = useState<Pick<TownshipFees, "id" | "name">[]>([])
   const [ isOpenOptions, setIsOpenOptions ] = useState(false)
 
   const { dispatch } = useStore()
 
   const {
-    data: cities,
+    data: townships,
     isLoading,
     isError,
     error
   } = useQuery({
-    queryKey: ["cities"],
-    queryFn: args => getCitiesFn(args, { 
+    queryKey: ["townships"],
+    queryFn: args => getTownshipsFn(args, { 
       filter: {},
       pagination: {
         page: 1,
@@ -45,26 +45,26 @@ export function CityMultiInputField({updateField = false}: CityMultiInputFieldPr
     select: data => data.results
   })
 
-  const defaultCityIds = getValues("cities")
-  const defaultCities = defaultCityIds
-    ? filter(cities, (city) => defaultCityIds.includes(city.id))
+  const defaultTownshipIds = getValues("townships")
+  const defaultTownships = defaultTownshipIds
+    ? filter(townships, (township) => defaultTownshipIds.includes(township.id))
     : []
 
 
   useEffect(() => {
-    if (defaultCities.length && updateField) setSelectedCities(defaultCities)
-  }, [defaultCities.length])
+    if (defaultTownships.length && updateField) setSelectedTownships(defaultTownships)
+  }, [defaultTownships.length])
 
 
-  const handleCategoryChange = (_: React.SyntheticEvent, value: Pick<CityFees, "id" | "city">[] | null) => {
+  const handleCategoryChange = (_: React.SyntheticEvent, value: Pick<TownshipFees, "id" | "name">[] | null) => {
     if (value) {
-      setSelectedCities(value)
-      setValue("cities", value.map(v => v.id))
+      setSelectedTownships(value)
+      setValue("townships", value.map(v => v.id))
     }
   }
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "cities" })
+    dispatch({ type: "OPEN_MODAL_FORM", payload: "townships" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))
@@ -75,7 +75,7 @@ export function CityMultiInputField({updateField = false}: CityMultiInputFieldPr
       renderInput={params => <TextField 
         {...params}
         error={true}
-        label="Failed city autocomplete"
+        label="Failed township autocomplete"
         fullWidth
         helperText={error?.message}
       />}
@@ -83,7 +83,7 @@ export function CityMultiInputField({updateField = false}: CityMultiInputFieldPr
 
   return <>
     <Controller
-      name="cities"
+      name="townships"
       control={control}
       render={({field}) => (
         <Autocomplete
@@ -92,14 +92,14 @@ export function CityMultiInputField({updateField = false}: CityMultiInputFieldPr
           onOpen={() => setIsOpenOptions(true)}
           onClose={handleOnCloseOptions}
           multiple
-          value={selectedCities}
-          options={cities || []}
+          value={selectedTownships}
+          options={townships || []}
           isOptionEqualToValue={(option, value) => option.id === value.id}
-          getOptionLabel={option => option.city || ""}
+          getOptionLabel={option => option.name || ""}
           loading={isLoading}
           renderOption={(props, option) => (
             <li {...props} style={{ display: 'block' }}>
-              {option.city}
+              {option.name}
             </li>
           )}
           PaperComponent={({children}) => <InnerPaper>
@@ -115,9 +115,9 @@ export function CityMultiInputField({updateField = false}: CityMultiInputFieldPr
           </InnerPaper>}
           renderInput={params => <TextField
             {...params}
-            error={!!errors.cities}
-            helperText={errors.cities?.message || ""}
-            label="Cities"
+            error={!!errors.townships}
+            helperText={errors.townships?.message || ""}
+            label="Townships"
             InputProps={{
               ...params.InputProps,
               endAdornment: <>

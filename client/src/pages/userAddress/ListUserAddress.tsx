@@ -8,6 +8,7 @@ import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { MuiButton } from "@/components/ui";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import getConfig from "@/libs/getConfig";
+import { UserAddressesList } from '@/components/content/user-addresses';
 
 
 const appName = getConfig("appName")
@@ -66,7 +67,7 @@ export default function ListUserAddress() {
       ?  <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>
-              {/* <BrandsList /> */}
+              <UserAddressesList />
             </Grid>
           </Grid>
         </Container>

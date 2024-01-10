@@ -5,21 +5,23 @@ import { convertNumericStrings } from "../utils/convertNumber";
 import { parseExcel } from "../utils/parseExcel";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { NextFunction, Request, Response } from "express";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper"; import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"; import { CityFilterPagination, CreateCityInput, CreateMultiCitisInput, DeleteMultiCitisInput, GetCityInput, UpdateCityInput } from "../schemas/city.schema";
+import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper"; 
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"; 
+import { CreateMultiTownshipsInput, CreateTownshipInput, DeleteMultiTownshipsInput, GetTownshipInput, TownshipFilterPagination, UpdateTownshipInput } from "../schemas/township.schema";
 import AppError from "../utils/appError";
 
 
-export async function getCitiesHandler(
-  req: Request<{}, {}, {}, CityFilterPagination>,
+export async function getTownshipsHandler(
+  req: Request<{}, {}, {}, TownshipFilterPagination>,
   res: Response,
   next: NextFunction
 ) {
   try {
     const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as CityFilterPagination["include"]
+    const include = convertStringToBoolean(includes) as TownshipFilterPagination["include"]
     const {
       id,
-      city,
+      name,
       fees,
     } = filter
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
@@ -27,12 +29,12 @@ export async function getCitiesHandler(
 
     const offset = (page - 1) * pageSize
 
-    const [count, cities] = await db.$transaction([
-      db.cityFees.count(),
-      db.cityFees.findMany({
+    const [count, townships] = await db.$transaction([
+      db.townshipFees.count(),
+      db.townshipFees.findMany({
         where: {
           id,
-          city,
+          name,
           fees,
         },
         include,
@@ -42,7 +44,7 @@ export async function getCitiesHandler(
       })
     ])
 
-    res.status(200).json(HttpListResponse(cities, count))
+    res.status(200).json(HttpListResponse(townships, count))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
@@ -51,25 +53,25 @@ export async function getCitiesHandler(
 }
 
 
-export async function getCityHandler(
-  req: Request<GetCityInput["params"] & Pick<CityFilterPagination, "include">>,
+export async function getTownshipHandler(
+  req: Request<GetTownshipInput["params"] & Pick<TownshipFilterPagination, "include">>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { cityId } = req.params
+    const { townshipId } = req.params
 
     const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as CityFilterPagination["include"]
+    const include = convertStringToBoolean(includes) as TownshipFilterPagination["include"]
 
-    const city = await db.cityFees.findUnique({
+    const township = await db.townshipFees.findUnique({
       where: {
-        id: cityId
+        id: townshipId
       },
       include
     })
 
-    res.status(200).json(HttpDataResponse({ city }))
+    res.status(200).json(HttpDataResponse({ township }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
@@ -78,7 +80,7 @@ export async function getCityHandler(
 }
 
 
-export async function createMultiCitiesHandler(
+export async function createMultiTownshipsHandler(
   req: Request,
   res: Response,
   next: NextFunction
@@ -89,16 +91,16 @@ export async function createMultiCitiesHandler(
     if (!excelFile) return res.status(204)
 
     const buf = fs.readFileSync(excelFile.path)
-    const data = parseExcel(buf) as CreateMultiCitisInput
+    const data = parseExcel(buf) as CreateMultiTownshipsInput
 
     // Update not affected
-    await Promise.all(data.map(city => db.cityFees.upsert({
+    await Promise.all(data.map(township => db.townshipFees.upsert({
       where: {
-        city: city.city
+        name: township.name
       },
       create: {
-        city: city.city,
-        fees: city.fees,
+        name: township.name,
+        fees: township.fees,
       },
       update: {}
     })))
@@ -108,48 +110,48 @@ export async function createMultiCitiesHandler(
     const msg = err?.message || "internal server error"
     logging.error(msg)
 
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "City already exists"))
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Township already exists"))
 
     next(new AppError(500, msg))
   }
 }
 
 
-export async function createCityHandler(
-  req: Request<{}, {}, CreateCityInput>,
+export async function createTownshipHandler(
+  req: Request<{}, {}, CreateTownshipInput>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { city: cityName, fees } = req.body
+    const { name, fees } = req.body
 
-    const city = await db.cityFees.create({
-      data: { city: cityName, fees },
+    const township = await db.townshipFees.create({
+      data: { name, fees },
     })
 
-    res.status(201).json(HttpDataResponse({ city }))
+    res.status(201).json(HttpDataResponse({ township }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
 
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "City already exists"))
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Township already exists"))
 
     next(new AppError(500, msg))
   }
 }
 
 
-export async function deleteCityHandler(
-  req: Request<GetCityInput["params"]>,
+export async function deleteTownshipHandler(
+  req: Request<GetTownshipInput["params"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { cityId } = req.params
+    const { townshipId } = req.params
 
-    await db.cityFees.delete({
+    await db.townshipFees.delete({
       where: {
-        id: cityId
+        id: townshipId
       }
     })
 
@@ -162,18 +164,18 @@ export async function deleteCityHandler(
 }
 
 
-export async function deleteMultilCitiesHandler(
-  req: Request<{}, {}, DeleteMultiCitisInput>,
+export async function deleteMultilTownshipsHandler(
+  req: Request<{}, {}, DeleteMultiTownshipsInput>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { cityIds } = req.body
+    const { townshipIds } = req.body
 
-    await db.cityFees.deleteMany({
+    await db.townshipFees.deleteMany({
       where: {
         id: {
-          in: cityIds
+          in: townshipIds
         }
       }
     })
@@ -187,28 +189,28 @@ export async function deleteMultilCitiesHandler(
 }
 
 
-export async function updateCityHandler(
-  req: Request<UpdateCityInput["params"], {}, UpdateCityInput["body"]>,
+export async function updateTownshipHandler(
+  req: Request<UpdateTownshipInput["params"], {}, UpdateTownshipInput["body"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { cityId } = req.params
+    const { townshipId } = req.params
     const data = req.body
 
-    const [city] = await db.$transaction([
-      db.cityFees.update({
+    const [townships] = await db.$transaction([
+      db.townshipFees.update({
         where: {
-          id: cityId,
+          id: townshipId,
         },
         data: {
-          city: data.city,
+          name: data.name,
           fees: data.fees
         }
       })
     ])
 
-    res.status(200).json(HttpDataResponse({ city }))
+    res.status(200).json(HttpDataResponse({ townships }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

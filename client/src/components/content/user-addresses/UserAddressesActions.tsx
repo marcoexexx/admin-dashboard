@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ImportIcon from '@mui/icons-material/MoveToInbox';
 
 import * as XLSX from 'xlsx'
-import { CreateCityInput } from "./forms";
+import { CreateBrandInput } from "./forms";
 
 
 const MenuActionBox = styled(Box)(({theme}) => ({
@@ -16,13 +16,13 @@ const MenuActionBox = styled(Box)(({theme}) => ({
 }))
 
 
-interface CitiesActionsProps {
+interface BrandsActionsProps {
   onExport: () => void
-  onImport: (data: CreateCityInput[]) => void
+  onImport: (data: CreateBrandInput[]) => void
   isAllowedImport: boolean
 }
 
-export function CitiesActions(props: CitiesActionsProps) {
+export function BrandsActions(props: BrandsActionsProps) {
   const { onExport, onImport, isAllowedImport } = props
 
   const ref = useRef<HTMLButtonElement>(null)
@@ -54,7 +54,7 @@ export function CitiesActions(props: CitiesActionsProps) {
       const wb = XLSX.read(data, { type: "binary" })
       const sheetName = wb.SheetNames[0]
       const sheet = wb.Sheets[sheetName]
-      const parsedData = XLSX.utils.sheet_to_json(sheet) as CreateCityInput[]
+      const parsedData = XLSX.utils.sheet_to_json(sheet) as CreateBrandInput[]
 
       onImport(parsedData)
     }

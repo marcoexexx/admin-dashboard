@@ -2,20 +2,20 @@ import { Card } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
-import { createMultiCitiesFn, deleteCityFn, deleteMultiCitiesFn, getCitiesFn } from "@/services/citiesApi";
-import { CitiesListTable } from ".";
+import { createMultiTownshipsFn, deleteMultiTownshipsFn, deleteTownshipFn, getTownshipsFn } from "@/services/TownshipsApi";
+import { TownshipsListTable } from ".";
 
 
-export function CitiesList() {
-  const { state: {cityFilter}, dispatch } = useStore()
+export function TownshipsList() {
+  const { state: {townshipFilter}, dispatch } = useStore()
 
   const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["cities", { filter: cityFilter } ],
-    queryFn: args => getCitiesFn(args, { 
-      filter: cityFilter?.fields,
+    queryKey: ["townships", { filter: townshipFilter } ],
+    queryFn: args => getTownshipsFn(args, { 
+      filter: townshipFilter?.fields,
       pagination: {
-        page: cityFilter?.page || 1,
-        pageSize: cityFilter?.limit || 10
+        page: townshipFilter?.page || 1,
+        pageSize: townshipFilter?.limit || 10
       },
       include: {
         region: true
@@ -25,10 +25,10 @@ export function CitiesList() {
   })
 
   const {
-    mutate: createCities,
+    mutate: createTownships,
     isPending
   } = useMutation({
-    mutationFn: createMultiCitiesFn,
+    mutationFn: createMultiTownshipsFn,
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
@@ -42,15 +42,15 @@ export function CitiesList() {
       } })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["cities"]
+        queryKey: ["townships"]
       })
     }
   })
 
   const {
-    mutate: deleteCity
+    mutate: deleteTownship
   } = useMutation({
-    mutationFn: deleteCityFn,
+    mutationFn: deleteTownshipFn,
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
@@ -59,20 +59,20 @@ export function CitiesList() {
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a city.",
+        message: "Success delete a township.",
         severity: "success"
       } })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["cities"]
+        queryKey: ["townships"]
       })
     }
   })
 
   const {
-    mutate: deleteCities
+    mutate: deleteTownships
   } = useMutation({
-    mutationFn: deleteMultiCitiesFn,
+    mutationFn: deleteMultiTownshipsFn,
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
@@ -86,7 +86,7 @@ export function CitiesList() {
       } })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["cities"]
+        queryKey: ["townships"]
       })
     }
   })
@@ -96,26 +96,26 @@ export function CitiesList() {
 
   if (!data || isLoading) return <SuspenseLoader />
 
-  function handleCreateManyCities(buf: ArrayBuffer) {
-    createCities(buf)
+  function handleCreateManyTownships(buf: ArrayBuffer) {
+    createTownships(buf)
   }
 
-  function handleDeleteCity(id: string) {
-    deleteCity(id)
+  function handleDeleteTownship(id: string) {
+    deleteTownship(id)
   }
 
-  function handleDeleteMultiCities(ids: string[]) {
-    deleteCities(ids)
+  function handleDeleteMultiTownships(ids: string[]) {
+    deleteTownships(ids)
   }
 
   return <Card>
-    <CitiesListTable
+    <TownshipsListTable
       isLoading={isPending}
-      cities={data.results} 
+      townships={data.results} 
       count={data.count} 
-      onCreateManyCities={handleCreateManyCities} 
-      onDelete={handleDeleteCity}
-      onMultiDelete={handleDeleteMultiCities}
+      onCreateManyTownships={handleCreateManyTownships} 
+      onDelete={handleDeleteTownship}
+      onMultiDelete={handleDeleteMultiTownships}
     />
   </Card>
 }

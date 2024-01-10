@@ -7,19 +7,19 @@ import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import getConfig from "@/libs/getConfig";
-import { getCityPermissionsFn } from '@/services/permissionsApi';
-import { UpdateCityForm } from '@/components/content/cities/forms';
+import { getTownshipPermissionsFn } from '@/services/permissionsApi';
+import { UpdateTownshipForm } from '@/components/content/townships/forms';
 
 
 const appName = getConfig("appName")
 
-export default function UpdateCity() {
+export default function UpdateTownship() {
   const navigate = useNavigate()
 
-  const isAllowedUpdateCity = usePermission({
-    key: "city-permissions",
+  const isAllowedUpdateTownship = usePermission({
+    key: "township-permissions",
     actions: "update",
-    queryFn: getCityPermissionsFn
+    queryFn: getTownshipPermissionsFn
   })
 
   const handleBack = () => {
@@ -30,7 +30,7 @@ export default function UpdateCity() {
   return (
     <>
       <Helmet>
-        <title>{appName} | Update city</title>
+        <title>{appName} | Update township</title>
         <meta name="description" content=""></meta>
       </Helmet>
 
@@ -46,7 +46,7 @@ export default function UpdateCity() {
           </Grid>
 
           <Grid item xs={10}>
-            <Typography variant="h3" component="h3" gutterBottom>Update a city</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>Update a township</Typography>
             <Typography variant="subtitle2" gutterBottom>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
             </Typography>
@@ -54,13 +54,13 @@ export default function UpdateCity() {
         </Grid>
       </PageTitle>
 
-      {isAllowedUpdateCity
+      {isAllowedUpdateTownship
       ? <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12} md={8}>
               <Card>
                 <CardContent>
-                  <UpdateCityForm />
+                  <UpdateTownshipForm />
                 </CardContent>
               </Card>
             </Grid>

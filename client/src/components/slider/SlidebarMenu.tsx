@@ -160,7 +160,7 @@ type ExpandMenu = {
   id:
     | "*"
     | "products"
-    | "cities"
+    | "townships"
     | "regions"
     | "categories"
     | "brands"
@@ -367,26 +367,26 @@ export default function SlidebarMenu() {
                 </List>
               </Collapse>
 
-              {/* Cities Menues */}
+              {/* Townships Menues */}
               <ListItem component="div">
                 <MuiButton
-                  onClick={handleToggleExpandMenu("cities")}
+                  onClick={handleToggleExpandMenu("townships")}
                   startIcon={<LocationCityIcon />}
-                  endIcon={getStateCurrentExpandMenu("cities")
+                  endIcon={getStateCurrentExpandMenu("townships")
                     ? <ExpandLessIcon />
                     : <ExpandMoreIcon />
                   }
                 >
-                  Cities
+                  Townships
                 </MuiButton>
               </ListItem>
 
-              <Collapse in={getStateCurrentExpandMenu("cities")}>
+              <Collapse in={getStateCurrentExpandMenu("townships")}>
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/cities/list" })}
-                      onClick={handleOpenMenu("/cities/list")}
+                      className={clsx({"active": currentMenu === "/townships/list" })}
+                      onClick={handleOpenMenu("/townships/list")}
                     >
                       <DotWrapper />
                       List
@@ -394,8 +394,8 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/cities/create" })}
-                      onClick={handleOpenMenu("/cities/create")}
+                      className={clsx({"active": currentMenu === "/townships/create" })}
+                      onClick={handleOpenMenu("/townships/create")}
                     >
                       <DotWrapper />
                       Create

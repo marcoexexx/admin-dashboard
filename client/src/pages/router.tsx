@@ -3,7 +3,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import Loader from "./loader";
 import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
-import { accessLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, cityPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
+import { accessLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, townshipPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 
@@ -21,10 +21,10 @@ const UpdateUserAddressPage = Loader(lazy(() => import("@/pages/userAddress/Upda
 
 const ListAccessLogPage = Loader(lazy(() => import("@/pages/accessLogs/ListAccessLogs")))
 
-// cities
-const ListCityPage = Loader(lazy(() => import("@/pages/cities/ListCity")))
-const CreateCityPage = Loader(lazy(() => import("@/pages/cities/CreateCity")))
-const UpdateCityPage = Loader(lazy(() => import("@/pages/cities/UpdateCity")))
+// townships
+const ListTownshipPage = Loader(lazy(() => import("@/pages/townships/ListTownship")))
+const CreateTownshipPage = Loader(lazy(() => import("@/pages/townships/CreateTownship")))
+const UpdateTownshipPage = Loader(lazy(() => import("@/pages/townships/UpdateTownship")))
 
 // regions
 const ListRegionPage = Loader(lazy(() => import("@/pages/regions/ListRegion")))
@@ -148,18 +148,18 @@ const routes = createBrowserRouter([
             ]
           },
 
-          /// CITIES ROUTES
+          /// TOWNSHIPS ROUTES
           {
-            path: "cities",
-            loader: cityPermissionsLoader,
+            path: "townships",
+            loader: townshipPermissionsLoader,
             children: [
               {
                 path: "",
-                element: <Navigate to="/cities/list" />
+                element: <Navigate to="/townships/list" />
               },
               {
                 path: "list",
-                Component: ListCityPage
+                Component: ListTownshipPage
               },
               {
                 path: "",
@@ -167,11 +167,11 @@ const routes = createBrowserRouter([
                 children: [
                   {
                     path: "create",
-                    Component: CreateCityPage
+                    Component: CreateTownshipPage
                   },
                   {
-                    path: "update/:cityId",
-                    Component: UpdateCityPage
+                    path: "update/:townshipId",
+                    Component: UpdateTownshipPage
                   }
                 ]
               },

@@ -1,36 +1,32 @@
 import { Box, Grid, TextField } from "@mui/material";
-import { MuiButton } from "@/components/ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
 import { useMutation } from "@tanstack/react-query";
+import { createBrandFn } from "@/services/brandsApi";
 import { useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
+import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
-import { createRegionFn } from "@/services/regionsApi";
-import { CityMultiInputField } from "@/components/input-fields";
-import { FormModal } from "@/components/forms";
-import { CreateCityForm } from "../../cities/forms";
 
-const createRegionSchema = object({
-  name: string({ required_error: "Region name is required" })
-    .min(1).max(128),
-  townships: string().array().default([])
+const createBrandSchema = object({
+  name: string({ required_error: "Brand name is required" })
+    .min(1).max(128)
 })
 
-export type CreateRegionInput = z.infer<typeof createRegionSchema>
+export type CreateBrandInput = z.infer<typeof createBrandSchema>
 
-export function CreateRegionForm() {
+export function CreateBrandForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/regions"
+  const from = "/brands"
 
   const {
-    mutate: createRegion,
+    mutate: createBrand,
   } = useMutation({
-    mutationFn: createRegionFn,
+    mutationFn: createBrandFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success created a new brand.",
@@ -39,7 +35,7 @@ export function CreateRegionForm() {
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["regions"]
+        queryKey: ["brands"]
       })
     },
     onError: (err: any) => {
@@ -50,8 +46,8 @@ export function CreateRegionForm() {
     },
   })
 
-  const methods = useForm<CreateRegionInput>({
-    resolver: zodResolver(createRegionSchema)
+  const methods = useForm<CreateBrandInput>({
+    resolver: zodResolver(createBrandSchema)
   })
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods
@@ -60,14 +56,9 @@ export function CreateRegionForm() {
     setFocus("name")
   }, [setFocus])
 
-  const onSubmit: SubmitHandler<CreateRegionInput> = (value) => {
-    createRegion(value)
+  const onSubmit: SubmitHandler<CreateBrandInput> = (value) => {
+    createBrand(value)
   }
-
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
-  }
-
 
   return (
     <>
@@ -82,7 +73,6 @@ export function CreateRegionForm() {
                 error={!!errors.name} 
                 helperText={!!errors.name ? errors.name.message : ""} 
               />
-              <TownshipMultiInputField />
             </Box>
           </Grid>
 
@@ -91,12 +81,6 @@ export function CreateRegionForm() {
           </Grid>
         </Grid>
       </FormProvider>
-      
-      {modalForm.field === "cities"
-      ? <FormModal field="cities" title='Create new city' onClose={handleOnCloseModalForm}>
-        <CreateCityForm />
-      </FormModal>
-      : null}
     </>
   )
 }

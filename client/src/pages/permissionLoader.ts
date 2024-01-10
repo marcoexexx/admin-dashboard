@@ -1,5 +1,5 @@
 import { queryClient } from "@/components";
-import { getBrandPermissionsFn, getCategoryPermissionsFn, getCityPermissionsFn, getExchangePermissionsFn, getProductPermissionsFn, getRegionPermissionsFn, getSalesCategoryPermissionsFn, getUserAddressPermissionsFn, getUserPermissionsFn } from "@/services/permissionsApi";
+import { getBrandPermissionsFn, getCategoryPermissionsFn, getExchangePermissionsFn, getProductPermissionsFn, getRegionPermissionsFn, getSalesCategoryPermissionsFn, getTownshipPermissionsFn, getUserAddressPermissionsFn, getUserPermissionsFn } from "@/services/permissionsApi";
 
 export async function userPermissionsLoader() {
   return queryClient.fetchQuery({
@@ -64,10 +64,10 @@ export async function userAddressPermissionsLoader() {
   })
 }
 
-export async function cityPermissionsLoader() {
+export async function townshipPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["city-permissions"],
-    queryFn: getCityPermissionsFn,
+    queryKey: ["township-permissions"],
+    queryFn: getTownshipPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
   })

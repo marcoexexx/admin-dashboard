@@ -4,20 +4,20 @@ import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } f
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import { getCityPermissionsFn } from '@/services/permissionsApi';
 
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import getConfig from "@/libs/getConfig";
-import { CreateCityForm } from '@/components/content/cities/forms';
+import { getTownshipPermissionsFn } from '@/services/permissionsApi';
+import { CreateTownshipForm } from '@/components/content/townships/forms';
 
 
 const appName = getConfig("appName")
 
-export default function CreateCity() {
-  const isAllowedCreateCity = usePermission({
-    key: "city-permissions",
+export default function CreateTownship() {
+  const isAllowedCreateTownship = usePermission({
+    key: "township-permissions",
     actions: "create",
-    queryFn: getCityPermissionsFn
+    queryFn: getTownshipPermissionsFn
   })
   
   const navigate = useNavigate()
@@ -29,7 +29,7 @@ export default function CreateCity() {
   return (
     <>
       <Helmet>
-        <title>{appName} | Create City</title>
+        <title>{appName} | Create Township</title>
         <meta name="description" content=""></meta>
       </Helmet>
 
@@ -45,7 +45,7 @@ export default function CreateCity() {
           </Grid>
 
           <Grid item xs={10}>
-            <Typography variant="h3" component="h3" gutterBottom>Create a new city</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>Create a new township</Typography>
             <Typography variant="subtitle2" gutterBottom>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
             </Typography>
@@ -53,13 +53,13 @@ export default function CreateCity() {
         </Grid>
       </PageTitle>
 
-      {isAllowedCreateCity
+      {isAllowedCreateTownship
       ? <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12} md={8}>
               <Card>
                 <CardContent>
-                  <CreateCityForm />
+                  <CreateTownshipForm />
                 </CardContent>
               </Card>
             </Grid>

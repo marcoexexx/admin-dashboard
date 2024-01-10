@@ -12,6 +12,7 @@
 # TODO
  - ## IMPORTANT
  - [ ] item code
+ - [ ] check filter forms
 
  - [ ] user detail :: relation
  - [ ] product list & detail :: relation
