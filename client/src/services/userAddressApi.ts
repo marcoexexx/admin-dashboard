@@ -1,3 +1,4 @@
+import { CreateUserAddressInput, UpdateUserAddressInput } from "@/components/content/user-addresses/forms";
 import { authApi } from "./authApi";
 import { Address, HttpListResponse, HttpResponse, QueryOptionArgs, UserAddressResponse } from "./types";
 
@@ -33,7 +34,7 @@ export async function createUserAddressFn(address: CreateUserAddressInput) {
 }
 
 
-export async function updateUserAddressFn({userAddressId, address}: {userAddressId: string, address: UpdateBrandInput}) {
+export async function updateUserAddressFn({userAddressId, address}: {userAddressId: string, address: UpdateUserAddressInput}) {
   const { data } = await authApi.patch<UserAddressResponse>(`/addresses/detail/${userAddressId}`, address)
   return data
 }

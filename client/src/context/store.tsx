@@ -72,6 +72,12 @@ export type Store = {
     limit?: number,
     mode?: "insensitive" | "default",
   },
+  userAddressFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default",
+  },
   productFilter?: {
     fields?: any,
     page?: number,
@@ -160,6 +166,11 @@ export type Store = {
       _count?: boolean
     }
   }
+}
+
+interface UserAddressFilterActions {
+  type: "SET_USER_ADDRESS_FILTER",
+  payload: Store["userAddressFilter"]
 }
 
 interface AccessLogFilterActions {
@@ -272,6 +283,7 @@ type Action =
   | SlidebarToggleActions
   | SlidebarCloseActions
 
+  | UserAddressFilterActions
   | TownshipFilterActions
   | AccessLogFilterActions
   | UserFilterActions
@@ -312,6 +324,11 @@ const initialState: Store = {
     mode: "default",
   },
   userFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default",
+  },
+  userAddressFilter: {
     page: 1,
     limit: 10,
     mode: "default",
@@ -446,6 +463,13 @@ const stateReducer = (state: Store, action: Action): Store => {
     case "SET_USER_FILTER": {
       return { ...state, userFilter: {
         ...state.userFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_USER_ADDRESS_FILTER": {
+      return { ...state, userAddressFilter: {
+        ...state.userAddressFilter,
         ...action.payload
       } }
     }

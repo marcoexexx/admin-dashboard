@@ -7,6 +7,7 @@ import { getUserAddressPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import getConfig from "@/libs/getConfig";
+import { UpdateUserAddressForm } from '@/components/content/user-addresses/forms';
 
 
 const appName = getConfig("appName")
@@ -58,7 +59,7 @@ export default function UpdateUserAddress() {
             <Grid item xs={12} md={8}>
               <Card>
                 <CardContent>
-                  {/* <UpdateBrandForm /> */}
+                  <UpdateUserAddressForm />
                 </CardContent>
               </Card>
             </Grid>

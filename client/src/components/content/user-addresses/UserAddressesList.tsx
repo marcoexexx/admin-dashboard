@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { deleteMultiUserAddressesFn, deleteUserAddressFn, getUserAddressesFn } from "@/services/userAddressApi";
+import { UserAddressesListTable } from ".";
 
 
 export function UserAddressesList() {
@@ -69,22 +70,21 @@ export function UserAddressesList() {
 
   if (!data || isLoading) return <SuspenseLoader />
 
-  function handleDeleteBrand(id: string) {
+  function handleDeleteUserAddress(id: string) {
     deleteUserAddress(id)
   }
 
-  function handleDeleteMultiBrands(ids: string[]) {
+  function handleDeleteMultiUserAddresses(ids: string[]) {
     deleteUserAddresses(ids)
   }
 
   return <Card>
-    <BrandsListTable 
-      isLoading={isPending}
-      brands={data.results} 
+    <UserAddressesListTable 
+      isLoading={isLoading}
+      userAddresses={data.results} 
       count={data.count} 
-      onCreateManyBrands={handleCreateManyBrands} 
-      onDelete={handleDeleteBrand}
-      onMultiDelete={handleDeleteMultiBrands}
+      onDelete={handleDeleteUserAddress}
+      onMultiDelete={handleDeleteMultiUserAddresses}
     />
   </Card>
 }

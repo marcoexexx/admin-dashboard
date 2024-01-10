@@ -1,23 +1,40 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { useState } from "react"
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
+import { FormModal } from "@/components/forms";
+import { MuiButton } from "@/components/ui";
+import { Address } from "@/services/types";
+import { UserAddressActions } from ".";
+import { useState } from "react"
+import { exportToExcel } from "@/libs/exportToExcel";
+import { usePermission, useStore } from "@/hooks";
+import { useNavigate } from "react-router-dom";
+import { getUserAddressPermissionsFn } from "@/services/permissionsApi";
+
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
-import { FormModal } from "@/components/forms";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
-import { MuiButton } from "@/components/ui";
-
-import { useNavigate } from "react-router-dom";
-import { Address } from "@/services/types";
 
 
 const columnData: TableColumnHeader<Address>[] = [
   {
-    id: "name",
+    id: "username",
     align: "left",
     name: "Name"
+  },
+  {
+    id: "phone",
+    align: "left",
+    name: "Name"
+  },
+  {
+    id: "email",
+    align: "left",
+    name: "Email"
+  },
+  {
+    id: "fullAddress",
+    align: "left",
+    name: "Full address"
   },
 ]
 
@@ -29,17 +46,16 @@ const columnHeader = columnData.concat([
   }
 ])
 
-interface BrandsListTableProps {
-  brands: Brand[]
+interface UserAddressesListTableProps {
+  userAddresses: Address[]
   isLoading?: boolean
   count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyBrands: (buf: ArrayBuffer) => void
 }
 
-export function BrandsListTable(props: BrandsListTableProps) {
-  const { brands, count, isLoading, onCreateManyBrands, onDelete, onMultiDelete } = props
+export function UserAddressesListTable(props: UserAddressesListTableProps) {
+  const { userAddresses, count, isLoading, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
@@ -55,7 +71,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
   const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = evt.target
     setSellectedRows(checked
-      ? brands.map(e => e.id)
+      ? userAddresses.map(e => e.id)
       : []
     )
   }
@@ -78,24 +94,12 @@ export function BrandsListTable(props: BrandsListTableProps) {
   }
 
   const handleOnExport = () => {
-    exportToExcel(brands, "Brands")
-  }
-
-  const handleOnImport = (data: CreateBrandInput[]) => {
-    convertToExcel(data, "Brands")
-      .then(excelBuffer => onCreateManyBrands(excelBuffer))
-      .catch(err => dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message: `Failed Excel upload: ${err.message}`,
-          severity: "error"
-        }
-      }))
+    exportToExcel(userAddresses, "Addresses")
   }
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_BRAND_FILTER",
+      type: "SET_USER_ADDRESS_FILTER",
       payload: {
         page: page += 1
       }
@@ -104,7 +108,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_BRAND_FILTER",
+      type: "SET_USER_ADDRESS_FILTER",
       payload: {
         limit: parseInt(evt.target.value, 10)
       }
@@ -117,34 +121,28 @@ export function BrandsListTable(props: BrandsListTableProps) {
     })
   }
 
-  const isAllowedDeleteBrand = usePermission({
-    key: "brand-permissions",
+  const isAllowedDeleteUserAddress = usePermission({
+    key: "address-permissions",
     actions: "delete",
-    queryFn: getBrandPermissionsFn
+    queryFn: getUserAddressPermissionsFn
   })
 
-  const isAllowedUpdateBrand = usePermission({
-    key: "brand-permissions",
+  const isAllowedUpdateUserAddress = usePermission({
+    key: "address-permissions",
     actions: "update",
-    queryFn: getBrandPermissionsFn
+    queryFn: getUserAddressPermissionsFn
   })
 
-  const isAllowedCreateBrand = usePermission({
-    key: "brand-permissions",
-    actions: "create",
-    queryFn: getBrandPermissionsFn
-  })
-
-  const selectedAllRows = selectedRows.length === brands.length
+  const selectedAllRows = selectedRows.length === userAddresses.length
   const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < brands.length
+    selectedRows.length < userAddresses.length
 
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
         <BulkActions
-          field="delete-brand-multi"
-          isAllowedDelete={isAllowedDeleteBrand}
+          field="delete-user-address-multi"
+          isAllowedDelete={isAllowedDeleteUserAddress}
           onDelete={() => onMultiDelete(selectedRows)}
         />
       </Box>}
@@ -152,10 +150,8 @@ export function BrandsListTable(props: BrandsListTableProps) {
       <Divider />
 
       <CardContent>
-        <BrandsActions 
+        <UserAddressActions
           onExport={handleOnExport} 
-          onImport={handleOnImport}  
-          isAllowedImport={isAllowedCreateBrand}
         />
       </CardContent>
 
@@ -178,7 +174,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
                 const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
                 return header.id !== "actions"
                   ? render
-                  : isAllowedUpdateBrand && isAllowedDeleteBrand
+                  : isAllowedUpdateUserAddress && isAllowedDeleteUserAddress
                   ? render
                   : null
               })}
@@ -186,7 +182,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
           </TableHead>
 
           <TableBody>
-            {brands.map(row => {
+            {userAddresses.map(row => {
               const isSelected = selectedRows.includes(row.id)
               return <TableRow
                 hover
@@ -210,13 +206,13 @@ export function BrandsListTable(props: BrandsListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {row.name}
+                    {row.username}
                   </Typography>
                 </TableCell>)}
 
-                {isAllowedUpdateBrand && isAllowedDeleteBrand
+                {isAllowedUpdateUserAddress && isAllowedDeleteUserAddress
                 ? <TableCell align="right">
-                    {isAllowedUpdateBrand
+                    {isAllowedUpdateUserAddress
                     ? <Tooltip title="Edit Product" arrow>
                         <IconButton
                           sx={{
@@ -234,8 +230,8 @@ export function BrandsListTable(props: BrandsListTableProps) {
                       </Tooltip>
                     : null}
 
-                    {isAllowedDeleteBrand
-                    ? <Tooltip title="Delete Product" arrow>
+                    {isAllowedDeleteUserAddress
+                    ? <Tooltip title="Delete address" arrow>
                         <IconButton
                           sx={{
                             '&:hover': {
@@ -273,10 +269,10 @@ export function BrandsListTable(props: BrandsListTableProps) {
         />
       </Box>
 
-      {modalForm.field === "delete-brand"
+      {modalForm.field === "delete-user-address"
       ? <FormModal
-        field="delete-brand"
-        title="Delete brand"
+        field="delete-user-address"
+        title="Delete address"
         onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>

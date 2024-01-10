@@ -324,6 +324,7 @@ export type Address = {
   isDefault: boolean
   username: string
   phone: string
+  email: string
   fullAddress: string
 
   // relationship

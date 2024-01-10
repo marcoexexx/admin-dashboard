@@ -1,32 +1,37 @@
 import { Box, Grid, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { object, string, z } from "zod";
+import { boolean, object, string, z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { createBrandFn } from "@/services/brandsApi";
 import { useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
-import { useEffect } from "react";
+import { createUserAddressFn } from "@/services/userAddressApi";
 
-const createBrandSchema = object({
-  name: string({ required_error: "Brand name is required" })
-    .min(1).max(128)
+
+const createUserAddressSchema = object({
+  isDefault: boolean().default(false),
+  username: string({ required_error: "Name (username) is required" }),
+  phone: string({ required_error: "phone is required" }).min(9).max(12),
+  email: string({ required_error: "email is required" }).email(),
+  regionId: string({ required_error: "region is required" }),
+  townshipFeesId: string({ required_error: "township is required" }),
+  fullAddress: string({ required_error: "fullAddress is required" }).max(128),
 })
 
-export type CreateBrandInput = z.infer<typeof createBrandSchema>
+export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>
 
-export function CreateBrandForm() {
+export function CreateUserAddressForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/brands"
+  const from = "/addresses"
 
   const {
-    mutate: createBrand,
+    mutate: createUserAddress,
   } = useMutation({
-    mutationFn: createBrandFn,
+    mutationFn: createUserAddressFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success created a new brand.",
@@ -35,7 +40,7 @@ export function CreateBrandForm() {
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["brands"]
+        queryKey: ["user-addresses"]
       })
     },
     onError: (err: any) => {
@@ -46,18 +51,14 @@ export function CreateBrandForm() {
     },
   })
 
-  const methods = useForm<CreateBrandInput>({
-    resolver: zodResolver(createBrandSchema)
+  const methods = useForm<CreateUserAddressInput>({
+    resolver: zodResolver(createUserAddressSchema)
   })
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods
+  const { handleSubmit, register, formState: { errors } } = methods
 
-  useEffect(() => {
-    setFocus("name")
-  }, [setFocus])
-
-  const onSubmit: SubmitHandler<CreateBrandInput> = (value) => {
-    createBrand(value)
+  const onSubmit: SubmitHandler<CreateUserAddressInput> = (value) => {
+    createUserAddress(value)
   }
 
   return (
@@ -68,10 +69,10 @@ export function CreateBrandForm() {
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField 
                 fullWidth 
-                {...register("name")} 
+                {...register("username")} 
                 label="Name" 
-                error={!!errors.name} 
-                helperText={!!errors.name ? errors.name.message : ""} 
+                error={!!errors.username} 
+                helperText={!!errors.username ? errors.username.message : ""} 
               />
             </Box>
           </Grid>

@@ -4,10 +4,6 @@ import { useRef, useState } from "react";
 import ExportIcon from '@mui/icons-material/Upgrade';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ImportIcon from '@mui/icons-material/MoveToInbox';
-
-import * as XLSX from 'xlsx'
-import { CreateBrandInput } from "./forms";
 
 
 const MenuActionBox = styled(Box)(({theme}) => ({
@@ -16,17 +12,14 @@ const MenuActionBox = styled(Box)(({theme}) => ({
 }))
 
 
-interface BrandsActionsProps {
+interface UserAddressActionsProps {
   onExport: () => void
-  onImport: (data: CreateBrandInput[]) => void
-  isAllowedImport: boolean
 }
 
-export function BrandsActions(props: BrandsActionsProps) {
-  const { onExport, onImport, isAllowedImport } = props
+export function UserAddressActions(props: UserAddressActionsProps) {
+  const { onExport } = props
 
   const ref = useRef<HTMLButtonElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
   
   const [isOpen, setIsOpen] = useState(false)
 
@@ -36,28 +29,6 @@ export function BrandsActions(props: BrandsActionsProps) {
 
   const handleClose = () => {
     setIsOpen(false)
-  }
-
-  const handleImportExcel = () => {
-    // onImport()
-    inputRef.current?.click()
-  }
-
-  const handleChangeImportExcel = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const file = (evt.target.files)?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.readAsBinaryString(file)
-    reader.onload = (e) => {
-      // @ts-ignore
-      const data = e.target.result
-      const wb = XLSX.read(data, { type: "binary" })
-      const sheetName = wb.SheetNames[0]
-      const sheet = wb.Sheets[sheetName]
-      const parsedData = XLSX.utils.sheet_to_json(sheet) as CreateBrandInput[]
-
-      onImport(parsedData)
-    }
   }
 
   const handleExportExcel = () => {
@@ -105,24 +76,6 @@ export function BrandsActions(props: BrandsActionsProps) {
               </ListItemIcon>
               <ListItemText primary="Export" />
             </ListItemButton>
-
-            {isAllowedImport
-            ? <ListItemButton onClick={handleImportExcel}>
-                <ListItemIcon>
-                  <ImportIcon fontSize="small" />
-                </ListItemIcon>
-                <input 
-                  type="file"
-                  style={{
-                    display: "none"
-                  }}
-                  ref={inputRef}
-                  accept=".xlsx, .xls"
-                  onChange={handleChangeImportExcel}
-                />
-                <ListItemText primary="Import" />
-              </ListItemButton>
-            : null}
           </List>
         </MenuActionBox>
       </Popover>
