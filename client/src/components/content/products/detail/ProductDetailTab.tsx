@@ -1,8 +1,8 @@
 import { Box, Card, CardActions, CardMedia, Divider, Typography, styled } from "@mui/material"
 import { MuiButton, Text } from '@/components/ui'
-import { Product } from "@/services/types";
+import { OrderItem, Product } from "@/services/types";
 import { useMutation } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
+import { useLocalStorage, useStore } from "@/hooks";
 import { queryClient } from "@/components";
 import { likeProductByUserFn, unLikeProductByUserFn } from "@/services/productsApi";
 
@@ -11,6 +11,7 @@ import ProductSpecificationTable from "./ProductSpecificationTable"
 import ThumbUpAltTwoToneIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUp';
 import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 
 const CardActionsWrapper = styled(CardActions)(({theme}) => ({
@@ -27,6 +28,8 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
   const { product } = props
 
   const { state, dispatch } = useStore()
+
+  const { set, get } = useLocalStorage()
 
   const { mutate: likeProduct, isPending: likeIsPending } = useMutation({
     mutationFn: likeProductByUserFn,
@@ -77,6 +80,23 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       })
     }
   })
+
+  const handleAddToCart = () => {
+    const initialQuality = 1
+
+    const newPayload: Omit<OrderItem, "createdAt" | "updatedAt"> = {
+      id: crypto.randomUUID(),  // For unique item, not necessary for api
+      product,
+      productId: product.id,
+      price: product.price,
+      quantity: initialQuality,
+      totalPrice: initialQuality * product.price
+    }
+
+    const payload = get<OrderItem[]>("CARTS") ?? []
+
+    set("CARTS", [...payload, newPayload])
+  }
 
   const likedTotal = product._count.likedUsers
   const reviewsTotal = product._count.reviews
@@ -144,7 +164,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
           justifyContent: "space-between"
         }}
       >
-        <Box display="flex" flexDirection={{ xs: "column", sm: "row" }} alignItems="start" justifyContent="start" gap={1}>
+        <Box display="flex" flexDirection={{ xs: "column", sm: "row" }} alignItems="start" gap={1}>
           <MuiButton 
             fullWidth
             startIcon={isLiked
@@ -167,6 +187,14 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
             variant="outlined"
           >
             Review
+          </MuiButton>
+          <MuiButton
+            fullWidth
+            startIcon={<ShoppingCartIcon />}
+            variant="outlined"
+            onClick={handleAddToCart}
+          >
+            Add 
           </MuiButton>
         </Box>
 

@@ -1,10 +1,13 @@
-import { useStore } from "@/hooks"
+import { useLocalStorage, useStore } from "@/hooks"
 import { Box, Divider, IconButton, Stack, Tooltip, alpha, lighten, styled } from "@mui/material"
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 import CloseTwoToneIcon from '@mui/icons-material/CloseTwoTone';
 import HeaderMenu from "./HeaderMenu";
 import HeaderUserBox from "./HeaderUserBox";
 import HeaderButtons from "./HeaderButtons";
+import { FormModal } from "../forms";
+import { Carts } from "../Cart";
+import { OrderItem } from "@/services/types";
 
 
 const MainContent = styled(Box)(({theme}) => ({
@@ -38,11 +41,21 @@ const MainContent = styled(Box)(({theme}) => ({
 
 export default function Header() {
   const { state, dispatch } = useStore()
-  const { slidebar } = state
+  const { slidebar, modalForm } = state
+
+  const { get } = useLocalStorage();
+
+  const carts = get<OrderItem[]>("CARTS") ?? []
+
 
   const onClickToggleSlidebarHandler = (_: React.MouseEvent<HTMLButtonElement>) => {
     dispatch({ type: "TOGGLE_SLIDEBAR" })
   }
+
+  const handleOnCloseModalForm = () => {
+    dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
+  }
+
 
   return (
     <MainContent display="flex" alignItems="center">
@@ -64,6 +77,12 @@ export default function Header() {
           </Tooltip>
         </Box>
       </Box>
+
+      {modalForm.field === "cart"
+      ? <FormModal field='cart' title='Carts' onClose={handleOnCloseModalForm}>
+          <Carts orderItems={carts} />
+      </FormModal>
+      : null}
     </MainContent>
   )
 }

@@ -3,7 +3,7 @@ import { useStore } from "@/hooks";
 import { Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
 interface FormModalProps {
-  field: Omit<Store["modalForm"]["field"], "*">
+  field: Store["modalForm"]["field"]
   title: string
   description?: string
   onClose: () => void

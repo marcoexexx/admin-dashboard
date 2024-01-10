@@ -63,8 +63,26 @@ export type AccessLog = {
 }
 
 
+export type OrderItem = {
+  id: string
+  price: number
+  totalPrice: number
+  quantity: number
+
+  // relationship
+  product?: Product
+  productId?: string
+  order?: Order
+  orderId?: string
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
 export type Order = {
   id: string
+  orderItems: OrderItem[]
 
   // relationship
   userId?: string
