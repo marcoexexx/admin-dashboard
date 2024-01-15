@@ -32,12 +32,18 @@ export async function getUserAddressesHandler(
 
     const offset = (page - 1) * pageSize
 
+    // @ts-ignore  for mocha testing
+    const user = req.user
+
+    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+
     const [count, userAddresses] = await db.$transaction([
       db.userAddress.count(),
       db.userAddress.findMany({
         where: {
           id,
           username,
+          userId: user.id,
           isDefault,
           phone,
           email,

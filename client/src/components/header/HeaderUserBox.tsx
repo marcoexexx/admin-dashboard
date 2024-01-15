@@ -88,6 +88,7 @@ export default function HeaderUserBox() {
   }
 
   const handleOpenCart = () => {
+    setIsOpen(false)
     dispatch({
       type: "OPEN_MODAL_FORM",
       payload: "cart"

@@ -6,6 +6,7 @@ import { convertNumericStrings } from "../utils/convertNumber";
 import { ChangeUserRoleInput, GetUserByUsernameInput, GetUserInput, UploadImageUserInput, UserFilterPagination } from "../schemas/user.schema";
 import { db } from "../utils/db";
 
+
 export async function getMeProfileHandler(
   req: Request,
   res: Response,
@@ -21,7 +22,7 @@ export async function getMeProfileHandler(
         id: userSession.id
       },
       include: {
-        order: true,
+        orders: true,
         favorites: true,
         addresses: true,
         reviews: true,

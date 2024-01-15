@@ -9,6 +9,7 @@ export * from './ProductInputField'
 export * from './TownshipMultiInputField'
 export * from './TownshipByRegionInputField'
 export * from './RegionInputField'
+export * from './AddressInputField'
 
 // TODO: Necessary Components
 export * from './_ColorsInputField'

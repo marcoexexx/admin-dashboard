@@ -96,6 +96,11 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
     const payload = get<OrderItem[]>("CARTS") ?? []
 
     set("CARTS", [...payload, newPayload])
+
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: "cart"
+    })
   }
 
   const likedTotal = product._count.likedUsers

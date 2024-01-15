@@ -168,6 +168,7 @@ type ExpandMenu = {
     | "exchanges"
     | "users"
     | "coupons"
+    | "potential-orders"
   state: boolean
 }
 
@@ -322,6 +323,43 @@ export default function SlidebarMenu() {
                     <MuiButton
                       className={clsx({"active": currentMenu === "/products/create" })}
                       onClick={handleOpenMenu("/products/create")}
+                    >
+                      <DotWrapper />
+                      Create
+                    </MuiButton>
+                  </ListItem>
+                </List>
+              </Collapse>
+
+              {/* Potential Orders Menues */}
+              <ListItem component="div">
+                <MuiButton
+                  onClick={handleToggleExpandMenu("potential-orders")}
+                  startIcon={<GradingIcon />}
+                  endIcon={getStateCurrentExpandMenu("potential-orders")
+                    ? <ExpandLessIcon />
+                    : <ExpandMoreIcon />
+                  }
+                >
+                  Potential orders
+                </MuiButton>
+              </ListItem>
+
+              <Collapse in={getStateCurrentExpandMenu("potential-orders")}>
+                <List component="div" disablePadding>
+                  <ListItem component="div">
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/potential-orders/list" })}
+                      onClick={handleOpenMenu("/potential-orders/list")}
+                    >
+                      <DotWrapper />
+                      List
+                    </MuiButton>
+                  </ListItem>
+                  <ListItem component="div">
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/potential-orders/create" })}
+                      onClick={handleOpenMenu("/potential-orders/create")}
                     >
                       <DotWrapper />
                       Create

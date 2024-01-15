@@ -29,13 +29,14 @@ enum AuthProvider {
 }
 
 model Exchange {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  from      PriceUnit
-  to        PriceUnit
-  rate      Float
-  date      DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id   String    @id @default(auto()) @map("_id") @db.ObjectId
+  from PriceUnit
+  to   PriceUnit
+  rate Float
+  date DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Coupon {
@@ -66,25 +67,26 @@ model Reward {
 }
 
 model User {
-  id               String        @id @default(auto()) @map("_id") @db.ObjectId
+  id               String           @id @default(auto()) @map("_id") @db.ObjectId
   name             String
   email            String
-  reward           Reward        @relation(fields: [rewardId], references: [id])
-  rewardId         String        @unique @db.ObjectId
-  username         String        @unique
+  reward           Reward           @relation(fields: [rewardId], references: [id])
+  rewardId         String           @unique @db.ObjectId
+  username         String           @unique
   password         String
-  role             Role          @default(User)
+  role             Role             @default(User)
   image            String?
   coverImage       String?
-  verified         Boolean       @default(false)
+  verified         Boolean          @default(false)
   verificationCode String?
-  provider         AuthProvider  @default(Local)
+  provider         AuthProvider     @default(Local)
   favorites        Favorites[]
-  createdProducts  Product[]     @relation("CreatedBy")
+  createdProducts  Product[]        @relation("CreatedBy")
   reviews          Review[]
   accessLogs       AccessLog[]
   addresses        UserAddress[]
-  order            Order[]
+  orders           Order[]
+  potentialOrders  PotentialOrder[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -97,7 +99,7 @@ model UserAddress {
   isDefault      Boolean
   username       String
   phone          String
-  email          String
+  email          String?
   region         Region       @relation(fields: [regionId], references: [id])
   regionId       String       @db.ObjectId
   township       TownshipFees @relation(fields: [townshipFeesId], references: [id])
@@ -108,20 +110,24 @@ model UserAddress {
   billingOrders  Order[]      @relation("billingAddress")
   deliveryOrders Order[]      @relation("deliveryAddress")
 
+  billingPotentialOrders PotentialOrder[] @relation("billingAddress")
+  deveryPotentialOrders  PotentialOrder[] @relation("deliveryAddress")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model PickupAddress {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  username String
-  phone    String
-  email    String
-  date     DateTime
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  username        String
+  phone           String
+  email           String?
+  date            DateTime
+  orders          Order[]
+  potentialOrders PotentialOrder[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Order     Order[]
 }
 
 model Favorites {
@@ -278,11 +284,17 @@ model Review {
   updatedAt DateTime @updatedAt
 }
 
-enum OrderState {
+enum OrderStatus {
   Pending
   Processing
   Shipped
   Delivered
+  Cancelled
+}
+
+enum PotentialOrderStatus {
+  Processing
+  Confimed
   Cancelled
 }
 
@@ -310,34 +322,58 @@ enum PaymentMethodProvider {
   BankTransfer
 }
 
-model Order {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  user       User        @relation(fields: [userId], references: [id])
-  userId     String      @db.ObjectId
+// Admin team only
+model PotentialOrder {
+  id         String               @id @default(auto()) @map("_id") @db.ObjectId
+  user       User?                @relation(fields: [userId], references: [id])
+  userId     String?              @db.ObjectId
   orderItems OrderItem[]
-  status     OrderState  @default(Pending)
+  status     PotentialOrderStatus @default(Processing)
 
-  deliveryAddress       UserAddress           @relation("deliveryAddress", fields: [deliveryAddressId], references: [id])
-  deliveryAddressId     String                @db.ObjectId
-  pickupAddress         PickupAddress         @relation(fields: [pickupAddressId], references: [id])
-  pickupAddressId       String                @db.ObjectId
+  deliveryAddress       UserAddress?          @relation("deliveryAddress", fields: [deliveryAddressId], references: [id])
+  deliveryAddressId     String?               @db.ObjectId
+  pickupAddress         PickupAddress?        @relation(fields: [pickupAddressId], references: [id])
+  pickupAddressId       String?               @db.ObjectId
   billingAddress        UserAddress           @relation("billingAddress", fields: [billingAddressId], references: [id])
   billingAddressId      String                @db.ObjectId
   paymentMethodProvider PaymentMethodProvider
+  remark                String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  user       User?       @relation(fields: [userId], references: [id])
+  userId     String?     @db.ObjectId
+  orderItems OrderItem[]
+  status     OrderStatus @default(Pending)
+
+  deliveryAddress       UserAddress?          @relation("deliveryAddress", fields: [deliveryAddressId], references: [id])
+  deliveryAddressId     String?               @db.ObjectId
+  pickupAddress         PickupAddress?        @relation(fields: [pickupAddressId], references: [id])
+  pickupAddressId       String?               @db.ObjectId
+  billingAddress        UserAddress           @relation("billingAddress", fields: [billingAddressId], references: [id])
+  billingAddressId      String                @db.ObjectId
+  paymentMethodProvider PaymentMethodProvider
+  remark                String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model OrderItem {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  price      Float
-  totalPrice Float
-  quantity   Int
-  product    Product @relation(fields: [productId], references: [id])
-  productId  String  @db.ObjectId
-  order      Order?  @relation(fields: [orderId], references: [id])
-  orderId    String? @db.ObjectId
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  price            Float
+  totalPrice       Float
+  quantity         Int
+  product          Product         @relation(fields: [productId], references: [id])
+  productId        String          @db.ObjectId
+  order            Order?          @relation(fields: [orderId], references: [id])
+  orderId          String?         @db.ObjectId
+  potentialOrder   PotentialOrder? @relation(fields: [potentialOrderId], references: [id])
+  potentialOrderId String?         @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

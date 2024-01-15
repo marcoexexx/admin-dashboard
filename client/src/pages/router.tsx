@@ -3,15 +3,22 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import Loader from "./loader";
 import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
-import { accessLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, townshipPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
+import { accessLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, potentialOrderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, townshipPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 
-const HomePage = Loader(lazy(() => import("@/pages/home/Home")))
+const HomePage = Loader(lazy(() => import("@/pages/home")))
+
+const CheckoutPage = Loader(lazy(() => import("@/pages/checkout")))
 
 // Status
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))
 const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.page")))
+
+// potential-orders
+const ListPotentialOrderPage = Loader(lazy(() => import("@/pages/potentialOrders/ListPotentialOrder")))
+const CreatePotentialOrderPage = Loader(lazy(() => import("@/pages/potentialOrders/CreatePotentialOrder")))
+const UpdatePotentialOrderPage = Loader(lazy(() => import("@/pages/potentialOrders/UpdatePotentialOrder")))
 
 // user-address
 const ListUserAddressPage = Loader(lazy(() => import("@/pages/userAddress/ListUserAddress")))
@@ -106,6 +113,11 @@ const routes = createBrowserRouter([
           },
 
           {
+            path: "checkout",
+            Component: CheckoutPage
+          },
+
+          {
             path: "me",
             loader: meProfileLoader,
             Component: ManagementUserProfilePage
@@ -116,6 +128,36 @@ const routes = createBrowserRouter([
             path: "access-logs",
             loader: accessLogsPermissionsLoader,
             Component: ListAccessLogPage
+          },
+
+          /// POTENTIAL ORDERS ROUTES
+          {
+            path: "potential-orders",
+            loader: potentialOrderPermissionsLoader,
+            children: [
+              {
+                path: "",
+                element: <Navigate to="/potential-orders/list" />
+              },
+              {
+                path: "list",
+                Component: ListPotentialOrderPage
+              },
+              {
+                path: "",
+                element: <PagePermission allowedRoles={["Admin", "Shopowner", "User"]} />,
+                children: [
+                  {
+                    path: "create",
+                    Component: CreatePotentialOrderPage
+                  },
+                  {
+                    path: "update/:potentialOrderId",
+                    Component: UpdatePotentialOrderPage
+                  }
+                ]
+              },
+            ]
           },
 
           /// USER ADDRESS ROUTES

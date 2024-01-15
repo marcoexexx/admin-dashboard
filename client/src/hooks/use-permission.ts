@@ -13,6 +13,7 @@ type PermissionKey =
   | "brand-permissions"
   | "product-permissions"
   | "order-permissions"
+  | "potential-order-permissions"
   | "access-log-permissions"
   | "coupon-permissions"
   | "region-permissions"
