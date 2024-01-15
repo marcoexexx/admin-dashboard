@@ -14,6 +14,7 @@
  - [ ] item code
  - [ ] check filter forms
  - [ ] refresh button on modalForm
+ - [ ] nullish coalescing operator :: localStorage data
 
  - [ ] user detail :: relation
  - [ ] product list & detail :: relation

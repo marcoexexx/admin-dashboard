@@ -48,13 +48,13 @@ export const createOrderSchema = object({
       productId: string(),
     }).array(),
     status: z.enum(orderStatus).default("Pending"),
-    deliveryAddressId: string({ required_error: "deliveryAddressId is required" }),
+    deliveryAddressId: string().optional(),
     pickupAddress: object({
       username: string({ required_error: "username is required" }),
       phone: string({ required_error: "phone number is required" }),
       email: string().optional(),
       date: string({ required_error: "date is required" }).default((new Date()).toISOString())
-    }),
+    }).optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
     paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
     remark: string().optional()
@@ -80,13 +80,13 @@ export const updateOrderSchema = object({
       productId: string(),
     }).array(),
     status: z.enum(orderStatus).default("Pending"),
-    deliveryAddressId: string({ required_error: "deliveryAddressId is required" }),
+    deliveryAddressId: string().optional(),
     pickupAddress: object({
       username: string({ required_error: "username is required" }),
       phone: string({ required_error: "phone number is required" }),
       email: string().optional(),
       date: string({ required_error: "date is required" }).default((new Date()).toISOString())
-    }),
+    }).optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
     paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
     remark: string().optional()
