@@ -1,12 +1,12 @@
 import { Box, Container, Radio, Typography, styled } from "@mui/material";
 import { AddressInputField } from "@/components/input-fields";
-import { useFormContext } from "react-hook-form";
 import { CreateOrderInput, OrderAddressType } from "@/components/content/orders/forms";
+import { PickupAddressForm } from "./PickupAddressForm";
+import { useFormContext } from "react-hook-form";
 import { useEffect } from "react";
-import { PickupAddressForm } from "../PickupAddressForm";
 
 
-const SelectionCard = styled(Box)<{ active: "true" | "false" }>(({ theme, active }) => ({
+const SelectionCardWrapper = styled(Box)<{ active: "true" | "false" }>(({ theme, active }) => ({
   cursor: "pointer",
   border: active === "true" ? `2px solid ${theme.colors.primary.dark}` : undefined,
   borderRadius: 10,
@@ -41,48 +41,51 @@ export default function AddressInformationStep() {
       <Box display="flex" flexDirection="column" gap={3}>
         <Typography variant="h3">Address Information</Typography>
 
-        <Box display="flex" flexDirection="row" gap={1}>
-          <SelectionCard active={addressType === "delivery" ? "true" : "false"} onClick={handleChangeAddressType("delivery")}>
-            <Box 
-              ml={2}
-              component="img"
-              sx={{
-                height: 133,
-              }}
-              alt="deliveryAddress image"
-              src="/static/motorcycle-delivery.svg"
-            >
-            </Box>
-            <Typography variant="h3">Delivery</Typography>
-            <Radio 
-              sx={{ alignSelf: "start" }}
-              checked={addressType === "delivery"}
-              value="delivery"
-              name="delivery"
-              inputProps={{ "aria-label": "Delivery" }}
-            />
-          </SelectionCard>
+        <Box display="flex" flexDirection="column" gap={1}>
+          <Typography>Choose the option</Typography>
+          <Box display="flex" flexDirection="row" gap={1}>
+            <SelectionCardWrapper active={addressType === "delivery" ? "true" : "false"} onClick={handleChangeAddressType("delivery")}>
+              <Box 
+                ml={2}
+                component="img"
+                sx={{
+                  height: 133,
+                }}
+                alt="deliveryAddress image"
+                src="/static/motorcycle-delivery.svg"
+              >
+              </Box>
+              <Typography variant="h3">Delivery</Typography>
+              <Radio 
+                sx={{ alignSelf: "start" }}
+                checked={addressType === "delivery"}
+                value="delivery"
+                name="delivery"
+                inputProps={{ "aria-label": "Delivery" }}
+              />
+            </SelectionCardWrapper>
 
-          <SelectionCard active={addressType === "pickup" ? "true" : "false"} onClick={handleChangeAddressType("pickup")}>
-            <Box 
-              ml={2}
-              component="img"
-              sx={{
-                height: 133,
-              }}
-              alt="deliveryAddress image"
-              src="/static/box.svg"
-            >
-            </Box>
-            <Typography variant="h3">Pickup</Typography>
-            <Radio 
-              sx={{ alignSelf: "start" }}
-              checked={addressType === "pickup"}
-              value="pickup"
-              name="pickup"
-              inputProps={{ "aria-label": "Pickup" }}
-            />
-          </SelectionCard>
+            <SelectionCardWrapper active={addressType === "pickup" ? "true" : "false"} onClick={handleChangeAddressType("pickup")}>
+              <Box 
+                ml={2}
+                component="img"
+                sx={{
+                  height: 133,
+                }}
+                alt="deliveryAddress image"
+                src="/static/box.svg"
+              >
+              </Box>
+              <Typography variant="h3">Pickup</Typography>
+              <Radio 
+                sx={{ alignSelf: "start" }}
+                checked={addressType === "pickup"}
+                value="pickup"
+                name="pickup"
+                inputProps={{ "aria-label": "Pickup" }}
+              />
+            </SelectionCardWrapper>
+          </Box>
         </Box>
 
         {addressType === "delivery" ? <AddressInputField updateField fieldName="deliveryAddressId" /> : null}

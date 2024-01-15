@@ -1,20 +1,24 @@
-import { useEffect, useState } from "react";
-import { Box, CircularProgress, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, stepConnectorClasses, styled } from "@mui/material"
-import { MuiButton } from "@/components/ui";
-import { OrderSummary } from "./OrderSummary";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { CreateOrderInput, createOrderSchema } from "@/components/content/orders/forms";
+import dayjs from "dayjs";
 
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/components";
 import { useLocalStorage, useStore } from "@/hooks";
-import AddressInformationStep from "./AddressInformation";
-import Check from '@mui/icons-material/Check'
+import { Box, Checkbox, CircularProgress, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel } from "@mui/material"
+import { MuiButton } from "@/components/ui";
+import { Link as LinkRouter } from "react-router-dom";
+import { OrderSummary } from "./OrderSummary";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { CreateOrderInput, createOrderSchema } from "@/components/content/orders/forms";
 import { FormModal } from "@/components/forms";
 import { CreateUserAddressForm } from "@/components/content/user-addresses/forms";
 import { OrderItem } from "@/services/types";
-import dayjs from "dayjs";
+import { PaymentMethodStep } from "./PaymentMethod";
+import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
+
+import AddressInformationStep from "./AddressInformation";
+import Check from '@mui/icons-material/Check'
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -65,6 +69,7 @@ const QontoStepIconRoot = styled('div')<{ ownerState: { active?: boolean } }>(
 function QontoStepIcon(props: StepIconProps) {
   const { active, completed, className } = props;
 
+
   return (
     <QontoStepIconRoot ownerState={{ active }} className={className}>
       {completed ? (
@@ -84,8 +89,8 @@ const steps = [
 
 function RenderStepper({activeStepIdx}: {activeStepIdx: number}) {
   if (activeStepIdx === 0) return <AddressInformationStep />
-  if (activeStepIdx === 1) return <h1>2</h1>
-  if (activeStepIdx === 2) return <h1>3</h1>
+  if (activeStepIdx === 1) return <PaymentMethodStep />
+  if (activeStepIdx === 2) return <CheckoutOrderConfirmation />
   return <h1>Invalid step</h1>
 }
 
@@ -94,6 +99,7 @@ export function CheckoutForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const [activeStepIdx, setActiveStepIdx] = useState(0)
+  const [isConfirmed, setIsConfirmed] = useState(false)
 
   const { set, get } = useLocalStorage()
 
@@ -132,8 +138,10 @@ export function CheckoutForm() {
 
     if (Array.isArray(cartItems) && cartItems.length) methods.setValue("orderItems", cartItems.filter((cart) => !!cart.productId))
     if (values) {
-      methods.setValue("pickupAddress", { ...values.pickupAddress, date: dayjs(values.pickupAddress.date) })
-      methods.setValue("deliveryAddressId", values.deliveryAddressId)
+      if (values.pickupAddress) methods.setValue("pickupAddress", { ...values.pickupAddress, date: dayjs(values.pickupAddress.date) })
+      if (values.deliveryAddressId) methods.setValue("deliveryAddressId", values.deliveryAddressId)
+      if (values.billingAddressId) methods.setValue("billingAddressId", values.billingAddressId)
+      if (values.paymentMethodProvider) methods.setValue("paymentMethodProvider", values.paymentMethodProvider)
     }
 
     methods.setValue("addressType", values?.addressType || "delivery")
@@ -156,15 +164,20 @@ export function CheckoutForm() {
 
   const checkValidCurrentStepForm = (idx: number) => {
     const errors = methods.formState.errors
-    const value = methods.watch()
+    const { addressType, deliveryAddressId, pickupAddress, billingAddressId, paymentMethodProvider } = methods.getValues()
 
     if (idx === 0) {
-      if (methods.getValues("addressType") === "delivery" && !errors.deliveryAddressId && value.deliveryAddressId) return true
-      if (methods.getValues("addressType") === "pickup" && !errors.pickupAddress && value.pickupAddress.username && value.pickupAddress.phone && value.pickupAddress.date) return true
+      if (addressType === "delivery" && !errors.deliveryAddressId && deliveryAddressId) return true
+      if (addressType === "pickup" && !errors.pickupAddress && pickupAddress.username && pickupAddress.phone && pickupAddress.date) return true
     }
 
     if (idx === 1) {
-      console.log(value)
+      if (!errors.billingAddressId && billingAddressId) return true
+      if (!errors.paymentMethodProvider && paymentMethodProvider) return true
+    }
+
+    if (idx == 2) {
+      console.log("Confirm", { errors })
     }
 
     return false
@@ -172,6 +185,12 @@ export function CheckoutForm() {
 
   const handleNextStep = (_: React.MouseEvent<HTMLButtonElement>) => {
     if (checkValidCurrentStepForm(activeStepIdx)) setActiveStepIdx(prev => prev + 1)
+  }
+
+  const handleConfirmOrder = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const { target } = evt
+
+    setIsConfirmed(target.checked)
   }
 
   const handleBackStep = (_: React.MouseEvent<HTMLButtonElement>) => setActiveStepIdx(prev => prev - 1)
@@ -204,13 +223,21 @@ export function CheckoutForm() {
             <Box component="form" onSubmit={methods.handleSubmit(onSubmit)}>
               <RenderStepper activeStepIdx={activeStepIdx} />
 
+              {isLastStep 
+                ? <FormGroup sx={{ p: 1 }}>
+                  <FormControlLabel 
+                    control={<Checkbox value={isConfirmed} onChange={handleConfirmOrder} />}
+                    label={<Typography>I have read and agreed to the website <Link component={LinkRouter} to="#temas">teams and conditions</Link>.</Typography>} />
+                </FormGroup>
+                : null}
+
               <Box mt={2} display="flex" flexDirection="row" alignItems="center" justifyContent="flex-start" gap={1}>
                 <MuiButton disabled={activeStepIdx === 0} onClick={handleBackStep} variant="outlined">
                   Back
                 </MuiButton>
                 {isLastStep 
-                  ? <MuiButton onClick={handleNextStep} type="button">Submit</MuiButton> 
-                  : <MuiButton onClick={handleNextStep} type="submit">Continue</MuiButton>}
+                  ? <MuiButton onClick={handleNextStep} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton> 
+                  : <MuiButton onClick={handleNextStep} type="submit" variant="outlined">Continue</MuiButton>}
               </Box>
             </Box>
           </FormProvider>}

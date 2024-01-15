@@ -13,6 +13,7 @@
  - ## IMPORTANT
  - [ ] item code
  - [ ] check filter forms
+ - [ ] refresh button on modalForm
 
  - [ ] user detail :: relation
  - [ ] product list & detail :: relation

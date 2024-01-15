@@ -36,7 +36,7 @@ export function AddressInputField({updateField = false, fieldName}: AddressInput
     isError,
     error
   } = useQuery({
-    queryKey: ["addresses", { fieldName }],
+    queryKey: ["user-addresses"],
     queryFn: args => getUserAddressesFn(args, {
       filter: {},
       pagination: {
