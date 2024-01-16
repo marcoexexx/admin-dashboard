@@ -45,6 +45,7 @@ export function EditorInputField({fieldName}: EditorInputFieldProps) {
             placeholder={fieldName}
             sx={{
               ".ql-toolbar.ql-snow": {
+                // Shape, Color and border radius
                 borderColor: !!fieldState.error ? theme.colors.error.main : "inherit"
               },
               ".ql-container.ql-snow": {
