@@ -37,7 +37,7 @@ export const paymentMethodProviderImages: Record<PaymentMethodProvider, string> 
   OnePay: "one-pay.png",
   UABPay: "uab-pay.png",
   WavePay: "wave-pay.png",
-  "BankTransfer": "bank-transfer.svg"
+  BankTransfer: "bank-transfer.svg"
 }
 
 

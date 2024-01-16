@@ -1,35 +1,25 @@
-import { SuspenseLoader } from "@/components";
-import { CreateOrderInput } from "@/components/content/orders/forms";
-import { Card, CardContent, Typography } from "@mui/material";
-import { getUserAddressFn } from "@/services/userAddressApi";
-import { useQuery } from "@tanstack/react-query";
-import { useFormContext } from "react-hook-form";
+import { Address } from "@/services/types";
+import { Alert, Card, CardContent, Typography } from "@mui/material";
 
 
-export function BillingAddressDetailCard() {
-  const { getValues } = useFormContext<CreateOrderInput>()
-  const { billingAddressId } = getValues()
+interface BillingAddressDetailCardProps {
+  billingAddress: Address | undefined
+}
 
-  const { data: billingAddress, isError, isLoading, error } = useQuery({
-    enabled: !!billingAddressId,
-    queryKey: ["user-addresses", { id: billingAddressId }],
-    queryFn: args => getUserAddressFn(args, { userAddressId: billingAddressId }),
-
-    select: data => data?.userAddress
-  })
-
-  if (isError && error) return <h1>ERROR: {error.message}</h1>
-
-  if (!billingAddress || isLoading) return <SuspenseLoader />
-
+export function BillingAddressDetailCard({billingAddress}: BillingAddressDetailCardProps) {
   return (
     <Card>
-      <CardContent>
-        <Typography variant="h4">{billingAddress.username}</Typography>
-        <Typography>Phone: {billingAddress.phone}</Typography>
-       {billingAddress.email ? <Typography>Email: {billingAddress.email}</Typography> : null}
-        <Typography>full address: {billingAddress.fullAddress}</Typography>
-      </CardContent>
+      {billingAddress
+        ? <CardContent>
+            <Typography variant="h4">{billingAddress.username}</Typography>
+            <Typography>Phone: {billingAddress.phone}</Typography>
+           {billingAddress.email ? <Typography>Email: {billingAddress.email}</Typography> : null}
+            <Typography>full address: {billingAddress.fullAddress}</Typography>
+          </CardContent>
+        : <CardContent>
+        <Alert severity="error">Error: Billing Address Not Found</Alert>
+        <Typography mt={2}>Sorry, we couldn't find the specified billing address. It may have been deleted or does not exist in our records. Please double-check the address and try again. If you continue to experience issues, reach out to our support team for further assistance.</Typography>
+      </CardContent>}
     </Card>
   )
 }

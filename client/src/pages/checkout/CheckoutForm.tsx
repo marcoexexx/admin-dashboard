@@ -5,7 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/components";
 import { useLocalStorage, useStore } from "@/hooks";
-import { Box, Checkbox, CircularProgress, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel } from "@mui/material"
+import { playSoundEffect } from "@/libs/playSound";
+import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel, Alert } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { Link as LinkRouter } from "react-router-dom";
 import { OrderSummary } from "./OrderSummary";
@@ -15,11 +16,12 @@ import { FormModal } from "@/components/forms";
 import { CreateUserAddressForm } from "@/components/content/user-addresses/forms";
 import { OrderItem } from "@/services/types";
 import { PaymentMethodStep } from "./PaymentMethod";
+import { CreatePotentialOrderInput } from "@/components/content/potential-orders/forms";
 import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
 
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
-import { playSoundEffect } from "@/libs/playSound";
+import { createPotentialOrderFn } from "@/services/potentialOrdersApi";
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -106,8 +108,8 @@ export function CheckoutForm() {
 
   const {
     mutate: createOrder,
-    isPending,
-    isSuccess
+    isPending: isPendingMutationOrder,
+    isSuccess: isSuccessMutationOrder
   } = useMutation({
     mutationFn: async (value: CreateOrderInput) => new Promise(resolve => setTimeout(() => resolve(console.log({ saved: {value}})), 3000)),
     onSuccess: () => {
@@ -130,9 +132,40 @@ export function CheckoutForm() {
     },
   })
 
-  const methods = useForm<CreateOrderInput>({
-    resolver: zodResolver(createOrderSchema)
+  const {
+    mutate: createPotentialOrder,
+    isPending: isPendingMutationPotentialOrder,
+  } = useMutation({
+    mutationFn: createPotentialOrderFn,
+    onSuccess: () => {
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: "Success created a new Potential order.",
+        severity: "success"
+      } })
+      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
+      queryClient.invalidateQueries({
+        queryKey: ["potential-orders"]
+      })
+      playSoundEffect("success")
+    },
+    onError: (err: any) => {
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: `failed: ${err.response.data.message}`,
+        severity: "error"
+      } })
+      playSoundEffect("error")
+    },
   })
+
+
+  const methods = useForm<CreateOrderInput>({
+    resolver: zodResolver(createOrderSchema),
+    reValidateMode: "onChange",
+  })
+
+  const { getValues, handleSubmit, setValue, watch, formState: {errors} } = methods
+
+  const errorMessage = `Invalid input: ${Object.keys(errors)} errors found!`
 
 
   // Initialize values from localStorage
@@ -140,31 +173,31 @@ export function CheckoutForm() {
     const cartItems = get<OrderItem[]>("CARTS")
     const values = get<CreateOrderInput>("PICKUP_FORM")
 
-    if (Array.isArray(cartItems) && cartItems.length) methods.setValue("orderItems", cartItems.filter((cart) => !!cart.productId))
+    if (Array.isArray(cartItems) && cartItems.length) setValue("orderItems", cartItems.filter((cart) => !!cart.productId))
     if (values) {
-      if (values.pickupAddress) methods.setValue("pickupAddress", { ...values.pickupAddress, date: dayjs(values.pickupAddress.date) })
-      if (values.deliveryAddressId) methods.setValue("deliveryAddressId", values.deliveryAddressId)
-      if (values.billingAddressId) methods.setValue("billingAddressId", values.billingAddressId)
-      if (values.paymentMethodProvider) methods.setValue("paymentMethodProvider", values.paymentMethodProvider)
+      if (values.pickupAddress) setValue("pickupAddress", { ...values.pickupAddress, date: dayjs(values.pickupAddress.date) })
+      if (values.deliveryAddressId) setValue("deliveryAddressId", values.deliveryAddressId)
+      if (values.billingAddressId) setValue("billingAddressId", values.billingAddressId)
+      if (values.paymentMethodProvider) setValue("paymentMethodProvider", values.paymentMethodProvider)
     }
 
-    methods.setValue("addressType", values?.addressType || "delivery")
+    setValue("addressType", values?.addressType || "delivery")
   }, [])
 
 
   // Save value to localStorage on form value change
   useEffect(() => {
-    const values = methods.watch()
+    const values = watch()
     let valuesUpdate = values
     const prevsValues = get<CreateOrderInput>("PICKUP_FORM")
 
     set("PICKUP_FORM", { ...prevsValues, ...valuesUpdate });
-  }, [methods.watch()])
+  }, [watch()])
 
 
   useEffect(() => {
-    if (isConfirmed && isSuccess) setActiveStepIdx(prev => prev += 1)
-  }, [isConfirmed, isSuccess])
+    if (isConfirmed && isSuccessMutationOrder) setActiveStepIdx(prev => prev += 1)
+  }, [isConfirmed, isSuccessMutationOrder])
 
 
   const onSubmit: SubmitHandler<CreateOrderInput> = (value) => {
@@ -172,8 +205,7 @@ export function CheckoutForm() {
   }
 
   const checkValidCurrentStepForm = (idx: number) => {
-    const errors = methods.formState.errors
-    const { addressType, deliveryAddressId, pickupAddress, billingAddressId, paymentMethodProvider } = methods.getValues()
+    const { addressType, deliveryAddressId, pickupAddress, billingAddressId, paymentMethodProvider } = getValues()
 
     if (idx === 0) {
       if (addressType === "delivery" && !errors.deliveryAddressId && deliveryAddressId) return true
@@ -181,8 +213,9 @@ export function CheckoutForm() {
     }
 
     if (idx === 1) {
-      if (!errors.billingAddressId && billingAddressId) return true
-      if (!errors.paymentMethodProvider && paymentMethodProvider) return true
+      if (!errors.paymentMethodProvider
+        && billingAddressId
+        && paymentMethodProvider) return true
     }
 
     if (idx == 2) return false
@@ -191,6 +224,20 @@ export function CheckoutForm() {
   }
 
   const handleNextStep = (_: React.MouseEvent<HTMLButtonElement>) => {
+    // Create potential order
+    if (activeStepIdx === 1) {
+      const value = getValues()
+
+      let payload: CreatePotentialOrderInput = {
+        orderItems: value.orderItems,
+        billingAddressId: value.billingAddressId,
+        paymentMethodProvider: value.paymentMethodProvider,
+        status: "Processing"
+      }
+
+      createPotentialOrder(payload)
+    }
+
     if (checkValidCurrentStepForm(activeStepIdx)) setActiveStepIdx(prev => prev + 1)
   }
 
@@ -221,13 +268,9 @@ export function CheckoutForm() {
 
       <Grid item md={7} xs={12}>
         {activeStepIdx === steps.length
-        ? isPending 
-          ? <Box display="flex" alignItems="center" justifyContent="center" mt={10}>
-              <CircularProgress />
-            </Box>
-          : <h1>Success</h1>
+        ? <h1>Success</h1>
         : <FormProvider  {...methods}>
-            <Box component="form" onSubmit={methods.handleSubmit(onSubmit)}>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)}>
               <RenderStepper activeStepIdx={activeStepIdx} />
 
               {isLastStep 
@@ -238,13 +281,17 @@ export function CheckoutForm() {
                 </FormGroup>
                 : null}
 
+              {Object.keys(errors).length
+              ? <Alert severity="error">{errorMessage}</Alert>
+              : null}
+
               <Box mt={2} display="flex" flexDirection="row" alignItems="center" justifyContent="flex-start" gap={1}>
                 <MuiButton disabled={activeStepIdx === 0} onClick={handleBackStep} variant="text">
                   Back
                 </MuiButton>
                 {isLastStep 
-                  ? <MuiButton onClick={handleNextStep} loading={isPending} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton> 
-                  : <MuiButton onClick={handleNextStep} type={activeStepIdx === 0 ? "submit" : "button"} variant="outlined">Continue</MuiButton>}
+                  ? <MuiButton onClick={handleNextStep} loading={isPendingMutationOrder} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton> 
+                  : <MuiButton onClick={handleNextStep} type={"button"} loading={isPendingMutationPotentialOrder} variant="outlined">Continue</MuiButton>}
               </Box>
             </Box>
           </FormProvider>}

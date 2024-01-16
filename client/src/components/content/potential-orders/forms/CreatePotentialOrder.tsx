@@ -29,7 +29,8 @@ const createPotentialOrderSchema = object({
   deliveryAddressId: string().optional(),
   pickupAddressId: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
-  paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethod is required" })
+  paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethod is required" }),
+  remark: string().optional()
 })
 
 export type CreatePotentialOrderInput = z.infer<typeof createPotentialOrderSchema>

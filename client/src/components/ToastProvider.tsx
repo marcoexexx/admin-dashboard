@@ -10,7 +10,7 @@ export function ToastProvider() {
   }
 
   return (
-    <Snackbar open={toast.status} autoHideDuration={1000 * 5} onClose={onCloseHandler} anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+    <Snackbar open={toast.status} autoHideDuration={1000 * 5} onClose={onCloseHandler} anchorOrigin={{ vertical: "top", horizontal: "left" }}>
       <Alert onClose={onCloseHandler} severity={toast.severity} sx={{ width: "100%" }}>
         {toast.message}
       </Alert>

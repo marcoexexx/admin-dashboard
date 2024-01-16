@@ -389,6 +389,7 @@ export type Address = {
   phone: string
   email?: string
   fullAddress: string
+  remark?: string
 
   // relationship
   userId?: string
@@ -419,7 +420,7 @@ export type Review = {
 
 // TODO: User profile
 export type UserProfile = User & {
-  order: Order[],
+  orders: Order[],
   favorites: Product[],
   addresses: Address[],
   reviews: Review[],

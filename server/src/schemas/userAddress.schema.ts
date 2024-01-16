@@ -27,6 +27,7 @@ export const createUserAddressSchema = object({
     regionId: string({ required_error: "region is required" }),
     townshipFeesId: string({ required_error: "township is required" }),
     fullAddress: string({ required_error: "fullAddress is required" }).max(128),
+    remark: string().optional()
   })
 })
 
@@ -44,6 +45,7 @@ export const updateUserAddressSchema = object({
     regionId: string({ required_error: "region is required" }),
     townshipFeesId: string({ required_error: "township is required" }),
     fullAddress: string({ required_error: "fullAddress is required" }).max(128),
+    remark: string().optional()
   })
 })
 

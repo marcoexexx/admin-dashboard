@@ -98,7 +98,12 @@ export async function createPotentialOrderHandler(
     const potentialOrder = await db.potentialOrder.create({
       data: {
         orderItems: {
-          create: orderItems
+          create: orderItems.map(item => ({
+            productId: item.productId,
+            price: item.price,
+            quantity: item.quantity,
+            totalPrice: item.totalPrice
+          }))
         },
         userId,
         status,

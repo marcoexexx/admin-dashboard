@@ -109,6 +109,7 @@ model UserAddress {
   userId         String       @db.ObjectId
   billingOrders  Order[]      @relation("billingAddress")
   deliveryOrders Order[]      @relation("deliveryAddress")
+  remark         String?
 
   billingPotentialOrders PotentialOrder[] @relation("billingAddress")
   deveryPotentialOrders  PotentialOrder[] @relation("deliveryAddress")

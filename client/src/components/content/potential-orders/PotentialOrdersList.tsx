@@ -18,6 +18,10 @@ export function PotentialOrdersList() {
         page: potentialOrderFilter?.page || 1,
         pageSize: potentialOrderFilter?.limit || 10
       },
+      include: {
+        user: true,
+        orderItems: true
+      }
     }),
     select: data => data
   })

@@ -7,11 +7,12 @@ import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody
 import { MuiButton } from "@/components/ui";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
-import { PotentialOrder } from "@/services/types";
+import { OrderItem, PotentialOrder } from "@/services/types";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import { PotentialOrdersActions } from ".";
+import { RenderOrderItemLabel } from "@/components/table-labels";
 
 
 const columnData: TableColumnHeader<PotentialOrder & { amount: number }>[] = [
@@ -146,6 +147,12 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
   const selectedSomeRows = selectedRows.length > 0 && 
     selectedRows.length < potentialOrders.length
 
+  const getAmount = (items: OrderItem[] | undefined) => {
+    if (!items) return 0
+    return items.reduce((total, item) => total + item.totalPrice, 0)
+  }
+
+
   return (
     <Card>
       {selectedBulkActions && <Box flex={1} p={2}>
@@ -215,7 +222,12 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {row.user?.name}
+                    {col.id === "user" && row.user?.name}
+                    {col.id === "amount" && getAmount(row.orderItems)}
+                    {col.id === "orderItems" && row.orderItems?.map(item => <RenderOrderItemLabel key={item.id} orderItem={item} />)}
+                    {col.id === "status" && row.status}
+                    {col.id === "updatedAt" && (new Date(row.updatedAt).toISOString())}
+                    {col.id === "remark" && row.remark}
                   </Typography>
                 </TableCell>)}
 
