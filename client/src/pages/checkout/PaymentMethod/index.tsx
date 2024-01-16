@@ -1,6 +1,6 @@
 import { CreateOrderInput, PaymentMethodProvider, paymentMethodProvider } from '@/components/content/orders/forms'
 import { AddressInputField } from '@/components/input-fields'
-import { Box, Container, Grid, Radio, Typography, styled } from '@mui/material'
+import { Box, Card, CardContent, Container, FormControlLabel, FormLabel, Grid, Radio, Typography, styled } from '@mui/material'
 import { useFormContext } from 'react-hook-form'
 
 
@@ -56,10 +56,15 @@ export function PaymentMethodStep() {
       <Box display="flex" flexDirection="column" gap={3}>
         <Typography variant="h3">Payment Method</Typography>
 
-        <Box display="flex" flexDirection="column" gap={1}>
-          <Typography>Choose the billing address</Typography>
-          <AddressInputField fieldName='billingAddressId' updateField />
-        </Box>
+        <Card>
+          <CardContent>
+            <Box display="flex" flexDirection="column" gap={2}>
+              {/* TODO: Form label */}
+              <FormLabel>Choose the billing address</FormLabel>
+              <AddressInputField fieldName='billingAddressId' updateField />
+              </Box>
+          </CardContent>
+        </Card>
 
         <Box display="flex" flexDirection="column" gap={1}>
           <Typography>Select the payment method</Typography>

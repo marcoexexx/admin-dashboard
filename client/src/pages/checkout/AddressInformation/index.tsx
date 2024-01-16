@@ -1,4 +1,4 @@
-import { Box, Container, Radio, Typography, styled } from "@mui/material";
+import { Box, Card, CardContent, Container, Radio, Typography, styled } from "@mui/material";
 import { AddressInputField } from "@/components/input-fields";
 import { CreateOrderInput, OrderAddressType } from "@/components/content/orders/forms";
 import { PickupAddressForm } from "./PickupAddressForm";
@@ -88,8 +88,12 @@ export default function AddressInformationStep() {
           </Box>
         </Box>
 
-        {addressType === "delivery" ? <AddressInputField updateField fieldName="deliveryAddressId" /> : null}
-        {addressType === "pickup" ? <PickupAddressForm /> : null}
+        <Card>
+          <CardContent>
+            {addressType === "delivery" ? <AddressInputField updateField fieldName="deliveryAddressId" /> : null}
+            {addressType === "pickup" ? <PickupAddressForm /> : null}
+          </CardContent>
+        </Card>
       </Box>
     </Container>
   )

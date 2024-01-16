@@ -297,7 +297,7 @@ export function CheckoutForm() {
           </FormProvider>}
       </Grid>
 
-      <Grid item md={3} xs={12}>
+      <Grid item md={4.8} xs={12}>
         <OrderSummary />
       </Grid>
 

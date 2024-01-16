@@ -1,7 +1,7 @@
+import getConfig from "@/libs/getConfig";
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
-import getConfig from "@/libs/getConfig";
 import { CheckoutForm } from './CheckoutForm';
 
 
