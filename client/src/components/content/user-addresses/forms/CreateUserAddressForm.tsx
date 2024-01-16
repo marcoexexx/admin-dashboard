@@ -9,7 +9,8 @@ import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { createUserAddressFn } from "@/services/userAddressApi";
 import { useEffect } from "react";
-import { RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
+import { EditorInputField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const createUserAddressSchema = object({
@@ -19,7 +20,8 @@ const createUserAddressSchema = object({
   email: string({ required_error: "email is required" }).email(),
   regionId: string({ required_error: "region is required" }),
   townshipFeesId: string({ required_error: "township is required" }),
-  fullAddress: string({ required_error: "fullAddress is required" }).max(128),
+  fullAddress: string({ required_error: "fullAddress is required" }).min(1).max(128),
+  remark: string().optional()
 })
 
 export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>
@@ -44,12 +46,14 @@ export function CreateUserAddressForm() {
       queryClient.invalidateQueries({
         queryKey: ["user-addresses"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 
@@ -125,6 +129,7 @@ export function CreateUserAddressForm() {
           </Grid>
 
           <Grid item xs={12}>
+            <EditorInputField fieldName="remark" />
             <FormControlLabel
               label="Set as default address"
               control={<Switch

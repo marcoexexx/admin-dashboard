@@ -26,11 +26,17 @@ export async function getUserAddressesHandler(
       region,
       township,
       fullAddress,
+      remark
     } = filter || { status: undefined }
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
       { page: 1, pageSize: 10 }
 
     const offset = (page - 1) * pageSize
+
+    // @ts-ignore  for mocha testing
+    const user = req.user
+
+    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
 
     const [count, userAddresses] = await db.$transaction([
       db.userAddress.count(),
@@ -38,12 +44,14 @@ export async function getUserAddressesHandler(
         where: {
           id,
           username,
+          userId: user.id,
           isDefault,
           phone,
           email,
           region: { name: region },
           township: { name: township },
-          fullAddress
+          fullAddress,
+          remark
         },
         include,
         orderBy,
@@ -94,7 +102,7 @@ export async function createUserAddressHandler(
   next: NextFunction
 ) {
   try {
-    const { username, isDefault, phone, email,  regionId, townshipFeesId, fullAddress } = req.body
+    const { username, isDefault, phone, email,  regionId, townshipFeesId, fullAddress, remark } = req.body
 
     // @ts-ignore  for mocha testing
     const user = req.user
@@ -110,7 +118,8 @@ export async function createUserAddressHandler(
         regionId,
         townshipFeesId,
         userId: user.id,
-        fullAddress
+        fullAddress,
+        remark
       },
     })
 

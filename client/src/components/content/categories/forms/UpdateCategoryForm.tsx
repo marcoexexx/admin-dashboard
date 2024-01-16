@@ -9,6 +9,7 @@ import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
 import { getCategoryFn, updateCategoryFn } from "@/services/categoryApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 const updateCategorySchema = object({
   name: string()
@@ -49,12 +50,14 @@ export function UpdateCategoryForm() {
       queryClient.invalidateQueries({
         queryKey: ["categories"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

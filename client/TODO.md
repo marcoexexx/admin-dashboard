@@ -13,6 +13,8 @@
  - ## IMPORTANT
  - [ ] item code
  - [ ] check filter forms
+ - [ ] useraddress add remark
+ - [ ] nullish coalescing operator :: localStorage data
 
  - [ ] user detail :: relation
  - [ ] product list & detail :: relation

@@ -9,6 +9,7 @@ import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { DatePickerField, ProductInputField } from "@/components/input-fields";
 import { createCouponFn } from "@/services/couponsApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const createCouponSchema = object({
@@ -45,12 +46,14 @@ export function CreateCouponForm() {
       queryClient.invalidateQueries({
         queryKey: ["coupons"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

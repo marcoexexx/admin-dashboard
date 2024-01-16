@@ -11,6 +11,7 @@ import { createExchangeFn } from "@/services/exchangesApi";
 import { DatePickerField } from "@/components/input-fields";
 
 import { priceUnit } from '@/components/content/products/forms'
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const createExchangeSchema = object({
@@ -43,12 +44,14 @@ export function CreateExchangeForm() {
       queryClient.invalidateQueries({
         queryKey: ["exchanges"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

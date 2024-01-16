@@ -4,6 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { deleteMultiUserAddressesFn, deleteUserAddressFn, getUserAddressesFn } from "@/services/userAddressApi";
 import { UserAddressesListTable } from ".";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 export function UserAddressesList() {
@@ -30,6 +31,7 @@ export function UserAddressesList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -40,6 +42,7 @@ export function UserAddressesList() {
       queryClient.invalidateQueries({
         queryKey: ["user-addresses"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -52,6 +55,7 @@ export function UserAddressesList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -62,6 +66,7 @@ export function UserAddressesList() {
       queryClient.invalidateQueries({
         queryKey: ["user-addresses"]
       })
+      playSoundEffect("success")
     }
   })
 

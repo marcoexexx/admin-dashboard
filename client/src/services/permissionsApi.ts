@@ -82,6 +82,14 @@ export async function getExchangePermissionsFn(opt: QueryOptionArgs) {
 }
 
 
+export async function getPotentialOrderPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/potential-orders", {
+    ...opt,
+  })
+  return data
+}
+
+
 export async function getOrderPermissionsFn(opt: QueryOptionArgs) {
   const { data } = await authApi.get<PermissionsResponse>("/permissions/orders", {
     ...opt,

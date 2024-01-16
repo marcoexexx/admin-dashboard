@@ -4,6 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { BrandsListTable } from "@/components/content/brands";
 import { createMultiBrandsFn, deleteBrandFn, deleteMultiBrandsFn, getBrandsFn } from "@/services/brandsApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 export function BrandsList() {
@@ -31,6 +32,7 @@ export function BrandsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -41,6 +43,7 @@ export function BrandsList() {
       queryClient.invalidateQueries({
         queryKey: ["brands"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -53,6 +56,7 @@ export function BrandsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -63,6 +67,7 @@ export function BrandsList() {
       queryClient.invalidateQueries({
         queryKey: ["brands"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -75,6 +80,7 @@ export function BrandsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -85,6 +91,7 @@ export function BrandsList() {
       queryClient.invalidateQueries({
         queryKey: ["brands"]
       })
+      playSoundEffect("success")
     }
   })
 

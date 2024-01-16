@@ -15,6 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getExchangesFn } from "@/services/exchangesApi";
 import { useEffect } from "react";
 import { priceUnit, productStatus, productStockStatus } from ".";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const updateProductSchema = object({
@@ -93,12 +94,14 @@ export function UpdateProductForm() {
       queryClient.invalidateQueries({
         queryKey: ["products"]
       })
+      playSoundEffect("success")
     },
     onError: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "failed created a new product.",
         severity: "error"
       } })
+      playSoundEffect("error")
     }
   })
 

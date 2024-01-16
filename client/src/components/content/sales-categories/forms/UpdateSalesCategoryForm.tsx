@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { queryClient } from "@/components";
 import { useEffect } from "react";
 import { getSalesCategoryFn, updateSalesCategoryFn } from "@/services/salesCategoryApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const updateSalesCategorySchema = object({
@@ -63,11 +64,13 @@ export function UpdateSalesCategoryForm() {
       queryClient.invalidateQueries({
         queryKey: ["sales-categories"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error" } })
+      playSoundEffect("error")
     },
   })
 

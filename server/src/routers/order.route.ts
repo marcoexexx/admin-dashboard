@@ -4,7 +4,7 @@ import { requiredUser } from "../middleware/requiredUser";
 import { permissionUser } from "../middleware/permissionUser";
 import { validate } from "../middleware/validate";
 import { orderPermission } from "../utils/auth/permissions";
-import { createOrderHandler, deleteMultiOrdersHandler, deleteOrderHandler, getOrderHandler, getOrdersHandler, updateOrderHandler } from "../controllers/order.controller";
+import { deleteMultiOrdersHandler, deleteOrderHandler, getOrderHandler, getOrdersHandler, updateOrderHandler } from "../controllers/order.controller";
 import { createOrderSchema, deleteMultiOrdersSchema, getOrderSchema, updateOrderSchema } from "../schemas/order.schema";
 
 

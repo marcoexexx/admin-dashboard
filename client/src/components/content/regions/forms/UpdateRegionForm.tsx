@@ -12,6 +12,7 @@ import { getRegionFn, updateRegionFn } from "@/services/regionsApi";
 import { FormModal } from "@/components/forms";
 import { TownshipMultiInputField } from "@/components/input-fields";
 import { CreateTownshipForm } from "../../townships/forms";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const updateRegionSchema = object({
@@ -54,12 +55,14 @@ export function UpdateRegionForm() {
       queryClient.invalidateQueries({
         queryKey: ["regions"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

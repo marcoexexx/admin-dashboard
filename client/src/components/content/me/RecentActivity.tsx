@@ -21,8 +21,8 @@ interface RecentActivityProps {
 export function RecentActivity({user}: RecentActivityProps) {
   const theme = useTheme()
 
-  const orderTotal = user._count.order
-  const orderCancelled = user.order.filter(order => order.status === "Cancelled").length
+  const orderTotal = user._count.orders
+  const orderCancelled = user.orders.filter(order => order.status === "Cancelled").length
 
   const favoriteProducts = user._count.favorites
   const createdProducts = user._count.createdProducts

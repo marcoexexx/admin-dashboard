@@ -4,6 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { CategoriesListTable } from "@/components/content/categories";
 import { createMultiCategorisFn, deleteCategoryFn, deleteMultiCategoriesFn, getCategoriesFn } from "@/services/categoryApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 export function CategoriesList() {
@@ -31,6 +32,7 @@ export function CategoriesList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -41,6 +43,7 @@ export function CategoriesList() {
       queryClient.invalidateQueries({
         queryKey: ["categories"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -53,6 +56,7 @@ export function CategoriesList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -63,6 +67,7 @@ export function CategoriesList() {
       queryClient.invalidateQueries({
         queryKey: ["categories"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -75,6 +80,7 @@ export function CategoriesList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -85,6 +91,7 @@ export function CategoriesList() {
       queryClient.invalidateQueries({
         queryKey: ["categories"]
       })
+      playSoundEffect("success")
     }
   })
 

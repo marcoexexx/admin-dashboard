@@ -9,6 +9,7 @@ import { createCategoryFn } from "@/services/categoryApi";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
+import { playSoundEffect } from "@/libs/playSound";
 
 const createCategorySchema = object({
   name: string({ required_error: "Category name is required" })
@@ -37,12 +38,14 @@ export function CreateCategoryForm() {
       queryClient.invalidateQueries({
         queryKey: ["categories"]
       })
+      playSoundEffect("success")
     },
     onError: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "failed created a new category.",
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

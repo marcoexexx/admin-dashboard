@@ -11,6 +11,7 @@ import { DatePickerField, ProductInputField } from "@/components/input-fields";
 import { useEffect } from "react";
 import dayjs from "dayjs";
 import { getCouponFn, updateCouponFn } from "@/services/couponsApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const updateCouponSchema = object({
@@ -60,12 +61,14 @@ export function UpdateCouponForm() {
       queryClient.invalidateQueries({
         queryKey: ["coupons"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

@@ -88,6 +88,7 @@ export default function HeaderUserBox() {
   }
 
   const handleOpenCart = () => {
+    setIsOpen(false)
     dispatch({
       type: "OPEN_MODAL_FORM",
       payload: "cart"
@@ -110,21 +111,26 @@ export default function HeaderUserBox() {
 
   return (
     <>
-      <UserBoxButton color="secondary" ref={ref} onClick={handleOpen}>
-        <Avatar variant="rounded" alt={user.name} src={user.image} />
-        <Hidden mdDown>
-          <UserBoxText>
-            <UserBoxLabel>{user.name}</UserBoxLabel>
-            <UserBoxDescription variant="body2">
-              {user.role}
-            </UserBoxDescription>
-          </UserBoxText>
-        </Hidden>
+      <Badge badgeContent={cartsCount} color="primary" anchorOrigin={{
+        vertical: "top",
+        horizontal: "right"
+      }}>
+        <UserBoxButton color="secondary" ref={ref} onClick={handleOpen}>
+          <Avatar variant="rounded" alt={user.name} src={user.image} />
+          <Hidden mdDown>
+            <UserBoxText>
+              <UserBoxLabel>{user.name}</UserBoxLabel>
+              <UserBoxDescription variant="body2">
+                {user.role}
+              </UserBoxDescription>
+            </UserBoxText>
+          </Hidden>
 
-        <Hidden smDown>
-          <ExpandMoreTwoToneIcon sx={{ ml: 1 }} />
-        </Hidden>
-      </UserBoxButton>
+          <Hidden smDown>
+            <ExpandMoreTwoToneIcon sx={{ ml: 1 }} />
+          </Hidden>
+        </UserBoxButton>
+      </Badge>
 
       <Popover
         anchorEl={ref.current}

@@ -28,6 +28,7 @@ export type Store = {
       | "sales-categories"
       | "region"
       | "townships"
+      | "addresses"
 
       | "update-product"  // Only for on publish product
       | "delete-product"
@@ -54,6 +55,9 @@ export type Store = {
       | "delete-user-address"
       | "delete-user-address-multi"
 
+      | "delete-potential-order"
+      | "delete-potential-order-multi"
+
       | "delete-region"
       | "delete-region-multi"
 
@@ -64,6 +68,12 @@ export type Store = {
   slidebar: boolean
   local: Local
   accessLogFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default",
+  },
+  potentialOrderFilter?: {
     fields?: any,
     page?: number,
     limit?: number,
@@ -169,6 +179,11 @@ export type Store = {
       _count?: boolean
     }
   }
+}
+
+interface PotentialOrderFilterActions {
+  type: "SET_POTENTIAL_ORDER_FILTER",
+  payload: Store["potentialOrderFilter"]
 }
 
 interface UserAddressFilterActions {
@@ -286,6 +301,7 @@ type Action =
   | SlidebarToggleActions
   | SlidebarCloseActions
 
+  | PotentialOrderFilterActions
   | UserAddressFilterActions
   | TownshipFilterActions
   | AccessLogFilterActions
@@ -322,6 +338,11 @@ const initialState: Store = {
     state: false
   },
   accessLogFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default",
+  },
+  potentialOrderFilter: {
     page: 1,
     limit: 10,
     mode: "default",
@@ -466,6 +487,13 @@ const stateReducer = (state: Store, action: Action): Store => {
     case "SET_USER_FILTER": {
       return { ...state, userFilter: {
         ...state.userFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_POTENTIAL_ORDER_FILTER": {
+      return { ...state, potentialOrderFilter: {
+        ...state.potentialOrderFilter,
         ...action.payload
       } }
     }

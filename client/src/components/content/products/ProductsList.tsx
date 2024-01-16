@@ -8,6 +8,7 @@ import { ProductsListTable } from ".";
 
 import { ProductStatus } from "./forms";
 import { Product, UserResponse } from "@/services/types";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 interface ProductStatusContext {
@@ -95,6 +96,7 @@ export function ProductsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -105,6 +107,7 @@ export function ProductsList() {
       queryClient.invalidateQueries({
         queryKey: ["products"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -117,6 +120,7 @@ export function ProductsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -127,6 +131,7 @@ export function ProductsList() {
       queryClient.invalidateQueries({
         queryKey: ["products"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -139,6 +144,7 @@ export function ProductsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -149,6 +155,7 @@ export function ProductsList() {
       queryClient.invalidateQueries({
         queryKey: ["products"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -161,6 +168,7 @@ export function ProductsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -171,6 +179,7 @@ export function ProductsList() {
       queryClient.invalidateQueries({
         queryKey: ["products"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -189,8 +198,6 @@ export function ProductsList() {
   function handleChangeStatusProduct(product: Product, status: ProductStatus) {
     try {
       const safedStatus = getProductStatusConcrate[product.status](status)
-
-      console.log({ sp: product.salesCategory })
 
       statusChangeProduct({ id: product.id, product: {
         ...product,
@@ -213,6 +220,7 @@ export function ProductsList() {
           severity: "warning"
         }
       })
+      playSoundEffect("denied")
     }
   }
 

@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { getExchangesFn } from "@/services/exchangesApi";
 import { useEffect } from "react";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 export const productStockStatus = ["Available", "OutOfStock", "AskForStock", "Discontinued"] as const
@@ -73,12 +74,14 @@ export function CreateProductForm() {
       queryClient.invalidateQueries({
         queryKey: ["products"]
       })
+      playSoundEffect("success")
     },
     onError: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "failed created a new product.",
         severity: "error"
       } })
+      playSoundEffect("error")
     }
   })
 

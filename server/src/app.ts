@@ -22,13 +22,11 @@ import AppError, { errorHandler } from './utils/appError'
 import redisClient from './utils/connectRedis'
 
 import authRouter from './routers/auth.route'
-import orderRouter from './routers/order.route'
 import meRouter from './routers/me.route'
 import permissionRouter from './routers/permission.route'
 import exchangeRouter from './routers/exchange.route'
 import couponRouter from './routers/coupon.route'
 import userRouter from './routers/user.route'
-import accessLogRouter from './routers/accessLog.route'
 import productRouter from './routers/product.route'
 import brandRouter from './routers/brand.route'
 import categoryRouter from './routers/category.route'
@@ -36,6 +34,11 @@ import salesCategoryRouter from './routers/salesCategory.route'
 import regionRouter from './routers/region.route'
 import townshipRouter from './routers/township.route'
 import userAddressRouter from './routers/userAddress.route'
+
+import orderRouter from './routers/order.route'
+import potentialOrderRouter from './routers/potentialOrder.route'
+
+import accessLogRouter from './routers/accessLog.route'
 
 import helmet from 'helmet';
 import useragent from 'express-useragent';
@@ -101,6 +104,7 @@ app.get("/healthcheck", async (_: Request, res: Response, next: NextFunction) =>
 
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/orders", orderRouter)
+app.use("/api/v1/potential-orders", potentialOrderRouter)
 app.use("/api/v1/me", meRouter)
 app.use("/api/v1/permissions", permissionRouter)
 app.use("/api/v1/exchanges", exchangeRouter)

@@ -12,6 +12,7 @@ import ThumbUpAltTwoToneIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUp';
 import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const CardActionsWrapper = styled(CardActions)(({theme}) => ({
@@ -44,6 +45,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       queryClient.invalidateQueries({
         queryKey: ["products"]
       })
+      playSoundEffect("success")
     },
     onError(err: any) {
       dispatch({
@@ -53,6 +55,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
           severity: "success"
         }
       })
+      playSoundEffect("error")
     }
   })
 
@@ -69,6 +72,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       queryClient.invalidateQueries({
         queryKey: ["products"]
       })
+      playSoundEffect("success")
     },
     onError(err: any) {
       dispatch({
@@ -78,6 +82,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
           severity: "success"
         }
       })
+      playSoundEffect("error")
     }
   })
 
@@ -96,6 +101,11 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
     const payload = get<OrderItem[]>("CARTS") ?? []
 
     set("CARTS", [...payload, newPayload])
+
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: "cart"
+    })
   }
 
   const likedTotal = product._count.likedUsers

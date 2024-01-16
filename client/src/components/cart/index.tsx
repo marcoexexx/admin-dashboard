@@ -1,6 +1,9 @@
 import { Container, Grid, Typography } from "@mui/material"
 import { CartsTable } from "./CartsTable"
 import { OrderItem } from "@/services/types"
+import { MuiButton } from "../ui"
+import { useNavigate } from "react-router-dom"
+import { useStore } from "@/hooks"
 
 
 interface CartsProps {
@@ -11,6 +14,16 @@ interface CartsProps {
 export function Carts(props: CartsProps) {
   const { orderItems } = props
 
+  const { dispatch } = useStore()
+
+  const navigate = useNavigate()
+
+  const handleNavigate = () => {
+    dispatch({ type: "CLOSE_MODAL_FORM", payload: "cart" })
+    navigate("/checkout")
+  }
+
+
   return (
     <Container>
       <Grid container justifyContent="space-between" alignItems="center" rowGap={3}>
@@ -20,7 +33,7 @@ export function Carts(props: CartsProps) {
         </Grid>
 
         <Grid item xs={6}>
-          <Typography variant="h3" component="h3" gutterBottom>Summary</Typography>
+          <MuiButton onClick={handleNavigate}>Checkout</MuiButton>
         </Grid>
       </Grid>
     </Container>

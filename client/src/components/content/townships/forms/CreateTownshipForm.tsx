@@ -9,6 +9,7 @@ import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
 import { createTownshipFn } from "@/services/TownshipsApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const createTownshipSchema = object({
@@ -39,12 +40,14 @@ export function CreateTownshipForm() {
       queryClient.invalidateQueries({
         queryKey: ["townships"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

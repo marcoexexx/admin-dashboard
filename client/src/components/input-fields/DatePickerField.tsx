@@ -8,15 +8,17 @@ interface DatePickerFieldProps {
 }
 
 export function DatePickerField({fieldName, required}: DatePickerFieldProps) {
-  const { control, formState: {errors} } = useFormContext()
+  const { control } = useFormContext()
 
   return (
     <Controller
       defaultValue={null}
       control={control}
       name={fieldName}
-      render={({field}) => (
+      render={({field, fieldState}) => (
         <DateTimePicker
+          sx={{ width: "100%" }}
+          defaultValue={field.value}
           label={fieldName}
           value={field.value}
           inputRef={field.ref}
@@ -26,8 +28,8 @@ export function DatePickerField({fieldName, required}: DatePickerFieldProps) {
           slotProps={{
             textField: {
               required: !!required,
-              error: !!errors[fieldName],
-              helperText: errors[fieldName]?.message?.toString() || ""
+              error: !!fieldState.error,
+              helperText: fieldState.error ? fieldState.error.message : ""
             }
           }}
         />

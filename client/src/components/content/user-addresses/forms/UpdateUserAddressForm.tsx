@@ -9,17 +9,19 @@ import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
 import { getUserAddressFn, updateUserAddressFn } from "@/services/userAddressApi";
-import { RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
+import { EditorInputField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const updateUserAddressSchema = object({
   isDefault: boolean().default(false),
   username: string({ required_error: "Name (username) is required" }),
   phone: string({ required_error: "phone is required" }).min(9).max(12),
-  email: string({ required_error: "email is required" }).email(),
+  email: string().email().optional(),
   regionId: string({ required_error: "region is required" }),
   townshipFeesId: string({ required_error: "township is required" }),
   fullAddress: string({ required_error: "fullAddress is required" }).max(128),
+  remark: string().optional()
 })
 
 export type UpdateUserAddressInput = z.infer<typeof updateUserAddressSchema>
@@ -56,12 +58,14 @@ export function UpdateUserAddressForm() {
       queryClient.invalidateQueries({
         queryKey: ["user-addresses"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 
@@ -75,6 +79,7 @@ export function UpdateUserAddressForm() {
       methods.setValue("phone", userAddress.phone)
       methods.setValue("email", userAddress.email)
       methods.setValue("fullAddress", userAddress.fullAddress)
+      methods.setValue("remark", userAddress.remark)
       methods.setValue("isDefault", userAddress.isDefault)
 
       if (userAddress.regionId) methods.setValue("regionId", userAddress.regionId)
@@ -149,6 +154,7 @@ export function UpdateUserAddressForm() {
           </Grid>
 
           <Grid item xs={12}>
+            <EditorInputField fieldName="remark" />
             <FormControlLabel
               label="Set as default address"
               control={<Switch

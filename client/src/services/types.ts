@@ -1,4 +1,5 @@
-import { OrderStatus } from "@/components/content/orders/forms"
+import { OrderStatus, PaymentMethodProvider } from "@/components/content/orders/forms"
+import { PotentialOrderStatus } from "@/components/content/potential-orders/forms"
 import { PriceUnit, ProductStatus, ProductStockStatus } from "@/components/content/products/forms"
 
 
@@ -68,10 +69,10 @@ export type OrderItem = {
   price: number
   totalPrice: number
   quantity: number
+  productId: string
 
   // relationship
   product?: Product
-  productId?: string
   order?: Order
   orderId?: string
 
@@ -80,15 +81,44 @@ export type OrderItem = {
 }
 
 
-export type Order = {
+export type PotentialOrder = {
   id: string
-  orderItems: OrderItem[]
+  status: PotentialOrderStatus
+  remark?: string
 
   // relationship
-  userId?: string
   user?: User
-  // orderItems?: OrderItem[]
-  status?: OrderStatus
+  userId?: string
+  orderItems?: OrderItem[]
+  deliveryAddress?: Address
+  deliveryAddressId?: string
+  pickupAddress?: PickupAddress
+  pickupAddressId?: string
+  billingAddress?: Address
+  billingAddressId?: string
+  paymentMethodProvider: PaymentMethodProvider
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+export type Order = {
+  id: string
+  status: OrderStatus
+  remark?: string
+
+  // relationship
+  user?: User
+  userId?: string
+  orderItems?: OrderItem[]
+  deliveryAddress?: Address
+  deliveryAddressId?: string
+  pickupAddress?: PickupAddress
+  pickupAddressId?: string
+  billingAddress?: Address
+  billingAddressId?: string
+  paymentMethodProvider: PaymentMethodProvider
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -337,13 +367,29 @@ export type PermissionsResponse = {
 }
 
 
+export type PickupAddress = {
+  id: string,
+  username: string
+  phone: string
+  email?: string
+  date: string | Date
+
+  orders?: Order[]
+  potentialOrders?: PotentialOrder[]
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
 export type Address = {
   id: string,
   isDefault: boolean
   username: string
   phone: string
-  email: string
+  email?: string
   fullAddress: string
+  remark?: string
 
   // relationship
   userId?: string
@@ -374,13 +420,13 @@ export type Review = {
 
 // TODO: User profile
 export type UserProfile = User & {
-  order: Order[],
+  orders: Order[],
   favorites: Product[],
   addresses: Address[],
   reviews: Review[],
   _count: {
     favorites: number,
-    order: number,
+    orders: number,
     createdProducts: number
     reviews: number,
     accessLogs: number,
@@ -445,3 +491,5 @@ export type RegionResponse = Omit<HttpResponse, "message"> & { region: Region };
 export type ExchangeResponse = Omit<HttpResponse, "message"> & { exchange: Exchange };
 
 export type UserAddressResponse = Omit<HttpResponse, "message"> & { userAddress: Address };
+
+export type PotentialOrderResponse = Omit<HttpResponse, "message"> & { potentialOrder: PotentialOrder };
