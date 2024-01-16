@@ -15,6 +15,7 @@
  - [ ] check filter forms
  - [ ] useraddress add remark
  - [ ] nullish coalescing operator :: localStorage data
+ - [ ] editor text input-fields :: border
 
  - [ ] user detail :: relation
  - [ ] product list & detail :: relation
