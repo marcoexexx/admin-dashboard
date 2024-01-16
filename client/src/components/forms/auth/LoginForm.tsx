@@ -11,6 +11,7 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
 import { PasswordInputField } from "@/components/input-fields"
 import { LoadingButton } from "@mui/lab"
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { playSoundEffect } from "@/libs/playSound"
 
 export const MuiTextFieldWrapper = styled(TextField)(({theme}) => ({
   '& .MuiOutlinedInput-root': {
@@ -64,12 +65,14 @@ export function LoginForm() {
         severity: "success"
       } })
       navigate(from)
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `Failed login: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     }
   })
 

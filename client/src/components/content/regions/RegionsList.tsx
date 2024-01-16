@@ -4,6 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { createMultiRegionsFn, deleteMultiRegionsFn, deleteRegionFn, getRegionsFn } from "@/services/regionsApi";
 import { RegionsListTable } from ".";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 export function RegionsList() {
@@ -34,6 +35,7 @@ export function RegionsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -44,6 +46,7 @@ export function RegionsList() {
       queryClient.invalidateQueries({
         queryKey: ["regions"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -56,6 +59,7 @@ export function RegionsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -66,6 +70,7 @@ export function RegionsList() {
       queryClient.invalidateQueries({
         queryKey: ["regions"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -78,6 +83,7 @@ export function RegionsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -88,11 +94,12 @@ export function RegionsList() {
       queryClient.invalidateQueries({
         queryKey: ["regions"]
       })
+      playSoundEffect("success")
     }
   })
 
 
-  if (isError && error) return <h1>ERROR: {JSON.stringify(error)}</h1>
+  if (isError && error) return <h1>ERROR: {error.message}</h1>
 
   if (!data || isLoading) return <SuspenseLoader />
 

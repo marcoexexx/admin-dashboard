@@ -9,6 +9,7 @@ import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
 import { getBrandFn, updateBrandFn } from "@/services/brandsApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 const updateBrandSchema = object({
   name: string()
@@ -50,12 +51,14 @@ export function UpdateBrandForm() {
         // queryKey: ["brands", { id: brandId }],
         queryKey: ["brands"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

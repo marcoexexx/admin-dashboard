@@ -4,6 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { createMultiSalesCategorisFn, deleteMultiSalesCategoriesFn, deleteSalesCategoryFn, getSalesCategoriesFn } from "@/services/salesCategoryApi";
 import { SalesCategoriesListTable } from "./SalesCategoriesListTable";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 export function SalesCategoriesList() {
@@ -34,6 +35,7 @@ export function SalesCategoriesList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -44,6 +46,7 @@ export function SalesCategoriesList() {
       queryClient.invalidateQueries({
         queryKey: ["sales-categories"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -56,6 +59,7 @@ export function SalesCategoriesList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -66,6 +70,7 @@ export function SalesCategoriesList() {
       queryClient.invalidateQueries({
         queryKey: ["sales-categories"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -78,6 +83,7 @@ export function SalesCategoriesList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -88,6 +94,7 @@ export function SalesCategoriesList() {
       queryClient.invalidateQueries({
         queryKey: ["sales-categories"]
       })
+      playSoundEffect("success")
     }
   })
 

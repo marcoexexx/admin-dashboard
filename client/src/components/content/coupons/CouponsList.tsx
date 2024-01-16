@@ -4,6 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { CouponsListTable } from ".";
 import { createMultiCouponsFn, deleteCouponFn, deleteMultiCouponsFn, getCouponsFn } from "@/services/couponsApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 export function CouponsList() {
@@ -34,6 +35,7 @@ export function CouponsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -44,6 +46,7 @@ export function CouponsList() {
       queryClient.invalidateQueries({
         queryKey: ["coupons"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -56,6 +59,7 @@ export function CouponsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -66,6 +70,7 @@ export function CouponsList() {
       queryClient.invalidateQueries({
         queryKey: ["coupons"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -78,6 +83,7 @@ export function CouponsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -88,6 +94,7 @@ export function CouponsList() {
       queryClient.invalidateQueries({
         queryKey: ["coupons"]
       })
+      playSoundEffect("success")
     }
   })
 

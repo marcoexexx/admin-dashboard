@@ -10,6 +10,7 @@ import { MuiTextFieldWrapper } from "."
 import { PasswordInputField } from "@/components/input-fields"
 import { LoadingButton } from "@mui/lab"
 import AccountCircleIcon from "@mui/icons-material/AccountCircle"
+import { playSoundEffect } from "@/libs/playSound"
 
 const registerUserSchema = object({
   name: string({ required_error: "Username is required" })
@@ -47,12 +48,14 @@ export function RegisterForm() {
       } })
       if (import.meta.env.MODE === "development") console.log({ _devOnly: { redirectUrl: data.redirectUrl } })
       navigate(from)
+      playSoundEffect("success")
     },
     onError: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Failed create an acount.",
         severity: "error"
       } })
+      playSoundEffect("error")
     }
   })
 

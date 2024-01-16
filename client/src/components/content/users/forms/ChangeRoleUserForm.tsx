@@ -9,6 +9,7 @@ import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
 import { changeRoleUserFn, getUserFn } from "@/services/usersApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const userRoles = ["Admin", "User", "Shopowner"]
@@ -52,12 +53,14 @@ export function ChangeRoleUserForm() {
       queryClient.invalidateQueries({
         queryKey: ["users"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

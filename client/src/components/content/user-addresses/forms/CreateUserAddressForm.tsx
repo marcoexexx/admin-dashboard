@@ -10,6 +10,7 @@ import { MuiButton } from "@/components/ui";
 import { createUserAddressFn } from "@/services/userAddressApi";
 import { useEffect } from "react";
 import { RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const createUserAddressSchema = object({
@@ -44,12 +45,14 @@ export function CreateUserAddressForm() {
       queryClient.invalidateQueries({
         queryKey: ["user-addresses"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

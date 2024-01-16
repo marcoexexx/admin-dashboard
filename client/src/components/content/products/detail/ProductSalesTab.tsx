@@ -9,6 +9,7 @@ import { FormModal } from "@/components/forms"
 import { useState } from "react"
 import { ProductSalesCategoriesResponse } from "@/services/types"
 import { MuiButton } from "@/components/ui"
+import { playSoundEffect } from "@/libs/playSound"
 
 
 interface ProductSalesTabProps {
@@ -52,7 +53,18 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
           severity: "success"
         }
       })
-    }
+      playSoundEffect("success")
+    },
+    onError: () => {
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: "Error delete sale",
+          severity: "error"
+        }
+      })
+      playSoundEffect("error")
+    },
   })
 
   const handleOnCloseModalForm = () => {

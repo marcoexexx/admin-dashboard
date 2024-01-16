@@ -10,6 +10,7 @@ import { useStore } from "@/hooks";
 import { queryClient } from "@/components";
 import { createProductSaleCategory, updateProductSaleCategoryFn } from "@/services/productsApi";
 import { useEffect } from "react";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const createProductSalesCategorySchema = object({
@@ -46,12 +47,14 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
       })
       setDefaultValues(undefined)
       methods.reset()
+      playSoundEffect("success")
     },
     onError: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "failed created a new sales category.",
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 
@@ -70,12 +73,14 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
       })
       setDefaultValues(undefined)
       methods.reset()
+      playSoundEffect("success")
     },
     onError: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "failed updated a new sales category.",
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

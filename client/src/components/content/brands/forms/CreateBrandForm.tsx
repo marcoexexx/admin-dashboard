@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
+import { playSoundEffect } from "@/libs/playSound";
 
 const createBrandSchema = object({
   name: string({ required_error: "Brand name is required" })
@@ -37,12 +38,14 @@ export function CreateBrandForm() {
       queryClient.invalidateQueries({
         queryKey: ["brands"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 

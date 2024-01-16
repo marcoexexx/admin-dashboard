@@ -4,6 +4,7 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { createMultiTownshipsFn, deleteMultiTownshipsFn, deleteTownshipFn, getTownshipsFn } from "@/services/TownshipsApi";
 import { TownshipsListTable } from ".";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 export function TownshipsList() {
@@ -34,6 +35,7 @@ export function TownshipsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -44,6 +46,7 @@ export function TownshipsList() {
       queryClient.invalidateQueries({
         queryKey: ["townships"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -56,6 +59,7 @@ export function TownshipsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -66,6 +70,7 @@ export function TownshipsList() {
       queryClient.invalidateQueries({
         queryKey: ["townships"]
       })
+      playSoundEffect("success")
     }
   })
 
@@ -78,6 +83,7 @@ export function TownshipsList() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -88,6 +94,7 @@ export function TownshipsList() {
       queryClient.invalidateQueries({
         queryKey: ["townships"]
       })
+      playSoundEffect("success")
     }
   })
 

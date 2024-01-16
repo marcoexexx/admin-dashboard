@@ -15,6 +15,7 @@ import { Product, User } from "@/services/types";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const productStatus: {
@@ -136,13 +137,16 @@ export function ProductsListTable(props: ProductsListTableProps) {
 
   const handleUpdateAction = (product: Product) => (_: React.MouseEvent<HTMLButtonElement>) => {
     if (product.status === "Draft") navigate(`/products/update/${product.id}`)
-    else dispatch({
-      type: "OPEN_TOAST",
-      payload: {
-        message: "Warning: only `Draft` state can edit!",
-        severity: "warning"
-      }
-    })
+    else {
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: "Warning: only `Draft` state can edit!",
+          severity: "warning"
+        }
+      })
+      playSoundEffect("denied")
+    }
   }
 
   const handleClickDeleteAction = (product: Product) => (_: React.MouseEvent<HTMLButtonElement>) => {
@@ -153,13 +157,16 @@ export function ProductsListTable(props: ProductsListTableProps) {
         payload: "delete-product"
       })
     }
-    else dispatch({
-      type: "OPEN_TOAST",
-      payload: {
-        message: "Warning: only `Draft` state can delete!",
-        severity: "warning"
-      }
-    })
+    else {
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: "Warning: only `Draft` state can delete!",
+          severity: "warning"
+        }
+      })
+      playSoundEffect("denied")
+    }
   }
 
   const handleOnExport = () => {

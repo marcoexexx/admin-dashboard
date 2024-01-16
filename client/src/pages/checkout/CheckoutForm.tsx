@@ -19,6 +19,7 @@ import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
 
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -105,24 +106,27 @@ export function CheckoutForm() {
 
   const {
     mutate: createOrder,
-    isPending
+    isPending,
+    isSuccess
   } = useMutation({
     mutationFn: async (value: CreateOrderInput) => new Promise(resolve => setTimeout(() => resolve(console.log({ saved: {value}})), 3000)),
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new brand.",
+        message: "Success created a new Order.",
         severity: "success"
       } })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
         queryKey: ["orders"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 
@@ -158,6 +162,11 @@ export function CheckoutForm() {
   }, [methods.watch()])
 
 
+  useEffect(() => {
+    if (isConfirmed && isSuccess) setActiveStepIdx(prev => prev += 1)
+  }, [isConfirmed, isSuccess])
+
+
   const onSubmit: SubmitHandler<CreateOrderInput> = (value) => {
     createOrder(value)
   }
@@ -168,7 +177,7 @@ export function CheckoutForm() {
 
     if (idx === 0) {
       if (addressType === "delivery" && !errors.deliveryAddressId && deliveryAddressId) return true
-      if (addressType === "pickup" && !errors.pickupAddress && pickupAddress.username && pickupAddress.phone && pickupAddress.date) return true
+      if (addressType === "pickup" && pickupAddress && !errors.pickupAddress && pickupAddress.username && pickupAddress.phone && pickupAddress.date) return true
     }
 
     if (idx === 1) {
@@ -176,9 +185,7 @@ export function CheckoutForm() {
       if (!errors.paymentMethodProvider && paymentMethodProvider) return true
     }
 
-    if (idx == 2) {
-      console.log("Confirm", { errors })
-    }
+    if (idx == 2) return false
 
     return false
   }
@@ -232,12 +239,12 @@ export function CheckoutForm() {
                 : null}
 
               <Box mt={2} display="flex" flexDirection="row" alignItems="center" justifyContent="flex-start" gap={1}>
-                <MuiButton disabled={activeStepIdx === 0} onClick={handleBackStep} variant="outlined">
+                <MuiButton disabled={activeStepIdx === 0} onClick={handleBackStep} variant="text">
                   Back
                 </MuiButton>
                 {isLastStep 
-                  ? <MuiButton onClick={handleNextStep} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton> 
-                  : <MuiButton onClick={handleNextStep} type="submit" variant="outlined">Continue</MuiButton>}
+                  ? <MuiButton onClick={handleNextStep} loading={isPending} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton> 
+                  : <MuiButton onClick={handleNextStep} type={activeStepIdx === 0 ? "submit" : "button"} variant="outlined">Continue</MuiButton>}
               </Box>
             </Box>
           </FormProvider>}

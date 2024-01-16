@@ -12,6 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { queryClient } from "@/components";
 import { useEffect } from "react";
 import { priceUnit } from "../../products/forms";
+import { playSoundEffect } from "@/libs/playSound";
 
 
 const updateExchangeSchema = object({
@@ -56,12 +57,14 @@ export function UpdateExchangeForm() {
       queryClient.invalidateQueries({
         queryKey: ["exchanges"]
       })
+      playSoundEffect("success")
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      playSoundEffect("error")
     },
   })
 
