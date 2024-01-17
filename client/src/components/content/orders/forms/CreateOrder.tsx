@@ -48,7 +48,7 @@ export type CreateOrderInput = z.infer<typeof createOrderSchema>
 export interface CreateOrderProps {
 }
 
-export function CreateOrder(props: CreateOrderProps) {
+export function CreateOrderForm(props: CreateOrderProps) {
   const {} = props
   return <></>
 }

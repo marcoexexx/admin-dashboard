@@ -2,12 +2,11 @@ import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { useNavigate } from 'react-router-dom'
 import { Container, Grid, Typography } from "@mui/material"
-import { usePermission } from "@/hooks";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import { MuiButton } from "@/components/ui";
+import { usePermission } from "@/hooks"; import { MiniAccessDenied } from "@/components/MiniAccessDenied"; import { MuiButton } from "@/components/ui";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import getConfig from "@/libs/getConfig";
 import { getOrderPermissionsFn } from '@/services/permissionsApi';
+import { OrdersList } from '@/components/content/orders';
 
 
 const appName = getConfig("appName")
@@ -67,7 +66,7 @@ export default function ListOrder() {
       ? <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>
-              {"<OrdersList />"}
+              <OrdersList />
             </Grid>
           </Grid>
         </Container>

@@ -6,7 +6,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, OrderFilterPagination, UpdateOrderInput } from '../schemas/order.schema';
+import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, OrderFilterPagination, UpdateOrderInput } from "../schemas/order.schema";
 
 
 export async function getOrdersHandler(
@@ -19,7 +19,9 @@ export async function getOrdersHandler(
     const include = convertStringToBoolean(includes) as OrderFilterPagination["include"]
     const {
       id,
+      status,
       startDate,
+      remark,
       endDate
     } = filter || { status: undefined }
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
@@ -32,10 +34,12 @@ export async function getOrdersHandler(
       db.order.findMany({
         where: {
           id,
-          createdAt: {
+          updatedAt: {
             gte: startDate,
             lte: endDate
-          }
+          },
+          status,
+          remark,
         },
         orderBy,
         skip: offset,
@@ -81,31 +85,43 @@ export async function getOrderHandler(
 
 
 export async function createOrderHandler(
-  res: Response,
   req: Request<{}, {}, CreateOrderInput>,
+  res: Response,
   next: NextFunction
 ) {
   try {
-    const { orderItems } = req.body
+    const { orderItems, addressType, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
 
     // @ts-ignore  for mocha testing
-    const user = req.user
+    const userId: string | undefined = req.user?.id || undefined
 
-    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
-
-    // const order = await db.order.create({
-    //   data: {}
-    // })
-
-    // TODO: remove
-    const order = {}
+    const order = await db.order.create({
+      data: {
+        addressType,
+        orderItems: {
+          create: orderItems.map(item => ({
+            productId: item.productId,
+            price: item.price,
+            quantity: item.quantity,
+            totalPrice: item.totalPrice
+          }))
+        },
+        userId,
+        status,
+        deliveryAddressId,
+        billingAddressId,
+        pickupAddressId,
+        paymentMethodProvider,
+        remark,
+      },
+    })
 
     res.status(201).json(HttpDataResponse({ order }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
 
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Order already exists"))
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "order already exists"))
 
     next(new AppError(500, msg))
   }
@@ -121,15 +137,14 @@ export async function deleteOrderHandler(
     const { orderId } = req.params
     
     await db.$transaction([
-      // TODO: need remove pickup address
-      
       db.orderItem.deleteMany({
         where: {
+          // TODO: Must test
           orderId
         }
       }),
 
-      db.order.delete({
+      db.potentialOrder.delete({
         where: {
           id: orderId
         }
@@ -154,7 +169,14 @@ export async function deleteMultiOrdersHandler(
     const { orderIds } = req.body
 
     await db.$transaction([
-      // TODO: need remove pickup address
+      db.orderItem.deleteMany({
+        where: {
+          // TODO: Must test
+          orderId: {
+            in: orderIds
+          }
+        }
+      }),
 
       db.order.deleteMany({
         where: {
@@ -198,6 +220,13 @@ export async function updateOrderHandler(
           orderItems: {
             create: data.orderItems
           },
+          addressType: data.addressType,
+          status: data.status,
+          deliveryAddressId: data.deliveryAddressId,
+          billingAddressId: data.billingAddressId,
+          pickupAddressId: data.pickupAddressId,
+          paymentMethodProvider: data.paymentMethodProvider,
+          remark: data.remark,
         }
       })
     ])
@@ -209,4 +238,3 @@ export async function updateOrderHandler(
     next(new AppError(500, msg))
   }
 }
-

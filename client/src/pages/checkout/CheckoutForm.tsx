@@ -24,6 +24,7 @@ import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
 
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
+import { createOrderFn } from "@/services/orderApi";
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -114,7 +115,7 @@ export function CheckoutForm() {
     isPending: isPendingMutationOrder,
     isSuccess: isSuccessMutationOrder
   } = useMutation({
-    mutationFn: async (value: CreateOrderInput) => new Promise(resolve => setTimeout(() => resolve(console.log({ saved: {value}})), 3000)),
+    mutationFn: createOrderFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success created a new Order.",

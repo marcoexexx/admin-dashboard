@@ -91,7 +91,6 @@ export async function createPotentialOrderHandler(
 ) {
   try {
     const { id, orderItems, addressType, deliveryAddressId, billingAddressId, pickupAddress, status, paymentMethodProvider, remark } = req.body
-    console.log(req.body)
 
     // @ts-ignore  for mocha testing
     const userId: string | undefined = req.user?.id || undefined
@@ -244,10 +243,12 @@ export async function updatePotentialOrderHandler(
             create: data.orderItems
           },
           userId,
+          addressType: data.addressType,
           status: data.status,
           deliveryAddressId: data.deliveryAddressId,
           billingAddressId: data.billingAddressId,
-          paymentMethodProvider: data.paymentMethodProvider
+          paymentMethodProvider: data.paymentMethodProvider,
+          remark: data.remark
         }
       })
     ])

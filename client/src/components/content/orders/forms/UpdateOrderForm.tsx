@@ -1,6 +1,5 @@
 import { number, object, string, z } from "zod";
-import { potentialOrderStatus } from ".";
-import { orderAddressType } from "../../orders/forms";
+import { orderAddressType, orderStatus } from "../../orders/forms";
 
 
 const paymentMethodProvider = [
@@ -15,15 +14,14 @@ const paymentMethodProvider = [
 ] as const
 
 
-const updatePotentialOrderSchema = object({
-  id: string().optional(),
-  status: z.enum(potentialOrderStatus).default("Processing"),
+const updateOrderSchema = object({
   orderItems: object({
     price: number(),
     totalPrice: number(),
     quantity: number(),
     productId: string(),
   }).array(),
+  status: z.enum(orderStatus).default("Pending"),
   deliveryAddressId: string().optional(),
   pickupAddress: object({
     username: string({ required_error: "username is required" }),
@@ -34,18 +32,19 @@ const updatePotentialOrderSchema = object({
   billingAddressId: string({ required_error: "billingAddressId is required" }),
   paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
   remark: string().optional(),
+
   addressType: z.enum(orderAddressType, { required_error: "Order address type is required" })
 })
 
-export type UpdatePotentialOrderInput = z.infer<typeof updatePotentialOrderSchema>
+export type UpdateOrderInput = z.infer<typeof updateOrderSchema>
 
-export interface UpdatePotentialOrderProps {}
+export interface UpdateOrderProps {}
 
 
 /**
  * not support yet
  */
-export function UpdatePotentialOrderForm(props: UpdatePotentialOrderProps) {
+export function UpdateOrderForm(props: UpdateOrderProps) {
   const {} = props
   return "not support yet!"
 }
