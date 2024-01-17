@@ -100,7 +100,7 @@ export function OrdersListTable(props: OrdersListTableProps) {
   }
 
   const handleClickUpdateAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/potential-orders/update/${brandId}`)
+    navigate(`/orders/update/${brandId}`)
   }
 
   const handleOnExport = () => {

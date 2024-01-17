@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { getOrderPermissionsFn } from '@/services/permissionsApi';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import getConfig from "@/libs/getConfig";
+import { UpdatePotentialOrderForm } from '@/components/content/potential-orders/forms';
 
 
 const appName = getConfig("appName")
@@ -58,7 +59,7 @@ export default function UpdatePotentialOrder() {
             <Grid item xs={12} md={8}>
               <Card>
                 <CardContent>
-                  {"<UpdateOrderForm />"}
+                  <UpdatePotentialOrderForm />
                 </CardContent>
               </Card>
             </Grid>
