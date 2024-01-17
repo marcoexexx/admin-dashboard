@@ -212,7 +212,10 @@ export function CheckoutForm() {
 
 
   useEffect(() => {
-    if (isConfirmed && isSuccessMutationOrder) setActiveStepIdx(prev => prev += 1)
+    if (isConfirmed && isSuccessMutationOrder) {
+      setActiveStepIdx(prev => prev += 1)
+      set("PICKUP_FORM", undefined)
+    }
   }, [isConfirmed, isSuccessMutationOrder])
 
 

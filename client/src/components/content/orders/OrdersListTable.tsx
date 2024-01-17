@@ -290,10 +290,10 @@ export function OrdersListTable(props: OrdersListTableProps) {
         />
       </Box>
 
-      {modalForm.field === "delete-potential-order"
+      {modalForm.field === "delete-order"
       ? <FormModal
-        field="delete-potential-order"
-        title="Delete potential order"
+        field="delete-order"
+        title="Delete order"
         onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>

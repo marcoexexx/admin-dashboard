@@ -144,7 +144,7 @@ export async function deleteOrderHandler(
         }
       }),
 
-      db.potentialOrder.delete({
+      db.order.delete({
         where: {
           id: orderId
         }
