@@ -4,6 +4,7 @@ import { paymentMethodProvider } from "./order.schema";
 
 
 export const potentialOrderStatus = ["Processing", "Confimed", "Cancelled"] as const
+const potentialOrderAddressType = ["Delivery", "Pickup"] as const
 
 
 export type PotentialOrderFilterPagination = {
@@ -22,22 +23,27 @@ const params = {
   })
 }
 
-const orderItem = object({
-  price: number(),
-  totalPrice: number(),
-  quantity: number(),
-  productId: string(),
-})
-
 export const createPotentialOrderSchema = object({
   body: object({
-    orderItems: orderItem.array().min(1),
+    id: string().optional(),
+    orderItems: object({
+      price: number(),
+      totalPrice: number(),
+      quantity: number(),
+      productId: string(),
+    }).array(),
     status: z.enum(potentialOrderStatus).default("Processing"),
-    remark: string().optional(),
     deliveryAddressId: string().optional(),
-    pickupAddressId: string().optional(),
+    addressType: z.enum(potentialOrderAddressType),
+    pickupAddress: object({
+      username: string({ required_error: "username is required" }),
+      phone: string({ required_error: "phone number is required" }),
+      email: string().optional(),
+      date: string({ required_error: "date is required" }).default((new Date()).toISOString())
+    }).optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
-    paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethod is required" })
+    paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+    remark: string().optional()
   })
 })
 
@@ -50,13 +56,25 @@ export const getPotentialOrderSchema = object({
 export const updatePotentialOrderSchema = object({
   ...params,
   body: object({
-    orderItems: orderItem.array().min(1),
-    remark: string().optional(),
+    id: string().optional(),
+    orderItems: object({
+      price: number(),
+      totalPrice: number(),
+      quantity: number(),
+      productId: string(),
+    }).array(),
     status: z.enum(potentialOrderStatus).default("Processing"),
+    addressType: z.enum(potentialOrderAddressType),
     deliveryAddressId: string().optional(),
-    pickupAddressId: string().optional(),
+    pickupAddress: object({
+      username: string({ required_error: "username is required" }),
+      phone: string({ required_error: "phone number is required" }),
+      email: string().optional(),
+      date: string({ required_error: "date is required" }).default((new Date()).toISOString())
+    }).optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
-    paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethod is required" })
+    paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+    remark: string().optional()
   })
 })
 

@@ -323,6 +323,11 @@ enum PaymentMethodProvider {
   BankTransfer
 }
 
+enum AddressType {
+  Delivery
+  Pickup
+}
+
 // Admin team only
 model PotentialOrder {
   id         String               @id @default(auto()) @map("_id") @db.ObjectId
@@ -330,6 +335,8 @@ model PotentialOrder {
   userId     String?              @db.ObjectId
   orderItems OrderItem[]
   status     PotentialOrderStatus @default(Processing)
+
+  addressType AddressType
 
   deliveryAddress       UserAddress?          @relation("deliveryAddress", fields: [deliveryAddressId], references: [id])
   deliveryAddressId     String?               @db.ObjectId
@@ -350,6 +357,8 @@ model Order {
   userId     String?     @db.ObjectId
   orderItems OrderItem[]
   status     OrderStatus @default(Pending)
+
+  addressType AddressType
 
   deliveryAddress       UserAddress?          @relation("deliveryAddress", fields: [deliveryAddressId], references: [id])
   deliveryAddressId     String?               @db.ObjectId

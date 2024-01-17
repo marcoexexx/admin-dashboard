@@ -90,13 +90,22 @@ export async function createPotentialOrderHandler(
   next: NextFunction
 ) {
   try {
-    const { orderItems, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
+    const { id, orderItems, addressType, deliveryAddressId, billingAddressId, pickupAddress, status, paymentMethodProvider, remark } = req.body
+    console.log(req.body)
 
     // @ts-ignore  for mocha testing
     const userId: string | undefined = req.user?.id || undefined
 
-    const potentialOrder = await db.potentialOrder.create({
-      data: {
+    const newPickupAddress = pickupAddress ? await db.pickupAddress.create({
+      data: pickupAddress
+    }) : undefined
+
+    const potentialOrder = await db.potentialOrder.upsert({
+      where: {
+        id
+      },
+      create: {
+        addressType,
         orderItems: {
           create: orderItems.map(item => ({
             productId: item.productId,
@@ -109,7 +118,17 @@ export async function createPotentialOrderHandler(
         status,
         deliveryAddressId,
         billingAddressId,
-        pickupAddressId,
+        pickupAddressId: newPickupAddress?.id,
+        paymentMethodProvider,
+      },
+      update: {
+        addressType,
+        // WARN: order items not affected
+        userId,
+        status,
+        deliveryAddressId,
+        billingAddressId,
+        pickupAddressId: newPickupAddress?.id,
         paymentMethodProvider,
         remark
       }
@@ -138,7 +157,9 @@ export async function deletePotentialOrderHandler(
     await db.$transaction([
       db.orderItem.deleteMany({
         where: {
-          potentialOrderId
+          // TODO: Must test
+          orderId: undefined,
+          potentialOrderId,
         }
       }),
 
@@ -165,13 +186,26 @@ export async function deleteMultiPotentialOrdersHandler(
 ) {
   try {
     const { potentialOrderIds } = req.body
-    await db.potentialOrder.deleteMany({
-      where: {
-        id: {
-          in: potentialOrderIds
+
+    await db.$transaction([
+      db.orderItem.deleteMany({
+        where: {
+          // TODO: Must test
+          orderId: undefined,
+          potentialOrderId: {
+            in: potentialOrderIds
+          }
         }
-      }
-    })
+      }),
+
+      db.potentialOrder.deleteMany({
+        where: {
+          id: {
+            in: potentialOrderIds
+          }
+        }
+      })
+    ])
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
   } catch (err: any) {
@@ -213,7 +247,6 @@ export async function updatePotentialOrderHandler(
           status: data.status,
           deliveryAddressId: data.deliveryAddressId,
           billingAddressId: data.billingAddressId,
-          pickupAddressId: data.pickupAddressId,
           paymentMethodProvider: data.paymentMethodProvider
         }
       })

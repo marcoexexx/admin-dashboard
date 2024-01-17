@@ -1,4 +1,5 @@
 import { number, object, string, z } from "zod";
+import { orderAddressType } from "../../orders/forms";
 
 
 export const potentialOrderStatus = ["Processing", "Confimed", "Cancelled"] as const
@@ -15,22 +16,27 @@ const paymentMethodProvider = [
   "BankTransfer",
 ] as const
 
-const potentialOrderItem = object({
-  price: number(),
-  totalPrice: number(),
-  quantity: number(),
-  productId: string(),
-})
-
 
 const createPotentialOrderSchema = object({
-  orderItems: potentialOrderItem.array().min(1),
+  id: string().optional(),
   status: z.enum(potentialOrderStatus).default("Processing"),
+  orderItems: object({
+    price: number(),
+    totalPrice: number(),
+    quantity: number(),
+    productId: string(),
+  }).array(),
   deliveryAddressId: string().optional(),
-  pickupAddressId: string().optional(),
+  pickupAddress: object({
+    username: string({ required_error: "username is required" }),
+    phone: string({ required_error: "phone number is required" }),
+    email: string().optional(),
+    date: z.any()
+  }).optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
-  paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethod is required" }),
-  remark: string().optional()
+  paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+  remark: string().optional(),
+  addressType: z.enum(orderAddressType, { required_error: "Order address type is required" })
 })
 
 export type CreatePotentialOrderInput = z.infer<typeof createPotentialOrderSchema>

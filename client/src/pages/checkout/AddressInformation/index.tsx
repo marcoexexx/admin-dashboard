@@ -23,7 +23,7 @@ const SelectionCardWrapper = styled(Box)<{ active: "true" | "false" }>(({ theme,
 export default function AddressInformationStep() {
   const { getValues, setValue } = useFormContext<CreateOrderInput>()
 
-  const addressType = getValues("addressType") || "delivery"
+  const addressType: CreateOrderInput["addressType"] = getValues("addressType") || "Delivery"
 
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function AddressInformationStep() {
         <Box display="flex" flexDirection="column" gap={1}>
           <Typography>Choose the option</Typography>
           <Box display="flex" flexDirection="row" gap={1}>
-            <SelectionCardWrapper active={addressType === "delivery" ? "true" : "false"} onClick={handleChangeAddressType("delivery")}>
+            <SelectionCardWrapper active={addressType === "Delivery" ? "true" : "false"} onClick={handleChangeAddressType("Delivery")}>
               <Box 
                 ml={2}
                 component="img"
@@ -58,14 +58,14 @@ export default function AddressInformationStep() {
               <Typography variant="h3">Delivery</Typography>
               <Radio 
                 sx={{ alignSelf: "start" }}
-                checked={addressType === "delivery"}
+                checked={addressType === "Delivery"}
                 value="delivery"
                 name="delivery"
                 inputProps={{ "aria-label": "Delivery" }}
               />
             </SelectionCardWrapper>
 
-            <SelectionCardWrapper active={addressType === "pickup" ? "true" : "false"} onClick={handleChangeAddressType("pickup")}>
+            <SelectionCardWrapper active={addressType === "Pickup" ? "true" : "false"} onClick={handleChangeAddressType("Pickup")}>
               <Box 
                 ml={2}
                 component="img"
@@ -79,7 +79,7 @@ export default function AddressInformationStep() {
               <Typography variant="h3">Pickup</Typography>
               <Radio 
                 sx={{ alignSelf: "start" }}
-                checked={addressType === "pickup"}
+                checked={addressType === "Pickup"}
                 value="pickup"
                 name="pickup"
                 inputProps={{ "aria-label": "Pickup" }}
@@ -90,8 +90,8 @@ export default function AddressInformationStep() {
 
         <Card>
           <CardContent>
-            {addressType === "delivery" ? <AddressInputField updateField fieldName="deliveryAddressId" /> : null}
-            {addressType === "pickup" ? <PickupAddressForm /> : null}
+            {addressType === "Delivery" ? <AddressInputField updateField fieldName="deliveryAddressId" /> : null}
+            {addressType === "Pickup" ? <PickupAddressForm /> : null}
           </CardContent>
         </Card>
       </Box>

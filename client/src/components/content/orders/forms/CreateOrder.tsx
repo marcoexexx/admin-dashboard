@@ -1,7 +1,7 @@
 import { number, object, string, z } from "zod";
 
 
-export const orderAddressType = ["delivery", "pickup"] as const
+export const orderAddressType = ["Delivery", "Pickup"] as const
 export type OrderAddressType = typeof orderAddressType[number]
 
 export const orderStatus = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"] as const

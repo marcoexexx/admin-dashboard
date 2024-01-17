@@ -139,7 +139,7 @@ export function CheckoutForm() {
     mutationFn: createPotentialOrderFn,
     onSuccess: (response) => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new Potential order.",
+        message: "Success created or updated a new Potential order.",
         severity: "success"
       } })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
@@ -183,7 +183,7 @@ export function CheckoutForm() {
       if (values.createdPotentialOrderId) setValue("createdPotentialOrderId", values.createdPotentialOrderId)
     }
 
-    setValue("addressType", values?.addressType || "delivery")
+    setValue("addressType", values?.addressType || "Delivery")
   }, [])
 
 
@@ -210,8 +210,8 @@ export function CheckoutForm() {
     const { addressType, deliveryAddressId, pickupAddress, billingAddressId, paymentMethodProvider } = getValues()
 
     if (idx === 0) {
-      if (addressType === "delivery" && !errors.deliveryAddressId && deliveryAddressId) return true
-      if (addressType === "pickup" && pickupAddress && !errors.pickupAddress && pickupAddress.username && pickupAddress.phone && pickupAddress.date) return true
+      if (addressType === "Delivery" && !errors.deliveryAddressId && deliveryAddressId) return true
+      if (addressType === "Pickup" && pickupAddress && !errors.pickupAddress && pickupAddress.username && pickupAddress.phone && pickupAddress.date) return true
     }
 
     if (idx === 1) {
@@ -230,30 +230,36 @@ export function CheckoutForm() {
 
     // Check address type and clean necessary field
     if (activeStepIdx === 1) {
-      if (value.addressType === "pickup") {
+      if (value.addressType === "Pickup") {
         setValue("deliveryAddressId", undefined)
       }
-      if (value.addressType === "delivery") setValue("pickupAddress", undefined)
+      if (value.addressType === "Delivery") setValue("pickupAddress", undefined)
     }
 
     // Create potential order if it's not creeated
-    if (activeStepIdx === 1 && !value.createdPotentialOrderId) {
+    if (activeStepIdx === 1) {
       let payload: CreatePotentialOrderInput = {
+        id: value.createdPotentialOrderId,
         orderItems: value.orderItems,
         billingAddressId: value.billingAddressId,
         paymentMethodProvider: value.paymentMethodProvider,
-        status: "Processing"
+        status: "Processing",
+        addressType: value.addressType
       }
+
+      // check address type and add their address data
+      if (value.addressType === "Delivery") payload.deliveryAddressId = value.deliveryAddressId
+      else if (value.addressType === "Pickup") payload.pickupAddress = value.pickupAddress
 
       createPotentialOrder(payload)
     }
-    console.log(value)
 
     if (checkValidCurrentStepForm(activeStepIdx)) setActiveStepIdx(prev => prev + 1)
   }
 
   const handleConfirmOrder = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { target } = evt
+    console.log(getValues())
 
     setIsConfirmed(target.checked)
   }

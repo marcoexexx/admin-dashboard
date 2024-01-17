@@ -5,6 +5,9 @@ import { Container, Grid, Typography } from "@mui/material"
 import { CheckoutForm } from './CheckoutForm';
 
 
+// TODO: Update pickup form :: feature
+
+
 const appName = getConfig("appName")
 
 export default function Checkout() {

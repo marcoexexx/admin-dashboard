@@ -121,6 +121,8 @@ export async function deleteOrderHandler(
     const { orderId } = req.params
     
     await db.$transaction([
+      // TODO: need remove pickup address
+      
       db.orderItem.deleteMany({
         where: {
           orderId
@@ -150,13 +152,18 @@ export async function deleteMultiOrdersHandler(
 ) {
   try {
     const { orderIds } = req.body
-    await db.order.deleteMany({
-      where: {
-        id: {
-          in: orderIds
+
+    await db.$transaction([
+      // TODO: need remove pickup address
+
+      db.order.deleteMany({
+        where: {
+          id: {
+            in: orderIds
+          }
         }
-      }
-    })
+      })
+    ])
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
   } catch (err: any) {

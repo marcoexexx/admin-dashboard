@@ -78,14 +78,14 @@ export function CheckoutOrderConfirmation() {
   return (
     <Container maxWidth="lg">
       <Box display="flex" flexDirection="column" gap={3}>
-        {addressType === "delivery"
+        {addressType === "Delivery"
           ? <Box display="flex" flexDirection="column" gap={1}>
               <Typography variant="h3">Delivery address</Typography>
               <DeliveryAddressDetailCard deliveryAddress={deliveryAddress} />
             </Box>
           : null}
 
-        {addressType === "pickup" 
+        {addressType === "Pickup" 
           ? <Box display="flex" flexDirection="column" gap={1}>
               <Typography variant="h3">Pickup address</Typography>
               <PickupAddressDetailCard />
