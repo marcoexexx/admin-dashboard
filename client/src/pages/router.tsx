@@ -137,11 +137,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/potential-orders/list" />
+                Component: ListPotentialOrderPage
               },
               {
                 path: "list",
-                Component: ListPotentialOrderPage
+                element: <Navigate to="/potential-orders" />
               },
               {
                 path: "",
@@ -167,11 +167,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/addresses/list" />
+                Component: ListUserAddressPage
               },
               {
                 path: "list",
-                Component: ListUserAddressPage
+                element: <Navigate to="/addresses" />
               },
               {
                 path: "",
@@ -197,11 +197,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/townships/list" />
+                Component: ListTownshipPage
               },
               {
                 path: "list",
-                Component: ListTownshipPage
+                element: <Navigate to="/townships" />
               },
               {
                 path: "",
@@ -227,11 +227,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/regions/list" />
+                Component: ListRegionPage
               },
               {
                 path: "list",
-                Component: ListRegionPage
+                element: <Navigate to="/regions" />
               },
               {
                 path: "",
@@ -257,11 +257,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/orders/list" />
+                Component: ListOrderPage
               },
               {
                 path: "list",
-                Component: ListOrderPage
+                element: <Navigate to="/orders" />
               },
               {
                 path: "",
@@ -287,11 +287,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/coupons/list" />
+                Component: ListCouponPage
               },
               {
                 path: "list",
-                Component: ListCouponPage
+                element: <Navigate to="/coupons" />
               },
               {
                 path: "",
@@ -317,11 +317,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/exchanges/list" />
+                Component: ListExchangePage
               },
               {
                 path: "list",
-                Component: ListExchangePage
+                element: <Navigate to="/exchanges" />
               },
               {
                 path: "",
@@ -348,11 +348,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/brands/list" />
+                Component: ListUserPage
               },
               {
                 path: "list",
-                Component: ListUserPage
+                element: <Navigate to="/brands" />
               },
               {
                 path: "change-role/:userId",
@@ -375,11 +375,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/brands/list" />
+                Component: ListBrandPage
               },
               {
                 path: "list",
-                Component: ListBrandPage
+                element: <Navigate to="/brands" />
               },
               {
                 path: "",
@@ -405,11 +405,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/sales-categories/list" />
+                Component: ListSalesCategoryPage
               },
               {
                 path: "list",
-                Component: ListSalesCategoryPage
+                element: <Navigate to="/sales-categories" />
               },
               {
                 path: "",
@@ -435,11 +435,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/categories/list" />
+                Component: ListCategoryPage
               },
               {
                 path: "list",
-                Component: ListCategoryPage
+                element: <Navigate to="/categories" />
               },
               {
                 path: "",
@@ -465,11 +465,11 @@ const routes = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="/products/list" />
+                Component: ListProductPage
               },
               {
                 path: "list",
-                Component: ListProductPage
+                element: <Navigate to="/products" />
               },
               {
                 path: "detail/:productId",
