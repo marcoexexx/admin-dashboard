@@ -137,7 +137,7 @@ export function CheckoutForm() {
     isPending: isPendingMutationPotentialOrder,
   } = useMutation({
     mutationFn: createPotentialOrderFn,
-    onSuccess: () => {
+    onSuccess: (response) => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success created a new Potential order.",
         severity: "success"
@@ -147,6 +147,7 @@ export function CheckoutForm() {
         queryKey: ["potential-orders"]
       })
       playSoundEffect("success")
+      setValue("createdPotentialOrderId", response.potentialOrder.id)
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -179,6 +180,7 @@ export function CheckoutForm() {
       if (values.deliveryAddressId) setValue("deliveryAddressId", values.deliveryAddressId)
       if (values.billingAddressId) setValue("billingAddressId", values.billingAddressId)
       if (values.paymentMethodProvider) setValue("paymentMethodProvider", values.paymentMethodProvider)
+      if (values.createdPotentialOrderId) setValue("createdPotentialOrderId", values.createdPotentialOrderId)
     }
 
     setValue("addressType", values?.addressType || "delivery")
@@ -224,10 +226,18 @@ export function CheckoutForm() {
   }
 
   const handleNextStep = (_: React.MouseEvent<HTMLButtonElement>) => {
-    // Create potential order
-    if (activeStepIdx === 1) {
-      const value = getValues()
+    const value = getValues()
 
+    // Check address type and clean necessary field
+    if (activeStepIdx === 1) {
+      if (value.addressType === "pickup") {
+        setValue("deliveryAddressId", undefined)
+      }
+      if (value.addressType === "delivery") setValue("pickupAddress", undefined)
+    }
+
+    // Create potential order if it's not creeated
+    if (activeStepIdx === 1 && !value.createdPotentialOrderId) {
       let payload: CreatePotentialOrderInput = {
         orderItems: value.orderItems,
         billingAddressId: value.billingAddressId,
@@ -237,6 +247,7 @@ export function CheckoutForm() {
 
       createPotentialOrder(payload)
     }
+    console.log(value)
 
     if (checkValidCurrentStepForm(activeStepIdx)) setActiveStepIdx(prev => prev + 1)
   }

@@ -39,6 +39,7 @@ export const createOrderSchema = object({
   paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
   remark: string().optional(),
 
+  createdPotentialOrderId: string().optional(),
   addressType: z.enum(orderAddressType, { required_error: "Order address type is required" })
 })
 
