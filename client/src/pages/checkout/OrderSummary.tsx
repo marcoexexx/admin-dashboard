@@ -1,17 +1,20 @@
 import { MuiButton } from "@/components/ui"
 import { useLocalStorage } from "@/hooks"
 import { OrderItem } from "@/services/types"
-import { Badge, Box, Card, CardContent, Container, Grid, Typography } from "@mui/material"
+import { Badge, Box, Card, CardContent, Container, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material"
 
 
-interface OrderSummaryProps {}
+interface OrderSummaryProps {
+  deliveryFee: number | undefined
+}
 
-export function OrderSummary({}: OrderSummaryProps) {
+export function OrderSummary({deliveryFee = 0}: OrderSummaryProps) {
   const { get } = useLocalStorage()
 
   const items = get<OrderItem[]>("CARTS") || []  // should not `0` or empty string. So, using `||`
 
   const itemCount = items.length
+  const totalAmount = items.reduce((total, item) => total + item.totalPrice, 0)
 
 
   return (
@@ -44,7 +47,38 @@ export function OrderSummary({}: OrderSummaryProps) {
               </Grid>
 
               <Grid item xs={4}>
-                <MuiButton size="large">View items</MuiButton>
+                <Box display="flex" justifyContent="end">
+                  <MuiButton size="large">View items</MuiButton>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Divider orientation="horizontal" sx={{ my: 1 }} />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TableContainer>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell>
+                          <Typography variant="h4">Subtotal ({itemCount} items)</Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          <Typography variant="h4">{new Intl.NumberFormat().format(totalAmount)} Ks</Typography>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>
+                          <Typography variant="h4">Delivery fee</Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          <Typography variant="h4">{new Intl.NumberFormat().format(deliveryFee)} Ks</Typography>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               </Grid>
             </Grid>
           </Box>

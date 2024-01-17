@@ -21,7 +21,7 @@ export async function getUserAddressesFn(opt: QueryOptionArgs, { filter, paginat
 
 export async function getUserAddressFn(opt: QueryOptionArgs, { userAddressId }: { userAddressId: string | undefined }) {
   if (!userAddressId) return
-  const { data } = await authApi.get<UserAddressResponse>(`/addresses/detail/${userAddressId}`, {
+  const { data } = await authApi.get<UserAddressResponse>(`/addresses/detail/${userAddressId}?include[township]=true`, {
     ...opt,
   })
   return data

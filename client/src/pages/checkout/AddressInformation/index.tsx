@@ -32,6 +32,8 @@ export default function AddressInformationStep() {
 
 
   const handleChangeAddressType = (addressType: OrderAddressType) => (_: React.MouseEvent<HTMLDivElement>) => {
+    if (addressType === "Delivery") setValue("pickupAddress", undefined)
+    if (addressType === "Pickup") setValue("deliveryAddressId", undefined)
     setValue("addressType", addressType)
   }
 
@@ -43,7 +45,7 @@ export default function AddressInformationStep() {
 
         <Box display="flex" flexDirection="column" gap={1}>
           <Typography>Choose the option</Typography>
-          <Box display="flex" flexDirection="row" gap={1}>
+          <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={1}>
             <SelectionCardWrapper active={addressType === "Delivery" ? "true" : "false"} onClick={handleChangeAddressType("Delivery")}>
               <Box 
                 ml={2}

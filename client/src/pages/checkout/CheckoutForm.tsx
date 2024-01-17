@@ -1,12 +1,15 @@
 import dayjs from "dayjs";
+import cryptoRandomString from 'crypto-random-string';
 
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/components";
 import { useLocalStorage, useStore } from "@/hooks";
 import { playSoundEffect } from "@/libs/playSound";
-import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel, Alert } from "@mui/material"
+import { createPotentialOrderFn } from "@/services/potentialOrdersApi";
+import { getUserAddressFn } from "@/services/userAddressApi";
+import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel, Alert, Hidden, Divider } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { Link as LinkRouter } from "react-router-dom";
 import { OrderSummary } from "./OrderSummary";
@@ -21,7 +24,6 @@ import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
 
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
-import { createPotentialOrderFn } from "@/services/potentialOrdersApi";
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -106,6 +108,7 @@ export function CheckoutForm() {
 
   const { set, get } = useLocalStorage()
 
+
   const {
     mutate: createOrder,
     isPending: isPendingMutationOrder,
@@ -169,6 +172,16 @@ export function CheckoutForm() {
   const errorMessage = `Invalid input: ${Object.keys(errors)} errors found!`
 
 
+  const {
+    data: deliveryFee,
+  } = useQuery({
+    enabled: !!getValues("deliveryAddressId"),
+    queryKey: ["user-addresses", { id: getValues("deliveryAddressId") } ],
+    queryFn: args => getUserAddressFn(args, { userAddressId: deliveryAddressId }),
+    select: data => data?.userAddress
+  })
+
+
   // Initialize values from localStorage
   useEffect(() => {
     const cartItems = get<OrderItem[]>("CARTS")
@@ -228,18 +241,10 @@ export function CheckoutForm() {
   const handleNextStep = (_: React.MouseEvent<HTMLButtonElement>) => {
     const value = getValues()
 
-    // Check address type and clean necessary field
-    if (activeStepIdx === 1) {
-      if (value.addressType === "Pickup") {
-        setValue("deliveryAddressId", undefined)
-      }
-      if (value.addressType === "Delivery") setValue("pickupAddress", undefined)
-    }
-
     // Create potential order if it's not creeated
     if (activeStepIdx === 1) {
       let payload: CreatePotentialOrderInput = {
-        id: value.createdPotentialOrderId,
+        id: value.createdPotentialOrderId || cryptoRandomString({ length: 24 }),
         orderItems: value.orderItems,
         billingAddressId: value.billingAddressId,
         paymentMethodProvider: value.paymentMethodProvider,
@@ -270,6 +275,8 @@ export function CheckoutForm() {
 
   const handleOnCloseModalForm = () => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
 
+  const deliveryAddressId = getValues("deliveryAddressId")
+
 
   return (
     <Grid container gap={2}>
@@ -283,7 +290,17 @@ export function CheckoutForm() {
         </Stepper>
       </Grid>
 
-      <Grid item md={7} xs={12}>
+      <Hidden lgUp>
+        <Grid item xs={12}>
+          <OrderSummary deliveryFee={deliveryFee?.township?.fees} />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Divider flexItem orientation="horizontal" sx={{ my: 1 }} />
+        </Grid>
+      </Hidden>
+
+      <Grid item md={12} lg={7}>
         {activeStepIdx === steps.length
         ? <h1>Success</h1>
         : <FormProvider  {...methods}>
@@ -314,10 +331,11 @@ export function CheckoutForm() {
           </FormProvider>}
       </Grid>
 
-      <Grid item md={4.8} xs={12}>
-        <OrderSummary />
-      </Grid>
-
+      <Hidden lgDown>
+        <Grid item lg={4.7}>
+          <OrderSummary deliveryFee={deliveryFee?.township?.fees} />
+        </Grid>
+      </Hidden>
 
       {modalForm.field === "addresses"
       ? <FormModal field='addresses' title='Create new address' onClose={handleOnCloseModalForm}>
