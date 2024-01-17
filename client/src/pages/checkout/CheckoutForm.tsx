@@ -11,7 +11,7 @@ import { createPotentialOrderFn } from "@/services/potentialOrdersApi";
 import { getUserAddressFn } from "@/services/userAddressApi";
 import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel, Alert, Hidden, Divider } from "@mui/material"
 import { MuiButton } from "@/components/ui";
-import { Link as LinkRouter } from "react-router-dom";
+import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import { OrderSummary } from "./OrderSummary";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { CreateOrderInput, createOrderSchema } from "@/components/content/orders/forms";
@@ -108,6 +108,8 @@ export function CheckoutForm() {
   const [isConfirmed, setIsConfirmed] = useState(false)
 
   const { set, get, remove } = useLocalStorage()
+
+  const navigate = useNavigate()
 
 
   const {
@@ -212,11 +214,7 @@ export function CheckoutForm() {
 
 
   useEffect(() => {
-    if (isConfirmed && isSuccessMutationOrder) {
-      setActiveStepIdx(prev => prev += 1)
-      remove("PICKUP_FORM")
-      remove("CARTS")
-    }
+    if (isConfirmed && isSuccessMutationOrder) setActiveStepIdx(prev => prev += 1)
   }, [isConfirmed, isSuccessMutationOrder])
 
 
@@ -269,7 +267,6 @@ export function CheckoutForm() {
 
   const handleConfirmOrder = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { target } = evt
-    console.log(getValues())
 
     setIsConfirmed(target.checked)
   }
@@ -281,6 +278,13 @@ export function CheckoutForm() {
   const handleOnCloseModalForm = () => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
 
   const deliveryAddressId = getValues("deliveryAddressId")
+
+  const handleGoHome = () => {
+    remove("PICKUP_FORM")
+    remove("CARTS")
+
+    navigate("/home")
+  }
 
 
   return (
@@ -307,7 +311,7 @@ export function CheckoutForm() {
 
       <Grid item md={12} lg={7}>
         {activeStepIdx === steps.length
-        ? <h1>Success</h1>
+        ? <MuiButton onClick={handleGoHome}>Home</MuiButton>
         : <FormProvider  {...methods}>
             <Box component="form" onSubmit={handleSubmit(onSubmit)}>
               <RenderStepper activeStepIdx={activeStepIdx} />
