@@ -107,7 +107,7 @@ export function CheckoutForm() {
   const [activeStepIdx, setActiveStepIdx] = useState(0)
   const [isConfirmed, setIsConfirmed] = useState(false)
 
-  const { set, get } = useLocalStorage()
+  const { set, get, remove } = useLocalStorage()
 
 
   const {
@@ -207,14 +207,15 @@ export function CheckoutForm() {
     let valuesUpdate = values
     const prevsValues = get<CreateOrderInput>("PICKUP_FORM")
 
-    set("PICKUP_FORM", { ...prevsValues, ...valuesUpdate });
+    if (prevsValues) set("PICKUP_FORM", { ...prevsValues, ...valuesUpdate });
   }, [watch()])
 
 
   useEffect(() => {
     if (isConfirmed && isSuccessMutationOrder) {
       setActiveStepIdx(prev => prev += 1)
-      set("PICKUP_FORM", undefined)
+      remove("PICKUP_FORM")
+      remove("CARTS")
     }
   }, [isConfirmed, isSuccessMutationOrder])
 
