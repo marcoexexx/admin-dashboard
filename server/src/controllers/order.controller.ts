@@ -22,6 +22,7 @@ export async function getOrdersHandler(
       status,
       startDate,
       remark,
+      totalPrice,
       endDate
     } = filter || { status: undefined }
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
@@ -39,6 +40,7 @@ export async function getOrdersHandler(
             lte: endDate
           },
           status,
+          totalPrice,
           remark,
         },
         orderBy,
@@ -90,7 +92,7 @@ export async function createOrderHandler(
   next: NextFunction
 ) {
   try {
-    const { orderItems, addressType, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
+    const { orderItems, totalPrice, addressType, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
 
     // @ts-ignore  for mocha testing
     const userId: string | undefined = req.user?.id || undefined
@@ -107,6 +109,7 @@ export async function createOrderHandler(
           }))
         },
         userId,
+        totalPrice,
         status,
         deliveryAddressId,
         billingAddressId,
@@ -220,6 +223,7 @@ export async function updateOrderHandler(
           orderItems: {
             create: data.orderItems
           },
+          totalPrice: data.totalPrice,
           addressType: data.addressType,
           status: data.status,
           deliveryAddressId: data.deliveryAddressId,

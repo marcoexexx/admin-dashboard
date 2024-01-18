@@ -29,6 +29,7 @@ export const createOrderSchema = object({
   }).array(),
   status: z.enum(orderStatus).default("Pending"),
   deliveryAddressId: string().optional(),
+  totalPrice: number().min(0),
   pickupAddress: object({
     username: string({ required_error: "username is required" }),
     phone: string({ required_error: "phone number is required" }),

@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import cryptoRandomString from 'crypto-random-string';
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/components";
@@ -9,6 +9,7 @@ import { useLocalStorage, useStore } from "@/hooks";
 import { playSoundEffect } from "@/libs/playSound";
 import { createPotentialOrderFn } from "@/services/potentialOrdersApi";
 import { getUserAddressFn } from "@/services/userAddressApi";
+import { createOrderFn } from "@/services/orderApi";
 import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel, Alert, Hidden, Divider } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
@@ -24,7 +25,6 @@ import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
 
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
-import { createOrderFn } from "@/services/orderApi";
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -101,6 +101,10 @@ function RenderStepper({activeStepIdx}: {activeStepIdx: number}) {
 }
 
 
+/**
+ * totalAmount is total price of in all order items     := orderItems.reduce((total, item) => total + item.totalPrice, 0)
+ * totalPrice is total price of order                   := totalAmount + deliveryFee
+ */
 export function CheckoutForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
@@ -110,6 +114,9 @@ export function CheckoutForm() {
   const { set, get, remove } = useLocalStorage()
 
   const navigate = useNavigate()
+
+  const cartItems = get<OrderItem[]>("CARTS") || []
+  const values = get<CreateOrderInput>("PICKUP_FORM")
 
 
   const {
@@ -177,6 +184,7 @@ export function CheckoutForm() {
 
   const {
     data: deliveryFee,
+    isSuccess: isSuccessDeliveryFee,
   } = useQuery({
     enabled: !!getValues("deliveryAddressId"),
     queryKey: ["user-addresses", { id: getValues("deliveryAddressId") } ],
@@ -185,11 +193,15 @@ export function CheckoutForm() {
   })
 
 
+  const totalAmount = useMemo(() => {
+    // Checked re-calculate, fixed ✅
+    console.log("re-calculate")
+    return cartItems.reduce((total, item) => total + item.totalPrice, 0)
+  }, [JSON.stringify(cartItems), getValues("addressType")])
+
+
   // Initialize values from localStorage
   useEffect(() => {
-    const cartItems = get<OrderItem[]>("CARTS")
-    const values = get<CreateOrderInput>("PICKUP_FORM")
-
     if (Array.isArray(cartItems) && cartItems.length) setValue("orderItems", cartItems.filter((cart) => !!cart.productId))
     if (values) {
       if (values.pickupAddress) setValue("pickupAddress", { ...values.pickupAddress, date: dayjs(values.pickupAddress.date) })
@@ -207,12 +219,21 @@ export function CheckoutForm() {
   useEffect(() => {
     const values = watch()
     let valuesUpdate = values
-    const prevsValues = get<CreateOrderInput>("PICKUP_FORM")
+    const prevsValues = get<CreateOrderInput>("PICKUP_FORM") || {}
 
-    if (prevsValues) set("PICKUP_FORM", { ...prevsValues, ...valuesUpdate });
+    set("PICKUP_FORM", { ...prevsValues, ...valuesUpdate });
   }, [watch()])
 
 
+  // Get totalPrice of order
+  useEffect(() => {
+    const fees = deliveryFee?.township?.fees || 0
+    const totalPrice = fees + totalAmount
+
+    setValue("totalPrice", totalPrice)
+  }, [isSuccessDeliveryFee, deliveryFee, totalAmount])
+
+  // Go final step
   useEffect(() => {
     if (isConfirmed && isSuccessMutationOrder) setActiveStepIdx(prev => prev += 1)
   }, [isConfirmed, isSuccessMutationOrder])
@@ -244,22 +265,26 @@ export function CheckoutForm() {
   const handleNextStep = (_: React.MouseEvent<HTMLButtonElement>) => {
     const value = getValues()
 
-    // Create potential order if it's not creeated
+    // Create potential order if it's not created
     if (activeStepIdx === 1) {
-      let payload: CreatePotentialOrderInput = {
-        id: value.createdPotentialOrderId || cryptoRandomString({ length: 24 }),
-        orderItems: value.orderItems,
-        billingAddressId: value.billingAddressId,
-        paymentMethodProvider: value.paymentMethodProvider,
-        status: "Processing",
-        addressType: value.addressType
+      // Check deliveryFee and create
+      if (deliveryFee && deliveryFee.township) {
+        let payload: CreatePotentialOrderInput = {
+          id: value.createdPotentialOrderId || cryptoRandomString({ length: 24 }),
+          orderItems: value.orderItems,
+          billingAddressId: value.billingAddressId,
+          paymentMethodProvider: value.paymentMethodProvider,
+          status: "Processing",
+          totalPrice: deliveryFee.township.fees,
+          addressType: value.addressType
+        }
+
+        // check address type and add their address data
+        if (value.addressType === "Delivery") payload.deliveryAddressId = value.deliveryAddressId
+        else if (value.addressType === "Pickup") payload.pickupAddress = value.pickupAddress
+
+        createPotentialOrder(payload)
       }
-
-      // check address type and add their address data
-      if (value.addressType === "Delivery") payload.deliveryAddressId = value.deliveryAddressId
-      else if (value.addressType === "Pickup") payload.pickupAddress = value.pickupAddress
-
-      createPotentialOrder(payload)
     }
 
     if (checkValidCurrentStepForm(activeStepIdx)) setActiveStepIdx(prev => prev + 1)
@@ -289,6 +314,7 @@ export function CheckoutForm() {
 
   return (
     <Grid container gap={2}>
+      <button onClick={() => console.log(getValues())}>Print values</button>
       <Grid item xs={12}>
         <Stepper alternativeLabel activeStep={activeStepIdx} connector={<QontoConnector />}>
           {steps.map(label => {
@@ -301,7 +327,7 @@ export function CheckoutForm() {
 
       <Hidden lgUp>
         <Grid item xs={12}>
-          <OrderSummary deliveryFee={deliveryFee?.township?.fees} />
+          <OrderSummary deliveryFee={deliveryFee?.township?.fees} totalAmount={totalAmount} />
         </Grid>
 
         <Grid item xs={12}>
@@ -342,7 +368,7 @@ export function CheckoutForm() {
 
       <Hidden lgDown>
         <Grid item lg={4.7}>
-          <OrderSummary deliveryFee={deliveryFee?.township?.fees} />
+          <OrderSummary deliveryFee={deliveryFee?.township?.fees} totalAmount={totalAmount} />
         </Grid>
       </Hidden>
 

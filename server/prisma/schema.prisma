@@ -352,6 +352,7 @@ model PotentialOrder {
   userId     String?              @db.ObjectId
   orderItems OrderItem[]
   status     PotentialOrderStatus @default(Processing)
+  totalPrice Float
 
   addressType AddressType
 
@@ -374,6 +375,7 @@ model Order {
   userId     String?     @db.ObjectId
   orderItems OrderItem[]
   status     OrderStatus @default(Pending)
+  totalPrice Float
 
   addressType AddressType
 

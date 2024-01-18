@@ -34,6 +34,7 @@ export const createPotentialOrderSchema = object({
     }).array(),
     status: z.enum(potentialOrderStatus).default("Processing"),
     deliveryAddressId: string().optional(),
+    totalPrice: number().min(0),
     addressType: z.enum(potentialOrderAddressType),
     pickupAddress: object({
       username: string({ required_error: "username is required" }),
@@ -66,6 +67,7 @@ export const updatePotentialOrderSchema = object({
     status: z.enum(potentialOrderStatus).default("Processing"),
     addressType: z.enum(potentialOrderAddressType),
     deliveryAddressId: string().optional(),
+    totalPrice: number().min(0),
     pickupAddress: object({
       username: string({ required_error: "username is required" }),
       phone: string({ required_error: "phone number is required" }),

@@ -22,6 +22,7 @@ export async function getPotentialOrdersHandler(
       status,
       startDate,
       remark,
+      totalPrice,
       endDate
     } = filter || { status: undefined }
     const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
@@ -39,6 +40,7 @@ export async function getPotentialOrdersHandler(
             lte: endDate
           },
           status,
+          totalPrice,
           remark,
         },
         orderBy,
@@ -90,7 +92,7 @@ export async function createPotentialOrderHandler(
   next: NextFunction
 ) {
   try {
-    const { id, orderItems, addressType, deliveryAddressId, billingAddressId, pickupAddress, status, paymentMethodProvider, remark } = req.body
+    const { id, orderItems, totalPrice, addressType, deliveryAddressId, billingAddressId, pickupAddress, status, paymentMethodProvider, remark } = req.body
 
     // @ts-ignore  for mocha testing
     const userId: string | undefined = req.user?.id || undefined
@@ -115,6 +117,7 @@ export async function createPotentialOrderHandler(
         },
         userId,
         status,
+        totalPrice,
         deliveryAddressId,
         billingAddressId,
         pickupAddressId: newPickupAddress?.id,
@@ -242,6 +245,7 @@ export async function updatePotentialOrderHandler(
           orderItems: {
             create: data.orderItems
           },
+          totalPrice: data.totalPrice,
           userId,
           addressType: data.addressType,
           status: data.status,
