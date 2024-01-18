@@ -34,6 +34,7 @@ import salesCategoryRouter from './routers/salesCategory.route'
 import regionRouter from './routers/region.route'
 import townshipRouter from './routers/township.route'
 import userAddressRouter from './routers/userAddress.route'
+import pickupAddressRouter from './routers/pickupAddress.route'
 
 import orderRouter from './routers/order.route'
 import potentialOrderRouter from './routers/potentialOrder.route'
@@ -118,6 +119,7 @@ app.use("/api/v1/sales-categories", salesCategoryRouter)
 app.use("/api/v1/regions", regionRouter)
 app.use("/api/v1/townships", townshipRouter)
 app.use("/api/v1/addresses", userAddressRouter)
+app.use("/api/v1/pickup-addresses", pickupAddressRouter)
 
 
 // Unhandled Route
