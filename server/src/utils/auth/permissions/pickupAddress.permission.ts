@@ -1,11 +1,11 @@
 import { Role } from "../../../schemas/user.schema";
 import { Permission } from "../rbac";
 
-
 export const pickupAddressPermission: Permission<Role> = {
   createAllowedRoles: () => ["Admin", "Shopowner", "User"],
 
-  readAllowedRoles: () => ["Admin", "Shopowner", "User"],
+  /* This is permission for all pickup addresses */
+  readAllowedRoles: () => ["Admin"],  
 
   updateAllowedRoles: () => [],
 
