@@ -194,8 +194,8 @@ export function CheckoutForm() {
 
 
   const totalAmount = useMemo(() => {
-    // Checked re-calculate, fixed ✅
-    console.log("re-calculate")
+    // // Checked re-calculate, fixed ✅
+    // console.log("re-calculate")
     return cartItems.reduce((total, item) => total + item.totalPrice, 0)
   }, [JSON.stringify(cartItems), getValues("addressType")])
 
