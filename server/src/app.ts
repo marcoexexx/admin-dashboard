@@ -34,11 +34,13 @@ import salesCategoryRouter from './routers/salesCategory.route'
 import regionRouter from './routers/region.route'
 import townshipRouter from './routers/township.route'
 import userAddressRouter from './routers/userAddress.route'
+import pickupAddressRouter from './routers/pickupAddress.route'
 
 import orderRouter from './routers/order.route'
 import potentialOrderRouter from './routers/potentialOrder.route'
 
 import accessLogRouter from './routers/accessLog.route'
+import auditLogRouter from './routers/auditLog.route'
 
 import helmet from 'helmet';
 import useragent from 'express-useragent';
@@ -111,6 +113,7 @@ app.use("/api/v1/exchanges", exchangeRouter)
 app.use("/api/v1/coupons", couponRouter)
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/access-logs", accessLogRouter)
+app.use("/api/v1/audit-logs", auditLogRouter)
 app.use("/api/v1/products", productRouter)
 app.use("/api/v1/brands", brandRouter)
 app.use("/api/v1/categories", categoryRouter)
@@ -118,6 +121,7 @@ app.use("/api/v1/sales-categories", salesCategoryRouter)
 app.use("/api/v1/regions", regionRouter)
 app.use("/api/v1/townships", townshipRouter)
 app.use("/api/v1/addresses", userAddressRouter)
+app.use("/api/v1/pickup-addresses", pickupAddressRouter)
 
 
 // Unhandled Route

@@ -9,12 +9,13 @@ export function PickupAddressForm() {
 
 
   return <Grid container gap={1}>
-    <Grid item xs={5.9}>
+    <Grid item xs={12} sm={5.9}>
       <Controller
         control={control}
         name="pickupAddress.username"
         render={({ field, fieldState }) => <FormControl fullWidth {...field}>
           <TextField
+            fullWidth
             defaultValue={field.value}
             label="Username" 
             error={!!fieldState.error} 
@@ -23,12 +24,13 @@ export function PickupAddressForm() {
         </FormControl>}
       />
     </Grid>
-    <Grid item xs={5.9}>
+    <Grid item xs={12} sm={5.9}>
       <Controller
         control={control}
         name="pickupAddress.phone"
         render={({ field, fieldState }) => <FormControl fullWidth {...field}>
           <TextField
+            fullWidth
             defaultValue={field.value}
             label="Phone" 
             error={!!fieldState.error} 
@@ -37,12 +39,13 @@ export function PickupAddressForm() {
         </FormControl>}
       />
     </Grid>
-    <Grid item xs={5.9}>
+    <Grid item xs={12} sm={5.9}>
       <Controller
         control={control}
         name="pickupAddress.email"
         render={({ field, fieldState }) => <FormControl fullWidth {...field}>
           <TextField
+            fullWidth
             defaultValue={field.value}
             label="Email" 
             error={!!fieldState.error} 
@@ -51,7 +54,7 @@ export function PickupAddressForm() {
         </FormControl>}
       />
     </Grid>
-    <Grid item xs={5.9}>
+    <Grid item xs={12} sm={5.9}>
       <DatePickerField fieldName="pickupAddress.date" required />
     </Grid>
   </Grid>

@@ -24,7 +24,7 @@ interface AddressInputFieldProps {
 }
 
 export function AddressInputField({updateField = false, fieldName}: AddressInputFieldProps) {
-  const { control, setValue, getValues } = useFormContext()
+  const { control, setValue, getValues, resetField } = useFormContext()
   const [ selectedAddress, setSelectedAddress ] = useState<Address|null>(null)
   const [ isOpenOptions, setIsOpenOptions ] = useState(false)
 
@@ -62,6 +62,10 @@ export function AddressInputField({updateField = false, fieldName}: AddressInput
 
   useEffect(() => {
     if (defaultAddress && updateField) setSelectedAddress(defaultAddress)
+
+    if (defaultAddressId && !defaultAddress) {
+      resetField(fieldName)
+    }
   }, [defaultAddress])
 
 

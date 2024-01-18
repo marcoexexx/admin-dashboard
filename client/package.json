@@ -27,6 +27,7 @@
     "apexcharts": "^3.44.0",
     "axios": "^1.6.2",
     "clsx": "^2.0.0",
+    "crypto-random-string": "^5.0.0",
     "dayjs": "^1.11.10",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",

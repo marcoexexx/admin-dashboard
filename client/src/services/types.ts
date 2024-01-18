@@ -493,3 +493,5 @@ export type ExchangeResponse = Omit<HttpResponse, "message"> & { exchange: Excha
 export type UserAddressResponse = Omit<HttpResponse, "message"> & { userAddress: Address };
 
 export type PotentialOrderResponse = Omit<HttpResponse, "message"> & { potentialOrder: PotentialOrder };
+
+export type OrderResponse = Omit<HttpResponse, "message"> & { order: Order };

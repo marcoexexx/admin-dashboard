@@ -13,5 +13,9 @@ export function useLocalStorage() {
     localStorage.setItem(key, JSON.stringify(payload))
   }
 
-  return { get, set }
+  const remove = (key: LocalStorageKey) => {
+    localStorage.removeItem(key)
+  }
+
+  return { get, set, remove }
 }

@@ -1,4 +1,4 @@
-import { Box, Container, Radio, Typography, styled } from "@mui/material";
+import { Box, Card, CardContent, Container, Radio, Typography, styled } from "@mui/material";
 import { AddressInputField } from "@/components/input-fields";
 import { CreateOrderInput, OrderAddressType } from "@/components/content/orders/forms";
 import { PickupAddressForm } from "./PickupAddressForm";
@@ -23,7 +23,7 @@ const SelectionCardWrapper = styled(Box)<{ active: "true" | "false" }>(({ theme,
 export default function AddressInformationStep() {
   const { getValues, setValue } = useFormContext<CreateOrderInput>()
 
-  const addressType = getValues("addressType") || "delivery"
+  const addressType: CreateOrderInput["addressType"] = getValues("addressType") || "Delivery"
 
 
   useEffect(() => {
@@ -32,6 +32,8 @@ export default function AddressInformationStep() {
 
 
   const handleChangeAddressType = (addressType: OrderAddressType) => (_: React.MouseEvent<HTMLDivElement>) => {
+    if (addressType === "Delivery") setValue("pickupAddress", undefined)
+    if (addressType === "Pickup") setValue("deliveryAddressId", undefined)
     setValue("addressType", addressType)
   }
 
@@ -43,8 +45,8 @@ export default function AddressInformationStep() {
 
         <Box display="flex" flexDirection="column" gap={1}>
           <Typography>Choose the option</Typography>
-          <Box display="flex" flexDirection="row" gap={1}>
-            <SelectionCardWrapper active={addressType === "delivery" ? "true" : "false"} onClick={handleChangeAddressType("delivery")}>
+          <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={1}>
+            <SelectionCardWrapper active={addressType === "Delivery" ? "true" : "false"} onClick={handleChangeAddressType("Delivery")}>
               <Box 
                 ml={2}
                 component="img"
@@ -58,14 +60,14 @@ export default function AddressInformationStep() {
               <Typography variant="h3">Delivery</Typography>
               <Radio 
                 sx={{ alignSelf: "start" }}
-                checked={addressType === "delivery"}
+                checked={addressType === "Delivery"}
                 value="delivery"
                 name="delivery"
                 inputProps={{ "aria-label": "Delivery" }}
               />
             </SelectionCardWrapper>
 
-            <SelectionCardWrapper active={addressType === "pickup" ? "true" : "false"} onClick={handleChangeAddressType("pickup")}>
+            <SelectionCardWrapper active={addressType === "Pickup" ? "true" : "false"} onClick={handleChangeAddressType("Pickup")}>
               <Box 
                 ml={2}
                 component="img"
@@ -79,7 +81,7 @@ export default function AddressInformationStep() {
               <Typography variant="h3">Pickup</Typography>
               <Radio 
                 sx={{ alignSelf: "start" }}
-                checked={addressType === "pickup"}
+                checked={addressType === "Pickup"}
                 value="pickup"
                 name="pickup"
                 inputProps={{ "aria-label": "Pickup" }}
@@ -88,8 +90,12 @@ export default function AddressInformationStep() {
           </Box>
         </Box>
 
-        {addressType === "delivery" ? <AddressInputField updateField fieldName="deliveryAddressId" /> : null}
-        {addressType === "pickup" ? <PickupAddressForm /> : null}
+        <Card>
+          <CardContent>
+            {addressType === "Delivery" ? <AddressInputField updateField fieldName="deliveryAddressId" /> : null}
+            {addressType === "Pickup" ? <PickupAddressForm /> : null}
+          </CardContent>
+        </Card>
       </Box>
     </Container>
   )

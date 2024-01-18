@@ -13,6 +13,7 @@ export * from './region.permission'
 export * from './township.permission'
 export * from './userAddress.permission'
 export * from './potentialOrder.permission'
+export * from './pickupAddress.permission'
 
 const roleBasedAccess = createRoleBasedAccess<Role>()
 

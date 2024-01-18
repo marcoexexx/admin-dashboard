@@ -7,6 +7,7 @@ import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } f
 import { useNavigate } from 'react-router-dom'
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import getConfig from "@/libs/getConfig";
+import { CreateOrderForm } from '@/components/content/orders/forms';
 
 
 const appName = getConfig("appName")
@@ -57,7 +58,7 @@ export default function CreateOrder() {
             <Grid item xs={12} md={8}>
               <Card>
                 <CardContent>
-                  {"<CreateOrderForm />"}
+                  <CreateOrderForm />
                 </CardContent>
               </Card>
             </Grid>

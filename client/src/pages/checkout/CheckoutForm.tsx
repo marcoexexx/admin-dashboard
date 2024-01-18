@@ -1,14 +1,18 @@
 import dayjs from "dayjs";
+import cryptoRandomString from 'crypto-random-string';
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/components";
 import { useLocalStorage, useStore } from "@/hooks";
 import { playSoundEffect } from "@/libs/playSound";
-import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel, Alert } from "@mui/material"
+import { createPotentialOrderFn } from "@/services/potentialOrdersApi";
+import { getUserAddressFn } from "@/services/userAddressApi";
+import { createOrderFn } from "@/services/orderApi";
+import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel, Alert, Hidden, Divider } from "@mui/material"
 import { MuiButton } from "@/components/ui";
-import { Link as LinkRouter } from "react-router-dom";
+import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import { OrderSummary } from "./OrderSummary";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { CreateOrderInput, createOrderSchema } from "@/components/content/orders/forms";
@@ -21,7 +25,6 @@ import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
 
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
-import { createPotentialOrderFn } from "@/services/potentialOrdersApi";
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -98,20 +101,30 @@ function RenderStepper({activeStepIdx}: {activeStepIdx: number}) {
 }
 
 
+/**
+ * totalAmount is total price of in all order items     := orderItems.reduce((total, item) => total + item.totalPrice, 0)
+ * totalPrice is total price of order                   := totalAmount + deliveryFee
+ */
 export function CheckoutForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const [activeStepIdx, setActiveStepIdx] = useState(0)
   const [isConfirmed, setIsConfirmed] = useState(false)
 
-  const { set, get } = useLocalStorage()
+  const { set, get, remove } = useLocalStorage()
+
+  const navigate = useNavigate()
+
+  const cartItems = get<OrderItem[]>("CARTS") || []
+  const values = get<CreateOrderInput>("PICKUP_FORM")
+
 
   const {
     mutate: createOrder,
     isPending: isPendingMutationOrder,
     isSuccess: isSuccessMutationOrder
   } = useMutation({
-    mutationFn: async (value: CreateOrderInput) => new Promise(resolve => setTimeout(() => resolve(console.log({ saved: {value}})), 3000)),
+    mutationFn: createOrderFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success created a new Order.",
@@ -137,9 +150,9 @@ export function CheckoutForm() {
     isPending: isPendingMutationPotentialOrder,
   } = useMutation({
     mutationFn: createPotentialOrderFn,
-    onSuccess: () => {
+    onSuccess: (response) => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new Potential order.",
+        message: "Success created or updated a new Potential order.",
         severity: "success"
       } })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
@@ -147,6 +160,7 @@ export function CheckoutForm() {
         queryKey: ["potential-orders"]
       })
       playSoundEffect("success")
+      setValue("createdPotentialOrderId", response.potentialOrder.id)
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -168,20 +182,36 @@ export function CheckoutForm() {
   const errorMessage = `Invalid input: ${Object.keys(errors)} errors found!`
 
 
+  const {
+    data: deliveryFee,
+    isSuccess: isSuccessDeliveryFee,
+  } = useQuery({
+    enabled: !!getValues("deliveryAddressId"),
+    queryKey: ["user-addresses", { id: getValues("deliveryAddressId") } ],
+    queryFn: args => getUserAddressFn(args, { userAddressId: deliveryAddressId }),
+    select: data => data?.userAddress
+  })
+
+
+  const totalAmount = useMemo(() => {
+    // // Checked re-calculate, fixed ✅
+    // console.log("re-calculate")
+    return cartItems.reduce((total, item) => total + item.totalPrice, 0)
+  }, [JSON.stringify(cartItems), getValues("addressType")])
+
+
   // Initialize values from localStorage
   useEffect(() => {
-    const cartItems = get<OrderItem[]>("CARTS")
-    const values = get<CreateOrderInput>("PICKUP_FORM")
-
     if (Array.isArray(cartItems) && cartItems.length) setValue("orderItems", cartItems.filter((cart) => !!cart.productId))
     if (values) {
       if (values.pickupAddress) setValue("pickupAddress", { ...values.pickupAddress, date: dayjs(values.pickupAddress.date) })
       if (values.deliveryAddressId) setValue("deliveryAddressId", values.deliveryAddressId)
       if (values.billingAddressId) setValue("billingAddressId", values.billingAddressId)
       if (values.paymentMethodProvider) setValue("paymentMethodProvider", values.paymentMethodProvider)
+      if (values.createdPotentialOrderId) setValue("createdPotentialOrderId", values.createdPotentialOrderId)
     }
 
-    setValue("addressType", values?.addressType || "delivery")
+    setValue("addressType", values?.addressType || "Delivery")
   }, [])
 
 
@@ -189,12 +219,21 @@ export function CheckoutForm() {
   useEffect(() => {
     const values = watch()
     let valuesUpdate = values
-    const prevsValues = get<CreateOrderInput>("PICKUP_FORM")
+    const prevsValues = get<CreateOrderInput>("PICKUP_FORM") || {}
 
     set("PICKUP_FORM", { ...prevsValues, ...valuesUpdate });
   }, [watch()])
 
 
+  // Get totalPrice of order
+  useEffect(() => {
+    const fees = deliveryFee?.township?.fees || 0
+    const totalPrice = fees + totalAmount
+
+    setValue("totalPrice", totalPrice)
+  }, [isSuccessDeliveryFee, deliveryFee, totalAmount])
+
+  // Go final step
   useEffect(() => {
     if (isConfirmed && isSuccessMutationOrder) setActiveStepIdx(prev => prev += 1)
   }, [isConfirmed, isSuccessMutationOrder])
@@ -208,8 +247,8 @@ export function CheckoutForm() {
     const { addressType, deliveryAddressId, pickupAddress, billingAddressId, paymentMethodProvider } = getValues()
 
     if (idx === 0) {
-      if (addressType === "delivery" && !errors.deliveryAddressId && deliveryAddressId) return true
-      if (addressType === "pickup" && pickupAddress && !errors.pickupAddress && pickupAddress.username && pickupAddress.phone && pickupAddress.date) return true
+      if (addressType === "Delivery" && !errors.deliveryAddressId && deliveryAddressId) return true
+      if (addressType === "Pickup" && pickupAddress && !errors.pickupAddress && pickupAddress.username && pickupAddress.phone && pickupAddress.date) return true
     }
 
     if (idx === 1) {
@@ -224,18 +263,28 @@ export function CheckoutForm() {
   }
 
   const handleNextStep = (_: React.MouseEvent<HTMLButtonElement>) => {
-    // Create potential order
+    const value = getValues()
+
+    // Create potential order if it's not created
     if (activeStepIdx === 1) {
-      const value = getValues()
+      // Check deliveryFee and create
+      if (deliveryFee && deliveryFee.township) {
+        let payload: CreatePotentialOrderInput = {
+          id: value.createdPotentialOrderId || cryptoRandomString({ length: 24 }),
+          orderItems: value.orderItems,
+          billingAddressId: value.billingAddressId,
+          paymentMethodProvider: value.paymentMethodProvider,
+          status: "Processing",
+          totalPrice: deliveryFee.township.fees,
+          addressType: value.addressType
+        }
 
-      let payload: CreatePotentialOrderInput = {
-        orderItems: value.orderItems,
-        billingAddressId: value.billingAddressId,
-        paymentMethodProvider: value.paymentMethodProvider,
-        status: "Processing"
+        // check address type and add their address data
+        if (value.addressType === "Delivery") payload.deliveryAddressId = value.deliveryAddressId
+        else if (value.addressType === "Pickup") payload.pickupAddress = value.pickupAddress
+
+        createPotentialOrder(payload)
       }
-
-      createPotentialOrder(payload)
     }
 
     if (checkValidCurrentStepForm(activeStepIdx)) setActiveStepIdx(prev => prev + 1)
@@ -253,9 +302,19 @@ export function CheckoutForm() {
 
   const handleOnCloseModalForm = () => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
 
+  const deliveryAddressId = getValues("deliveryAddressId")
+
+  const handleGoHome = () => {
+    remove("PICKUP_FORM")
+    remove("CARTS")
+
+    navigate("/home")
+  }
+
 
   return (
     <Grid container gap={2}>
+      <button onClick={() => console.log(getValues())}>Print values</button>
       <Grid item xs={12}>
         <Stepper alternativeLabel activeStep={activeStepIdx} connector={<QontoConnector />}>
           {steps.map(label => {
@@ -266,9 +325,19 @@ export function CheckoutForm() {
         </Stepper>
       </Grid>
 
-      <Grid item md={7} xs={12}>
+      <Hidden lgUp>
+        <Grid item xs={12}>
+          <OrderSummary deliveryFee={deliveryFee?.township?.fees} totalAmount={totalAmount} />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Divider flexItem orientation="horizontal" sx={{ my: 1 }} />
+        </Grid>
+      </Hidden>
+
+      <Grid item md={12} lg={7}>
         {activeStepIdx === steps.length
-        ? <h1>Success</h1>
+        ? <MuiButton onClick={handleGoHome}>Home</MuiButton>
         : <FormProvider  {...methods}>
             <Box component="form" onSubmit={handleSubmit(onSubmit)}>
               <RenderStepper activeStepIdx={activeStepIdx} />
@@ -297,10 +366,11 @@ export function CheckoutForm() {
           </FormProvider>}
       </Grid>
 
-      <Grid item md={3} xs={12}>
-        <OrderSummary />
-      </Grid>
-
+      <Hidden lgDown>
+        <Grid item lg={4.7}>
+          <OrderSummary deliveryFee={deliveryFee?.township?.fees} totalAmount={totalAmount} />
+        </Grid>
+      </Hidden>
 
       {modalForm.field === "addresses"
       ? <FormModal field='addresses' title='Create new address' onClose={handleOnCloseModalForm}>

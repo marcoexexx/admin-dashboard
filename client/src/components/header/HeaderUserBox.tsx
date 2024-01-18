@@ -49,7 +49,7 @@ export default function HeaderUserBox() {
 
   const navigate = useNavigate()
 
-  const cartsCount = (get<OrderItem[]>("CARTS") ?? []).length
+  const cartsCount = (get<OrderItem[]>("CARTS") || []).length
 
   const { data: user, isLoading, isError, error } = useQuery({
     queryKey: ["authUser"],

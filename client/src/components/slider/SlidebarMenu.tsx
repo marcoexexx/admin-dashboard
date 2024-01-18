@@ -180,7 +180,7 @@ type PageMenu =
 
 type ExculdeWildcard<T extends string> = T extends "*" ? never : T
 type MenuPath<T extends string> = `/${T}`
-type ExpandableMenu<T extends string> = T | `${T}/list` | `${T}/create`
+type ExpandableMenu<T extends string> = T | `${T}/create`
 
 type SlideMenue = 
   | MenuPath<PageMenu>
@@ -312,8 +312,8 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/products/list" })}
-                      onClick={handleOpenMenu("/products/list")}
+                      className={clsx({"active": currentMenu === "/products" })}
+                      onClick={handleOpenMenu("/products")}
                     >
                       <DotWrapper />
                       List
@@ -349,8 +349,8 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/potential-orders/list" })}
-                      onClick={handleOpenMenu("/potential-orders/list")}
+                      className={clsx({"active": currentMenu === "/potential-orders" })}
+                      onClick={handleOpenMenu("/potential-orders")}
                     >
                       <DotWrapper />
                       List
@@ -386,8 +386,8 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/regions/list" })}
-                      onClick={handleOpenMenu("/regions/list")}
+                      className={clsx({"active": currentMenu === "/regions" })}
+                      onClick={handleOpenMenu("/regions")}
                     >
                       <DotWrapper />
                       List
@@ -423,8 +423,8 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/townships/list" })}
-                      onClick={handleOpenMenu("/townships/list")}
+                      className={clsx({"active": currentMenu === "/townships" })}
+                      onClick={handleOpenMenu("/townships")}
                     >
                       <DotWrapper />
                       List
@@ -460,8 +460,8 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/coupons/list" })}
-                      onClick={handleOpenMenu("/coupons/list")}
+                      className={clsx({"active": currentMenu === "/coupons" })}
+                      onClick={handleOpenMenu("/coupons")}
                     >
                       <DotWrapper />
                       List
@@ -497,8 +497,8 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/users/list" })}
-                      onClick={handleOpenMenu("/users/list")}
+                      className={clsx({"active": currentMenu === "/users" })}
+                      onClick={handleOpenMenu("/users")}
                     >
                       <DotWrapper />
                       List
@@ -525,8 +525,8 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/exchanges/list" })}
-                      onClick={handleOpenMenu("/exchanges/list")}
+                      className={clsx({"active": currentMenu === "/exchanges" })}
+                      onClick={handleOpenMenu("/exchanges")}
                     >
                       <DotWrapper />
                       List
@@ -562,8 +562,8 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/brands/list" })}
-                      onClick={handleOpenMenu("/brands/list")}
+                      className={clsx({"active": currentMenu === "/brands" })}
+                      onClick={handleOpenMenu("/brands")}
                     >
                       <DotWrapper />
                       List
@@ -599,8 +599,8 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/categories/list" })}
-                      onClick={handleOpenMenu("/categories/list")}
+                      className={clsx({"active": currentMenu === "/categories" })}
+                      onClick={handleOpenMenu("/categories")}
                     >
                       <DotWrapper />
                       List
@@ -636,8 +636,8 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/sales-categories/list" })}
-                      onClick={handleOpenMenu("/sales-categories/list")}
+                      className={clsx({"active": currentMenu === "/sales-categories" })}
+                      onClick={handleOpenMenu("/sales-categories")}
                     >
                       <DotWrapper />
                       List
