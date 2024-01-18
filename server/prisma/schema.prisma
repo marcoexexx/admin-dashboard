@@ -28,6 +28,22 @@ enum AuthProvider {
   Facebook
 }
 
+enum Resource {
+  User
+  Brand
+  Category
+  Coupon
+  Exchange
+  Order
+  PickupAddress
+  PotentialOrder
+  Product
+  Region
+  SalesCategory
+  Township
+  UserAddress
+}
+
 model Exchange {
   id   String    @id @default(auto()) @map("_id") @db.ObjectId
   from PriceUnit
@@ -87,6 +103,7 @@ model User {
   addresses        UserAddress[]
   orders           Order[]
   potentialOrders  PotentialOrder[]
+  eventActions     EventAction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -406,6 +423,26 @@ model Region {
   name          String         @unique
   townships     TownshipFees[]
   userAddresses UserAddress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EventActionType {
+  Create
+  Read
+  Update
+  Delete
+}
+
+model EventAction {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  action      EventActionType
+  resource    Resource
+  resourceIds String[]
+  user        User?           @relation(fields: [userId], references: [id])
+  userId      String?         @db.ObjectId
+  timestamp   DateTime        @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

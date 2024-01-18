@@ -1,14 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { db } from "../utils/db";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { BrandFilterPagination, CreateBrandInput, CreateMultiBrandsInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
-import { convertNumericStrings } from "../utils/convertNumber";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { db } from "../utils/db";
+import { convertNumericStrings } from "../utils/convertNumber";
+import { parseExcel } from "../utils/parseExcel";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+import { createEventAction } from "../utils/auditLog";
+
 import AppError from "../utils/appError";
 import logging from "../middleware/logging/logging";
 import fs from "fs"
-import { parseExcel } from "../utils/parseExcel";
-import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 
 
 export async function getBrandsHandler(
@@ -69,6 +71,16 @@ export async function getBrandHandler(
       include
     })
 
+    // Read event action audit log
+    if (brand) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: "Brand",
+        resourceIds: [brand.id],
+        action: "Read"
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ brand }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -92,7 +104,7 @@ export async function createMultiBrandsHandler(
     const data = parseExcel(buf) as CreateMultiBrandsInput
 
     // Update not affected
-    await Promise.all(data.map(brand => db.brand.upsert({
+    const brands = await Promise.all(data.map(brand => db.brand.upsert({
       where: {
         name: brand.name
       },
@@ -102,7 +114,15 @@ export async function createMultiBrandsHandler(
       update: {}
     })))
 
-    res.status(201).json(HttpResponse(201, "Success"))
+    // Create event action audit log
+    createEventAction(db, {
+      resource: "Brand",
+      userId: req.user?.id,
+      action: "Create",
+      resourceIds: brands.map(brand => brand.id),
+    })
+
+    res.status(201).json(HttpListResponse(brands))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
@@ -126,6 +146,16 @@ export async function createBrandHandler(
       data: { name },
     })
 
+    // Create event action audit log
+    if (brand) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: "Brand",
+        resourceIds: [brand.id],
+        action: "Create"
+      })
+    }
+
     res.status(201).json(HttpDataResponse({ brand }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -146,13 +176,23 @@ export async function deleteBrandHandler(
   try {
     const { brandId } = req.params
 
-    await db.brand.delete({
+    const brand = await db.brand.delete({
       where: {
         id: brandId
       }
     })
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
+    // Delete event action audit log
+    if (brand) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: "Brand",
+        resourceIds: [brand.id],
+        action: "Delete"
+      })
+    }
+
+    res.status(200).json(HttpDataResponse({ brand }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
@@ -175,6 +215,14 @@ export async function deleteMultiBrandsHandler(
           in: brandIds
         }
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: "Brand",
+      resourceIds: brandIds,
+      action: "Delete"
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -201,6 +249,16 @@ export async function updateBrandHandler(
       },
       data
     })
+
+    if (brand) {
+      // Delete event action audit log
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: "Brand",
+        resourceIds: [brand.id],
+        action: "Delete"
+      })
+    }
 
     res.status(200).json(HttpDataResponse({ brand }))
   } catch (err: any) {
