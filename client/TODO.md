@@ -11,6 +11,7 @@
 
 # TODO
  - ## IMPORTANT
+ - [ ] pickup address :: read(all, detail), delete(all, detail) :: client UI
  - [ ] nested model form
  - [ ] item code
  - [ ] check filter forms
