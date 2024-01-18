@@ -29,18 +29,12 @@ export async function getPickupAddressesHandler(
 
     const offset = (page - 1) * pageSize
 
-    // @ts-ignore  for mocha testing
-    const user = req.user
-
-    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
-
     const [count, pickupAddresses] = await db.$transaction([
       db.pickupAddress.count(),
       db.pickupAddress.findMany({
         where: {
           id,
           username,
-          userId: user.id,
           phone,
           email,
         },
