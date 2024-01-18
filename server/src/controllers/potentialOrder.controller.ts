@@ -128,6 +128,7 @@ export async function createPotentialOrderHandler(
         // WARN: order items not affected
         userId,
         status,
+        totalPrice,
         deliveryAddressId,
         billingAddressId,
         pickupAddressId: newPickupAddress?.id,

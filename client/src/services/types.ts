@@ -85,6 +85,7 @@ export type PotentialOrder = {
   id: string
   status: PotentialOrderStatus
   remark?: string
+  totalPrice: number
 
   // relationship
   user?: User
@@ -107,6 +108,7 @@ export type Order = {
   id: string
   status: OrderStatus
   remark?: string
+  totalPrice: number
 
   // relationship
   user?: User

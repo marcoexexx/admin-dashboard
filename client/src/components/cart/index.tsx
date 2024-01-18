@@ -33,7 +33,7 @@ export function Carts(props: CartsProps) {
         </Grid>
 
         <Grid item xs={6}>
-          <MuiButton onClick={handleNavigate}>Checkout</MuiButton>
+          <MuiButton disabled={!orderItems.length} onClick={handleNavigate}>Checkout</MuiButton>
         </Grid>
       </Grid>
     </Container>

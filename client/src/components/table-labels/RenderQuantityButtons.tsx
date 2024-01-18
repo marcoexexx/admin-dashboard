@@ -1,14 +1,17 @@
 import { Box, IconButton, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import { numberFormat } from "@/libs/numberFormat";
 
 
 export function RenderQuantityButtons({
   itemId,
-  value, 
+  value,
+  disabled,
   onIncrement, 
   onDecrement
 }: {
+  disabled: boolean,
   itemId: string,
   value: number, 
   onIncrement: (id: string) => void, 
@@ -32,13 +35,13 @@ export function RenderQuantityButtons({
       justifyContent="flex-end"
       gap={.5}
     >
-      <IconButton aria-label="add item" size="small" onClick={handleOnClickIncrementAction}>
+      <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickIncrementAction}>
         <AddIcon color="primary" fontSize="small" />
       </IconButton>
 
-      <Typography>{value}</Typography>
+      <Typography>{numberFormat(value)}</Typography>
 
-      <IconButton aria-label="add item" size="small" onClick={handleOnClickDecrementAction}>
+      <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickDecrementAction}>
         <RemoveIcon color="primary" fontSize="small" />
       </IconButton>
     </Box>

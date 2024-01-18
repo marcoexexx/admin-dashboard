@@ -1,8 +1,10 @@
 import { OrderItem } from "@/services/types"
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Alert, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { RenderQuantityButtons } from "../table-labels"
 import { useLocalStorage } from "@/hooks"
 import { useState } from "react"
+import { CreateOrderInput } from "../content/orders/forms"
+import { numberFormat } from "@/libs/numberFormat"
 
 
 const columnData: TableColumnHeader<OrderItem>[] = [
@@ -49,7 +51,10 @@ export function CartsTable(props: CartsTableProps) {
 
   const totalPrice = orderCarts.reduce((total, item) => total + item.totalPrice, 0)
 
-  const { set } = useLocalStorage()
+  const { set, get } = useLocalStorage()
+
+  const isCreatedPotentialOrder = !!get<CreateOrderInput>("PICKUP_FORM")?.createdPotentialOrderId
+
 
   const handleOnIncrement= (id: string) => {
     const payload = orderCarts
@@ -71,49 +76,55 @@ export function CartsTable(props: CartsTableProps) {
 
 
   return (
-    <TableContainer>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {columnHeader.map(header => {
-              const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-              return header.id !== "actions"
-                ? render
-                : null
-            })}
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {orderCarts.map((row, idx) => {
-            return <TableRow
-              hover
-              key={idx}
-            >
-              {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                <Typography
-                  variant="body1"
-                  fontWeight="normal"
-                  color="text.primary"
-                  gutterBottom
-                  noWrap
-                >
-                  {col.id === "product" && row.product && row.product.title}
-                  {col.id === "quantity" && <RenderQuantityButtons itemId={row.id} value={row.quantity} onIncrement={handleOnIncrement} onDecrement={handleOnDecrement} />}
-                  {col.id === "price" && row.price}
-                  {col.id === "totalPrice" && row.totalPrice}
-                </Typography>
-              </TableCell>)}
+    <Box display="flex" flexDirection="column" gap={2}>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {columnHeader.map(header => {
+                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
+                return header.id !== "actions"
+                  ? render
+                  : null
+              })}
             </TableRow>
-          })}
+          </TableHead>
 
-          <TableRow>
-            <TableCell align="right" colSpan={2} />
-            <TableCell align="right">Total</TableCell>
-            <TableCell align="right">{totalPrice}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </TableContainer>
+          <TableBody>
+            {orderCarts.map((row, idx) => {
+              return <TableRow
+                hover
+                key={idx}
+              >
+                {columnData.map(col => <TableCell align={col.align} key={col.id}>
+                  <Typography
+                    variant="body1"
+                    fontWeight="normal"
+                    color="text.primary"
+                    gutterBottom
+                    noWrap
+                  >
+                    {col.id === "product" && row.product && row.product.title}
+                    {col.id === "quantity" && <RenderQuantityButtons disabled={isCreatedPotentialOrder} itemId={row.id} value={row.quantity} onIncrement={handleOnIncrement} onDecrement={handleOnDecrement} />}
+                    {col.id === "price" && numberFormat(row.price)}
+                    {col.id === "totalPrice" && numberFormat(row.totalPrice)}
+                  </Typography>
+                </TableCell>)}
+              </TableRow>
+            })}
+
+            <TableRow>
+              <TableCell align="right" colSpan={2} />
+              <TableCell align="right">Total</TableCell>
+              <TableCell align="right">{numberFormat(totalPrice)}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {isCreatedPotentialOrder
+       ? <Alert severity="warning">Order items cannot be edited once potential order has been created.</Alert>
+       : null}
+    </Box>
   )
 }

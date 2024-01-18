@@ -1,5 +1,6 @@
 import { MuiButton } from "@/components/ui"
 import { useLocalStorage, useStore } from "@/hooks"
+import { numberFormat } from "@/libs/numberFormat"
 import { OrderItem } from "@/services/types"
 import { Alert, Badge, Box, Card, CardContent, Container, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material"
 
@@ -78,7 +79,7 @@ export function OrderSummary({deliveryFee = 0, totalAmount = 0}: OrderSummaryPro
                           <Typography variant="h4">Subtotal ({itemCount} items)</Typography>
                         </TableCell>
                         <TableCell align="right">
-                          <Typography variant="h4">{new Intl.NumberFormat().format(totalAmount)} Ks</Typography>
+                          <Typography variant="h4">{numberFormat(totalAmount)} Ks</Typography>
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -86,7 +87,7 @@ export function OrderSummary({deliveryFee = 0, totalAmount = 0}: OrderSummaryPro
                           <Typography variant="h4">Delivery fee</Typography>
                         </TableCell>
                         <TableCell align="right">
-                          <Typography variant="h4">{new Intl.NumberFormat().format(deliveryFee)} Ks</Typography>
+                          <Typography variant="h4">{numberFormat(deliveryFee)} Ks</Typography>
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -94,7 +95,7 @@ export function OrderSummary({deliveryFee = 0, totalAmount = 0}: OrderSummaryPro
                           <Typography variant="h4">Total</Typography>
                         </TableCell>
                         <TableCell align="right">
-                          <Typography variant="h4">{new Intl.NumberFormat().format(totalAmount + deliveryFee)} Ks</Typography>
+                          <Typography variant="h4">{numberFormat(totalAmount + deliveryFee)} Ks</Typography>
                         </TableCell>
                       </TableRow>
                     </TableBody>

@@ -135,6 +135,7 @@ export function CheckoutForm() {
         queryKey: ["orders"]
       })
       playSoundEffect("success")
+      set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1)
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -161,10 +162,12 @@ export function CheckoutForm() {
       })
       playSoundEffect("success")
       setValue("createdPotentialOrderId", response.potentialOrder.id)
+      setActiveStepIdx(prev => prev += 1)
+      set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1)
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
+        message: `failed: ${err.response.data.error.map((err: any) => err.message)}::${err.response.data.message}`,
         severity: "error"
       } })
       playSoundEffect("error")
@@ -202,6 +205,10 @@ export function CheckoutForm() {
 
   // Initialize values from localStorage
   useEffect(() => {
+    // Set form step
+    const activeStepIdxFromLocalStorage = get<number>("CHECKOUT_FORM_ACTIVE_STEP") || 0
+    setActiveStepIdx(activeStepIdxFromLocalStorage)
+
     if (Array.isArray(cartItems) && cartItems.length) setValue("orderItems", cartItems.filter((cart) => !!cart.productId))
     if (values) {
       if (values.pickupAddress) setValue("pickupAddress", { ...values.pickupAddress, date: dayjs(values.pickupAddress.date) })
@@ -268,26 +275,30 @@ export function CheckoutForm() {
     // Create potential order if it's not created
     if (activeStepIdx === 1) {
       // Check deliveryFee and create
-      if (deliveryFee && deliveryFee.township) {
-        let payload: CreatePotentialOrderInput = {
-          id: value.createdPotentialOrderId || cryptoRandomString({ length: 24 }),
-          orderItems: value.orderItems,
-          billingAddressId: value.billingAddressId,
-          paymentMethodProvider: value.paymentMethodProvider,
-          status: "Processing",
-          totalPrice: deliveryFee.township.fees,
-          addressType: value.addressType
-        }
-
-        // check address type and add their address data
-        if (value.addressType === "Delivery") payload.deliveryAddressId = value.deliveryAddressId
-        else if (value.addressType === "Pickup") payload.pickupAddress = value.pickupAddress
-
-        createPotentialOrder(payload)
+      let payload: CreatePotentialOrderInput = {
+        id: value.createdPotentialOrderId || cryptoRandomString({ length: 24 }),
+        orderItems: value.orderItems,
+        billingAddressId: value.billingAddressId,
+        paymentMethodProvider: value.paymentMethodProvider,
+        status: "Processing",
+        totalPrice: totalAmount,
+        addressType: value.addressType
       }
+
+      if (deliveryFee && deliveryFee.township) console.log("deli", totalAmount + deliveryFee.township.fees)
+      if (deliveryFee && deliveryFee.township) payload.totalPrice = deliveryFee.township.fees + totalAmount
+
+      // check address type and add their address data
+      if (value.addressType === "Delivery") payload.deliveryAddressId = value.deliveryAddressId
+      else if (value.addressType === "Pickup") payload.pickupAddress = value.pickupAddress
+
+      createPotentialOrder(payload)
     }
 
-    if (checkValidCurrentStepForm(activeStepIdx)) setActiveStepIdx(prev => prev + 1)
+    if (checkValidCurrentStepForm(activeStepIdx) && activeStepIdx !== 1) {
+      set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1)
+      setActiveStepIdx(prev => prev + 1)
+    }
   }
 
   const handleConfirmOrder = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -296,7 +307,10 @@ export function CheckoutForm() {
     setIsConfirmed(target.checked)
   }
 
-  const handleBackStep = (_: React.MouseEvent<HTMLButtonElement>) => setActiveStepIdx(prev => prev - 1)
+  const handleBackStep = (_: React.MouseEvent<HTMLButtonElement>) => {
+    setActiveStepIdx(prev => prev - 1)
+    set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx - 1)
+  }
 
   const isLastStep = activeStepIdx == steps.length - 1
 
@@ -307,6 +321,7 @@ export function CheckoutForm() {
   const handleGoHome = () => {
     remove("PICKUP_FORM")
     remove("CARTS")
+    remove("CHECKOUT_FORM_ACTIVE_STEP")
 
     navigate("/home")
   }

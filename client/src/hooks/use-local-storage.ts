@@ -1,6 +1,7 @@
 type LocalStorageKey = 
   | "CARTS"
   | "PICKUP_FORM"
+  | "CHECKOUT_FORM_ACTIVE_STEP"
 
 export function useLocalStorage() {
   const get = <T>(key: LocalStorageKey): T|undefined => {
