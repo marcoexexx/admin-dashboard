@@ -45,7 +45,7 @@ export default function Header() {
 
   const { get } = useLocalStorage();
 
-  const carts = get<OrderItem[]>("CARTS") ?? []
+  const carts = get<OrderItem[]>("CARTS") || []
 
 
   const onClickToggleSlidebarHandler = (_: React.MouseEvent<HTMLButtonElement>) => {

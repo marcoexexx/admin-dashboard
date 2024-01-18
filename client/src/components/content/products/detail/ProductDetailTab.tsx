@@ -98,7 +98,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       totalPrice: initialQuality * product.price
     }
 
-    const payload = get<OrderItem[]>("CARTS") ?? []
+    const payload = get<OrderItem[]>("CARTS") || []
 
     set("CARTS", [...payload, newPayload])
 

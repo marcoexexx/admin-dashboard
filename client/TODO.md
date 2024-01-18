@@ -13,12 +13,11 @@
  - ## IMPORTANT
  - [ ] item code
  - [ ] check filter forms
- - [ ] useraddress add remark
- - [ ] nullish coalescing operator :: localStorage data
  - [ ] editor text input-fields :: border
 
+ - [ ] product optional field bugs
+
  - [ ] user detail :: relation
- - [ ] product list & detail :: relation
 
  - ## NORMAL
  - [ ] filter -> specs products
@@ -58,3 +57,4 @@
  - [x] product get with include
  - [x] use name: { in: [] }
  - [x] loading -> update form
+ - [x] useraddress add remark
