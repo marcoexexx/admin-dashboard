@@ -112,7 +112,9 @@ export async function createPotentialOrderHandler(
             productId: item.productId,
             price: item.price,
             quantity: item.quantity,
-            totalPrice: item.totalPrice
+            totalPrice: item.price * item.quantity,
+            saving: item.saving,
+            originalTotalPrice: item.originalTotalPrice,
           }))
         },
         userId,
@@ -244,7 +246,10 @@ export async function updatePotentialOrderHandler(
         },
         data: {
           orderItems: {
-            create: data.orderItems
+            create: data.orderItems.map(item => ({
+              ...item,
+              totalPrice: item.price * item.quantity
+            }))
           },
           totalPrice: data.totalPrice,
           userId,

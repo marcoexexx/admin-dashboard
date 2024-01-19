@@ -68,6 +68,8 @@ export type OrderItem = {
   id: string
   price: number
   totalPrice: number
+  originalTotalPrice: number
+  saving: number
   quantity: number
   productId: string
 

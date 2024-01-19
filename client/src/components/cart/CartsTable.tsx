@@ -1,13 +1,14 @@
 import { OrderItem } from "@/services/types"
-import { Alert, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Alert, Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { RenderQuantityButtons } from "../table-labels"
+import { CreateOrderInput } from "../content/orders/forms"
 import { useLocalStorage } from "@/hooks"
 import { useState } from "react"
-import { CreateOrderInput } from "../content/orders/forms"
 import { numberFormat } from "@/libs/numberFormat"
+import { calculateProductDiscount } from "../content/products/detail/ProductDetailTab"
 
 
-const columnData: TableColumnHeader<OrderItem>[] = [
+const columnData: TableColumnHeader<OrderItem & { discount: number }>[] = [
   {
     id: "product",
     align: "left",
@@ -17,6 +18,11 @@ const columnData: TableColumnHeader<OrderItem>[] = [
     id: "quantity",
     align: "right",
     name: "Quantity"
+  },
+  {
+    id: "discount",
+    align: "right",
+    name: "Discount"
   },
   {
     id: "price",
@@ -49,7 +55,9 @@ export function CartsTable(props: CartsTableProps) {
 
   const [orderCarts, setOrderCarts] = useState(carts)
 
-  const totalPrice = orderCarts.reduce((total, item) => total + item.totalPrice, 0)
+  const totalAmount = orderCarts.reduce((total, item) => total + item.totalPrice, 0)
+  const totalSaving = orderCarts.reduce((total, item) => total + item.saving, 0)
+  const originalTotalPrice = orderCarts.reduce((total, item) => total + item.originalTotalPrice, 0)
 
   const { set, get } = useLocalStorage()
 
@@ -57,9 +65,25 @@ export function CartsTable(props: CartsTableProps) {
 
 
   const handleOnIncrement= (id: string) => {
+
     const payload = orderCarts
-      .map(cart => cart.id === id ? { ...cart, quantity: cart.quantity + 1, totalPrice: (cart.quantity + 1) * cart.price } : cart)
-      .filter(cart => 0 <= cart.quantity)
+      .map(cart => {
+        const { productDiscountAmount } = calculateProductDiscount(cart.product)
+
+        const originalTotalPrice = (cart.quantity + 1) * cart.price
+        const totalPrice = (cart.quantity + 1) * productDiscountAmount
+        
+        if (cart.id === id) return {
+          ...cart,
+          quantity: cart.quantity + 1,
+          originalTotalPrice,
+          totalPrice,
+          saving: originalTotalPrice - totalPrice,
+        }
+
+        return cart
+      })
+      .filter(cart => 0 < cart.quantity)
 
     set("CARTS", payload)
     setOrderCarts(payload)
@@ -67,8 +91,23 @@ export function CartsTable(props: CartsTableProps) {
 
   const handleOnDecrement= (id: string) => {
     const payload = orderCarts
-      .map(cart => cart.id === id ? { ...cart, quantity: cart.quantity - 1, totalPrice: (cart.quantity - 1) * cart.price } : cart)
-      .filter(cart => 0 <= cart.quantity)
+      .map(cart => {
+        const { productDiscountAmount } = calculateProductDiscount(cart.product)
+
+        const originalTotalPrice = (cart.quantity - 1) * cart.price
+        const totalPrice = (cart.quantity - 1) * productDiscountAmount
+        
+        if (cart.id === id) return {
+          ...cart,
+          quantity: cart.quantity - 1,
+          originalTotalPrice,
+          totalPrice,
+          saving: originalTotalPrice - totalPrice,
+        }
+
+        return cart
+      })
+      .filter(cart => 0 < cart.quantity)
 
     set("CARTS", payload)
     setOrderCarts(payload)
@@ -96,27 +135,47 @@ export function CartsTable(props: CartsTableProps) {
                 hover
                 key={idx}
               >
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {col.id === "product" && row.product && row.product.title}
-                    {col.id === "quantity" && <RenderQuantityButtons disabled={isCreatedPotentialOrder} itemId={row.id} value={row.quantity} onIncrement={handleOnIncrement} onDecrement={handleOnDecrement} />}
-                    {col.id === "price" && numberFormat(row.price)}
-                    {col.id === "totalPrice" && numberFormat(row.totalPrice)}
-                  </Typography>
-                </TableCell>)}
+                {columnData.map(col => {
+                  const { productDiscountPercent } = calculateProductDiscount(row.product)
+
+                  return (
+                    <TableCell align={col.align} key={col.id}>
+                      <Typography
+                        variant="body1"
+                        fontWeight="normal"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {col.id === "discount" && row.product && `${productDiscountPercent} %`}
+                        {col.id === "product" && row.product && row.product.title}
+                        {col.id === "quantity" && <RenderQuantityButtons disabled={isCreatedPotentialOrder} itemId={row.id} value={row.quantity} onIncrement={handleOnIncrement} onDecrement={handleOnDecrement} />}
+                        {col.id === "price" && numberFormat(row.price)}
+                        {col.id === "totalPrice" && numberFormat(row.originalTotalPrice)}
+                      </Typography>
+                    </TableCell>
+                  )
+                })}
               </TableRow>
             })}
 
             <TableRow>
-              <TableCell align="right" colSpan={2} />
-              <TableCell align="right">Total</TableCell>
-              <TableCell align="right">{numberFormat(totalPrice)}</TableCell>
+              <TableCell align="right" colSpan={3} />
+              <TableCell align="right" sx={{ verticalAlign: "top" }}>
+                <Typography variant="h4">Total</Typography>
+              </TableCell>
+              <TableCell align="right">
+                <Typography variant="h4">{numberFormat(totalAmount)} Ks</Typography>
+                <Typography variant="h5" sx={{ textDecoration: "line-through" }}>{numberFormat(originalTotalPrice)} Ks</Typography>
+                <Box display="flex" alignItems="center" gap={1} justifyContent="end">
+                  <Chip
+                    label="saving" 
+                    style={{ borderRadius: 5 }}
+                    color="primary" 
+                    size="small" />
+                  <Typography variant="h5">{numberFormat(totalSaving)} Ks</Typography>
+                </Box>
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>
