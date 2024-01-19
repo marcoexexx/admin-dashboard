@@ -14,6 +14,26 @@ import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { playSoundEffect } from "@/libs/playSound";
 
+import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween"
+import { memoize } from "lodash";
+
+
+dayjs.extend(isBetween)
+
+
+export const calculateProductDiscount = memoize((product: Product | undefined) => {
+  if (!product) return { saving: 0, productDiscountAmount: 0 }
+
+  const originalProductDiscount = product.discount
+  const activeSaleDiscount = product.salesCategory?.find(sale => sale.salesCategory.isActive && dayjs().isBetween(sale.salesCategory.startDate, sale.salesCategory.endDate) && sale.salesCategory.isActive)?.discount
+
+  const productDiscountPercent = activeSaleDiscount ?? originalProductDiscount  // may be 0 due to the active sale discount
+  const productDiscountAmount = product.price - (product.price * productDiscountPercent) / 100
+
+  return { productDiscountAmount, productDiscountPercent }
+})
+
 
 const CardActionsWrapper = styled(CardActions)(({theme}) => ({
   background: theme.colors.alpha.black[5],
@@ -89,13 +109,20 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
   const handleAddToCart = () => {
     const initialQuality = 1
 
+    const { productDiscountAmount } = calculateProductDiscount(product)
+
+    const originalTotalPrice = initialQuality * product.price
+    const totalPrice = initialQuality * productDiscountAmount
+
     const newPayload: Omit<OrderItem, "createdAt" | "updatedAt"> = {
       id: crypto.randomUUID(),  // For unique item, not necessary for api
       product,
       productId: product.id,
       price: product.price,
       quantity: initialQuality,
-      totalPrice: initialQuality * product.price
+      originalTotalPrice,
+      totalPrice,
+      saving: originalTotalPrice - totalPrice,
     }
 
     const payload = get<OrderItem[]>("CARTS") || []

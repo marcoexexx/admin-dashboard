@@ -1,6 +1,6 @@
 import { Store } from "@/context/store";
 import { useStore } from "@/hooks";
-import { Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { Dialog, DialogContent, DialogContentText, DialogProps, DialogTitle } from "@mui/material";
 
 interface FormModalProps {
   field: Store["modalForm"]["field"]
@@ -8,14 +8,15 @@ interface FormModalProps {
   description?: string
   onClose: () => void
   children: React.ReactNode
+  maxWidth?: DialogProps["maxWidth"]
 }
 
 export function FormModal(props: FormModalProps) {
-  const { title, field, description, onClose, children } = props
+  const { title, field, description, onClose, maxWidth = "sm", children } = props
   const { state } = useStore()
 
   return (
-    <Dialog open={state.modalForm.state && state.modalForm.field === field} onClose={onClose}>
+    <Dialog maxWidth={maxWidth} open={state.modalForm.state && state.modalForm.field === field} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {description ? <DialogContentText>{description}</DialogContentText> : null}

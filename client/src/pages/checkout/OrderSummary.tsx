@@ -1,29 +1,42 @@
+import { Alert, Badge, Box, Card, CardContent, Chip, Container, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material"
 import { MuiButton } from "@/components/ui"
-import { useLocalStorage, useStore } from "@/hooks"
-import { numberFormat } from "@/libs/numberFormat"
 import { OrderItem } from "@/services/types"
-import { Alert, Badge, Box, Card, CardContent, Container, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material"
+import { useMemo } from "react"
+import { useStore } from "@/hooks"
+import { numberFormat } from "@/libs/numberFormat"
 
 
 interface OrderSummaryProps {
+  orderItems: OrderItem[]
   deliveryFee: number | undefined
-  totalAmount: number
 }
 
 /**
  * totalAmount is total price of in all order items     := orderItems.reduce((total, item) => total + item.totalPrice, 0)
  * totalPrice is total price of order                   := totalAmount + deliveryFee
  */
-export function OrderSummary({deliveryFee = 0, totalAmount = 0}: OrderSummaryProps) {
-  const { get } = useLocalStorage()
-
+export function OrderSummary({orderItems, deliveryFee = 0}: OrderSummaryProps) {
   const { dispatch } = useStore()
 
-  const items = get<OrderItem[]>("CARTS") || []  // should not `0` or empty string. So, using `||`
+  const itemCount = orderItems.length
 
-  const itemCount = items.length
+  const totalAmount = useMemo(() => orderItems.reduce((total, item) => {
+    // console.log("re-calculate")
+    return total + item.totalPrice
+  }, 0), [JSON.stringify(orderItems)])
+
+  const originalTotalPrice = useMemo(() => orderItems.reduce((total, item) => {
+    // console.log("re-calculate")
+    return total + item.originalTotalPrice
+  }, 0), [JSON.stringify(orderItems)])
+
+  const totalSaving = useMemo(() => orderItems.reduce((total, item) => {
+    // console.log("re-calculate")
+    return total + item.saving
+  }, 0), [JSON.stringify(orderItems)])
+
   
-  const handleViewItems = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleViewItems = () => {
     dispatch({
       type: "OPEN_MODAL_FORM",
       payload: "cart"
@@ -43,7 +56,7 @@ export function OrderSummary({deliveryFee = 0, totalAmount = 0}: OrderSummaryPro
                 <Box>
                   <Typography mb={2} variant="h4">Total {itemCount} items</Typography>
                   <Box display="flex" flexDirection="row" gap={1}>
-                    {items.slice(0, 3).map((item, idx) => {
+                    {orderItems.slice(0, 3).map((item, idx) => {
                       if (item.product) return <Badge key={idx} badgeContent={item.quantity} variant="standard" color="primary">
                         <Box
                           component="img"
@@ -75,11 +88,20 @@ export function OrderSummary({deliveryFee = 0, totalAmount = 0}: OrderSummaryPro
                   <Table>
                     <TableBody>
                       <TableRow>
-                        <TableCell>
+                        <TableCell sx={{ verticalAlign: "top" }}>
                           <Typography variant="h4">Subtotal ({itemCount} items)</Typography>
                         </TableCell>
                         <TableCell align="right">
                           <Typography variant="h4">{numberFormat(totalAmount)} Ks</Typography>
+                          <Typography variant="h5" sx={{ textDecoration: "line-through" }}>{numberFormat(originalTotalPrice)} Ks</Typography>
+                          <Box display="flex" alignItems="center" gap={1} justifyContent="end">
+                            <Chip 
+                              label="saving" 
+                              style={{ borderRadius: 5 }}
+                              color="primary" 
+                              size="small" />
+                            <Typography variant="h5">{numberFormat(totalSaving)} Ks</Typography>
+                          </Box>
                         </TableCell>
                       </TableRow>
                       <TableRow>

@@ -48,9 +48,10 @@ export const createOrderSchema = object({
   body: object({
     orderItems: object({
       price: number(),
-      totalPrice: number(),
       quantity: number(),
       productId: string(),
+      totalPrice: number().min(0),
+      saving: number()
     }).array().min(0),
     status: z.enum(orderStatus).default("Pending"),
     deliveryAddressId: string().optional(),
@@ -77,9 +78,10 @@ export const updateOrderSchema = object({
   body: object({
     orderItems: object({
       price: number(),
-      totalPrice: number(),
       quantity: number(),
       productId: string(),
+      totalPrice: number().min(0),
+      saving: number()
     }).array().min(0),
     status: z.enum(orderStatus).default("Pending"),
     deliveryAddressId: string().optional(),

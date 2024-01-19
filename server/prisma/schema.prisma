@@ -393,16 +393,18 @@ model Order {
 }
 
 model OrderItem {
-  id               String          @id @default(auto()) @map("_id") @db.ObjectId
-  price            Float
-  totalPrice       Float
-  quantity         Int
-  product          Product         @relation(fields: [productId], references: [id])
-  productId        String          @db.ObjectId
-  order            Order?          @relation(fields: [orderId], references: [id])
-  orderId          String?         @db.ObjectId
-  potentialOrder   PotentialOrder? @relation(fields: [potentialOrderId], references: [id])
-  potentialOrderId String?         @db.ObjectId
+  id                 String          @id @default(auto()) @map("_id") @db.ObjectId
+  price              Float
+  originalTotalPrice Float
+  totalPrice         Float
+  saving             Float
+  quantity           Int
+  product            Product         @relation(fields: [productId], references: [id])
+  productId          String          @db.ObjectId
+  order              Order?          @relation(fields: [orderId], references: [id])
+  orderId            String?         @db.ObjectId
+  potentialOrder     PotentialOrder? @relation(fields: [potentialOrderId], references: [id])
+  potentialOrderId   String?         @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

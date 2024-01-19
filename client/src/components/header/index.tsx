@@ -79,7 +79,7 @@ export default function Header() {
       </Box>
 
       {modalForm.field === "cart"
-      ? <FormModal field='cart' title='Carts' onClose={handleOnCloseModalForm}>
+      ? <FormModal maxWidth="lg" field='cart' title='Carts' onClose={handleOnCloseModalForm}>
           <Carts orderItems={carts} />
       </FormModal>
       : null}

@@ -27,10 +27,11 @@ export const createPotentialOrderSchema = object({
   body: object({
     id: string().optional(),
     orderItems: object({
-      price: number(),
-      totalPrice: number(),
+      price: number().min(0),
       quantity: number(),
       productId: string(),
+      totalPrice: number().min(0),
+      saving: number()
     }).array().min(0),
     status: z.enum(potentialOrderStatus).default("Processing"),
     deliveryAddressId: string().optional(),
@@ -60,9 +61,10 @@ export const updatePotentialOrderSchema = object({
     id: string().optional(),
     orderItems: object({
       price: number(),
-      totalPrice: number(),
       quantity: number(),
       productId: string(),
+      totalPrice: number().min(0),
+      saving: number()
     }).array().min(0),
     status: z.enum(potentialOrderStatus).default("Processing"),
     addressType: z.enum(potentialOrderAddressType),
