@@ -64,8 +64,7 @@ export function OrderSummary({orderItems, deliveryFee = 0}: OrderSummaryProps) {
                             height: 54,
                           }}
                           alt={item.product.title}
-                          // src={item.product.images[0]}
-                          src={"../../../public/static/box.svg"}  // TODO: real product image
+                          src={item.product.images[0] || "/static/box.svg"}
                         />
                       </Badge>
                     })}

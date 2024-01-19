@@ -1,7 +1,7 @@
 const sounds = {
-  success: "../../public/audio/success.mp3",
-  error: "../../public/audio/error.mp3",
-  denied: "../../public/audio/denied.mp3",
+  success: "/audio/success.mp3",
+  error: "/audio/error.mp3",
+  denied: "/audio/denied.mp3",
 }
 
 
