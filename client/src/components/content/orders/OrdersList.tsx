@@ -20,7 +20,11 @@ export function OrdersList() {
       },
       include: {
         user: true,
-        orderItems: true
+        orderItems: {
+          include: {
+            product: false
+          }
+        }
       }
     }),
     select: data => data
