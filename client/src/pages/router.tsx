@@ -352,7 +352,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/brands" />
+                element: <Navigate to="/users" />
               },
               {
                 path: "change-role/:userId",
