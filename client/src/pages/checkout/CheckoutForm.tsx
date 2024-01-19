@@ -7,7 +7,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/components";
 import { useLocalStorage, useStore } from "@/hooks";
 import { playSoundEffect } from "@/libs/playSound";
-import { createPotentialOrderFn } from "@/services/potentialOrdersApi";
+import { createPotentialOrderFn, deletePotentialOrderFn } from "@/services/potentialOrdersApi";
 import { getUserAddressFn } from "@/services/userAddressApi";
 import { createOrderFn } from "@/services/orderApi";
 import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel, Alert, Hidden, Divider } from "@mui/material"
@@ -120,9 +120,20 @@ export function CheckoutForm() {
 
 
   const {
+    mutate: deletePotentialOrder,
+    isPending: isPendingDeletePotentialOrder,
+    isSuccess: isSuccessDeletePotentialOrder
+  } = useMutation({
+    mutationFn: deletePotentialOrderFn,
+    onSuccess: () => {},
+    onError: () => {},
+  })
+
+
+  const {
     mutate: createOrder,
-    isPending: isPendingMutationOrder,
-    isSuccess: isSuccessMutationOrder
+    isPending: isPendingCreateOrder,
+    isSuccess: isSuccessCreateOrder
   } = useMutation({
     mutationFn: createOrderFn,
     onSuccess: () => {
@@ -136,6 +147,9 @@ export function CheckoutForm() {
       })
       playSoundEffect("success")
       set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1)
+      // Remove potential order
+      const createdPotentialOrderId = getValues("createdPotentialOrderId")
+      if (createdPotentialOrderId) deletePotentialOrder(createdPotentialOrderId)
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -148,7 +162,7 @@ export function CheckoutForm() {
 
   const {
     mutate: createPotentialOrder,
-    isPending: isPendingMutationPotentialOrder,
+    isPending: isPendingCreatePotentialOrder,
   } = useMutation({
     mutationFn: createPotentialOrderFn,
     onSuccess: (response) => {
@@ -242,8 +256,8 @@ export function CheckoutForm() {
 
   // Go final step
   useEffect(() => {
-    if (isConfirmed && isSuccessMutationOrder) setActiveStepIdx(prev => prev += 1)
-  }, [isConfirmed, isSuccessMutationOrder])
+    if (isConfirmed && isSuccessCreateOrder && isSuccessDeletePotentialOrder) setActiveStepIdx(prev => prev += 1)
+  }, [isConfirmed, isSuccessCreateOrder, isSuccessDeletePotentialOrder])
 
 
   const onSubmit: SubmitHandler<CreateOrderInput> = (value) => {
@@ -376,8 +390,8 @@ export function CheckoutForm() {
                   Back
                 </MuiButton>
                 {isLastStep 
-                  ? <MuiButton onClick={handleNextStep} loading={isPendingMutationOrder} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton> 
-                  : <MuiButton onClick={handleNextStep} type={"button"} loading={isPendingMutationPotentialOrder} variant="outlined">Continue</MuiButton>}
+                  ? <MuiButton onClick={handleNextStep} loading={isPendingCreateOrder && isPendingDeletePotentialOrder} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton> 
+                  : <MuiButton onClick={handleNextStep} type={"button"} loading={isPendingCreatePotentialOrder} variant="outlined">Continue</MuiButton>}
               </Box>
             </Box>
           </FormProvider>}
