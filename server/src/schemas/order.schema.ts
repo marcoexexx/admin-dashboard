@@ -50,7 +50,7 @@ export const createOrderSchema = object({
       price: number(),
       quantity: number(),
       productId: string(),
-      originalTotalPrice: number().min(0),
+      totalPrice: number().min(0),
       saving: number()
     }).array().min(0),
     status: z.enum(orderStatus).default("Pending"),
@@ -80,7 +80,7 @@ export const updateOrderSchema = object({
       price: number(),
       quantity: number(),
       productId: string(),
-      originalTotalPrice: number().min(0),
+      totalPrice: number().min(0),
       saving: number()
     }).array().min(0),
     status: z.enum(orderStatus).default("Pending"),

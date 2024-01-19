@@ -30,7 +30,7 @@ export const createPotentialOrderSchema = object({
       price: number().min(0),
       quantity: number(),
       productId: string(),
-      originalTotalPrice: number().min(0),
+      totalPrice: number().min(0),
       saving: number()
     }).array().min(0),
     status: z.enum(potentialOrderStatus).default("Processing"),
@@ -63,7 +63,7 @@ export const updatePotentialOrderSchema = object({
       price: number(),
       quantity: number(),
       productId: string(),
-      originalTotalPrice: number().min(0),
+      totalPrice: number().min(0),
       saving: number()
     }).array().min(0),
     status: z.enum(potentialOrderStatus).default("Processing"),

@@ -16,10 +16,11 @@ const paymentMethodProvider = [
 
 const updateOrderSchema = object({
   orderItems: object({
-    price: number(),
-    totalPrice: number(),
+    price: number().min(0),
     quantity: number(),
     productId: string(),
+    totalPrice: number().min(0),
+    saving: number()
   }).array(),
   status: z.enum(orderStatus).default("Pending"),
   deliveryAddressId: string().optional(),

@@ -19,10 +19,11 @@ const updatePotentialOrderSchema = object({
   id: string().optional(),
   status: z.enum(potentialOrderStatus).default("Processing"),
   orderItems: object({
-    price: number(),
-    totalPrice: number(),
+    price: number().min(0),
     quantity: number(),
     productId: string(),
+    totalPrice: number().min(0),
+    saving: number()
   }).array(),
   deliveryAddressId: string().optional(),
   totalPrice: number().min(0),

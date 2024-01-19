@@ -330,7 +330,7 @@ export function CheckoutForm() {
   return (
     <Grid container gap={2}>
       {/* DEBUG: print current form values */}
-      {/* <button onClick={() => console.log(getValues())}>Print values</button> */}
+      <button onClick={() => console.log(getValues())}>Print values</button>
 
       <Grid item xs={12}>
         <Stepper alternativeLabel activeStep={activeStepIdx} connector={<QontoConnector />}>
