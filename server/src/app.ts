@@ -1,5 +1,6 @@
 import { resolve } from 'path';
 import dotenv from 'dotenv'
+import show_bannar from './utils/show_bannar';
 
 const env = process.env.NODE_ENV || "development"
 const path = env === "development"
@@ -7,6 +8,8 @@ const path = env === "development"
   : resolve(__dirname, `../.${env}.env`)
 
 dotenv.config({ path })
+
+show_bannar()
 
 
 import https from 'https'
