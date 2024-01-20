@@ -1,7 +1,7 @@
 // @ts-nocheck
 export default async function show_bannar() {
   try {
-    const response = await fetch('../../public/bannar.wasm');
+    const response = await fetch('/bannar.wasm');
     const wasmBuffer = await response.arrayBuffer();
     const wasmModule = await WebAssembly.instantiate(wasmBuffer, {});
     const exports = wasmModule.instance.exports;
