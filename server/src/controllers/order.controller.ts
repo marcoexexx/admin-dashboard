@@ -149,14 +149,15 @@ export async function deleteOrderHandler(
         }
       }),
 
-      // // TODO: delete pickup address
-      // db.pickupAddress.deleteMany({
-      //   where: {
-      //     orders: {
-      //       some
-      //     }
-      //   }
-      // }),
+      db.pickupAddress.deleteMany({
+        where: {
+          orders: {
+            some: {
+              id: orderId
+            }
+          }
+        }
+      }),
 
       db.order.delete({
         where: {
@@ -191,14 +192,17 @@ export async function deleteMultiOrdersHandler(
         }
       }),
 
-      // // TODO: delete pickup address
-      // db.pickupAddress.deleteMany({
-      //   where: {
-      //     orders: {
-      //       some
-      //     }
-      //   }
-      // }),
+      db.pickupAddress.deleteMany({
+        where: {
+          orders: {
+            some: {
+              id: {
+                in: orderIds
+              }
+            }
+          }
+        }
+      }),
 
       db.order.deleteMany({
         where: {
