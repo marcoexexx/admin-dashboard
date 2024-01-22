@@ -12,6 +12,8 @@ import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 import { parseExcel } from '../utils/parseExcel';
 import { UpdateProductSaleCategoryInput } from '../schemas/salesCategory.schema';
 import { generateUuid } from '../utils/generateUuid';
+import { LifeCycleProductConcrate, LifeCycleState } from '../utils/auth/life-cycle-state';
+import { ProductStatus } from '@prisma/client';
 
 
 // TODO: specification filter
@@ -379,39 +381,56 @@ export async function deleteProductHandler(
 
     const product = await db.product.findUnique({
       where: {
-        id: productId
+        id: productId,
+        status: ProductStatus.Draft
+      },
+      select: {
+        status: true
       }
     })
 
-    if (!product) return next(new AppError(404,  `Product not found`))
+    if (!product) return next(new AppError(403,  `Deletion is restricted for product in non-drift states.`))
 
     await db.$transaction([
       // remove association data(s)
       db.specification.deleteMany({
         where: {
           productId,
+          product: {
+            status: ProductStatus.Draft
+          }
         }
       }),
       db.favorites.deleteMany({
         where: {
           productId,
+          product: {
+            status: ProductStatus.Draft
+          }
         }
       }),
       db.productCategory.deleteMany({
         where: {
           productId,
+          product: {
+            status: ProductStatus.Draft
+          }
         }
       }),
       db.productSalesCategory.deleteMany({
         where: {
           productId,
+          product: {
+            status: ProductStatus.Draft
+          }
         }
       }),
 
       // remove real data
       db.product.delete({
         where: {
-          id: productId
+          id: productId,
+          status: ProductStatus.Draft
         }
       })
     ])
@@ -440,6 +459,9 @@ export async function deleteMultiProductHandler(
           productId: {
             in: productIds
           },
+          product: {
+            status: ProductStatus.Draft
+          }
         }
       }),
       db.favorites.deleteMany({
@@ -447,6 +469,9 @@ export async function deleteMultiProductHandler(
           productId: {
             in: productIds
           },
+          product: {
+            status: ProductStatus.Draft
+          }
         }
       }),
       db.productCategory.deleteMany({
@@ -454,6 +479,9 @@ export async function deleteMultiProductHandler(
           productId: {
             in: productIds
           },
+          product: {
+            status: ProductStatus.Draft
+          }
         }
       }),
       db.productSalesCategory.deleteMany({
@@ -461,6 +489,9 @@ export async function deleteMultiProductHandler(
           productId: {
             in: productIds
           },
+          product: {
+            status: ProductStatus.Draft
+          }
         }
       }),
       db.product.deleteMany({
@@ -468,6 +499,7 @@ export async function deleteMultiProductHandler(
           id: {
             in: productIds
           },
+          status: ProductStatus.Draft
         }
       })
     ])
@@ -506,21 +538,43 @@ export async function updateProductHandler(
       status
     } = req.body
 
+    const originalProductState = await db.product.findUnique({
+      where: {
+        id: productId,
+        status: ProductStatus.Draft
+      },
+      select: {
+        status: true
+      }
+    })
+
+    if (!originalProductState) return next(new AppError(403, "Unable to update product details at this time. Please ensure the product is in a modifiable state."))
+
+    const productLifeCycleState = new LifeCycleState<LifeCycleProductConcrate>({ resource: "product", state: originalProductState.status })
+    const productState = productLifeCycleState.changeState(status)
+
     const [_deletedProductCategory, _daletedProductSalesCategory, _deletedProductSpecificationm, product] = await db.$transaction([
       // remove association data(s)
       db.productCategory.deleteMany({
         where: {
           productId,
+          product: {
+            status: ProductStatus.Draft
+          }
         }
       }),
       db.productSalesCategory.deleteMany({
         where: {
           productId,
+          product: {
+            status: ProductStatus.Draft
+          }
         }
       }),
       db.product.update({
         where: {
-          id: productId
+          id: productId,
+          status: ProductStatus.Draft
         },
         data: {
           specification: {
@@ -534,7 +588,8 @@ export async function updateProductHandler(
       // Update real
       db.product.update({
         where: {
-          id: productId
+          id: productId,
+          status: ProductStatus.Draft
         },
         data: {
           price,
@@ -548,7 +603,7 @@ export async function updateProductHandler(
           description,
           dealerPrice,
           marketPrice,
-          status,
+          status: productState,
           priceUnit,
           categories: {
             create: categories.map(id => ({
@@ -569,8 +624,12 @@ export async function updateProductHandler(
     ])
 
     res.status(200).json(HttpDataResponse({ product }))
-  } catch (err) {
-    next(err)
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    const status = err?.status || 500
+
+    logging.error(msg)
+    next(new AppError(status, msg))
   }
 }
 

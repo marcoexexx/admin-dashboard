@@ -15,7 +15,6 @@ import { Product, User } from "@/services/types";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { playSoundEffect } from "@/libs/playSound";
 
 
 const productStatus: {
@@ -136,37 +135,15 @@ export function ProductsListTable(props: ProductsListTableProps) {
   }
 
   const handleUpdateAction = (product: Product) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    if (product.status === "Draft") navigate(`/products/update/${product.id}`)
-    else {
-      dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message: "Warning: only `Draft` state can edit!",
-          severity: "warning"
-        }
-      })
-      playSoundEffect("denied")
-    }
+    navigate(`/products/update/${product.id}`)
   }
 
   const handleClickDeleteAction = (product: Product) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    if (product.status === "Draft") {
-      setDeleteId(product.id)
-      dispatch({
-        type: "OPEN_MODAL_FORM",
-        payload: "delete-product"
-      })
-    }
-    else {
-      dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message: "Warning: only `Draft` state can delete!",
-          severity: "warning"
-        }
-      })
-      playSoundEffect("denied")
-    }
+    setDeleteId(product.id)
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: "delete-product"
+    })
   }
 
   const handleOnExport = () => {

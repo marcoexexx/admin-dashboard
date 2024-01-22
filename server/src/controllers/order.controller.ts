@@ -7,6 +7,7 @@ import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, OrderFilterPagination, UpdateOrderInput } from "../schemas/order.schema";
+import { LifeCycleOrderConcrate, LifeCycleState } from "../utils/auth/life-cycle-state";
 
 
 export async function getOrdersHandler(
@@ -211,6 +212,20 @@ export async function updateOrderHandler(
     const { orderId } = req.params
     const data = req.body
 
+    const originalOrderState = await db.order.findUnique({
+      where: {
+        id: orderId
+      },
+      select: {
+        status: true
+      }
+    })
+
+    if (!originalOrderState) return next(new AppError(404, "Order not found"))
+
+    const orderLifeCycleState = new LifeCycleState<LifeCycleOrderConcrate>({ resource: "order", state: originalOrderState.status })
+    const orderState = orderLifeCycleState.changeState(data.status)
+
     const [_, order] = await db.$transaction([
       db.orderItem.deleteMany({
         where: {
@@ -230,7 +245,7 @@ export async function updateOrderHandler(
           },
           totalPrice: data.totalPrice,
           addressType: data.addressType,
-          status: data.status,
+          status: orderState,
           deliveryAddressId: data.deliveryAddressId,
           billingAddressId: data.billingAddressId,
           pickupAddressId: data.pickupAddressId,
@@ -243,7 +258,9 @@ export async function updateOrderHandler(
     res.status(200).json(HttpDataResponse({ order }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
+    const status = err?.status || 500
+
     logging.error(msg)
-    next(new AppError(500, msg))
+    next(new AppError(status, msg))
   }
 }
