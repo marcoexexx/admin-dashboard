@@ -20,7 +20,6 @@ export default async function show_bannar() {
     const bannerPtr = get_banner();
     const banner = getString(bannerPtr);
 
-    console.clear()
     console.log(banner.split(".com")[0] + ".com");
 
     free_banner(bannerPtr);
