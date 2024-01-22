@@ -1,10 +1,11 @@
 import { ErrorBoundary, PagePermission } from "@/components";
 import { Navigate, createBrowserRouter } from "react-router-dom";
-import Loader from "./loader";
-import { lazy } from "react";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
+import { lazy } from "react";
 import { accessLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, potentialOrderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, townshipPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
+
+import Loader from "./loader";
 
 
 const HomePage = Loader(lazy(() => import("@/pages/home")))
