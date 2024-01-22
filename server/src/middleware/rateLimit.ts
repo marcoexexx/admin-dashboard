@@ -27,7 +27,7 @@ export async function rateLimitMiddleware(
     let retryAfter: number
     let ttl = await redisClient.ttl(key)
 
-    if (!requestCount) {
+    if (!requestCount || ttl === -1) {
       await redisClient.setEx(key, ALLOWED_EXPIRY_TIME, "1")
       resetTime = currentTimestamp + ALLOWED_EXPIRY_TIME
     } else {
