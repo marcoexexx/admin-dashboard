@@ -145,10 +145,18 @@ export async function deleteOrderHandler(
     await db.$transaction([
       db.orderItem.deleteMany({
         where: {
-          // TODO: Must test
           orderId
         }
       }),
+
+      // // TODO: delete pickup address
+      // db.pickupAddress.deleteMany({
+      //   where: {
+      //     orders: {
+      //       some
+      //     }
+      //   }
+      // }),
 
       db.order.delete({
         where: {
@@ -177,12 +185,20 @@ export async function deleteMultiOrdersHandler(
     await db.$transaction([
       db.orderItem.deleteMany({
         where: {
-          // TODO: Must test
           orderId: {
             in: orderIds
           }
         }
       }),
+
+      // // TODO: delete pickup address
+      // db.pickupAddress.deleteMany({
+      //   where: {
+      //     orders: {
+      //       some
+      //     }
+      //   }
+      // }),
 
       db.order.deleteMany({
         where: {
@@ -239,7 +255,11 @@ export async function updateOrderHandler(
         data: {
           orderItems: {
             create: data.orderItems.map(item => ({
-              ...item,
+              productId: item.productId,
+              price: item.price,
+              quantity: item.quantity,
+              totalPrice: item.totalPrice,
+              saving: item.saving,
               originalTotalPrice: item.price * item.quantity
             }))
           },

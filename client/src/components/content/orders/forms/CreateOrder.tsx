@@ -37,6 +37,7 @@ export const createOrderSchema = object({
     email: string().optional(),
     date: z.any()
   }).optional(),
+  pickupAddressId: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
   paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
   remark: string().optional(),

@@ -89,6 +89,10 @@ export type PotentialOrder = {
   remark?: string
   totalPrice: number
 
+  addressType: 
+    | "Delivery"
+    | "Pickup"
+
   // relationship
   user?: User
   userId?: string
@@ -111,6 +115,10 @@ export type Order = {
   status: OrderStatus
   remark?: string
   totalPrice: number
+
+  addressType: 
+    | "Delivery"
+    | "Pickup"
 
   // relationship
   user?: User

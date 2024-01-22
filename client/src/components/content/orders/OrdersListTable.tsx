@@ -4,7 +4,7 @@ import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { getOrderPermissionsFn } from "@/services/permissionsApi";
 import { numberFormat } from "@/libs/numberFormat";
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, Theme, useTheme } from "@mui/material"
+import { Box, Card, CardContent, Checkbox, Divider, IconButton, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, Theme, useTheme, SelectChangeEvent } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
@@ -88,12 +88,13 @@ interface OrdersListTableProps {
   orders: Order[]
   isLoading?: boolean
   count: number
+  onStatusChange: (order: Order, status: OrderStatus) => void 
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
 }
 
 export function OrdersListTable(props: OrdersListTableProps) {
-  const { orders, count, isLoading, onDelete, onMultiDelete } = props
+  const { orders, count, isLoading, onStatusChange, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
@@ -157,6 +158,11 @@ export function OrdersListTable(props: OrdersListTableProps) {
     dispatch({
       type: "CLOSE_ALL_MODAL_FORM"
     })
+  }
+
+  const handleChangeOrderStatus = (order: Order) => (evt: SelectChangeEvent) => {
+    const { value } = evt.target
+    onStatusChange(order, value as OrderStatus)
   }
 
   const isAllowedDeleteOrder = usePermission({
@@ -258,7 +264,7 @@ export function OrdersListTable(props: OrdersListTableProps) {
                   <Select
                     labelId="order-status"
                     value={row.status}
-                    // onChange={handleChangeProductStatus(row)}
+                    onChange={handleChangeOrderStatus(row)}
                     size="small"
                   >
                     {orderStatus.map(status => {

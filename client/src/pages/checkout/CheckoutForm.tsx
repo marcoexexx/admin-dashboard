@@ -176,6 +176,7 @@ export function CheckoutForm() {
       })
       playSoundEffect("success")
       setValue("createdPotentialOrderId", response.potentialOrder.id)
+      setValue("pickupAddressId", response.potentialOrder.pickupAddressId)
       setActiveStepIdx(prev => prev += 1)
       set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1)
     },
