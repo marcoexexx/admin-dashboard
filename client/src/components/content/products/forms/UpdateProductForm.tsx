@@ -153,9 +153,13 @@ export function UpdateProductForm() {
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<UpdateProductInput> = (value) => {
-    if (productId) updateProduct({id: productId, product: {
+    if (!productId) return
+
+    if (product?.status !== "Draft") return
+
+    updateProduct({id: productId, product: {
       ...value,
-      status: product?.status
+      status: value.isPending ? "Pending" : value.status
     }})
   }
 
@@ -307,7 +311,7 @@ export function UpdateProductForm() {
             : null}
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Save</MuiButton>
+            <MuiButton variant="contained" type="submit" disabled={product.status !== "Draft"}>Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

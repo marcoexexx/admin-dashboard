@@ -541,14 +541,13 @@ export async function updateProductHandler(
     const originalProductState = await db.product.findUnique({
       where: {
         id: productId,
-        status: ProductStatus.Draft
       },
       select: {
         status: true
       }
     })
 
-    if (!originalProductState) return next(new AppError(403, "Unable to update product details at this time. Please ensure the product is in a modifiable state."))
+    if (!originalProductState) return next(new AppError(404, "Product not found."))
 
     const productLifeCycleState = new LifeCycleState<LifeCycleProductConcrate>({ resource: "product", state: originalProductState.status })
     const productState = productLifeCycleState.changeState(status)
@@ -558,23 +557,16 @@ export async function updateProductHandler(
       db.productCategory.deleteMany({
         where: {
           productId,
-          product: {
-            status: ProductStatus.Draft
-          }
         }
       }),
       db.productSalesCategory.deleteMany({
         where: {
           productId,
-          product: {
-            status: ProductStatus.Draft
-          }
         }
       }),
       db.product.update({
         where: {
           id: productId,
-          status: ProductStatus.Draft
         },
         data: {
           specification: {
@@ -589,7 +581,6 @@ export async function updateProductHandler(
       db.product.update({
         where: {
           id: productId,
-          status: ProductStatus.Draft
         },
         data: {
           price,
