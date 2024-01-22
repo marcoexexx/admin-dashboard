@@ -11,45 +11,6 @@ import { Product, UserResponse } from "@/services/types";
 import { playSoundEffect } from "@/libs/playSound";
 
 
-interface ProductStatusContext {
-  requestReview: () => ProductStatus
-  approve: () => ProductStatus
-  makeDraft: () => ProductStatus
-}
-
-type ProductStatusHandler = () => ProductStatusContext
-
-const handleDraftProductStatus: ProductStatusHandler = () => ({
-  requestReview: () => "Pending",
-  approve: () => { throw new Error("Can not publish Draft status.") },
-  makeDraft: () => { throw new Error("Product already Draft status.") },
-})
-
-const handlePendingProductStatus: ProductStatusHandler = () => ({
-  requestReview: () => { throw new Error("Product already Pending status.") },
-  approve: () => "Published",
-  makeDraft: () => "Draft",
-})
-
-const handlePublishedProductStatus: ProductStatusHandler = () => ({
-  requestReview: () => { throw new Error("Published product can not be Pending status.") },
-  approve: () => { throw new Error("Product already in Published status.") },
-  makeDraft: () => "Draft",
-})
-
-const getProductStatusContext: Record<ProductStatus, "approve" | "requestReview" | "makeDraft"> = {
-  Draft: "makeDraft",
-  Pending: "requestReview",
-  Published: "approve"
-}
-
-const getProductStatusConcrate: Record<ProductStatus, (status: ProductStatus) => ProductStatus> = ({
-  Draft: (status) => handleDraftProductStatus()[getProductStatusContext[status]](),
-  Pending: (status) => handlePendingProductStatus()[getProductStatusContext[status]](),
-  Published: (status) => handlePublishedProductStatus()[getProductStatusContext[status]]()
-})
-
-
 export function ProductsList() {
   const { state: {productFilter}, dispatch } = useStore()
 
@@ -118,9 +79,9 @@ export function ProductsList() {
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
-        severity: "error"
+        severity: err.response.data.status === 403 ? "warning" : "error"
       } })
-      playSoundEffect("error")
+      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -142,9 +103,9 @@ export function ProductsList() {
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
-        severity: "error"
+        severity: err.response.data.status === 403 ? "warning" : "error"
       } })
-      playSoundEffect("error")
+      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -166,9 +127,9 @@ export function ProductsList() {
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
-        severity: "error"
+        severity: err.response.data.status === 403 ? "warning" : "error"
       } })
-      playSoundEffect("error")
+      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -196,32 +157,18 @@ export function ProductsList() {
   }
 
   function handleChangeStatusProduct(product: Product, status: ProductStatus) {
-    try {
-      const safedStatus = getProductStatusConcrate[product.status](status)
+    statusChangeProduct({ id: product.id, product: {
+      ...product,
+      overview: product.overview || undefined,
+      description: product.description || undefined,
+      status,
+      categories: product.categories?.map(x => x.categoryId),
+      salesCategory: product.salesCategory?.map(({salesCategoryId, discount}) => ({
+        salesCategory: salesCategoryId,
+        discount
+      }))
 
-      statusChangeProduct({ id: product.id, product: {
-        ...product,
-        overview: product.overview || undefined,
-        description: product.description || undefined,
-        status: safedStatus,
-        categories: product.categories?.map(x => x.categoryId),
-        salesCategory: product.salesCategory?.map(({salesCategoryId, discount}) => ({
-          salesCategory: salesCategoryId,
-          discount
-        }))
-
-      } })
-    } catch (err: any) {
-      const message = err instanceof Error ? err.message : "unknown error"
-      dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message,
-          severity: "warning"
-        }
-      })
-      playSoundEffect("denied")
-    }
+    } })
   }
 
 

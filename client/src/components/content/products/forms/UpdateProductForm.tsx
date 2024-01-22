@@ -1,4 +1,4 @@
-import { Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, Switch, TextField } from "@mui/material";
+import { Alert, Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, Switch, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { BrandInputField, CatgoryMultiInputField, EditorInputField, SpecificationInputField } from "@/components/input-fields";
 import { SuspenseLoader, queryClient } from "@/components";
@@ -96,12 +96,12 @@ export function UpdateProductForm() {
       })
       playSoundEffect("success")
     },
-    onError: () => {
+    onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed created a new product.",
-        severity: "error"
+        message: `failed: ${err.response.data.message}`,
+        severity: err.response.data.status === 403 ? "warning" : "error"
       } })
-      playSoundEffect("error")
+      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
     }
   })
 
@@ -203,7 +203,6 @@ export function UpdateProductForm() {
             </Box>
           </Grid>
 
-
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField 
@@ -301,8 +300,14 @@ export function UpdateProductForm() {
             />
           </Grid>
 
+          {product.status !== "Draft" 
+            ? <Grid item xs={12}>
+              <Alert severity="warning">Update not permitted during the {product.status} process.</Alert>
+              </Grid>
+            : null}
+
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Create</MuiButton>
+            <MuiButton variant="contained" type="submit">Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

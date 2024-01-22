@@ -3,18 +3,45 @@ import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { getOrderPermissionsFn } from "@/services/permissionsApi";
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { numberFormat } from "@/libs/numberFormat";
+import { Box, Card, CardContent, Checkbox, Divider, IconButton, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, Theme, useTheme, SelectChangeEvent } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
 import { Order, PotentialOrder } from "@/services/types";
 import { PotentialOrdersActions } from ".";
 import { RenderOrderItemLabel } from "@/components/table-labels";
+import { OrderStatus } from "./forms";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { numberFormat } from "@/libs/numberFormat";
 
+
+const orderStatus: {
+  label: OrderStatus,
+  color: (theme: Theme) => string,
+}[] = [
+  {
+    label: "Processing",
+    color: (theme) => theme.colors.success.main,
+  },
+  {
+    label: "Pending",
+    color: (theme) => theme.colors.warning.main,
+  }, 
+  {
+    label: "Cancelled",
+    color: (theme) => theme.colors.error.main,
+  },
+  {
+    label: "Shipped",
+    color: (theme) => theme.colors.gradients.purple1,
+  },
+  {
+    label: "Delivered",
+    color: (theme) => theme.colors.primary.main,
+  },
+]
 
 const columnData: TableColumnHeader<PotentialOrder & { amount: number }>[] = [
   {
@@ -33,11 +60,6 @@ const columnData: TableColumnHeader<PotentialOrder & { amount: number }>[] = [
     name: "Order No"
   },
   {
-    id: "status",
-    align: "left",
-    name: "Order status"
-  },
-  {
     id: "updatedAt",
     align: "left",
     name: "Orderrd date"
@@ -51,6 +73,11 @@ const columnData: TableColumnHeader<PotentialOrder & { amount: number }>[] = [
 
 const columnHeader = columnData.concat([
   {
+    id: "status",
+    align: "left",
+    name: "Order status"
+  },
+  {
     id: "actions",
     align: "right",
     name: "Actions"
@@ -61,12 +88,13 @@ interface OrdersListTableProps {
   orders: Order[]
   isLoading?: boolean
   count: number
+  onStatusChange: (order: Order, status: OrderStatus) => void 
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
 }
 
 export function OrdersListTable(props: OrdersListTableProps) {
-  const { orders, count, isLoading, onDelete, onMultiDelete } = props
+  const { orders, count, isLoading, onStatusChange, onDelete, onMultiDelete } = props
 
   const [deleteId, setDeleteId] = useState("")
 
@@ -130,6 +158,11 @@ export function OrdersListTable(props: OrdersListTableProps) {
     dispatch({
       type: "CLOSE_ALL_MODAL_FORM"
     })
+  }
+
+  const handleChangeOrderStatus = (order: Order) => (evt: SelectChangeEvent) => {
+    const { value } = evt.target
+    onStatusChange(order, value as OrderStatus)
   }
 
   const isAllowedDeleteOrder = usePermission({
@@ -226,6 +259,25 @@ export function OrdersListTable(props: OrdersListTableProps) {
                     {col.id === "remark" && row.remark}
                   </Typography>
                 </TableCell>)}
+
+                <TableCell align="right">
+                  <Select
+                    labelId="order-status"
+                    value={row.status}
+                    onChange={handleChangeOrderStatus(row)}
+                    size="small"
+                  >
+                    {orderStatus.map(status => {
+                      return <MenuItem
+                        key={status.label} 
+                        value={status.label}
+                      >
+                        <Typography color={status.color(theme)}>{status.label}</Typography>
+                      </MenuItem>
+                    })}
+                  </Select>
+                </TableCell>
+
 
                 {isAllowedUpdateOrder && isAllowedDeleteOrder
                 ? <TableCell align="right">

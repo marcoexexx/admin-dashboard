@@ -162,7 +162,6 @@ export async function deletePotentialOrderHandler(
     await db.$transaction([
       db.orderItem.deleteMany({
         where: {
-          // TODO: Must test
           orderId: undefined,
           potentialOrderId,
         }
@@ -195,7 +194,6 @@ export async function deleteMultiPotentialOrdersHandler(
     await db.$transaction([
       db.orderItem.deleteMany({
         where: {
-          // TODO: Must test
           orderId: undefined,
           potentialOrderId: {
             in: potentialOrderIds

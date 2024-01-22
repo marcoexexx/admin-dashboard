@@ -4,7 +4,9 @@ import { useStore } from "@/hooks";
 import { SuspenseLoader, queryClient } from "@/components";
 import { OrdersListTable } from ".";
 import { playSoundEffect } from "@/libs/playSound";
-import { deleteMultiOrdersFn, deleteOrderFn, getOrdersFn } from "@/services/orderApi";
+import { deleteMultiOrdersFn, deleteOrderFn, getOrdersFn, updateOrderFn } from "@/services/orderApi";
+import { Order } from "@/services/types";
+import { OrderStatus } from "./forms";
 
 
 export function OrdersList() {
@@ -78,6 +80,44 @@ export function OrdersList() {
     }
   })
 
+  const {
+    mutate: statusChangeOrder,
+  } = useMutation({
+    mutationFn: updateOrderFn,
+    onError(err: any) {
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: `failed: ${err.response.data.message}`,
+        severity: err.response.data.status === 403 ? "warning" : "error"
+      } })
+      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
+    },
+    onSuccess() {
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: "Success update order.",
+        severity: "success"
+      } })
+      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
+      queryClient.invalidateQueries({
+        queryKey: ["orders"]
+      })
+      playSoundEffect("success")
+    }
+  })
+
+  function handleChangeStatusOrder(order: Order, status: OrderStatus) {
+    if (!order.billingAddressId) return
+
+    statusChangeOrder({ orderId: order.id, order: {
+      ...order,
+      status,
+      orderItems: order.orderItems || [],
+      deliveryAddressId: order.deliveryAddressId || undefined,
+      pickupAddressId: order.pickupAddressId || undefined,
+      billingAddressId: order.billingAddressId,
+      remark: order.remark || undefined,
+    } })
+  }
+
 
   if (isError && error) return <h1>ERROR: {error.message}</h1>
 
@@ -93,6 +133,7 @@ export function OrdersList() {
 
   return <Card>
     <OrdersListTable
+      onStatusChange={handleChangeStatusOrder}
       isLoading={isLoading}
       orders={data.results} 
       count={data.count} 
