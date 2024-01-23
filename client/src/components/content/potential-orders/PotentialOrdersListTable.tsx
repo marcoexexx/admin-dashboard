@@ -38,9 +38,14 @@ const columnData: TableColumnHeader<PotentialOrder & { amount: number }>[] = [
     name: "Order status"
   },
   {
+    id: "createdAt",
+    align: "left",
+    name: "Created"
+  },
+  {
     id: "updatedAt",
     align: "left",
-    name: "Orderrd date"
+    name: "Updated"
   },
   {
     id: "remark",
@@ -222,7 +227,8 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
                     {col.id === "amount" && numberFormat(row.totalPrice)}
                     {col.id === "orderItems" && row.orderItems?.map(item => <RenderOrderItemLabel key={item.id} orderItem={item} />)}
                     {col.id === "status" && row.status}
-                    {col.id === "updatedAt" && (new Date(row.updatedAt).toISOString())}
+                    {col.id === "updatedAt" && (new Date(row.updatedAt).toLocaleString())}
+                    {col.id === "createdAt" && (new Date(row.createdAt).toLocaleString())}
                     {col.id === "remark" && row.remark}
                   </Typography>
                 </TableCell>)}
