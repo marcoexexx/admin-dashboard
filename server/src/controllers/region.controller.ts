@@ -2,13 +2,16 @@ import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { parseExcel } from "../utils/parseExcel";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+import { createEventAction } from "../utils/auditLog";
+import { CreateMultiRegionsInput, CreateRegionInput, DeleteMultiRegionsInput, GetRegionInput, RegionFilterPagination, UpdateRegionInput } from "../schemas/region.schema";
+import { EventActionType, Resource } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
 import AppError from "../utils/appError";
 import logging from "../middleware/logging/logging";
 import fs from "fs"
-import { CreateMultiRegionsInput, CreateRegionInput, DeleteMultiRegionsInput, GetRegionInput, RegionFilterPagination, UpdateRegionInput } from "../schemas/region.schema";
 
 
 export async function getRegionsHandler(
@@ -69,6 +72,16 @@ export async function getRegionHandler(
       include
     })
 
+    if (region) {
+      // Read event action audit log
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.Region,
+        resourceIds: [region.id],
+        action: EventActionType.Read
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ region }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -92,7 +105,7 @@ export async function createMultiRegionsHandler(
     const data = parseExcel(buf) as CreateMultiRegionsInput
 
     // Update not affected
-    await Promise.all(data.map(region => db.region.upsert({
+    const regions = await Promise.all(data.map(region => db.region.upsert({
       where: {
         name: region.name
       },
@@ -101,6 +114,14 @@ export async function createMultiRegionsHandler(
       },
       update: {}
     })))
+
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Region,
+      resourceIds: regions.map(region => region.id),
+      action: EventActionType.Create
+    })
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {
@@ -131,6 +152,14 @@ export async function createRegionHandler(
       },
     })
 
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Region,
+      resourceIds: [region.id],
+      action: EventActionType.Create
+    })
+
     res.status(201).json(HttpDataResponse({ region }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -151,10 +180,18 @@ export async function deleteRegionHandler(
   try {
     const { regionId } = req.params
 
-    await db.region.delete({
+    const region = await db.region.delete({
       where: {
         id: regionId
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Region,
+      resourceIds: [region.id],
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -180,6 +217,14 @@ export async function deleteMultilRegionsHandler(
           in: regionIds
         }
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Region,
+      resourceIds: regionIds,
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -210,6 +255,14 @@ export async function updateRegionHandler(
         }
       }),
     ])
+
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Region,
+      resourceIds: [region.id],
+      action: EventActionType.Update
+    })
 
     res.status(200).json(HttpDataResponse({ region }))
   } catch (err: any) {

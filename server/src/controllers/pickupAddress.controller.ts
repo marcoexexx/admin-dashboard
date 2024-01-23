@@ -1,12 +1,14 @@
 import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+import { createEventAction } from "../utils/auditLog";
+import { EventActionType, Resource } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import { DeleteMultiPickupAddressesInput, GetPickupAddressInput, PickupAddressFilterPagination } from "../schemas/pickupAddress.schema";
 
 import AppError from "../utils/appError";
 import logging from "../middleware/logging/logging";
-import { DeleteMultiPickupAddressesInput, GetPickupAddressInput, PickupAddressFilterPagination } from "../schemas/pickupAddress.schema";
 
 
 export async function getPickupAddressesHandler(
@@ -72,6 +74,16 @@ export async function getPickupAddressHandler(
       include
     })
 
+    // Read event action audit log
+    if (pickupAddress) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.PickupAddress,
+        resourceIds: [pickupAddress.id],
+        action: EventActionType.Read
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ pickupAddress }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -89,10 +101,18 @@ export async function deletePickupAddressHandler(
   try {
     const { pickupAddressId } = req.params
 
-    await db.pickupAddress.delete({
+    const pickupAddress = await db.pickupAddress.delete({
       where: {
         id: pickupAddressId
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.PickupAddress,
+      resourceIds: [pickupAddress.id],
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -118,6 +138,14 @@ export async function deleteMultiPickupAddressesHandler(
           in: pickupAddressIds
         }
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.PickupAddress,
+      resourceIds: pickupAddressIds,
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))

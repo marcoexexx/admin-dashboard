@@ -28,6 +28,7 @@ enum AuthProvider {
   Facebook
 }
 
+// TODO: rename to AuditLogResource
 enum Resource {
   User
   Brand
@@ -432,6 +433,7 @@ model Region {
   updatedAt DateTime @updatedAt
 }
 
+// TODO: rename to AuditLogAction
 enum EventActionType {
   Create
   Read

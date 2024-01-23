@@ -98,6 +98,14 @@ export async function getOrderPermissionsFn(opt: QueryOptionArgs) {
 }
 
 
+export async function getAuditLogsPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/audit-logs", {
+    ...opt,
+  })
+  return data
+}
+
+
 export async function getAccessLogsPermissionsFn(opt: QueryOptionArgs) {
   const { data } = await authApi.get<PermissionsResponse>("/permissions/access-logs", {
     ...opt,

@@ -1,15 +1,18 @@
-import { NextFunction, Request, Response } from "express";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { CouponFilterPagination, CreateCouponInput, CreateMultiCouponsInput, DeleteMultiCouponsInput, GetCouponInput, UpdateCouponInput } from "../schemas/coupon.schema";
 import { db } from "../utils/db";
+import { parseExcel } from "../utils/parseExcel";
+import { generateCouponLabel } from "../utils/generateCouponLabel";
+import { createEventAction } from "../utils/auditLog";
+import { NextFunction, Request, Response } from "express";
+import { CouponFilterPagination, CreateCouponInput, CreateMultiCouponsInput, DeleteMultiCouponsInput, GetCouponInput, UpdateCouponInput } from "../schemas/coupon.schema";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { parseExcel } from "../utils/parseExcel";
+import { EventActionType, Resource } from "@prisma/client";
+
+import AppError from "../utils/appError";
 import fs from 'fs'
 import logging from "../middleware/logging/logging";
-import AppError from "../utils/appError";
-import { generateCouponLabel } from "../utils/generateCouponLabel";
 
 
 export async function getCouponsHandler(
@@ -78,6 +81,16 @@ export async function getCouponHandler(
       include
     })
 
+    // Read event action audit log
+    if (coupon) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.Coupon,
+        resourceIds: [coupon.id],
+        action: EventActionType.Read
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ coupon }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -103,6 +116,14 @@ export async function createCouponHandler(
         isUsed,
         expiredDate
       },
+    })
+
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Coupon,
+      resourceIds: [coupon.id],
+      action: EventActionType.Create
     })
 
     res.status(200).json(HttpDataResponse({ coupon }))
@@ -131,7 +152,7 @@ export async function createMultiCouponsHandler(
     const data = parseExcel(buf) as CreateMultiCouponsInput
 
     // Update not affected
-    await Promise.all(data.map(({label, points, dolla, isUsed, expiredDate}) => db.coupon.upsert({
+    const coupons = await Promise.all(data.map(({label, points, dolla, isUsed, expiredDate}) => db.coupon.upsert({
       where: {
         label
       },
@@ -144,6 +165,14 @@ export async function createMultiCouponsHandler(
       },
       update: {}
     })))
+
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Coupon,
+      resourceIds: coupons.map(coupon => coupon.id),
+      action: EventActionType.Create
+    })
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {
@@ -164,10 +193,19 @@ export async function deleteCouponHandler(
 ) {
   try {
     const { couponId } = req.params
-    await db.coupon.delete({
+
+    const coupon = await db.coupon.delete({
       where: {
         id: couponId
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Coupon,
+      resourceIds: [coupon.id],
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -186,12 +224,21 @@ export async function deleteMultiCouponsHandler(
 ) {
   try {
     const { couponIds } = req.body
+
     await db.coupon.deleteMany({
       where: {
         id: {
           in: couponIds
         }
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Coupon,
+      resourceIds: couponIds,
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -217,6 +264,14 @@ export async function updateCouponHandler(
         id: couponId,
       },
       data
+    })
+
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Coupon,
+      resourceIds: [coupon.id],
+      action: EventActionType.Update
     })
 
     res.status(200).json(HttpDataResponse({ coupon }))

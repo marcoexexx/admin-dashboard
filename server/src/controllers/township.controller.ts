@@ -1,14 +1,17 @@
-import logging from "../middleware/logging/logging";
-import fs from "fs"
 import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { parseExcel } from "../utils/parseExcel";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+import { createEventAction } from "../utils/auditLog";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper"; 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"; 
 import { CreateMultiTownshipsInput, CreateTownshipInput, DeleteMultiTownshipsInput, GetTownshipInput, TownshipFilterPagination, UpdateTownshipInput } from "../schemas/township.schema";
+import { EventActionType, Resource } from "@prisma/client";
+
 import AppError from "../utils/appError";
+import logging from "../middleware/logging/logging";
+import fs from "fs"
 
 
 export async function getTownshipsHandler(
@@ -73,6 +76,16 @@ export async function getTownshipHandler(
       include
     })
 
+    if (township) {
+      // Read event action audit log
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.Township,
+        resourceIds: [township.id],
+        action: EventActionType.Read
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ township }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -96,7 +109,7 @@ export async function createMultiTownshipsHandler(
     const data = parseExcel(buf) as CreateMultiTownshipsInput
 
     // Update not affected
-    await Promise.all(data.map(township => db.townshipFees.upsert({
+    const townships = await Promise.all(data.map(township => db.townshipFees.upsert({
       where: {
         name: township.name
       },
@@ -106,6 +119,14 @@ export async function createMultiTownshipsHandler(
       },
       update: {}
     })))
+
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Township,
+      resourceIds: townships.map(township => township.id),
+      action: EventActionType.Create
+    })
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {
@@ -131,6 +152,14 @@ export async function createTownshipHandler(
       data: { name, fees },
     })
 
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Township,
+      resourceIds: [township.id],
+      action: EventActionType.Create
+    })
+
     res.status(201).json(HttpDataResponse({ township }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -151,10 +180,18 @@ export async function deleteTownshipHandler(
   try {
     const { townshipId } = req.params
 
-    await db.townshipFees.delete({
+    const township = await db.townshipFees.delete({
       where: {
         id: townshipId
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Township,
+      resourceIds: [township.id],
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -180,6 +217,14 @@ export async function deleteMultilTownshipsHandler(
           in: townshipIds
         }
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Township,
+      resourceIds: townshipIds,
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -211,6 +256,14 @@ export async function updateTownshipHandler(
         }
       })
     ])
+
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Township,
+      resourceIds: [townships.id],
+      action: EventActionType.Update
+    })
 
     res.status(200).json(HttpDataResponse({ townships }))
   } catch (err: any) {

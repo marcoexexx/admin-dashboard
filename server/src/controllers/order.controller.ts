@@ -1,13 +1,16 @@
-import logging from "../middleware/logging/logging";
-import AppError from "../utils/appError";
-import { NextFunction, Request, Response } from "express";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
+import { createEventAction } from "../utils/auditLog";
+import { EventActionType, Resource } from "@prisma/client";
+import { NextFunction, Request, Response } from "express";
+import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, OrderFilterPagination, UpdateOrderInput } from "../schemas/order.schema";
 import { LifeCycleOrderConcrate, LifeCycleState } from "../utils/auth/life-cycle-state";
+
+import AppError from "../utils/appError";
+import logging from "../middleware/logging/logging";
 
 
 export async function getOrdersHandler(
@@ -78,6 +81,16 @@ export async function getOrderHandler(
       include
     })
 
+    // Read event action audit log
+    if (order) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.Order,
+        resourceIds: [order.id],
+        action: EventActionType.Read
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ order }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -122,6 +135,14 @@ export async function createOrderHandler(
       },
     })
 
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Order,
+      resourceIds: [order.id],
+      action: EventActionType.Create
+    })
+
     res.status(201).json(HttpDataResponse({ order }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -142,7 +163,7 @@ export async function deleteOrderHandler(
   try {
     const { orderId } = req.params
     
-    await db.$transaction([
+    const [_deletedOrderItems, _deletedPickupAddress, order] = await db.$transaction([
       db.orderItem.deleteMany({
         where: {
           orderId
@@ -165,6 +186,14 @@ export async function deleteOrderHandler(
         }
       })
     ])
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Order,
+      resourceIds: [order.id],
+      action: EventActionType.Delete
+    })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
   } catch (err: any) {
@@ -212,6 +241,14 @@ export async function deleteMultiOrdersHandler(
         }
       })
     ])
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Order,
+      resourceIds: orderIds,
+      action: EventActionType.Delete
+    })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
   } catch (err: any) {
@@ -278,6 +315,14 @@ export async function updateOrderHandler(
         }
       })
     ])
+
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Order,
+      resourceIds: [order.id],
+      action: EventActionType.Update
+    })
 
     res.status(200).json(HttpDataResponse({ order }))
   } catch (err: any) {

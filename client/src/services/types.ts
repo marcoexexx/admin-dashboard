@@ -3,6 +3,33 @@ import { PotentialOrderStatus } from "@/components/content/potential-orders/form
 import { PriceUnit, ProductStatus, ProductStockStatus } from "@/components/content/products/forms"
 
 
+export const AuditLogResource = {
+  User: "User",
+  Brand: "Brand",
+  Category: "Category",
+  Coupon: "Coupon",
+  Exchange: "Exchange",
+  Order: "Order",
+  PickupAddress: "PickupAddress",
+  PotentialOrder: "PotentialOrder",
+  Product: "Product",
+  Region: "Region",
+  SalesCategory: "SalesCategory",
+  Township: "Township",
+  UserAddress: "UserAddress"
+} as const
+export type AuditLogResource = typeof AuditLogResource[keyof typeof AuditLogResource]
+
+
+export const AuditLogAction = {
+  Create: "Create",
+  Read: "Read",
+  Update: "Updat",
+  Delete: "Delete"
+} as const
+export type AuditLogAction = typeof AuditLogAction[keyof typeof AuditLogAction]
+
+
 export type Role =
   | "Admin"
   | "User"
@@ -42,6 +69,22 @@ export type Reward = {
 
   // relationship
   coupons?: Coupon[]
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+export type AuditLog = {
+  id: string
+  resource: AuditLogResource
+  action: AuditLogAction
+  resourceIds: string[]
+  timestamp: Date | string
+
+  // relationship
+  user?: User
+  userId?: string
 
   createdAt: string | Date
   updatedAt: string | Date

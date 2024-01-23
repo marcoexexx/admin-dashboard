@@ -1,5 +1,5 @@
 import { queryClient } from "@/components";
-import { getBrandPermissionsFn, getCategoryPermissionsFn, getExchangePermissionsFn, getPotentialOrderPermissionsFn, getProductPermissionsFn, getRegionPermissionsFn, getSalesCategoryPermissionsFn, getTownshipPermissionsFn, getUserAddressPermissionsFn, getUserPermissionsFn } from "@/services/permissionsApi";
+import { getAccessLogsPermissionsFn, getAuditLogsPermissionsFn, getBrandPermissionsFn, getCategoryPermissionsFn, getCouponsPermissionsFn, getExchangePermissionsFn, getOrderPermissionsFn, getPotentialOrderPermissionsFn, getProductPermissionsFn, getRegionPermissionsFn, getSalesCategoryPermissionsFn, getTownshipPermissionsFn, getUserAddressPermissionsFn, getUserPermissionsFn } from "@/services/permissionsApi";
 
 export async function userPermissionsLoader() {
   return queryClient.fetchQuery({
@@ -94,7 +94,16 @@ export async function regionPermissionsLoader() {
 export async function orderPermissionsLoader() {
   return queryClient.fetchQuery({
     queryKey: ["order-permissions"],
-    queryFn: getProductPermissionsFn,
+    queryFn: getOrderPermissionsFn,
+
+    staleTime: 1000 * 60 * 60 * 60 * 24
+  })
+}
+
+export async function auditLogsPermissionsLoader() {
+  return queryClient.fetchQuery({
+    queryKey: ["audit-logs-permissions"],
+    queryFn: getAuditLogsPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
   })
@@ -102,8 +111,8 @@ export async function orderPermissionsLoader() {
 
 export async function accessLogsPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["access-log-permissions"],
-    queryFn: getProductPermissionsFn,
+    queryKey: ["access-logs-permissions"],
+    queryFn: getAccessLogsPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
   })
@@ -112,7 +121,7 @@ export async function accessLogsPermissionsLoader() {
 export async function  couponPermissionsLoader() {
   return queryClient.fetchQuery({
     queryKey: ["coupon-permissions"],
-    queryFn: getProductPermissionsFn,
+    queryFn: getCouponsPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
   })

@@ -1,12 +1,15 @@
-import { NextFunction, Request, Response } from "express";
 import { db } from "../utils/db";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+import { createEventAction } from "../utils/auditLog";
 import { convertNumericStrings } from "../utils/convertNumber";
+import { NextFunction, Request, Response } from "express";
+import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { CreateUserAddressInput, DeleteMultiUserAddressesInput, GetUserAddressInput, UpdateUserAddressInput, UserAddressFilterPagination } from "../schemas/userAddress.schema";
+import { EventActionType, Resource } from "@prisma/client";
+
 import AppError from "../utils/appError";
 import logging from "../middleware/logging/logging";
-import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { CreateUserAddressInput, DeleteMultiUserAddressesInput, GetUserAddressInput, UpdateUserAddressInput, UserAddressFilterPagination } from "../schemas/userAddress.schema";
 
 
 export async function getUserAddressesHandler(
@@ -87,6 +90,16 @@ export async function getUserAddressHandler(
       include
     })
 
+    if (userAddress) {
+      // Read event action audit log
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.UserAddress,
+        resourceIds: [userAddress.id],
+        action: EventActionType.Read
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ userAddress }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -123,6 +136,14 @@ export async function createUserAddressHandler(
       },
     })
 
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.UserAddress,
+      resourceIds: [userAddress.id],
+      action: EventActionType.Create
+    })
+
     res.status(201).json(HttpDataResponse({ userAddress }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -143,10 +164,18 @@ export async function deleteUserAddressHandler(
   try {
     const { userAddressId } = req.params
 
-    await db.userAddress.delete({
+    const userAddress = await db.userAddress.delete({
       where: {
         id: userAddressId
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.UserAddress,
+      resourceIds: [userAddress.id],
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -174,6 +203,14 @@ export async function deleteMultiUserAddressesHandler(
       }
     })
 
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.UserAddress,
+      resourceIds: userAddressIds,
+      action: EventActionType.Delete
+    })
+
     res.status(200).json(HttpResponse(200, "Success deleted"))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -197,6 +234,14 @@ export async function updateUserAddressHandler(
         id: userAddressId,
       },
       data
+    })
+
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.UserAddress,
+      resourceIds: [userAddress.id],
+      action: EventActionType.Update
     })
 
     res.status(200).json(HttpDataResponse({ userAddress }))

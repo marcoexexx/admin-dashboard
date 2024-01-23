@@ -1,19 +1,20 @@
-import fs from 'fs'
-import logging from '../middleware/logging/logging';
-import AppError from '../utils/appError';
-
-import { Request, Response, NextFunction } from 'express'
-import { CreateMultiProductsInput, CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
-import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { db } from '../utils/db'
 import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 import { parseExcel } from '../utils/parseExcel';
-import { UpdateProductSaleCategoryInput } from '../schemas/salesCategory.schema';
 import { generateUuid } from '../utils/generateUuid';
+import { createEventAction } from '../utils/auditLog';
+import { Request, Response, NextFunction } from 'express'
+import { CreateMultiProductsInput, CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
+import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { LifeCycleProductConcrate, LifeCycleState } from '../utils/auth/life-cycle-state';
-import { ProductStatus } from '@prisma/client';
+import { EventActionType, ProductStatus, Resource } from '@prisma/client';
+import { UpdateProductSaleCategoryInput } from '../schemas/salesCategory.schema';
+
+import AppError from '../utils/appError';
+import fs from 'fs'
+import logging from '../middleware/logging/logging';
 
 
 // TODO: specification filter
@@ -105,6 +106,16 @@ export async function getProductHandler(
 
     if (!product) return next(new AppError(404, "Product not found"))
 
+    // Read event action audit log
+    if (product) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.Product,
+        resourceIds: [product.id],
+        action: EventActionType.Read
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ product }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -176,6 +187,15 @@ export async function createProductHandler(
         creatorId: user.id
       }
     })
+
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Product,
+      resourceIds: [new_product.id],
+      action: EventActionType.Create
+    })
+
     res.status(201).json(HttpDataResponse({ product: new_product }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -206,8 +226,7 @@ export async function createMultiProductsHandler(
     const buf = fs.readFileSync(excelFile.path)
     const data = parseExcel(buf) as CreateMultiProductsInput
 
-
-    for (const product of data) {
+    const products = await Promise.all(data.map(product => {
       const sale = (product["sales.name"] && product["sales.discount"]) ? {
         name: product["sales.name"].toString(),
         startDate: product["sales.startDate"] || new Date(),
@@ -217,7 +236,7 @@ export async function createMultiProductsHandler(
         description: product["sales.description"],
       } : null
 
-      await db.product.upsert({
+      const task = db.product.upsert({
         where: {
           id: product.id || generateUuid()
         },
@@ -301,7 +320,17 @@ export async function createMultiProductsHandler(
           },
         },
       })
-    }
+
+      return task
+    }))
+
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Product,
+      resourceIds: products.map(product => product.id),
+      action: EventActionType.Create
+    })
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {
@@ -328,6 +357,15 @@ export async function deleteProductSaleCategoryHandler(
         id: productSaleCategoryId,
         productId
       }
+    })
+
+    // It remove sale form product, it is update product
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Product,
+      resourceIds: [productId],
+      action: EventActionType.Update
     })
 
     res.status(200).json(HttpResponse(200, "Success delete"))
@@ -361,6 +399,15 @@ export async function updateProductSalesCategoryHandler(
       }
     })
 
+    // It update sale form product, it is update product
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Product,
+      resourceIds: [productSalesCategory.productId],
+      action: EventActionType.Update
+    })
+
     res.status(200).json(HttpDataResponse({ productSalesCategory }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -391,7 +438,7 @@ export async function deleteProductHandler(
 
     if (!product) return next(new AppError(403,  `Deletion is restricted for product in non-drift states.`))
 
-    await db.$transaction([
+    const [_deletedSpes, _deletedFav, _deletedCate, _deletedSale, deledtedProduct] = await db.$transaction([
       // remove association data(s)
       db.specification.deleteMany({
         where: {
@@ -434,6 +481,14 @@ export async function deleteProductHandler(
         }
       })
     ])
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Product,
+      resourceIds: [deledtedProduct.id],
+      action: EventActionType.Delete
+    })
 
     res.status(200).json(HttpResponse(200, "Success delete"))
   } catch (err: any) {
@@ -503,6 +558,14 @@ export async function deleteMultiProductHandler(
         }
       })
     ])
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Product,
+      resourceIds: productIds,
+      action: EventActionType.Delete
+    })
 
     res.status(200).json(HttpResponse(200, "Success delete"))
   } catch (err: any) {
@@ -614,6 +677,14 @@ export async function updateProductHandler(
       })
     ])
 
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Product,
+      resourceIds: [product.id],
+      action: EventActionType.Update
+    })
+
     res.status(200).json(HttpDataResponse({ product }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -634,7 +705,7 @@ export async function uploadImagesProductHandler(
     const { productId } = req.params
     const { images } = req.body
 
-    await db.product.update({
+    const product = await db.product.update({
       where: {
         id: productId
       },
@@ -643,6 +714,14 @@ export async function uploadImagesProductHandler(
           push: images,
         }
       }
+    })
+
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Product,
+      resourceIds: [product.id],
+      action: EventActionType.Update
     })
 
     res.status(200).json(HttpListResponse(images))
@@ -672,6 +751,15 @@ export async function likeProductByUserHandler(
       }
     })
 
+    // // TODO: liked products
+    // // Update event action audit log
+    // createEventAction(db, {
+    //   userId: req.user?.id,
+    //   resource: Resource.Product,
+    //   resourceIds: [product.id],
+    //   action: EventActionType.Update
+    // })
+
     res.status(200).json(HttpDataResponse({ product }))
   } catch (err) {
     next(err)
@@ -695,15 +783,13 @@ export async function unLikeProductByUserHandler(
       }
     })
 
-    // const product = await db.product.update({
-    //   where: { id: productId },
-    //   data: {
-    //     likedUsers: {
-    //       create: {
-    //         userId: userId
-    //       }
-    //     }
-    //   }
+    // // TODO: unliked products
+    // // Update event action audit log
+    // createEventAction(db, {
+    //   userId: req.user?.id,
+    //   resource: Resource.Product,
+    //   resourceIds: [productId],
+    //   action: EventActionType.Update
     // })
 
     res.status(200).json(HttpResponse(200, "Success Unlike"))

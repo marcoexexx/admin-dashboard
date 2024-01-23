@@ -1,13 +1,16 @@
-import { NextFunction, Request, Response } from "express";
-import AppError from "../utils/appError";
 import { db } from "../utils/db";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { convertNumericStrings } from "../utils/convertNumber";
+import { parseExcel } from "../utils/parseExcel";
+import { createEventAction } from "../utils/auditLog";
+import { NextFunction, Request, Response } from "express";
+import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreateExchangeInput, CreateMultiExchangesInput, DeleteMultiExchangesInput, ExchangeFilterPagination, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
+import { EventActionType, Resource } from "@prisma/client";
+
+import AppError from "../utils/appError";
 import logging from "../middleware/logging/logging";
 import fs from 'fs'
-import { parseExcel } from "../utils/parseExcel";
 
 
 export async function getExchangesHandler(
@@ -72,6 +75,16 @@ export async function getExchangeHandler(
       }
     })
 
+    // Read event action audit log
+    if (exchange) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.Exchange,
+        resourceIds: [exchange.id],
+        action: EventActionType.Read
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ exchange }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -97,6 +110,14 @@ export async function updateExchangeHandler(
       data
     })
 
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Exchange,
+      resourceIds: [exchange.id],
+      action: EventActionType.Update
+    })
+
     res.status(200).json(HttpDataResponse({ exchange }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -113,6 +134,7 @@ export async function createExchangeHandler(
 ) {
   try {
     const { from, to, rate, date } = req.body
+
     const exchange = await db.exchange.create({
       data: {
         from,
@@ -120,6 +142,14 @@ export async function createExchangeHandler(
         to,
         rate
       },
+    })
+
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Exchange,
+      resourceIds: [exchange.id],
+      action: EventActionType.Create
     })
 
     res.status(201).json(HttpDataResponse({ exchange }))
@@ -147,9 +177,16 @@ export async function createMultiExchangesHandler(
     const buf = fs.readFileSync(excelFile.path)
     const data = parseExcel(buf) as CreateMultiExchangesInput
 
-    await db.exchange.createMany({
-      data,
-      // skipDuplicates: true
+    const exchanges = await Promise.all(data.map((exchange) => db.exchange.create({
+      data: { ...exchange },
+    })))
+
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Exchange,
+      resourceIds: exchanges.map(exchange => exchange.id),
+      action: EventActionType.Create
     })
 
     res.status(201).json(HttpResponse(201, "Success"))
@@ -171,10 +208,19 @@ export async function deleteExchangeHandler(
 ) {
   try {
     const { exchangeId } = req.params
-    await db.exchange.delete({
+    
+    const exchange = await db.exchange.delete({
       where: {
         id: exchangeId
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Exchange,
+      resourceIds: [exchange.id],
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -193,12 +239,21 @@ export async function deleteMultiExchangesHandler(
 ) {
   try {
     const { exchangeIds } = req.body
+    
     await db.exchange.deleteMany({
       where: {
         id: {
           in: exchangeIds
         }
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Exchange,
+      resourceIds: exchangeIds,
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))

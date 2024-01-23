@@ -1,14 +1,17 @@
-import { NextFunction, Request, Response } from "express";
-import AppError from "../utils/appError";
+import { parseExcel } from "../utils/parseExcel";
+import { convertNumericStrings } from "../utils/convertNumber";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+import { createEventAction } from "../utils/auditLog";
 import { db } from "../utils/db";
+import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CategoryFilterPagination, CreateCategoryInput, CreateMultiCategoriesInput, DeleteMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { convertNumericStrings } from "../utils/convertNumber";
+import { EventActionType, Resource } from "@prisma/client";
+
+import AppError from "../utils/appError";
 import logging from "../middleware/logging/logging";
 import fs from 'fs'
-import { parseExcel } from "../utils/parseExcel";
-import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 
 
 export async function getCategoriesHandler(
@@ -69,6 +72,16 @@ export async function getCategoryHandler(
       include
     })
 
+    // Read event action audit log
+    if (category) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.Category,
+        resourceIds: [category.id],
+        action: EventActionType.Read
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ category }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -88,6 +101,16 @@ export async function createCategoryHandler(
     const category = await db.category.create({
       data: { name },
     })
+
+    // Create event action audit log
+    if (category) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.Category,
+        resourceIds: [category.id],
+        action: EventActionType.Create
+      })
+    }
 
     res.status(200).json(HttpDataResponse({ category }))
   } catch (err: any) {
@@ -115,7 +138,7 @@ export async function createMultiCategoriesHandler(
     const data = parseExcel(buf) as CreateMultiCategoriesInput
 
     // Update not affected
-    await Promise.all(data.map(category => db.category.upsert({
+    const categories = await Promise.all(data.map(category => db.category.upsert({
       where: {
         name: category.name
       },
@@ -124,6 +147,14 @@ export async function createMultiCategoriesHandler(
       },
       update: {}
     })))
+
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Category,
+      resourceIds: categories.map(category => category.id),
+      action: EventActionType.Create
+    })
 
     res.status(201).json(HttpResponse(201, "Success"))
   } catch (err: any) {
@@ -144,10 +175,19 @@ export async function deleteCategoryHandler(
 ) {
   try {
     const { categoryId } = req.params
-    await db.category.delete({
+    
+    const category = await db.category.delete({
       where: {
         id: categoryId
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Category,
+      resourceIds: [category.id],
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -166,12 +206,21 @@ export async function deleteMultiCategoriesHandler(
 ) {
   try {
     const { categoryIds } = req.body
+
     await db.category.deleteMany({
       where: {
         id: {
           in: categoryIds
         }
       }
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Category,
+      resourceIds: categoryIds,
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -197,6 +246,14 @@ export async function updateCategoryHandler(
         id: categoryId,
       },
       data
+    })
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Category,
+      resourceIds: [category.id],
+      action: EventActionType.Update
     })
 
     res.status(200).json(HttpDataResponse({ category }))

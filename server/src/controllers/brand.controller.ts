@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { BrandFilterPagination, CreateBrandInput, CreateMultiBrandsInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { EventActionType, Resource } from "@prisma/client";
 import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { parseExcel } from "../utils/parseExcel";
@@ -75,9 +76,9 @@ export async function getBrandHandler(
     if (brand) {
       createEventAction(db, {
         userId: req.user?.id,
-        resource: "Brand",
+        resource: Resource.Brand,
         resourceIds: [brand.id],
-        action: "Read"
+        action: EventActionType.Read
       })
     }
 
@@ -116,9 +117,9 @@ export async function createMultiBrandsHandler(
 
     // Create event action audit log
     createEventAction(db, {
-      resource: "Brand",
+      resource: Resource.Brand,
       userId: req.user?.id,
-      action: "Create",
+      action: EventActionType.Create,
       resourceIds: brands.map(brand => brand.id),
     })
 
@@ -150,9 +151,9 @@ export async function createBrandHandler(
     if (brand) {
       createEventAction(db, {
         userId: req.user?.id,
-        resource: "Brand",
+        resource: Resource.Brand,
         resourceIds: [brand.id],
-        action: "Create"
+        action: EventActionType.Create
       })
     }
 
@@ -186,9 +187,9 @@ export async function deleteBrandHandler(
     if (brand) {
       createEventAction(db, {
         userId: req.user?.id,
-        resource: "Brand",
+        resource: Resource.Brand,
         resourceIds: [brand.id],
-        action: "Delete"
+        action: EventActionType.Delete
       })
     }
 
@@ -220,9 +221,9 @@ export async function deleteMultiBrandsHandler(
     // Delete event action audit log
     createEventAction(db, {
       userId: req.user?.id,
-      resource: "Brand",
+      resource: Resource.Brand,
       resourceIds: brandIds,
-      action: "Delete"
+      action: EventActionType.Delete
     })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
@@ -251,12 +252,12 @@ export async function updateBrandHandler(
     })
 
     if (brand) {
-      // Delete event action audit log
+      // Update event action audit log
       createEventAction(db, {
         userId: req.user?.id,
-        resource: "Brand",
+        resource: Resource.Brand,
         resourceIds: [brand.id],
-        action: "Delete"
+        action: EventActionType.Update
       })
     }
 
