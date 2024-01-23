@@ -74,8 +74,8 @@ export async function getRegionHandler(
 
     if (region) {
       // Read event action audit log
-      createEventAction(db, {
-        userId: req.user?.id,
+      if (req.user) createEventAction(db, {
+        userId: req.user.id,
         resource: Resource.Region,
         resourceIds: [region.id],
         action: EventActionType.Read
@@ -116,8 +116,8 @@ export async function createMultiRegionsHandler(
     })))
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Region,
       resourceIds: regions.map(region => region.id),
       action: EventActionType.Create
@@ -153,8 +153,8 @@ export async function createRegionHandler(
     })
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Region,
       resourceIds: [region.id],
       action: EventActionType.Create
@@ -187,8 +187,8 @@ export async function deleteRegionHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Region,
       resourceIds: [region.id],
       action: EventActionType.Delete
@@ -220,8 +220,8 @@ export async function deleteMultilRegionsHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Region,
       resourceIds: regionIds,
       action: EventActionType.Delete
@@ -257,8 +257,8 @@ export async function updateRegionHandler(
     ])
 
     // Update event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Region,
       resourceIds: [region.id],
       action: EventActionType.Update

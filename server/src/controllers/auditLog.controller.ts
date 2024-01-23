@@ -18,7 +18,7 @@ export async function getAuditLogsHandler(
     // @ts-ignore  for mocha
     const user = req.user
 
-    const { filter = {}, pagination, include: includes } = convertNumericStrings(req.query)
+    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
     const include = convertStringToBoolean(includes) as AuditLogFilterPagination["include"]
     const {
       resource,
@@ -39,6 +39,7 @@ export async function getAuditLogsHandler(
         },
         include,
         skip: offset,
+        orderBy,
         take: pageSize,
       })
     ])

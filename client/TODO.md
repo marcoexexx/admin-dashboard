@@ -12,6 +12,7 @@
 # TODO
  - ## IMPORTANT
  - [ ] api detail get :: handle NotFound::404
+ - [ ] orderBy
  - [ ] pickup address :: read(all, detail), delete(all, detail) :: client UI
  - [ ] nested model form
  - [ ] item code

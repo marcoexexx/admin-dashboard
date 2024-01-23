@@ -77,7 +77,7 @@ export async function getExchangeHandler(
 
     // Read event action audit log
     if (exchange) {
-      createEventAction(db, {
+      if (req.user) createEventAction(db, {
         userId: req.user?.id,
         resource: Resource.Exchange,
         resourceIds: [exchange.id],
@@ -111,8 +111,8 @@ export async function updateExchangeHandler(
     })
 
     // Update event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Exchange,
       resourceIds: [exchange.id],
       action: EventActionType.Update
@@ -145,8 +145,8 @@ export async function createExchangeHandler(
     })
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Exchange,
       resourceIds: [exchange.id],
       action: EventActionType.Create
@@ -182,8 +182,8 @@ export async function createMultiExchangesHandler(
     })))
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Exchange,
       resourceIds: exchanges.map(exchange => exchange.id),
       action: EventActionType.Create
@@ -216,8 +216,8 @@ export async function deleteExchangeHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Exchange,
       resourceIds: [exchange.id],
       action: EventActionType.Delete
@@ -249,8 +249,8 @@ export async function deleteMultiExchangesHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Exchange,
       resourceIds: exchangeIds,
       action: EventActionType.Delete

@@ -101,8 +101,8 @@ export async function getSalesCategoryHandler(
 
     if (salesCategory) {
       // Read event action audit log
-      createEventAction(db, {
-        userId: req.user?.id,
+      if (req.user) createEventAction(db, {
+        userId: req.user.id,
         resource: Resource.SalesCategory,
         resourceIds: [salesCategory.id],
         action: EventActionType.Read
@@ -135,8 +135,8 @@ export async function createSalesCategoryHandler(
     })
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.SalesCategory,
       resourceIds: [category.id],
       action: EventActionType.Create
@@ -211,8 +211,8 @@ export async function createMultiSalesCategoriesHandler(
     })))
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.SalesCategory,
       resourceIds: categories.map(category => category.id),
       action: EventActionType.Create
@@ -245,8 +245,8 @@ export async function deleteSalesCategoryHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.SalesCategory,
       resourceIds: [salesCategory.id],
       action: EventActionType.Delete
@@ -278,8 +278,8 @@ export async function deleteMultiSalesCategoriesHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.SalesCategory,
       resourceIds: salesCategoryIds,
       action: EventActionType.Delete
@@ -312,8 +312,8 @@ export async function updateSalesCategoryHandler(
     })
 
     // Update event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.SalesCategory,
       resourceIds: [category.id],
       action: EventActionType.Update

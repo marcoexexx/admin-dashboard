@@ -74,8 +74,8 @@ export async function getBrandHandler(
 
     // Read event action audit log
     if (brand) {
-      createEventAction(db, {
-        userId: req.user?.id,
+      if (req.user) createEventAction(db, {
+        userId: req.user.id,
         resource: Resource.Brand,
         resourceIds: [brand.id],
         action: EventActionType.Read
@@ -116,9 +116,9 @@ export async function createMultiBrandsHandler(
     })))
 
     // Create event action audit log
-    createEventAction(db, {
+    if (req.user) createEventAction(db, {
       resource: Resource.Brand,
-      userId: req.user?.id,
+      userId: req.user.id,
       action: EventActionType.Create,
       resourceIds: brands.map(brand => brand.id),
     })
@@ -148,14 +148,12 @@ export async function createBrandHandler(
     })
 
     // Create event action audit log
-    if (brand) {
-      createEventAction(db, {
-        userId: req.user?.id,
-        resource: Resource.Brand,
-        resourceIds: [brand.id],
-        action: EventActionType.Create
-      })
-    }
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
+      resource: Resource.Brand,
+      resourceIds: [brand.id],
+      action: EventActionType.Create
+    })
 
     res.status(201).json(HttpDataResponse({ brand }))
   } catch (err: any) {
@@ -184,14 +182,12 @@ export async function deleteBrandHandler(
     })
 
     // Delete event action audit log
-    if (brand) {
-      createEventAction(db, {
-        userId: req.user?.id,
-        resource: Resource.Brand,
-        resourceIds: [brand.id],
-        action: EventActionType.Delete
-      })
-    }
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
+      resource: Resource.Brand,
+      resourceIds: [brand.id],
+      action: EventActionType.Delete
+    })
 
     res.status(200).json(HttpDataResponse({ brand }))
   } catch (err: any) {
@@ -219,8 +215,8 @@ export async function deleteMultiBrandsHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Brand,
       resourceIds: brandIds,
       action: EventActionType.Delete
@@ -251,15 +247,13 @@ export async function updateBrandHandler(
       data
     })
 
-    if (brand) {
-      // Update event action audit log
-      createEventAction(db, {
-        userId: req.user?.id,
-        resource: Resource.Brand,
-        resourceIds: [brand.id],
-        action: EventActionType.Update
-      })
-    }
+    // Update event action audit log
+    if (req.user) createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.Brand,
+      resourceIds: [brand.id],
+      action: EventActionType.Update
+    })
 
     res.status(200).json(HttpDataResponse({ brand }))
   } catch (err: any) {

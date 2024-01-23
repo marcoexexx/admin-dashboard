@@ -76,8 +76,8 @@ export async function getPickupAddressHandler(
 
     // Read event action audit log
     if (pickupAddress) {
-      createEventAction(db, {
-        userId: req.user?.id,
+      if (req.user) createEventAction(db, {
+        userId: req.user.id,
         resource: Resource.PickupAddress,
         resourceIds: [pickupAddress.id],
         action: EventActionType.Read
@@ -108,8 +108,8 @@ export async function deletePickupAddressHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.PickupAddress,
       resourceIds: [pickupAddress.id],
       action: EventActionType.Delete
@@ -141,8 +141,8 @@ export async function deleteMultiPickupAddressesHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.PickupAddress,
       resourceIds: pickupAddressIds,
       action: EventActionType.Delete

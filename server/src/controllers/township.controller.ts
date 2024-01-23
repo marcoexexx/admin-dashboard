@@ -78,8 +78,8 @@ export async function getTownshipHandler(
 
     if (township) {
       // Read event action audit log
-      createEventAction(db, {
-        userId: req.user?.id,
+      if (req.user) createEventAction(db, {
+        userId: req.user.id,
         resource: Resource.Township,
         resourceIds: [township.id],
         action: EventActionType.Read
@@ -121,8 +121,8 @@ export async function createMultiTownshipsHandler(
     })))
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Township,
       resourceIds: townships.map(township => township.id),
       action: EventActionType.Create
@@ -153,8 +153,8 @@ export async function createTownshipHandler(
     })
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Township,
       resourceIds: [township.id],
       action: EventActionType.Create
@@ -187,8 +187,8 @@ export async function deleteTownshipHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Township,
       resourceIds: [township.id],
       action: EventActionType.Delete
@@ -220,8 +220,8 @@ export async function deleteMultilTownshipsHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Township,
       resourceIds: townshipIds,
       action: EventActionType.Delete
@@ -258,8 +258,8 @@ export async function updateTownshipHandler(
     ])
 
     // Update event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Township,
       resourceIds: [townships.id],
       action: EventActionType.Update

@@ -441,13 +441,14 @@ enum EventActionType {
   Delete
 }
 
+// TODO: rename to AuditLog
 model EventAction {
   id          String          @id @default(auto()) @map("_id") @db.ObjectId
   action      EventActionType
   resource    Resource
   resourceIds String[]
-  user        User?           @relation(fields: [userId], references: [id])
-  userId      String?         @db.ObjectId
+  user        User            @relation(fields: [userId], references: [id])
+  userId      String          @db.ObjectId
   timestamp   DateTime        @default(now())
 
   createdAt DateTime @default(now())

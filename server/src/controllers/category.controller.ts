@@ -74,8 +74,8 @@ export async function getCategoryHandler(
 
     // Read event action audit log
     if (category) {
-      createEventAction(db, {
-        userId: req.user?.id,
+      if (req.user) createEventAction(db, {
+        userId: req.user.id,
         resource: Resource.Category,
         resourceIds: [category.id],
         action: EventActionType.Read
@@ -103,14 +103,12 @@ export async function createCategoryHandler(
     })
 
     // Create event action audit log
-    if (category) {
-      createEventAction(db, {
-        userId: req.user?.id,
-        resource: Resource.Category,
-        resourceIds: [category.id],
-        action: EventActionType.Create
-      })
-    }
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
+      resource: Resource.Category,
+      resourceIds: [category.id],
+      action: EventActionType.Create
+    })
 
     res.status(200).json(HttpDataResponse({ category }))
   } catch (err: any) {
@@ -149,8 +147,8 @@ export async function createMultiCategoriesHandler(
     })))
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Category,
       resourceIds: categories.map(category => category.id),
       action: EventActionType.Create
@@ -183,8 +181,8 @@ export async function deleteCategoryHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Category,
       resourceIds: [category.id],
       action: EventActionType.Delete
@@ -216,8 +214,8 @@ export async function deleteMultiCategoriesHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Category,
       resourceIds: categoryIds,
       action: EventActionType.Delete
@@ -249,8 +247,8 @@ export async function updateCategoryHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Category,
       resourceIds: [category.id],
       action: EventActionType.Update

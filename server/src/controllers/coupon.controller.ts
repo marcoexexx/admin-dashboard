@@ -83,8 +83,8 @@ export async function getCouponHandler(
 
     // Read event action audit log
     if (coupon) {
-      createEventAction(db, {
-        userId: req.user?.id,
+      if (req.user) createEventAction(db, {
+        userId: req.user.id,
         resource: Resource.Coupon,
         resourceIds: [coupon.id],
         action: EventActionType.Read
@@ -119,8 +119,8 @@ export async function createCouponHandler(
     })
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Coupon,
       resourceIds: [coupon.id],
       action: EventActionType.Create
@@ -167,8 +167,8 @@ export async function createMultiCouponsHandler(
     })))
 
     // Create event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Coupon,
       resourceIds: coupons.map(coupon => coupon.id),
       action: EventActionType.Create
@@ -201,8 +201,8 @@ export async function deleteCouponHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Coupon,
       resourceIds: [coupon.id],
       action: EventActionType.Delete
@@ -234,8 +234,8 @@ export async function deleteMultiCouponsHandler(
     })
 
     // Delete event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Coupon,
       resourceIds: couponIds,
       action: EventActionType.Delete
@@ -267,8 +267,8 @@ export async function updateCouponHandler(
     })
 
     // Update event action audit log
-    createEventAction(db, {
-      userId: req.user?.id,
+    if (req.user) createEventAction(db, {
+      userId: req.user.id,
       resource: Resource.Coupon,
       resourceIds: [coupon.id],
       action: EventActionType.Update
