@@ -1,15 +1,20 @@
 import { useStore } from "@/hooks";
 import { Box, Card, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow,Typography } from "@mui/material"
 import { LoadingTablePlaceholder } from "@/components";
-import { AuditLog } from "@/services/types";
+import { AuditLog, Role } from "@/services/types";
 import { RenderUsernameLabel } from "@/components/table-labels";
 
 
-const columnData: TableColumnHeader<AuditLog>[] = [
+const columnData: TableColumnHeader<AuditLog & { role: Role }>[] = [
   {
     id: "user",
     align: "left",
     name: "User"
+  },
+  {
+    id: "role",
+    align: "left",
+    name: "Role"
   },
   {
     id: "resource",
@@ -87,6 +92,7 @@ export function AuditLogsListTable(props: AuditLogsListTableProps) {
                     noWrap
                   >
                     {(col.id === "user" && row.user && me) && <RenderUsernameLabel user={row.user} me={me} />}
+                    {(col.id === "role" && row.user && me) && row.user.role}
                     {col.id === "resource" && row.resource}
                     {col.id === "action" && row.action}
                   </Typography>
