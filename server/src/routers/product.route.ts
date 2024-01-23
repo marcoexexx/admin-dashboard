@@ -51,6 +51,7 @@ router.post("/excel-upload",
 
 router.route("/detail/:productId")
   .get(
+    deserializeUser,
     validate(getProductSchema), 
     getProductHandler
   )

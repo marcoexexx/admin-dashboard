@@ -31,7 +31,6 @@ export async function deserializeUser(
         id: JSON.parse(session).id
       }
     })
-    if (!user) return next(new AppError(401, "Invalid token or session has expired"))
 
     // @ts-ignore  for mocha testing
     req.user = user

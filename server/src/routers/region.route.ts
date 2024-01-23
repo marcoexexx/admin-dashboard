@@ -47,6 +47,7 @@ router.post("/excel-upload",
 
 router.route("/detail/:regionId")
   .get(
+    deserializeUser,
     permissionUser("read", regionPermission),
     validate(getRegionSchema),
     getRegionHandler

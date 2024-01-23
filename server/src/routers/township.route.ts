@@ -48,6 +48,7 @@ router.post("/excel-upload",
 
 router.route("/detail/:townshipId")
   .get(
+    deserializeUser,
     permissionUser("read", townshipPermission),
     validate(getTownshipSchema),
     getTownshipHandler

@@ -47,6 +47,7 @@ router.post("/excel-upload",
 
 router.route("/detail/:salesCategoryId")
   .get(
+    deserializeUser,
     permissionUser("read", salesCategoryPermission),
     validate(getSalesCategorySchema),
     getSalesCategoryHandler

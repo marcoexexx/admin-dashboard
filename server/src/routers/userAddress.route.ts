@@ -35,6 +35,7 @@ router.route("/multi")
 
 router.route("/detail/:userAddressId")
   .get(
+    deserializeUser,
     permissionUser("read", userAddressPermission),
     validate(getUserAddressSchema),
     getUserAddressHandler
