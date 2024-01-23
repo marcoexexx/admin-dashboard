@@ -4,6 +4,8 @@ import { requiredUser } from "../middleware/requiredUser";
 import { permissionUser } from "../middleware/permissionUser";
 import { accessLogPermission } from "../utils/auth/permissions/accessLog.permission";
 import { deleteAccessLogsHandler, getAccessLogsHandler } from "../controllers/accessLog.controller";
+import { getAccessLogSchema } from "../schemas/accessLog.schema";
+import { validate } from "../middleware/validate";
 
 const router = Router()
 
@@ -17,8 +19,9 @@ router.route("")
   )
 
 
-router.route("")
-  .get(
+router.route("/detail/:accessLogId")
+  .delete(
+    validate(getAccessLogSchema),
     permissionUser("delete", accessLogPermission),
     deleteAccessLogsHandler,
   )

@@ -2,7 +2,7 @@ import { ErrorBoundary, PagePermission } from "@/components";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
 import { lazy } from "react";
-import { accessLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, potentialOrderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, townshipPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
+import { accessLogsPermissionsLoader, auditLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, potentialOrderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, townshipPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 import Loader from "./loader";
@@ -28,6 +28,7 @@ const UpdateUserAddressPage = Loader(lazy(() => import("@/pages/userAddress/Upda
 
 
 const ListAccessLogPage = Loader(lazy(() => import("@/pages/accessLogs/ListAccessLogs")))
+const ListAuditLogPage = Loader(lazy(() => import("@/pages/auditLogs/ListAuditLogs")))
 
 // townships
 const ListTownshipPage = Loader(lazy(() => import("@/pages/townships/ListTownship")))
@@ -129,6 +130,13 @@ const routes = createBrowserRouter([
             path: "access-logs",
             loader: accessLogsPermissionsLoader,
             Component: ListAccessLogPage
+          },
+
+          /// AUDIT LOGS
+          {
+            path: "audit-logs",
+            loader: auditLogsPermissionsLoader,
+            Component: ListAuditLogPage
           },
 
           /// POTENTIAL ORDERS ROUTES

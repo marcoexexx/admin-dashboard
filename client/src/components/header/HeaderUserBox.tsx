@@ -1,11 +1,14 @@
-import { useLocalStorage, useStore } from "@/hooks"
-import { Avatar, Badge, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
 import { useRef, useState } from "react"
-import { MuiButton } from "@/components/ui"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { getMeFn, logoutUserFn } from "@/services/authApi"
 import { queryClient } from ".."
 import { useNavigate } from "react-router-dom"
+import { useLocalStorage, useStore } from "@/hooks"
+
+import { Avatar, Badge, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
+import { MuiButton } from "@/components/ui"
+import { OrderItem } from "@/services/types"
+
 import SecurityIcon from '@mui/icons-material/Security';
 import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone'
 import GradingIcon from '@mui/icons-material/Grading';
@@ -14,7 +17,7 @@ import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone'
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { OrderItem } from "@/services/types"
+import HistoryIcon from '@mui/icons-material/History';
 
 
 const UserBoxButton = styled(Button)(({theme}) => ({
@@ -170,6 +173,13 @@ export default function HeaderUserBox() {
               <AccountBoxTwoToneIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText primary="My Profile" />
+          </ListItemButton>
+
+          <ListItemButton onClick={handleNavigate("/audit-logs")}>
+            <ListItemIcon>
+              <HistoryIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Audit logs" />
           </ListItemButton>
 
           <ListItemButton onClick={handleNavigate("/addresses")}>

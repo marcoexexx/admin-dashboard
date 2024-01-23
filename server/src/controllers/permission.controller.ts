@@ -1,7 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import logging from "../middleware/logging/logging";
-import AppError from "../utils/appError";
-import mapValues from "lodash/mapValues";
 import { potentialOrderPermission, orderPermission, productPermission, regionPermission, townshipPermission, userAddressPermission, userPermission, pickupAddressPermission } from "../utils/auth/permissions";
 import { HttpDataResponse } from "../utils/helper";
 import { brandPermission } from "../utils/auth/permissions/brand.permission";
@@ -10,6 +7,11 @@ import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory
 import { exchangePermission } from "../utils/auth/permissions/exchange.permission";
 import { accessLogPermission } from "../utils/auth/permissions/accessLog.permission";
 import { couponPermission } from "../utils/auth/permissions/coupon.permisson";
+
+import AppError from "../utils/appError";
+import logging from "../middleware/logging/logging";
+import mapValues from "lodash/mapValues";
+import { auditLogPermission } from "../utils/auth/permissions/auditLog.permission";
 
 
 export async function permissionsUserHandler(
@@ -137,6 +139,25 @@ export async function permissionsAccessLogsHandler(
     res
       .status(200)
       .json(HttpDataResponse({ permissions, label: "access-logs" }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
+
+
+export async function permissionsAuditLogsHandler(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const permissions = mapValues(auditLogPermission, value => value())
+
+    res
+      .status(200)
+      .json(HttpDataResponse({ permissions, label: "audit-logs" }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)

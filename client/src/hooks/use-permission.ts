@@ -20,6 +20,7 @@ type PermissionKey =
   | "township-permissions"
   | "address-permissions"
   | "access-logs-permissions"
+  | "audit-logs-permissions"
 
 interface Args {
   key: PermissionKey,

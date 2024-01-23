@@ -3,9 +3,9 @@ import { deleteAuditLogsHandler, getAuditLogsHandler } from "../controllers/audi
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { getAccessLogSchema } from "../schemas/accessLog.schema";
 import { permissionUser } from "../middleware/permissionUser";
-import { accessLogPermission } from "../utils/auth/permissions/accessLog.permission";
+import { deleteAuditLogSchema } from "../schemas/auditLog.schema";
+import { auditLogPermission } from "../utils/auth/permissions/auditLog.permission";
 
 const router = Router()
 
@@ -19,8 +19,8 @@ router.route("/detail/:auditLogId")
   .delete(
     deserializeUser,
     requiredUser,
-    validate(getAccessLogSchema),
-    permissionUser("delete", accessLogPermission),
+    validate(deleteAuditLogSchema),
+    permissionUser("delete", auditLogPermission),
     deleteAuditLogsHandler,
   )
 

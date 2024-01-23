@@ -76,6 +76,12 @@ export type Store = {
     limit?: number,
     mode?: "insensitive" | "default",
   },
+  auditLogFilter?: {
+    fields?: any,
+    page?: number,
+    limit?: number,
+    mode?: "insensitive" | "default",
+  },
   orderFilter?: {
     fields?: any,
     page?: number,
@@ -205,6 +211,11 @@ interface UserAddressFilterActions {
   payload: Store["userAddressFilter"]
 }
 
+interface AuditLogFilterActions {
+  type: "SET_AUDIT_LOG_FILTER",
+  payload: Store["auditLogFilter"]
+}
+
 interface AccessLogFilterActions {
   type: "SET_ACCESS_LOG_FILTER",
   payload: Store["accessLogFilter"]
@@ -319,6 +330,7 @@ type Action =
   | PotentialOrderFilterActions
   | UserAddressFilterActions
   | TownshipFilterActions
+  | AuditLogFilterActions
   | AccessLogFilterActions
   | UserFilterActions
   | ProductFilterActions
@@ -351,6 +363,11 @@ const initialState: Store = {
   modalForm: {
     field: "*",
     state: false
+  },
+  auditLogFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default",
   },
   accessLogFilter: {
     page: 1,
@@ -528,6 +545,13 @@ const stateReducer = (state: Store, action: Action): Store => {
     case "SET_USER_ADDRESS_FILTER": {
       return { ...state, userAddressFilter: {
         ...state.userAddressFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_AUDIT_LOG_FILTER": {
+      return { ...state, auditLogFilter: {
+        ...state.auditLogFilter,
         ...action.payload
       } }
     }
