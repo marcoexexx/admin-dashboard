@@ -73,7 +73,7 @@ export async function getRegionHandler(
     })
 
     if (region) {
-      // Update event action audit log
+      // Read event action audit log
       createEventAction(db, {
         userId: req.user?.id,
         resource: Resource.Region,
