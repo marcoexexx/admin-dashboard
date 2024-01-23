@@ -10,7 +10,7 @@ import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
 import { Order, PotentialOrder } from "@/services/types";
 import { PotentialOrdersActions } from ".";
-import { RenderOrderItemLabel } from "@/components/table-labels";
+import { RenderOrderItemLabel, RenderUsernameLabel } from "@/components/table-labels";
 import { OrderStatus } from "./forms";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
@@ -101,7 +101,7 @@ export function OrdersListTable(props: OrdersListTableProps) {
   const navigate = useNavigate()
 
   const theme = useTheme()
-  const { state: {orderFilter, modalForm}, dispatch } = useStore()
+  const { state: {orderFilter, modalForm, user: me}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -251,7 +251,7 @@ export function OrdersListTable(props: OrdersListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {col.id === "user" && row.user?.name}
+                    {col.id === "user" && row.user && me && <RenderUsernameLabel user={row.user} me={me} />}
                     {col.id === "amount" && numberFormat(row.totalPrice)}
                     {col.id === "orderItems" && row.orderItems?.map(item => <RenderOrderItemLabel key={item.id} orderItem={item} />)}
                     {col.id === "status" && row.status}

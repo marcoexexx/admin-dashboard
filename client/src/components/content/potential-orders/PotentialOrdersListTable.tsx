@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { numberFormat } from "@/libs/numberFormat";
 import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
@@ -8,12 +9,11 @@ import { MuiButton } from "@/components/ui";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
 import { PotentialOrder } from "@/services/types";
+import { PotentialOrdersActions } from ".";
+import { RenderOrderItemLabel, RenderUsernameLabel } from "@/components/table-labels";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { PotentialOrdersActions } from ".";
-import { RenderOrderItemLabel } from "@/components/table-labels";
-import { numberFormat } from "@/libs/numberFormat";
 
 
 const columnData: TableColumnHeader<PotentialOrder & { amount: number }>[] = [
@@ -73,7 +73,7 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
   const navigate = useNavigate()
 
   const theme = useTheme()
-  const { state: {potentialOrderFilter, modalForm}, dispatch } = useStore()
+  const { state: {potentialOrderFilter, modalForm, user: me}, dispatch } = useStore()
 
   const [selectedRows, setSellectedRows] = useState<string[]>([])
 
@@ -218,7 +218,7 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
                     gutterBottom
                     noWrap
                   >
-                    {col.id === "user" && row.user?.name}
+                    {col.id === "user" && row.user && me && <RenderUsernameLabel user={row.user} me={me} />}
                     {col.id === "amount" && numberFormat(row.totalPrice)}
                     {col.id === "orderItems" && row.orderItems?.map(item => <RenderOrderItemLabel key={item.id} orderItem={item} />)}
                     {col.id === "status" && row.status}
