@@ -1,12 +1,15 @@
-import logging from "../middleware/logging/logging";
-import AppError from "../utils/appError";
-import { NextFunction, Request, Response } from "express";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { createEventAction } from "../utils/auditLog";
 import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
+import { NextFunction, Request, Response } from "express";
+import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreatePotentialOrderInput, DeleteMultiPotentialOrdersInput, GetPotentialOrderInput, PotentialOrderFilterPagination, UpdatePotentialOrderInput } from "../schemas/potentialOrder.schema";
+import { EventActionType, Resource } from "@prisma/client";
+
+import AppError from "../utils/appError";
+import logging from "../middleware/logging/logging";
 
 
 export async function getPotentialOrdersHandler(
@@ -77,6 +80,16 @@ export async function getPotentialOrderHandler(
       include
     })
 
+    // Read event action audit log
+    if (potentialOrder) {
+      createEventAction(db, {
+        userId: req.user?.id,
+        resource: Resource.PotentialOrder,
+        resourceIds: [potentialOrder.id],
+        action: EventActionType.Read
+      })
+    }
+
     res.status(200).json(HttpDataResponse({ potentialOrder }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -139,6 +152,14 @@ export async function createPotentialOrderHandler(
       }
     })
 
+    // Create event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.PotentialOrder,
+      resourceIds: [potentialOrder.id],
+      action: EventActionType.Create
+    })
+
     res.status(201).json(HttpDataResponse({ potentialOrder }))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
@@ -159,7 +180,7 @@ export async function deletePotentialOrderHandler(
   try {
     const { potentialOrderId } = req.params
     
-    await db.$transaction([
+    const [_deletedOrderItems, potentialOrder] = await db.$transaction([
       db.orderItem.deleteMany({
         where: {
           orderId: undefined,
@@ -173,6 +194,14 @@ export async function deletePotentialOrderHandler(
         }
       })
     ])
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.PotentialOrder,
+      resourceIds: [potentialOrder.id],
+      action: EventActionType.Delete
+    })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
   } catch (err: any) {
@@ -209,6 +238,14 @@ export async function deleteMultiPotentialOrdersHandler(
         }
       })
     ])
+
+    // Delete event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.PotentialOrder,
+      resourceIds: potentialOrderIds,
+      action: EventActionType.Delete
+    })
 
     res.status(200).json(HttpResponse(200, "Success deleted"))
   } catch (err: any) {
@@ -260,6 +297,14 @@ export async function updatePotentialOrderHandler(
         }
       })
     ])
+
+    // Update event action audit log
+    createEventAction(db, {
+      userId: req.user?.id,
+      resource: Resource.PotentialOrder,
+      resourceIds: [potentialOrder.id],
+      action: EventActionType.Update
+    })
 
     res.status(200).json(HttpDataResponse({ potentialOrder }))
   } catch (err: any) {
