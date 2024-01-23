@@ -11,6 +11,7 @@
 
 # TODO
  - ## IMPORTANT
+ - [ ] time throttle for creating audit log for read resorce
  - [ ] api detail get :: handle NotFound::404
  - [ ] orderBy
  - [ ] pickup address :: read(all, detail), delete(all, detail) :: client UI
