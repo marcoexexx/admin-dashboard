@@ -1,6 +1,6 @@
 import { OrderItem } from "@/services/types"
 import { Alert, Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
-import { RenderProductLabel, RenderQuantityButtons } from "../table-labels"
+import { RenderImageLabel, RenderProductLabel, RenderQuantityButtons } from "../table-labels"
 import { CreateOrderInput } from "../content/orders/forms"
 import { useLocalStorage } from "@/hooks"
 import { useState } from "react"
@@ -8,7 +8,12 @@ import { numberFormat } from "@/libs/numberFormat"
 import { calculateProductDiscount } from "../content/products/detail/ProductDetailTab"
 
 
-const columnData: TableColumnHeader<OrderItem & { discount: number }>[] = [
+const columnData: TableColumnHeader<OrderItem & { discount: number, image: string }>[] = [
+  {
+    id: "image",
+    align: "left",
+    name: "Image"
+  },
   {
     id: "product",
     align: "left",
@@ -148,6 +153,7 @@ export function CartsTable(props: CartsTableProps) {
                         gutterBottom
                         noWrap
                       >
+                        {col.id === "image" && <RenderImageLabel src={row.product?.images[0] || "/default.png"} alt={row.product?.title || "product"} />}
                         {col.id === "discount" && row.product && `${productDiscountPercent} %`}
                         {col.id === "product" && row.product && <RenderProductLabel product={row.product} />}
                         {col.id === "quantity" && <RenderQuantityButtons disabled={isCreatedPotentialOrder} item={row} onIncrement={handleOnIncrement} onDecrement={handleOnDecrement} />}
@@ -161,7 +167,7 @@ export function CartsTable(props: CartsTableProps) {
             })}
 
             <TableRow>
-              <TableCell align="right" colSpan={3} />
+              <TableCell align="right" colSpan={4} />
               <TableCell align="right" sx={{ verticalAlign: "top" }}>
                 <Typography variant="h4">Total</Typography>
               </TableCell>
