@@ -110,8 +110,20 @@ export async function createPotentialOrderHandler(
     // @ts-ignore  for mocha testing
     const userId: string | undefined = req.user?.id || undefined
 
+    // // TODO: Check product still exist
+    // const getProductId = async (id: string) => {
+    //   const product = await db.product.findUnique({
+    //     where: { id }
+    //   })
+    //   if (!product) throw new AppError(404, "Product not found")
+    //   return product.id
+    // }
+
     const newPickupAddress = pickupAddress ? await db.pickupAddress.create({
-      data: pickupAddress
+      data: {
+        ...pickupAddress,
+        userId
+      },
     }) : undefined
 
     const potentialOrder = await db.potentialOrder.upsert({
@@ -121,14 +133,15 @@ export async function createPotentialOrderHandler(
       create: {
         addressType,
         orderItems: {
-          create: orderItems.map(item => ({
+          create: await Promise.all(orderItems.map(async item => ({
+            // productId: await getProductId(item.productId),
             productId: item.productId,
             price: item.price,
             quantity: item.quantity,
             totalPrice: item.totalPrice,
             saving: item.saving,
             originalTotalPrice: item.price * item.quantity,
-          }))
+          })))
         },
         userId,
         status,
@@ -167,7 +180,7 @@ export async function createPotentialOrderHandler(
 
     if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "potentialOrder already exists"))
 
-    next(new AppError(500, msg))
+    next(new AppError(err.status || 500, msg))
   }
 }
 

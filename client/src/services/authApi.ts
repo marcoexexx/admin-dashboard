@@ -1,5 +1,5 @@
 import { LoginUserInput, RegisterUserInput } from "@/components/forms/auth";
-import { HttpResponse, LoginResponse, QueryOptionArgs, UserProfileResponse, UserResponse } from "./types";
+import { HttpResponse, LoginResponse, QueryOptionArgs, UserResponse } from "./types";
 import getConfig from "@/libs/getConfig";
 import axios from "axios";
 
@@ -46,8 +46,9 @@ export async function getMeFn() {
   return res.data
 }
 
+// TODO: remove this function
 export async function getMeProfileFn() {
-  const res = await authApi.get<UserProfileResponse>("me/profile");
+  const res = await authApi.get<UserResponse>("me/profile");
   return res.data
 }
 

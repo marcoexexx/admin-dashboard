@@ -21,6 +21,7 @@ type PermissionKey =
   | "address-permissions"
   | "access-logs-permissions"
   | "audit-logs-permissions"
+  | "pickup-address-permissions"
 
 interface Args {
   key: PermissionKey,

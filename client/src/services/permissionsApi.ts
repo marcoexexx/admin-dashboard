@@ -106,6 +106,14 @@ export async function getAuditLogsPermissionsFn(opt: QueryOptionArgs) {
 }
 
 
+export async function getPickupAddressPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/pickup-address", {
+    ...opt,
+  })
+  return data
+}
+
+
 export async function getAccessLogsPermissionsFn(opt: QueryOptionArgs) {
   const { data } = await authApi.get<PermissionsResponse>("/permissions/access-logs", {
     ...opt,

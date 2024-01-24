@@ -145,6 +145,9 @@ export function CheckoutForm() {
       queryClient.invalidateQueries({
         queryKey: ["orders"]
       })
+      queryClient.invalidateQueries({
+        queryKey: ["products"]
+      })
       playSoundEffect("success")
       set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1)
       // Remove potential order
@@ -182,7 +185,7 @@ export function CheckoutForm() {
     },
     onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.error.map((err: any) => err.message)}::${err.response.data.message}`,
+        message: `failed: ${err?.response?.data?.error?.map((err: any) => err?.message)}::${err?.response?.data?.message}`,
         severity: "error"
       } })
       playSoundEffect("error")

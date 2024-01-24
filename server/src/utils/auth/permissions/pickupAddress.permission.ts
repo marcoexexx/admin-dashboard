@@ -4,8 +4,7 @@ import { Permission } from "../rbac";
 export const pickupAddressPermission: Permission<Role> = {
   createAllowedRoles: () => ["Admin", "Shopowner", "User"],
 
-  /* This is permission for all pickup addresses */
-  readAllowedRoles: () => ["Admin"],  
+  readAllowedRoles: () => ["Admin", "Shopowner", "User"],  
 
   updateAllowedRoles: () => [],
 
