@@ -1,15 +1,15 @@
-import { SuspenseLoader, queryClient } from "@/components"
 import { useStore } from "@/hooks"
 import { deleteProductSaleCategory, getProductSaleCategories } from "@/services/productsApi"
-import { Box, Card, CardContent, CardHeader, Container, Grid, Typography } from "@mui/material"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import { useState } from "react"
+import { playSoundEffect } from "@/libs/playSound"
+import { SuspenseLoader, queryClient } from "@/components"
+import { Box, Card, CardContent, CardHeader, Container, Grid, Typography } from "@mui/material"
 import { ProductSalesCategoryCard } from "./ProductSalesCategoryCard"
 import { CreateProductSalesCategoryForm, CreateSalesCategoryForm } from "../../sales-categories/forms"
 import { FormModal } from "@/components/forms"
-import { useState } from "react"
 import { ProductSalesCategoriesResponse } from "@/services/types"
 import { MuiButton } from "@/components/ui"
-import { playSoundEffect } from "@/libs/playSound"
 
 
 interface ProductSalesTabProps {
