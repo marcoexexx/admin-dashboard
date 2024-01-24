@@ -2,7 +2,7 @@ import { ErrorBoundary, PagePermission } from "@/components";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
 import { lazy } from "react";
-import { accessLogsPermissionsLoader, auditLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, potentialOrderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, townshipPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
+import { accessLogsPermissionsLoader, auditLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, pickupAddressPermissionsLoader, potentialOrderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, townshipPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 import Loader from "./loader";
@@ -11,6 +11,8 @@ import Loader from "./loader";
 const HomePage = Loader(lazy(() => import("@/pages/home")))
 
 const CheckoutPage = Loader(lazy(() => import("@/pages/checkout")))
+
+const PickupAddressHistoryPage = Loader(lazy(() => import("@/pages/pickupHistory/ListPickupHistory")))
 
 // Status
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))
@@ -123,6 +125,13 @@ const routes = createBrowserRouter([
             path: "me",
             loader: meProfileLoader,
             Component: ManagementUserProfilePage
+          },
+
+          /// ACCESS LOGS
+          {
+            path: "pickup-address-history",
+            loader: pickupAddressPermissionsLoader,
+            Component: PickupAddressHistoryPage
           },
 
           /// ACCESS LOGS

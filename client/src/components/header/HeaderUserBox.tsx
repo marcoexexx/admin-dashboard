@@ -18,6 +18,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import HistoryIcon from '@mui/icons-material/History';
+import MapIcon from '@mui/icons-material/Map';
 
 
 const UserBoxButton = styled(Button)(({theme}) => ({
@@ -173,6 +174,13 @@ export default function HeaderUserBox() {
               <AccountBoxTwoToneIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText primary="My Profile" />
+          </ListItemButton>
+
+          <ListItemButton onClick={handleNavigate("/pickup-address-history")}>
+            <ListItemIcon>
+              <MapIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Pickup address history" />
           </ListItemButton>
 
           <ListItemButton onClick={handleNavigate("/audit-logs")}>

@@ -1,6 +1,6 @@
 import { OrderItem } from "@/services/types"
 import { Alert, Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
-import { RenderQuantityButtons } from "../table-labels"
+import { RenderProductLabel, RenderQuantityButtons } from "../table-labels"
 import { CreateOrderInput } from "../content/orders/forms"
 import { useLocalStorage } from "@/hooks"
 import { useState } from "react"
@@ -64,32 +64,33 @@ export function CartsTable(props: CartsTableProps) {
   const isCreatedPotentialOrder = !!get<CreateOrderInput>("PICKUP_FORM")?.createdPotentialOrderId
 
 
-  const handleOnIncrement= (id: string) => {
+  const handleOnIncrement= (item: OrderItem) => {
+    if (item.product && item.quantity < item.product?.quantity) {
+      const payload = orderCarts
+        .map(cart => {
+          const { productDiscountAmount } = calculateProductDiscount(cart.product)
 
-    const payload = orderCarts
-      .map(cart => {
-        const { productDiscountAmount } = calculateProductDiscount(cart.product)
+          const originalTotalPrice = (cart.quantity + 1) * cart.price
+          const totalPrice = (cart.quantity + 1) * productDiscountAmount
+          
+          if (cart.id === item.id) return {
+            ...cart,
+            quantity: cart.quantity + 1,
+            originalTotalPrice,
+            totalPrice,
+            saving: originalTotalPrice - totalPrice,
+          }
 
-        const originalTotalPrice = (cart.quantity + 1) * cart.price
-        const totalPrice = (cart.quantity + 1) * productDiscountAmount
-        
-        if (cart.id === id) return {
-          ...cart,
-          quantity: cart.quantity + 1,
-          originalTotalPrice,
-          totalPrice,
-          saving: originalTotalPrice - totalPrice,
-        }
+          return cart
+        })
+        .filter(cart => 0 < cart.quantity)
 
-        return cart
-      })
-      .filter(cart => 0 < cart.quantity)
-
-    set("CARTS", payload)
-    setOrderCarts(payload)
+      set("CARTS", payload)
+      setOrderCarts(payload)
+    }
   }
 
-  const handleOnDecrement= (id: string) => {
+  const handleOnDecrement= (item: OrderItem) => {
     const payload = orderCarts
       .map(cart => {
         const { productDiscountAmount } = calculateProductDiscount(cart.product)
@@ -97,7 +98,7 @@ export function CartsTable(props: CartsTableProps) {
         const originalTotalPrice = (cart.quantity - 1) * cart.price
         const totalPrice = (cart.quantity - 1) * productDiscountAmount
         
-        if (cart.id === id) return {
+        if (cart.id === item.id) return {
           ...cart,
           quantity: cart.quantity - 1,
           originalTotalPrice,
@@ -148,8 +149,8 @@ export function CartsTable(props: CartsTableProps) {
                         noWrap
                       >
                         {col.id === "discount" && row.product && `${productDiscountPercent} %`}
-                        {col.id === "product" && row.product && row.product.title}
-                        {col.id === "quantity" && <RenderQuantityButtons disabled={isCreatedPotentialOrder} itemId={row.id} value={row.quantity} onIncrement={handleOnIncrement} onDecrement={handleOnDecrement} />}
+                        {col.id === "product" && row.product && <RenderProductLabel product={row.product} />}
+                        {col.id === "quantity" && <RenderQuantityButtons disabled={isCreatedPotentialOrder} item={row} onIncrement={handleOnIncrement} onDecrement={handleOnDecrement} />}
                         {col.id === "price" && numberFormat(row.price)}
                         {col.id === "totalPrice" && numberFormat(row.originalTotalPrice)}
                       </Typography>

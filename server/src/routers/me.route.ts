@@ -15,6 +15,7 @@ router.route("/")
   .get(getMeHandler)
 
 
+// TODO: remove this
 router.route("/profile")
   .get(getMeProfileHandler)
 

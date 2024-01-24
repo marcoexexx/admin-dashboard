@@ -1,5 +1,5 @@
 import { Avatar, Box, Card, CardHeader, Divider, Typography, styled, useTheme } from "@mui/material"
-import { UserProfile } from "@/services/types";
+import { User } from "@/services/types";
 
 import ShoppingBagTwoToneIcon from '@mui/icons-material/ShoppingBagTwoTone';
 import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
@@ -15,14 +15,14 @@ const AvatarPrimary = styled(Avatar)(({theme}) => ({
 
 
 interface RecentActivityProps {
-  user: UserProfile
+  user: User
 }
 
 export function RecentActivity({user}: RecentActivityProps) {
   const theme = useTheme()
 
   const orderTotal = user._count.orders
-  const orderCancelled = user.orders.filter(order => order.status === "Cancelled").length
+  const orderCancelled = user.orders?.filter(order => order.status === "Cancelled").length
 
   const favoriteProducts = user._count.favorites
   const createdProducts = user._count.createdProducts

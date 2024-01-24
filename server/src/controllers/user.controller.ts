@@ -7,6 +7,7 @@ import { ChangeUserRoleInput, GetUserByUsernameInput, GetUserInput, UploadImageU
 import { db } from "../utils/db";
 
 
+// TODO: remove this
 export async function getMeProfileHandler(
   req: Request,
   res: Response,
@@ -25,6 +26,11 @@ export async function getMeProfileHandler(
         orders: true,
         favorites: true,
         addresses: true,
+        pickupAddresses: {
+          include: {
+            orders: true
+          }
+        },
         reviews: true,
         _count: true
       },

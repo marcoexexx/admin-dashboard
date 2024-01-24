@@ -200,7 +200,20 @@ export type User = {
   reviews?: Review
   accessLogs?: AccessLog[]
   addresses?: Address[]
-  order?: Order[]
+  pickupAddresses?: PickupAddress[]
+  orders?: Order[]
+
+  _count: {
+    favorites: number,
+    createdProducts: number,
+    reviews: number,
+    accessLogs: number,
+    addresses: number,
+    pickupAddresses: number,
+    orders: number,
+    potentialOrders: number,
+    eventActions: number
+  }
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -473,23 +486,6 @@ export type Review = {
 }
 
 
-// TODO: User profile
-export type UserProfile = User & {
-  orders: Order[],
-  favorites: Product[],
-  addresses: Address[],
-  reviews: Review[],
-  _count: {
-    favorites: number,
-    orders: number,
-    createdProducts: number
-    reviews: number,
-    accessLogs: number,
-    addresses: number
-  }
-}
-
-
 export type Settings = {
   theme:
   | "light"
@@ -522,10 +518,6 @@ export type QueryOptionArgs = {
 export type LoginResponse = Omit<HttpResponse, "message"> & { accessToken: string };
 
 export type UserResponse = Omit<HttpResponse, "message"> & { user: User, redirectUrl: string | undefined };
-
-export type UserProfileResponse = Omit<HttpResponse, "message"> & {
-  user: UserProfile
-};
 
 export type CategoryResponse = Omit<HttpResponse, "message"> & { category: Category };
 

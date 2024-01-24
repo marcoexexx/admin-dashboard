@@ -112,27 +112,41 @@ export async function createOrderHandler(
     const userId: string | undefined = req.user?.id || undefined
 
     const order = await db.order.create({
-      data: {
-        addressType,
-        orderItems: {
-          create: orderItems.map(item => ({
-            productId: item.productId,
-            price: item.price,
-            quantity: item.quantity,
-            totalPrice: item.totalPrice,
-            saving: item.saving,
-            originalTotalPrice: item.price * item.quantity,
-          }))
-        },
-        userId,
-        totalPrice,
-        status,
-        deliveryAddressId,
-        billingAddressId,
-        pickupAddressId,
-        paymentMethodProvider,
-        remark,
-      },
+        data: {
+          addressType,
+          orderItems: {
+            create: await Promise.all(orderItems.map(async item => {
+              // update product quantity
+              await db.product.update({
+                where: {
+                  id: item.productId
+                },
+                data: {
+                  quantity: {
+                    decrement: item.quantity
+                  }
+                }
+              })
+
+              return {
+                productId: item.productId,
+                price: item.price,
+                quantity: item.quantity,
+                totalPrice: item.totalPrice,
+                saving: item.saving,
+                originalTotalPrice: item.price * item.quantity,
+              }
+            }))
+          },
+          userId,
+          totalPrice,
+          status,
+          deliveryAddressId,
+          billingAddressId,
+          pickupAddressId,
+          paymentMethodProvider,
+          remark,
+        }
     })
 
     // Create event action audit log
