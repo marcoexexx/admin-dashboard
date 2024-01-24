@@ -328,7 +328,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
                     if (key === "categories" && row.categories) return row.categories.map(({category}, idx) => <RenderCategoryLabel key={idx} category={category} />)
                     if (key === "salesCategory" && row.salesCategory) return row.salesCategory.map(({salesCategory}, idx) => <RenderSalesCategoryLabel key={idx} salesCategory={salesCategory} />)
                     if (key === "brand" && row.brand) return <RenderBrandLabel brand={row.brand} />
-                    if (key === "title") return <RenderProductLabel product={row} />
+                    if (key === "title") return <RenderProductLabel fetch={false} product={row} />
                     if (key === "creator") return row.creator ? <RenderUsernameLabel user={row.creator} me={me} /> : null
                     return row[key] as string
                   }

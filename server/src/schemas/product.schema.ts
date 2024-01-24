@@ -173,16 +173,6 @@ export const updateProductSchema = object({
     dealerPrice: number().min(0),
     marketPrice: number().min(0),
     priceUnit: z.enum(priceUnit).default("MMK"),
-    /** Example: How salesCategory work
-     * sale: { name: "11.11", startDate, endDate, isActivate }
-     * product,
-     * discount: 13  // by percent
-     **/
-    salesCategory: object({
-      salesCategory: string(), // by id
-      discount: number().max(100).default(0)
-    }).array().default([]),
-    quantity: number().min(0),
     status: z.enum(productStatus).default("Draft"),
 
     itemCode: string().nullable().optional(),

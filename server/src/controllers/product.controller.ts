@@ -595,9 +595,7 @@ export async function updateProductHandler(
       dealerPrice,
       marketPrice,
       priceUnit,
-      salesCategory,
       categories,
-      quantity,
       status
     } = req.body
 
@@ -615,14 +613,9 @@ export async function updateProductHandler(
     const productLifeCycleState = new LifeCycleState<LifeCycleProductConcrate>({ resource: "product", state: originalProductState.status })
     const productState = productLifeCycleState.changeState(status)
 
-    const [_deletedProductCategory, _daletedProductSalesCategory, _deletedProductSpecificationm, product] = await db.$transaction([
+    const [_deletedProductCategory, _deletedProductSpecificationm, product] = await db.$transaction([
       // remove association data(s)
       db.productCategory.deleteMany({
-        where: {
-          productId,
-        }
-      }),
-      db.productSalesCategory.deleteMany({
         where: {
           productId,
         }
@@ -666,13 +659,6 @@ export async function updateProductHandler(
               }
             }))
           },
-          salesCategory: {
-            create: (salesCategory || []).map(({ salesCategory: salesCategoryId, discount }) => ({
-              salesCategory: { connect: { id: salesCategoryId } },
-              discount
-            }))
-          },
-          quantity,
         }
       })
     ])
