@@ -39,6 +39,8 @@ import townshipRouter from './routers/township.route'
 import userAddressRouter from './routers/userAddress.route'
 import pickupAddressRouter from './routers/pickupAddress.route'
 
+import generatePkRouter from './routers/generatePk.route'
+
 import orderRouter from './routers/order.route'
 import potentialOrderRouter from './routers/potentialOrder.route'
 
@@ -106,6 +108,8 @@ app.get("/healthcheck", async (_: Request, res: Response, next: NextFunction) =>
     .then((message) => res.status(200).json({ message, env }))
     .catch(errorHandler(500, next));
 })
+
+app.use("/api/v1/generate-pk", generatePkRouter)
 
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/orders", orderRouter)
