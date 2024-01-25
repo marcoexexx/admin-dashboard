@@ -10,11 +10,11 @@ const TextFieldWrapper = styled(OutlinedInput)(({theme}) => ({
   '& fieldset': {
     borderColor: theme.colors.alpha.white[70],
   },
-  '&:hover fieldset': {
-    borderColor: theme.colors.alpha.white[70],
+  '&:hover .MuiOutlinedInput-notchedOutline': {
+    borderColor: theme.colors.primary.main
   },
-  '&.Mui-focused fieldset': {
-    borderColor: theme.colors.alpha.white[100],
+  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+    borderColor: theme.colors.primary.main
   },
 
   '& .MuiInputLabel-root': {
