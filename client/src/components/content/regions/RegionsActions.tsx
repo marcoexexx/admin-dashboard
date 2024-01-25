@@ -1,13 +1,16 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Typography, styled } from "@mui/material";
 import { useRef, useState } from "react";
+import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Tooltip, Typography, styled } from "@mui/material";
+import { RegionsFilterForm } from ".";
+import { CreateRegionInput } from "./forms";
+
 import ExportIcon from '@mui/icons-material/Upgrade';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ImportIcon from '@mui/icons-material/MoveToInbox';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 import * as XLSX from 'xlsx'
-import { RegionsFilterForm } from ".";
-import { CreateRegionInput } from "./forms";
+import { queryClient } from "@/components";
 
 
 const MenuActionBox = styled(Box)(({theme}) => ({
@@ -65,6 +68,13 @@ export function RegionsActions(props: RegionsActionsProps) {
     onExport()
   }
 
+  const handleRefreshList = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["regions"]
+    })
+  }
+
+
   return (
     <Box display="flex" justifyContent="space-between" alignItems="baseline" flexDirection="row">
       <Accordion sx={{ width: "100%" }}>
@@ -83,6 +93,12 @@ export function RegionsActions(props: RegionsActionsProps) {
       <IconButton aria-label="more actions" ref={ref} onClick={handleOpen}>
         <MoreVertIcon />
       </IconButton>
+
+      <Tooltip title="Refresh regions" arrow>
+        <IconButton aria-label="refresh button" onClick={handleRefreshList}>
+          <RefreshIcon />
+        </IconButton>
+      </Tooltip>
 
       <Popover
         anchorEl={ref.current}
