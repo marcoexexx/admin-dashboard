@@ -163,6 +163,8 @@ export function ProductsList() {
       description: product.description || undefined,
       status,
       categories: product.categories?.map(x => x.categoryId),
+      // TODO: fix type 
+      // @ts-ignore
       salesCategory: product.salesCategory?.map(({salesCategoryId, discount}) => ({
         salesCategory: salesCategoryId,
         discount
