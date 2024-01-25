@@ -1,9 +1,12 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Typography, styled } from "@mui/material";
 import { useRef, useState } from "react";
+import { queryClient } from "@/components";
+import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Tooltip, Typography, styled } from "@mui/material";
+import { UsersFilterForm } from ".";
+
 import ExportIcon from '@mui/icons-material/Upgrade';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { UsersFilterForm } from ".";
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 
 const MenuActionBox = styled(Box)(({theme}) => ({
@@ -36,6 +39,13 @@ export function UsersActions(props: UsersActionsProps) {
     onExport()
   }
 
+  const handleRefreshList = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["users"]
+    })
+  }
+
+
   return (
     <Box display="flex" justifyContent="space-between" alignItems="baseline" flexDirection="row">
       <Accordion sx={{ width: "100%" }}>
@@ -54,6 +64,12 @@ export function UsersActions(props: UsersActionsProps) {
       <IconButton aria-label="more actions" ref={ref} onClick={handleOpen}>
         <MoreVertIcon />
       </IconButton>
+
+      <Tooltip title="Refresh users" arrow>
+        <IconButton aria-label="refresh button" onClick={handleRefreshList}>
+          <RefreshIcon />
+        </IconButton>
+      </Tooltip>
 
       <Popover
         anchorEl={ref.current}

@@ -1,13 +1,16 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Typography, styled } from "@mui/material";
-import { CategoriesFilterForm } from ".";
 import { useRef, useState } from "react";
+import { queryClient } from "@/components";
+import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Tooltip, Typography, styled } from "@mui/material";
+import { CategoriesFilterForm } from ".";
+import { CreateCategoryInput } from "./forms";
+
 import ExportIcon from '@mui/icons-material/Upgrade';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ImportIcon from '@mui/icons-material/MoveToInbox';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 import * as XLSX from 'xlsx'
-import { CreateCategoryInput } from "./forms";
 
 
 const MenuActionBox = styled(Box)(({theme}) => ({
@@ -65,6 +68,13 @@ export function CategoriesActions(props: CategoriesActionsProps) {
     onExport()
   }
 
+  const handleRefreshList = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["categories"]
+    })
+  }
+
+
   return (
     <Box display="flex" justifyContent="space-between" alignItems="baseline" flexDirection="row">
       <Accordion sx={{ width: "100%" }}>
@@ -83,6 +93,12 @@ export function CategoriesActions(props: CategoriesActionsProps) {
       <IconButton aria-label="more actions" ref={ref} onClick={handleOpen}>
         <MoreVertIcon />
       </IconButton>
+
+      <Tooltip title="Refresh categories" arrow>
+        <IconButton aria-label="refresh button" onClick={handleRefreshList}>
+          <RefreshIcon />
+        </IconButton>
+      </Tooltip>
 
       <Popover
         anchorEl={ref.current}

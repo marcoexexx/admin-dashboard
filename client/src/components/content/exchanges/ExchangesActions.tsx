@@ -1,13 +1,16 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Typography, styled } from "@mui/material";
-import { ExchangesFilterForm } from ".";
 import { useRef, useState } from "react";
+import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Tooltip, Typography, styled } from "@mui/material";
+import { ExchangesFilterForm } from ".";
+import { CreateExchangeInput } from "./forms";
+
 import ExportIcon from '@mui/icons-material/Upgrade';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ImportIcon from '@mui/icons-material/MoveToInbox';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 import * as XLSX from 'xlsx'
-import { CreateExchangeInput } from "./forms";
+import { queryClient } from "@/components";
 
 
 const MenuActionBox = styled(Box)(({theme}) => ({
@@ -65,6 +68,13 @@ export function ExchangesActions(props: ExchangesActionsProps) {
     onExport()
   }
 
+  const handleRefreshList = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["exchanges"]
+    })
+  }
+
+
   return (
     <Box display="flex" justifyContent="space-between" alignItems="baseline" flexDirection="row">
       <Accordion sx={{ width: "100%" }}>
@@ -83,6 +93,12 @@ export function ExchangesActions(props: ExchangesActionsProps) {
       <IconButton aria-label="more actions" ref={ref} onClick={handleOpen}>
         <MoreVertIcon />
       </IconButton>
+
+      <Tooltip title="Refresh exchanges" arrow>
+        <IconButton aria-label="refresh button" onClick={handleRefreshList}>
+          <RefreshIcon />
+        </IconButton>
+      </Tooltip>
 
       <Popover
         anchorEl={ref.current}
