@@ -83,7 +83,7 @@ export async function getCouponHandler(
 
     // Read event action audit log
     if (coupon) {
-      if (req.user) createEventAction(db, {
+      if (req?.user?.id) createEventAction(db, {
         userId: req.user.id,
         resource: Resource.Coupon,
         resourceIds: [coupon.id],
@@ -119,7 +119,7 @@ export async function createCouponHandler(
     })
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Coupon,
       resourceIds: [coupon.id],
@@ -167,7 +167,7 @@ export async function createMultiCouponsHandler(
     })))
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Coupon,
       resourceIds: coupons.map(coupon => coupon.id),
@@ -201,7 +201,7 @@ export async function deleteCouponHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Coupon,
       resourceIds: [coupon.id],
@@ -234,7 +234,7 @@ export async function deleteMultiCouponsHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Coupon,
       resourceIds: couponIds,
@@ -267,7 +267,7 @@ export async function updateCouponHandler(
     })
 
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Coupon,
       resourceIds: [coupon.id],

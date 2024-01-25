@@ -82,7 +82,7 @@ export async function getPotentialOrderHandler(
 
     // Read event action audit log
     if (potentialOrder) {
-      if (req.user) createEventAction(db, {
+      if (req?.user?.id) createEventAction(db, {
         userId: req.user.id,
         resource: Resource.PotentialOrder,
         resourceIds: [potentialOrder.id],
@@ -166,7 +166,7 @@ export async function createPotentialOrderHandler(
     })
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.PotentialOrder,
       resourceIds: [potentialOrder.id],
@@ -209,7 +209,7 @@ export async function deletePotentialOrderHandler(
     ])
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.PotentialOrder,
       resourceIds: [potentialOrder.id],
@@ -253,7 +253,7 @@ export async function deleteMultiPotentialOrdersHandler(
     ])
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.PotentialOrder,
       resourceIds: potentialOrderIds,
@@ -312,7 +312,7 @@ export async function updatePotentialOrderHandler(
     ])
 
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.PotentialOrder,
       resourceIds: [potentialOrder.id],

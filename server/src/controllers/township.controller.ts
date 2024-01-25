@@ -78,7 +78,7 @@ export async function getTownshipHandler(
 
     if (township) {
       // Read event action audit log
-      if (req.user) createEventAction(db, {
+      if (req?.user?.id) createEventAction(db, {
         userId: req.user.id,
         resource: Resource.Township,
         resourceIds: [township.id],
@@ -121,7 +121,7 @@ export async function createMultiTownshipsHandler(
     })))
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Township,
       resourceIds: townships.map(township => township.id),
@@ -153,7 +153,7 @@ export async function createTownshipHandler(
     })
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Township,
       resourceIds: [township.id],
@@ -187,7 +187,7 @@ export async function deleteTownshipHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Township,
       resourceIds: [township.id],
@@ -220,7 +220,7 @@ export async function deleteMultilTownshipsHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Township,
       resourceIds: townshipIds,
@@ -258,7 +258,7 @@ export async function updateTownshipHandler(
     ])
 
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Township,
       resourceIds: [townships.id],

@@ -83,7 +83,7 @@ export async function getOrderHandler(
 
     // Read event action audit log
     if (order) {
-      if (req.user) createEventAction(db, {
+      if (req?.user?.id) createEventAction(db, {
         userId: req.user.id,
         resource: Resource.Order,
         resourceIds: [order.id],
@@ -202,7 +202,7 @@ export async function deleteOrderHandler(
     ])
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Order,
       resourceIds: [order.id],
@@ -257,7 +257,7 @@ export async function deleteMultiOrdersHandler(
     ])
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Order,
       resourceIds: orderIds,
@@ -331,7 +331,7 @@ export async function updateOrderHandler(
     ])
 
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Order,
       resourceIds: [order.id],

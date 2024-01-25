@@ -101,7 +101,7 @@ export async function getSalesCategoryHandler(
 
     if (salesCategory) {
       // Read event action audit log
-      if (req.user) createEventAction(db, {
+      if (req?.user?.id) createEventAction(db, {
         userId: req.user.id,
         resource: Resource.SalesCategory,
         resourceIds: [salesCategory.id],
@@ -135,7 +135,7 @@ export async function createSalesCategoryHandler(
     })
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.SalesCategory,
       resourceIds: [category.id],
@@ -211,7 +211,7 @@ export async function createMultiSalesCategoriesHandler(
     })))
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.SalesCategory,
       resourceIds: categories.map(category => category.id),
@@ -245,7 +245,7 @@ export async function deleteSalesCategoryHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.SalesCategory,
       resourceIds: [salesCategory.id],
@@ -278,7 +278,7 @@ export async function deleteMultiSalesCategoriesHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.SalesCategory,
       resourceIds: salesCategoryIds,
@@ -312,7 +312,7 @@ export async function updateSalesCategoryHandler(
     })
 
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.SalesCategory,
       resourceIds: [category.id],

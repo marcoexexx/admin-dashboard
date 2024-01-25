@@ -92,7 +92,7 @@ export async function getUserAddressHandler(
 
     if (userAddress) {
       // Read event action audit log
-      if (req.user) createEventAction(db, {
+      if (req?.user?.id) createEventAction(db, {
         userId: req.user.id,
         resource: Resource.UserAddress,
         resourceIds: [userAddress.id],
@@ -137,7 +137,7 @@ export async function createUserAddressHandler(
     })
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.UserAddress,
       resourceIds: [userAddress.id],
@@ -171,7 +171,7 @@ export async function deleteUserAddressHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.UserAddress,
       resourceIds: [userAddress.id],
@@ -204,7 +204,7 @@ export async function deleteMultiUserAddressesHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.UserAddress,
       resourceIds: userAddressIds,
@@ -237,7 +237,7 @@ export async function updateUserAddressHandler(
     })
 
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.UserAddress,
       resourceIds: [userAddress.id],

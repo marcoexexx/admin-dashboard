@@ -19,14 +19,14 @@ export function PickupAddressList() {
 
   if (isError && error) return <h1>ERROR: {error.message}</h1>
 
-  if (!data?.pickupAddresses || isLoading) return <SuspenseLoader />
+  if (isLoading) return <SuspenseLoader />
 
 
   return <Card>
     <PickupAddressListTable
       isLoading={isLoading}
-      pickupAddresses={data.pickupAddresses} 
-      count={data.pickupAddresses.length} 
+      pickupAddresses={data?.pickupAddresses || []} 
+      count={data?.pickupAddresses?.length || 0} 
     />
   </Card>
 }

@@ -74,7 +74,7 @@ export async function getCategoryHandler(
 
     // Read event action audit log
     if (category) {
-      if (req.user) createEventAction(db, {
+      if (req?.user?.id) createEventAction(db, {
         userId: req.user.id,
         resource: Resource.Category,
         resourceIds: [category.id],
@@ -103,7 +103,7 @@ export async function createCategoryHandler(
     })
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Category,
       resourceIds: [category.id],
@@ -147,7 +147,7 @@ export async function createMultiCategoriesHandler(
     })))
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Category,
       resourceIds: categories.map(category => category.id),
@@ -181,7 +181,7 @@ export async function deleteCategoryHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Category,
       resourceIds: [category.id],
@@ -214,7 +214,7 @@ export async function deleteMultiCategoriesHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Category,
       resourceIds: categoryIds,
@@ -247,7 +247,7 @@ export async function updateCategoryHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Category,
       resourceIds: [category.id],

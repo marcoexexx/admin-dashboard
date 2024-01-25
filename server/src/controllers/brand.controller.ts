@@ -74,7 +74,7 @@ export async function getBrandHandler(
 
     // Read event action audit log
     if (brand) {
-      if (req.user) createEventAction(db, {
+      if (req?.user?.id) createEventAction(db, {
         userId: req.user.id,
         resource: Resource.Brand,
         resourceIds: [brand.id],
@@ -116,7 +116,7 @@ export async function createMultiBrandsHandler(
     })))
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       resource: Resource.Brand,
       userId: req.user.id,
       action: EventActionType.Create,
@@ -148,7 +148,7 @@ export async function createBrandHandler(
     })
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Brand,
       resourceIds: [brand.id],
@@ -182,7 +182,7 @@ export async function deleteBrandHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Brand,
       resourceIds: [brand.id],
@@ -215,7 +215,7 @@ export async function deleteMultiBrandsHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Brand,
       resourceIds: brandIds,
@@ -248,7 +248,7 @@ export async function updateBrandHandler(
     })
 
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user?.id,
       resource: Resource.Brand,
       resourceIds: [brand.id],

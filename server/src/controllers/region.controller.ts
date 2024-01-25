@@ -74,7 +74,7 @@ export async function getRegionHandler(
 
     if (region) {
       // Read event action audit log
-      if (req.user) createEventAction(db, {
+      if (req?.user?.id) createEventAction(db, {
         userId: req.user.id,
         resource: Resource.Region,
         resourceIds: [region.id],
@@ -116,7 +116,7 @@ export async function createMultiRegionsHandler(
     })))
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Region,
       resourceIds: regions.map(region => region.id),
@@ -153,7 +153,7 @@ export async function createRegionHandler(
     })
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Region,
       resourceIds: [region.id],
@@ -187,7 +187,7 @@ export async function deleteRegionHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Region,
       resourceIds: [region.id],
@@ -220,7 +220,7 @@ export async function deleteMultilRegionsHandler(
     })
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Region,
       resourceIds: regionIds,
@@ -257,7 +257,7 @@ export async function updateRegionHandler(
     ])
 
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Region,
       resourceIds: [region.id],

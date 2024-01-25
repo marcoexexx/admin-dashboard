@@ -108,7 +108,7 @@ export async function getProductHandler(
 
     // Read event action audit log
     if (product) {
-      if (req.user) createEventAction(db, {
+      if (req?.user?.id) createEventAction(db, {
         userId: req.user.id,
         resource: Resource.Product,
         resourceIds: [product.id],
@@ -189,7 +189,7 @@ export async function createProductHandler(
     })
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Product,
       resourceIds: [new_product.id],
@@ -325,7 +325,7 @@ export async function createMultiProductsHandler(
     }))
 
     // Create event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Product,
       resourceIds: products.map(product => product.id),
@@ -361,7 +361,7 @@ export async function deleteProductSaleCategoryHandler(
 
     // It remove sale form product, it is update product
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Product,
       resourceIds: [productId],
@@ -401,7 +401,7 @@ export async function updateProductSalesCategoryHandler(
 
     // It update sale form product, it is update product
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Product,
       resourceIds: [productSalesCategory.productId],
@@ -483,7 +483,7 @@ export async function deleteProductHandler(
     ])
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Product,
       resourceIds: [deledtedProduct.id],
@@ -560,7 +560,7 @@ export async function deleteMultiProductHandler(
     ])
 
     // Delete event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Product,
       resourceIds: productIds,
@@ -664,7 +664,7 @@ export async function updateProductHandler(
     ])
 
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Product,
       resourceIds: [product.id],
@@ -703,7 +703,7 @@ export async function uploadImagesProductHandler(
     })
 
     // Update event action audit log
-    if (req.user) createEventAction(db, {
+    if (req?.user?.id) createEventAction(db, {
       userId: req.user.id,
       resource: Resource.Product,
       resourceIds: [product.id],
