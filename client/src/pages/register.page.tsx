@@ -58,7 +58,7 @@ export default function Register() {
               <img
                 alt="register"
                 height={360}
-                src="/static/reception-desk.svg"
+                src="/static/girl-announcing-shopping-super-sale.svg"
               />
             </Box>
           </Container>
