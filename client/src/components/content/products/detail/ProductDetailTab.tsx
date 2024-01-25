@@ -1,10 +1,15 @@
-import { Box, Card, CardActions, CardMedia, Divider, Typography, styled } from "@mui/material"
+import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween"
+
+import { Box, Card, CardActions, CardMedia, Divider, IconButton, Tooltip, Typography, styled } from "@mui/material"
 import { MuiButton, Text } from '@/components/ui'
 import { OrderItem, Product } from "@/services/types";
+import { memoize } from "lodash";
 import { useMutation } from "@tanstack/react-query";
 import { useLocalStorage, useStore } from "@/hooks";
 import { queryClient } from "@/components";
 import { likeProductByUserFn, unLikeProductByUserFn } from "@/services/productsApi";
+import { playSoundEffect } from "@/libs/playSound";
 
 import ProductRelationshipTable from "./ProductRelationshipTable";
 import ProductSpecificationTable from "./ProductSpecificationTable"
@@ -12,11 +17,7 @@ import ThumbUpAltTwoToneIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUp';
 import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { playSoundEffect } from "@/libs/playSound";
-
-import dayjs from "dayjs";
-import isBetween from "dayjs/plugin/isBetween"
-import { memoize } from "lodash";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 
 dayjs.extend(isBetween)
@@ -152,6 +153,12 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
     ? true 
     : false
 
+  const handleRefreshList = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["products", { id: product.id }]
+    })
+  }
+
 
   return (
     <Card>
@@ -161,7 +168,16 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         title={product.title}
       />
 
-      <Typography variant="h2" sx={{ p: 3 }}>{product.title}</Typography>
+      <Box display="flex" flexDirection="row" justifyContent="space-between">
+        <Typography variant="h2" sx={{ p: 3 }}>{product.title}</Typography>
+        <Box alignSelf="center">
+          <Tooltip title="Refresh products" arrow sx={{ mr: 2 }}>
+            <IconButton aria-label="refresh button" onClick={handleRefreshList}>
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box>
 
       <Divider />
 
