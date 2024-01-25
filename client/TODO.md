@@ -11,7 +11,6 @@
 
 # TODO
  - ## IMPORTANT
- - [ ] api detail get :: handle NotFound::404
  - [ ] orderBy
  - [ ] pickup address :: read(all, detail), delete(all, detail) :: client UI
  - [ ] nested model form
@@ -63,3 +62,4 @@
  - [x] loading -> update form
  - [x] useraddress add remark
  - [x] time throttle for creating audit log for read resorce
+ - [x] api detail get :: handle NotFound::404

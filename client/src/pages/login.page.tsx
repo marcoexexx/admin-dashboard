@@ -59,7 +59,7 @@ export default function Login() {
                 <img
                   alt="500"
                   height={360}
-                  src="/static/reception-desk.jpg"
+                  src="/static/reception-desk.svg"
                 />
               </Box>
             </Container>
