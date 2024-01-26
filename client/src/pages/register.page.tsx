@@ -1,6 +1,7 @@
 import { OAuthForm, RegisterForm } from '@/components/forms/auth'
-import { Box, Container, Grid, Typography, styled } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { Box, Container, Grid, Typography, Link, styled } from '@mui/material'
+import { Link as BrowserLink } from "react-router-dom"
+
 
 const GridWrapper = styled(Grid)(({ theme }) => ({
   background: theme.colors.gradients.black1
@@ -24,19 +25,8 @@ const TypographySecondary = styled(Typography)(({ theme }) => ({
   color: theme.colors.alpha.white[70]
 }))
 
-const LinkWrapper = styled(Typography)(({theme}) => ({
-  color: theme.colors.alpha.white[100],
-  cursor: "pointer",
-
-  "&:hover": {
-    textDecoration: "underline"
-  }
-}))
-
 
 export default function Register() {
-  const navigate = useNavigate()
-
   return <>
     <MainContent>
       <Grid
@@ -83,7 +73,7 @@ export default function Register() {
               <RegisterForm />
 
               <TypographySecondary variant='h4' fontWeight="normal" sx={{ my: 2 }}>
-                Already have an account? <LinkWrapper onClick={() => navigate("/auth/login")}>Login</LinkWrapper>
+                Already have an account? <Link component={BrowserLink} to="/auth/login">Login</Link>
               </TypographySecondary>
 
               <OAuthForm />

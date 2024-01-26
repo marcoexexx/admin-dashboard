@@ -6,7 +6,7 @@ import { accessLogsPermissionsLoader, auditLogsPermissionsLoader, brandPermissio
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 import Loader from "./loader";
-import ErrorPage from "./error.page";
+import ErrorBoundaryRouter from "@/components/ErrorBoundaryRouter";
 
 
 const HomePage = Loader(lazy(() => import("@/pages/home")))
@@ -97,7 +97,7 @@ const UpdateSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategorie
 const routes = createBrowserRouter([
   {
     path: "",
-    ErrorBoundary: ErrorPage,
+    ErrorBoundary: ErrorBoundaryRouter,
     children: [
       /// MAIN ROUTES
       {
@@ -558,7 +558,7 @@ const routes = createBrowserRouter([
 
           {
             path: "500",
-            Component: ErrorPage
+            Component: ErrorBoundaryRouter
           }
         ]
       },
@@ -578,7 +578,7 @@ const routes = createBrowserRouter([
   {
     path: "verify-email/:verifyEmailCode",
     Component: BaseLayout,
-    ErrorBoundary: ErrorPage,
+    ErrorBoundary: ErrorBoundaryRouter,
     children: [
       {
         path: "",

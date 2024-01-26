@@ -6,6 +6,7 @@ import { PermissionsResponse } from "@/services/types"
 type ExtractPerm<T extends string> = T extends `${infer P}-permissions` ? P : never
 
 type PermissionKey = 
+  | "dashboard-permissions"
   | "user-permissions"
   | "exchange-permissions"
   | "category-permissions"

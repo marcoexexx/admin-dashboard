@@ -1,9 +1,12 @@
 import { SuspenseLoader } from '.';
 import { useCookies } from 'react-cookie'
-import { useStore } from "@/hooks";
+import { usePermission, useStore } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { getMeFn } from '@/services/authApi';
+import { AppError } from '@/libs/exceptions';
+import { getDashboardPermissionsFn } from '@/services/permissionsApi';
+
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -25,15 +28,18 @@ export function AuthProvider(props: AuthProviderProps) {
     dispatch({ type: "SET_USER", payload: data })
   }, [isSuccess])
 
-  if (isLoading) return <SuspenseLoader />
-
-  console.error({
-    environment: import.meta.env.MODE,
-    error: error
+  const isAllowedReactDashboard = usePermission({
+    key: "dashboard-permissions",
+    queryFn: getDashboardPermissionsFn,
+    actions: "read",
   })
 
-  // TODO: thrown
-  if (isError && error) throw error
+  if (isLoading) return <SuspenseLoader />
+
+  if (isError && error) throw AppError.ApiError(error.message, (error as any)?.response?.data?.status || 500)
+
+  // TODO: User permission throw
+  console.log({ isSuccess, isAllowedReactDashboard, isError })
 
   return children
 }

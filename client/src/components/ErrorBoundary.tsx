@@ -1,4 +1,6 @@
+import { PermissionError } from "@/libs/exceptions";
 import ErrorPage from "@/pages/error.page";
+import Unauthorized from "@/pages/unauthorized.page";
 import { Component, ErrorInfo, ReactNode } from "react";
 
 
@@ -10,7 +12,7 @@ interface ErrorBoundaryState {
   error?: Error
 }
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = {
@@ -24,7 +26,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   render(): ReactNode {
-    if (!!this.state.error) return <ErrorPage error={this.state.error} />
+    if (!!this.state.error) {
+      if (this.state.error instanceof PermissionError) return <Unauthorized />
+      return <ErrorPage error={this.state.error} />
+    }
     return this.props.children
   }
 }

@@ -1,5 +1,6 @@
 import { RenderBrandLabel, RenderSalesCategoryLabel } from "@/components/table-labels"
 import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLabel"
+import { AppError } from "@/libs/exceptions"
 import { Brand, Product } from "@/services/types"
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 
@@ -31,9 +32,7 @@ interface ProductRelationshipTableProps {
 export default function ProductRelationshipTable(props: ProductRelationshipTableProps) {
   const { brand, categories, salesCategories } = props
 
-
-  if (!brand) throw new Error("Product should have brand")
-
+  if (!brand) throw AppError.InvalidInputError("Product should have brand")
 
   const rows = [
     { 
