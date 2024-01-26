@@ -1,4 +1,4 @@
-import { ErrorBoundary, PagePermission } from "@/components";
+import { PagePermission } from "@/components";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
 import { lazy } from "react";
@@ -6,6 +6,7 @@ import { accessLogsPermissionsLoader, auditLogsPermissionsLoader, brandPermissio
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 import Loader from "./loader";
+import ErrorPage from "./error.page";
 
 
 const HomePage = Loader(lazy(() => import("@/pages/home")))
@@ -96,7 +97,7 @@ const UpdateSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategorie
 const routes = createBrowserRouter([
   {
     path: "",
-    ErrorBoundary,
+    ErrorBoundary: ErrorPage,
     children: [
       /// MAIN ROUTES
       {
@@ -557,7 +558,7 @@ const routes = createBrowserRouter([
 
           {
             path: "500",
-            Component: ErrorBoundary
+            Component: ErrorPage
           }
         ]
       },
@@ -577,7 +578,7 @@ const routes = createBrowserRouter([
   {
     path: "verify-email/:verifyEmailCode",
     Component: BaseLayout,
-    ErrorBoundary,
+    ErrorBoundary: ErrorPage,
     children: [
       {
         path: "",

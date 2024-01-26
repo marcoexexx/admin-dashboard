@@ -1,29 +1,30 @@
-import { useRouteError } from "react-router-dom"
-import { Link } from 'react-router-dom'
+import ErrorPage from "@/pages/error.page";
+import { Component, ErrorInfo, ReactNode } from "react";
 
-export function ErrorBoundary() {
-  let error = useRouteError() as Error;
 
-  return (
-    <div>
-      <div>
-        {/* <img src={OppsImag} className="px-12" /> */}
-      </div>
+interface ErrorBoundaryProps {
+  children: React.ReactNode
+}
 
-      <h1>Aaaah! Something went wrong</h1>
+interface ErrorBoundaryState {
+  error?: Error
+}
 
-      <div>
-        <p>Brace yourself till we get the error fixed.</p>
-        <p>You may also refresh the page or try again later</p>
-        <Link to="/">Home</Link>
-      </div>
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props)
+    this.state = {
+      error: undefined
+    }
+  }
 
-      <div>
-        <h1>Sorry Something went wrong!!</h1>
-        { process.env.NODE_ENV === "development" 
-          ? <pre>{error?.message}</pre> 
-          : <h1>Error code 500</h1>}
-      </div>
-    </div>
-  )
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    console.error("ErrorBoundary caught an error: ", error, errorInfo)
+    this.setState({ error })
+  }
+
+  render(): ReactNode {
+    if (!!this.state.error) return <ErrorPage error={this.state.error} />
+    return this.props.children
+  }
 }

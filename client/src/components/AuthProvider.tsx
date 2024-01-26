@@ -1,9 +1,9 @@
+import { SuspenseLoader } from '.';
 import { useCookies } from 'react-cookie'
 import { useStore } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { getMeFn } from '@/services/authApi';
-import { SuspenseLoader } from '.';
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -14,7 +14,7 @@ export function AuthProvider(props: AuthProviderProps) {
   const { dispatch } = useStore()
   const [cookies] = useCookies(["logged_in"])
 
-  const query = useQuery({
+  const { data, isSuccess, isLoading, isError, error } = useQuery({
     enabled: !!cookies.logged_in,
     queryKey: ["authUser"],
     queryFn: getMeFn,
@@ -22,13 +22,18 @@ export function AuthProvider(props: AuthProviderProps) {
   })
 
   useEffect(() => {
-    dispatch({ type: "SET_USER", payload: query.data })
-  }, [query.isSuccess])
+    dispatch({ type: "SET_USER", payload: data })
+  }, [isSuccess])
 
-  if (query.isLoading) return <SuspenseLoader />
+  if (isLoading) return <SuspenseLoader />
 
-  // TODO: Error page
-  if (query.isError) return <h1>Environment on: {import.meta.env.MODE} Change Error: {query.error.message}</h1>
+  console.error({
+    environment: import.meta.env.MODE,
+    error: error
+  })
+
+  // TODO: thrown
+  if (isError && error) throw error
 
   return children
 }
