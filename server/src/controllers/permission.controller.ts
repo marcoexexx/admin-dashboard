@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { potentialOrderPermission, orderPermission, productPermission, regionPermission, townshipPermission, userAddressPermission, userPermission, pickupAddressPermission } from "../utils/auth/permissions";
+import { potentialOrderPermission, orderPermission, productPermission, regionPermission, townshipPermission, userAddressPermission, userPermission, pickupAddressPermission, dashboardPermission } from "../utils/auth/permissions";
 import { HttpDataResponse } from "../utils/helper";
 import { brandPermission } from "../utils/auth/permissions/brand.permission";
 import { categoryPermission } from "../utils/auth/permissions/category.permission";
@@ -12,6 +12,25 @@ import AppError from "../utils/appError";
 import logging from "../middleware/logging/logging";
 import mapValues from "lodash/mapValues";
 import { auditLogPermission } from "../utils/auth/permissions/auditLog.permission";
+
+
+export async function permissionsDashboardHandler(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const permissions = mapValues(dashboardPermission, value => value())
+
+    res
+      .status(200)
+      .json(HttpDataResponse({ permissions, label: "dashboard" }))
+  } catch (err: any) {
+    const msg = err?.message || "internal server error"
+    logging.error(msg)
+    next(new AppError(500, msg))
+  }
+}
 
 
 export async function permissionsUserHandler(
