@@ -1,4 +1,4 @@
-import { PermissionError } from "@/libs/exceptions";
+import { AppError } from "@/libs/exceptions";
 import ErrorPage from "@/pages/error.page";
 import Unauthorized from "@/pages/unauthorized.page";
 import { Component, ErrorInfo, ReactNode } from "react";
@@ -27,7 +27,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 
   render(): ReactNode {
     if (!!this.state.error) {
-      if (this.state.error instanceof PermissionError) return <Unauthorized />
+      if (this.state.error instanceof AppError.PermissionError.cls) return <Unauthorized />
       return <ErrorPage error={this.state.error} />
     }
     return this.props.children

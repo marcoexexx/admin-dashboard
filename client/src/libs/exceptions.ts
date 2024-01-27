@@ -1,22 +1,34 @@
-export class NetworkError extends Error {
+interface Cls<T> {
+  cls: T
+}
+
+class NetworkError extends Error implements Cls<typeof NetworkError> {
+  cls: typeof NetworkError = NetworkError
+
   constructor() {
     super(`NetworkError`)
   }
 }
 
-export class ApiError extends Error {
+class ApiError extends Error implements Cls<typeof ApiError> {
+  cls: typeof ApiError = ApiError
+
   constructor(message: string, status: number = 500) {
     super(`ApiError: ${status}::${message}`)
   }
 }
 
-export class InvalidInputError extends Error {
+class InvalidInputError extends Error implements Cls<typeof InvalidInputError> {
+  cls: typeof InvalidInputError = InvalidInputError
+
   constructor(message: string) {
     super(`InvalidInputError: ${message}`)
   }
 }
 
-export class PermissionError extends Error {
+class PermissionError extends Error implements Cls<typeof PermissionError> {
+  cls: typeof PermissionError = PermissionError
+
   constructor() {
     super(`PermissionError: You do not have permission to access this resource.`)
   }
