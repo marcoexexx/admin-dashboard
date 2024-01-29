@@ -1,6 +1,6 @@
 import { QueryFunction, useQuery } from "@tanstack/react-query"
-import { useStore } from "."
 import { PermissionsResponse } from "@/services/types"
+import { getMeFn } from "@/services/authApi"
 
 
 type ExtractPerm<T extends string> = T extends `${infer P}-permissions` ? P : never
@@ -27,25 +27,36 @@ type PermissionKey =
 interface Args {
   key: PermissionKey,
   actions: "create" | "read" | "update" | "delete"
+  enabled?: boolean
   queryFn?: QueryFunction<PermissionsResponse, PermissionKey[], never> | undefined
 }
 
-export function usePermission({key, actions, queryFn}: Args) {
-  const { state: {user} } = useStore()
+export function usePermission({key, actions, enabled, queryFn}: Args) {
+  const { data: user, isSuccess: isSuccessUser, isError: isErrorUser, error: errorUser } = useQuery({
+    enabled,
+    queryKey: ["authUser"],
+    queryFn: getMeFn,
+    select: data => data.user,
+  })
 
   const role = user?.role || "*"
   const resource = key.split("-")[0] as ExtractPerm<PermissionKey>
 
   const {
     data: permissions,
-    isError,
-    isSuccess,
-    error
+    isError: isErrorPermissions,
+    isSuccess: isSuccessPermissions,
+    error: errorPermissions
   } = useQuery({
     queryKey: [key],
     queryFn,
     select: (data: PermissionsResponse) => data
   })
+
+  // const isLoading = isLoadingUser || isLoadingPemissions
+  const isSuccess = isSuccessUser || isSuccessPermissions
+  const isError = isErrorUser || isErrorPermissions
+  const error = errorUser || errorPermissions
 
   if (permissions?.label !== resource && !isSuccess) return false
   if ((isError && error)) {

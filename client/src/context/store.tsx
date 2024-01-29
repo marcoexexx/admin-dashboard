@@ -1,7 +1,8 @@
 import { User } from "@/services/types"
 import { createContext, useReducer } from "react"
 import { i18n, Local } from "@/i18n"
-import { AppError } from "@/libs/exceptions"
+
+import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 
 export type Store = {
@@ -626,7 +627,7 @@ const stateReducer = (state: Store, action: Action): Store => {
     default: {
       const _: never = action
       console.warn({ message: "Unhandled action type", _ })
-      throw AppError.InvalidInputError("Unhandled action type")
+      throw AppError.new(AppErrorKind.InvalidInputError, "Unhandled action type")
     }
   }
 }

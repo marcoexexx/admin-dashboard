@@ -4,8 +4,9 @@ import { usePermission, useStore } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { getMeFn } from '@/services/authApi';
-import { AppError } from '@/libs/exceptions';
 import { getDashboardPermissionsFn } from '@/services/permissionsApi';
+
+import AppError, { AppErrorKind } from '@/libs/exceptions';
 
 
 interface AuthProviderProps {
@@ -29,17 +30,18 @@ export function AuthProvider(props: AuthProviderProps) {
   }, [isSuccess])
 
   const isAllowedReactDashboard = usePermission({
+    enabled: !!cookies.logged_in,
     key: "dashboard-permissions",
     queryFn: getDashboardPermissionsFn,
     actions: "read",
   })
 
+
   if (isLoading) return <SuspenseLoader />
 
-  if (isError && error) throw AppError.ApiError(error.message, (error as any)?.response?.data?.status || 500)
+  if (isError && error) throw AppError.new(AppErrorKind.ApiError, error.message)
 
-  // TODO: User permission throw
-  console.log({ isSuccess, isAllowedReactDashboard, isError })
+  if (cookies.logged_in && !isAllowedReactDashboard) throw AppError.new(AppErrorKind.PermissionError)
 
   return children
 }
