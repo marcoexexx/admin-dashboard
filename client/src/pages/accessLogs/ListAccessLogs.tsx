@@ -6,6 +6,7 @@ import { getAccessLogsPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import getConfig from "@/libs/getConfig";
 import { AccessLogsList } from '@/components/content/accessLogs';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
@@ -41,7 +42,9 @@ export default function ListAccessLogs() {
       ?  <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>
-              <AccessLogsList />
+              <ErrorBoundary>
+                <AccessLogsList />
+              </ErrorBoundary>
             </Grid>
           </Grid>
         </Container>
