@@ -1,5 +1,5 @@
 import { authApi } from "./authApi";
-import { CreateProductInput, DeleteProductInput, ProductStatus, UpdateProductInput } from "@/components/content/products/forms";
+import { CreateProductInput, ProductStatus, UpdateProductInput } from "@/components/content/products/forms";
 import { HttpListResponse, HttpResponse, Pagination, Product, ProductResponse, ProductSalesCategoriesResponse, QueryOptionArgs } from "./types";
 import { ProductFilter } from "@/context/product";
 
@@ -20,11 +20,14 @@ export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pag
 }
 
 
-export async function getProductFn(opt: QueryOptionArgs, { productId }: { productId: string | undefined}) {
+export async function getProductFn(opt: QueryOptionArgs, { productId, include }: { productId: string | undefined, include?: any }) {
   if (!productId) return
   // TODO: service :: query and filter from ReactQuery
-  const { data } = await authApi.get<ProductResponse>(`/products/detail/${productId}?include[specification]=true&include[_count]=true&include[likedUsers]=true&include[brand]=true&include[categories][include][category]=true&include[salesCategory][include][salesCategory]=true`, {
+  const { data } = await authApi.get<ProductResponse>(`/products/detail/${productId}`, {
     ...opt,
+    params: {
+      include
+    }
   })
   return data
 }
@@ -117,7 +120,7 @@ export async function updateProductFn(
 }
 
 
-export async function deleteMultiProductsFn(productIds: DeleteProductInput["productId"][]) {
+export async function deleteMultiProductsFn(productIds: string[]) {
   const { data } = await authApi.delete<HttpResponse>("/products/multi", {
     data: { productIds }
   })

@@ -1,4 +1,4 @@
-import { useStore, useMe, useCombineQuerys } from "@/hooks";
+import { useStore, useMe } from "@/hooks";
 import { useCreateMultiProducts, useDeleteMultiProducts, useDeleteProduct, useGetProducts } from "@/hooks/product";
 import { useUpdateProduct } from "@/hooks/product/use-update-product";
 
@@ -43,15 +43,6 @@ export function ProductsList() {
   const deleteProductsMutation = useDeleteMultiProducts()
   const statusChangeProductMutation = useUpdateProduct()
 
-  const { isLoading } = useCombineQuerys(
-    meQuery, 
-    productsQuery, 
-    createProductsMutation, 
-    deleteProductsMutation, 
-    deleteProductMutation, 
-    statusChangeProductMutation
-  )
-
   // Extraction
   const me = meQuery.try_data.ok_or_throw()
   const data = productsQuery.try_data.ok_or_throw()
@@ -94,7 +85,7 @@ export function ProductsList() {
   return <Card>
     <ProductsListTable
       me={me}
-      isLoading={isLoading}
+      isLoading={productsQuery.isLoading}
       onStatusChange={handleChangeStatusProduct}
       products={data.results} 
       count={data.count} 

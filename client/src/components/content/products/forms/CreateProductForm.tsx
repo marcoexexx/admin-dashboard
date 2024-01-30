@@ -73,7 +73,7 @@ export function CreateProductForm() {
   )
 
   // Extraction
-  const exchangeRate  = exchangesQuery.try_data.ok_or_throw()
+  const exchangeRate = exchangesQuery.try_data.ok_or_throw()
 
 
   useEffect(() => {

@@ -6,10 +6,14 @@ import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
+import { useNavigate } from "react-router-dom"
 
 
 export function useUpdateProduct() {
-  const { dispatch } = useStore()
+  const { state: {modalForm}, dispatch } = useStore()
+
+  const navigate = useNavigate()
+  const from = "/products"
 
   const mutation = useMutation({
     mutationFn: updateProductFn,
@@ -25,6 +29,7 @@ export function useUpdateProduct() {
         message: "Success update product.",
         severity: "success"
       } })
+      if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
         queryKey: ["products"]

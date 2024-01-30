@@ -8,14 +8,13 @@ import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getProductFn, updateProductFn } from "@/services/productsApi";
 import { useStore } from "@/hooks";
-import { useNavigate, useParams } from "react-router-dom";
-import { getExchangesFn } from "@/services/exchangesApi";
 import { useEffect } from "react";
 import { priceUnit, productStatus, productStockStatus } from ".";
-import { playSoundEffect } from "@/libs/playSound";
+import { useGetProduct } from "@/hooks/product";
+import { useUpdateProduct } from "@/hooks/product/use-update-product";
+import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
+import { useParams } from "react-router-dom";
 
 
 const updateProductSchema = object({
@@ -61,67 +60,40 @@ const toUpdateFields: (keyof UpdateProductInput)[] = [
 export function UpdateProductForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
-  const navigate = useNavigate()
   const { productId } = useParams()
-  const from = "/products"
-
-  const { 
-    data: product,
-    isLoading: isLoadingProduct,
-    isError: isErrorProduct,
-    error: errorProduct,
-    isSuccess: isSuccessFetchProduct,
-    fetchStatus: fetchStatusProduct
-  } = useQuery({
-    enabled: !!productId,
-    queryKey: ["products", { id: productId }],
-    queryFn: args => getProductFn(args, { productId }),
-    select: data => data?.product
-  })
-
-  const {
-    mutate: updateProduct
-  } = useMutation({
-    mutationFn: updateProductFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success updated a new product.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["products"]
-      })
-      playSoundEffect("success")
-    },
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: err.response.data.status === 403 ? "warning" : "error"
-      } })
-      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
-    }
-  })
 
   const methods = useForm<UpdateProductInput>({
     resolver: zodResolver(updateProductSchema),
   })
 
-  const { data: exchangeRate } = useQuery({
-    queryKey: ["exchanges", "latest", methods.getValues("priceUnit")],
-    queryFn: args => getExchangesFn(args, {
-      filter: {
-        from: methods.getValues("priceUnit"),
-        to: "MMK",
-      },
-      pagination: {
-        page: 1,
-        pageSize: 1
+  // Quries
+  const productQuery = useGetProduct({ id: productId, include: {
+    specification: true,
+    likedUsers: true,
+    brand: true,
+    categories: {
+      include: {
+        category: true
       }
-    }),
-    select: data => data.results
-  })
+    },
+    salesCategory: {
+      include: {
+        salesCategory: true
+      }
+    },
+
+    _count: true
+  }})
+  const exchangesQuery = useGetExchangeByLatestUnit(methods.getValues("priceUnit"))
+
+  // Mutations
+  const updateProductMutation = useUpdateProduct()
+
+  // Extraction
+  const product = productQuery.try_data.ok_or_throw()
+  const productFetchStatus = productQuery.fetchStatus
+  const exchangeRate = exchangesQuery.try_data.ok_or_throw()
+
 
   useEffect(() => {
     queryClient.invalidateQueries({
@@ -130,7 +102,7 @@ export function UpdateProductForm() {
   }, [methods.watch("priceUnit")])
 
   useEffect(() => {
-    if (isSuccessFetchProduct && product && fetchStatusProduct === "idle") {
+    if (productQuery.isSuccess && product && productFetchStatus === "idle") {
       toUpdateFields.forEach(key => {
         const value = key === "isPending" 
           ? product.status === "Pending"
@@ -142,7 +114,7 @@ export function UpdateProductForm() {
       })
       if (product.brandId) methods.setValue("brandId", product.brandId)
     }
-  }, [isSuccessFetchProduct, fetchStatusProduct])
+  }, [productQuery.isSuccess, productFetchStatus])
 
 
   const handleOnCloseModalForm = () => {
@@ -156,7 +128,7 @@ export function UpdateProductForm() {
 
     if (product?.status !== "Draft") return
 
-    updateProduct({id: productId, product: {
+    updateProductMutation.mutate({id: productId, product: {
       ...value,
       status: value.isPending ? "Pending" : value.status
     }})
@@ -169,8 +141,9 @@ export function UpdateProductForm() {
   }
 
 
-  if (isErrorProduct && errorProduct) return <h1>{errorProduct.message}</h1>
-  if (isLoadingProduct || !product) return <SuspenseLoader />
+  // TODO: Skeleton table loader
+  if (!product || productQuery.isLoading) return <SuspenseLoader />
+
 
   return (
     <>
@@ -310,7 +283,7 @@ export function UpdateProductForm() {
             : null}
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" disabled={product.status !== "Draft"}>Save</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={updateProductMutation.isPending} disabled={product.status !== "Draft"}>Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

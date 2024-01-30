@@ -1,10 +1,9 @@
 import { SuspenseLoader } from "@/components";
-import { getProductFn } from "@/services/productsApi";
 import { Grid, Tab, Tabs, styled } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import ProductDetailTab from "./ProductDetailTab";
 import ProductSalesTab from "./ProductSalesTab";
+import { useGetProduct } from "@/hooks/product";
 
 
 const TabWrapper = styled(Tabs)(() => ({
@@ -36,25 +35,35 @@ export function ProductDetail(props: ViewProductProps) {
 
   const [currentTab, setCurrentTab] = useState<ProductTabs>("detail")
 
-  const {
-    data: product,
-    isError: isProductError,
-    isLoading: isProductLoading,
-    error: productError
-  } = useQuery({
-    enabled: !!productId,
-    queryKey: ["products", { id: productId }],
-    queryFn: args => getProductFn(args, { productId }),
-    select: data => data?.product
-  })
+  // Quries
+  const productQuery = useGetProduct({ id: productId, include: {
+    specification: true,
+    likedUsers: true,
+    brand: true,
+    categories: {
+      include: {
+        category: true
+      }
+    },
+    salesCategory: {
+      include: {
+        salesCategory: true
+      }
+    },
+
+    _count: true
+  }})
+
+  // Extraction
+  const product = productQuery.try_data.ok_or_throw()
+
 
   const hgandleTabChange = (_: React.ChangeEvent<{}>, value: ProductTabs) => {
     setCurrentTab(value as ProductTabs)
   }
 
 
-  if (isProductError && productError) return <h1>ERROR: {productError.message}</h1>
-  if (!product || isProductLoading) return <SuspenseLoader />
+  if (!product || productQuery.isLoading) return <SuspenseLoader />
 
 
   return (

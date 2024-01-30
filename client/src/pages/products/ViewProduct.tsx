@@ -8,6 +8,7 @@ import { ProductDetail } from "@/components/content/products/detail";
 import { MuiButton } from "@/components/ui";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 
 export default function ViewProduct() {
@@ -71,7 +72,9 @@ export default function ViewProduct() {
 
       {isAllowedReadProduct
       ? <Container maxWidth="lg">
-          <ProductDetail productId={productId} />
+          <ErrorBoundary>
+            <ProductDetail productId={productId} />
+          </ErrorBoundary>
         </Container>
       : <MiniAccessDenied />}
     </>
