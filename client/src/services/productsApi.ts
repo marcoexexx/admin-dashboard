@@ -95,7 +95,7 @@ export async function createProductFn(product: CreateProductInput) {
 }
 
 
-export async function deleteProductFn(productId: DeleteProductInput["productId"]) {
+export async function deleteProductFn(productId: string) {
   const { data } = await authApi.delete<HttpResponse>(`/products/detail/${productId}`)
   return data
 }

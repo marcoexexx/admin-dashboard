@@ -2,8 +2,9 @@ import { ToString } from "./result"
 
 export const AppErrorKind = {
   InvalidInputError: "InvalidInputError",
-  ApiError: "AppError",
+  ApiError: "ApiError",
   NetworkError: "NetworkError",
+  NoDataError: "NoDataError",
   PermissionError: "PermissionError"
 } as const
 export type AppErrorKind = typeof AppErrorKind[keyof typeof AppErrorKind]
@@ -14,7 +15,7 @@ export default class AppError extends Error implements ToString {
     super(`${message}: ${kind}`)
   }
 
-  static new(kind: AppErrorKind, message?: string) {
+  static new(kind: AppErrorKind, message: string = "Unknown error") {
     return new AppError(kind, message)
   }
 

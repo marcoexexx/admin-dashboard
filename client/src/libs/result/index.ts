@@ -16,7 +16,7 @@ export function unwrap_failed<E extends ToString>(msg: string, err: E): never {
   throw new UnwrapException(`${msg}: ${err.toString()}`)
 }
 
-export default class Result<T extends ToString, E extends ToString> {
+export default class Result<T, E extends ToString> {
   constructor(
     public _type: "ok" | "err",
     public value: T | E

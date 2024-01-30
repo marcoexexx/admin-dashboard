@@ -3,6 +3,7 @@ import { createContext, useReducer } from "react"
 import { i18n, Local } from "@/i18n"
 
 import AppError, { AppErrorKind } from "@/libs/exceptions"
+import { ProductFilter } from "./product"
 
 
 export type Store = {
@@ -108,31 +109,7 @@ export type Store = {
     limit?: number,
     mode?: "insensitive" | "default",
   },
-  productFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-    include?: {
-      _count?: boolean
-      likedUsers?: boolean,
-      brand?: boolean,
-      specification?: boolean,
-      categories?: {
-        include?: {
-          category?: boolean,
-          product?: boolean,
-        }
-      },
-      salesCategory?: {
-        include?: {
-          salesCategory?: boolean,
-          product?: boolean,
-        }
-      },
-      reviews?: boolean
-    }
-  },
+  productFilter?: ProductFilter,
   salesCategoryFilter?: {
     fields?: any,
     page?: number,

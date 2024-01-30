@@ -9,6 +9,7 @@ import { MuiButton } from "@/components/ui";
 import { useNavigate } from "react-router-dom";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import getConfig from "@/libs/getConfig";
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
@@ -68,7 +69,9 @@ export default function ListProduct() {
       ? <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>
-              <ProductsList />
+              <ErrorBoundary>
+                <ProductsList />
+              </ErrorBoundary>
             </Grid>
           </Grid>
         </Container>

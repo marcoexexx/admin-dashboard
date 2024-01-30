@@ -1,8 +1,9 @@
+import AppError, { AppErrorKind } from "@/libs/exceptions";
+
 import { Component, ErrorInfo, ReactNode } from "react";
 
 import ErrorPage from "@/pages/error.page";
 import Unauthorized from "@/pages/unauthorized.page";
-import AppError, { AppErrorKind } from "@/libs/exceptions";
 
 
 interface ErrorBoundaryProps {
@@ -35,6 +36,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
           case AppErrorKind.ApiError: return <ErrorPage error={this.state.error} />
           case AppErrorKind.InvalidInputError: return <ErrorPage error={this.state.error} />
           case AppErrorKind.PermissionError: return <Unauthorized />
+          case AppErrorKind.NoDataError: return <ErrorPage error={this.state.error} />
 
           default: {
             const _unreachable: never = this.state.error.kind
