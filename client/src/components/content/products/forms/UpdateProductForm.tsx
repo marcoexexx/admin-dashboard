@@ -11,8 +11,7 @@ import { boolean, number, object, string, z } from "zod";
 import { useStore } from "@/hooks";
 import { useEffect } from "react";
 import { priceUnit, productStatus, productStockStatus } from ".";
-import { useGetProduct } from "@/hooks/product";
-import { useUpdateProduct } from "@/hooks/product/use-update-product";
+import { useGetProduct, useUpdateProduct } from "@/hooks/product";
 import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
 import { useParams } from "react-router-dom";
 

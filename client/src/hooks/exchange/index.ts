@@ -1,1 +1,1 @@
-export * from './use-get-exchanges-by-latest-unit'
+export * from './useGetExchangesByLatestUnit'

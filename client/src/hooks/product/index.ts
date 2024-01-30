@@ -1,8 +1,10 @@
-export * from './use-get-products'
-export * from './use-get-product'
+export * from './useGetProducts'
+export * from './useGetProduct'
 
-export * from './use-create-multi-products'
-export * from './use-create-product'
+export * from './useCreateMultiProducts'
+export * from './useCreateProduct'
 
-export * from './use-delete-product'
-export * from './use-delete-multi-products'
+export * from './useDeleteProduct'
+export * from './useDeleteMultiProducts'
+
+export * from './useUpdateProduct'

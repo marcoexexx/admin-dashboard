@@ -1,6 +1,5 @@
 import { useStore, useMe } from "@/hooks";
-import { useCreateMultiProducts, useDeleteMultiProducts, useDeleteProduct, useGetProducts } from "@/hooks/product";
-import { useUpdateProduct } from "@/hooks/product/use-update-product";
+import { useCreateMultiProducts, useDeleteMultiProducts, useDeleteProduct, useGetProducts, useUpdateProduct } from "@/hooks/product";
 
 import { Card } from "@mui/material";
 import { ProductsListTable } from ".";
