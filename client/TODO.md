@@ -11,6 +11,8 @@
 
 # TODO
  - ## IMPORTANT
+ - [ ] table cell
+
  - [ ] orderBy
  - [ ] pickup address :: read(all, detail), delete(all, detail) :: client UI
  - [ ] nested model form

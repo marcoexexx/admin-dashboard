@@ -56,15 +56,6 @@ export default function UpdateBrand() {
 
       {isAllowedUpdateProduct
       ? <Container maxWidth="lg">
-          {/* <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}> */}
-          {/*   <Grid item xs={12} md={4}> */}
-          {/*     <Card> */}
-          {/*       <CardContent> */}
-          {/*         <UploadProductImage /> */}
-          {/*       </CardContent> */}
-          {/*     </Card> */}
-          {/*   </Grid> */}
-
           <ErrorBoundary>
             <Card>
               <CardContent>

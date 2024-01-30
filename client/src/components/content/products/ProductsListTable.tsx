@@ -290,7 +290,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
                 const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
                 return header.id !== "actions"
                   ? render
-                  : onlyAdminAccess && isAllowedUpdateProduct && isAllowedDeleteProduct
+                  : onlyAdminAccess || isAllowedUpdateProduct || isAllowedDeleteProduct
                   ? render
                   : null
               })}
@@ -374,7 +374,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
                   </Select>
                 </TableCell>
 
-                {onlyAdminAccess && isAllowedUpdateProduct && isAllowedDeleteProduct
+                {onlyAdminAccess || isAllowedUpdateProduct || isAllowedDeleteProduct
                 ? <TableCell align="right">
                   <Box
                     display="flex"
