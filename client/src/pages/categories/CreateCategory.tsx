@@ -1,24 +1,40 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components";
+import { PageTitle, SuspenseLoader } from "@/components";
 import { CreateCategoryForm } from "@/components/content/categories/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getCategoryPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+
 import getConfig from "@/libs/getConfig";
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
 
-export default function CreateCategory() {
+
+function CreateCategoryWrapper() {
   const isAllowedCreateCategory = usePermission({
     key: "category-permissions",
     actions: "create",
     queryFn: getCategoryPermissionsFn
   })
+
+  if (!isAllowedCreateCategory) throw AppError.new(AppErrorKind.AccessDeniedError)
   
+  return <Card>
+    <CardContent>
+      <CreateCategoryForm />
+    </CardContent>
+  </Card>
+
+}
+
+
+export default function CreateCategory() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -52,28 +68,19 @@ export default function CreateCategory() {
         </Grid>
       </PageTitle>
 
-      {isAllowedCreateCategory
-      ? <Container maxWidth="lg">
+        <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            {/* <Grid item xs={12} md={4}> */}
-            {/*   <Card> */}
-            {/*     <CardContent> */}
-            {/*       <UploadProductImage /> */}
-            {/*     </CardContent> */}
-            {/*   </Card> */}
-            {/* </Grid> */}
-
             <Grid item xs={12} md={8}>
-              <Card>
-                <CardContent>
-                  <CreateCategoryForm />
-                </CardContent>
-              </Card>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <CreateCategoryWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
             </Grid>
           </Grid>
         </Container>
-      : <MiniAccessDenied />}
-      
     </>
   )
 }

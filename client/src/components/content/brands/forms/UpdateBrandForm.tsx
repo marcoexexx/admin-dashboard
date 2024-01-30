@@ -18,7 +18,7 @@ export type UpdateBrandInput = z.infer<typeof updateBrandSchema>
 export function UpdateBrandForm() {
   const { brandId } = useParams()
 
-  // Quries
+  // Queries
   const brandQuery = useGetBrand({
     id: brandId,
   })

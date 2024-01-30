@@ -1,122 +1,50 @@
 import { Card } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { SuspenseLoader, queryClient } from "@/components";
+import { SuspenseLoader } from "@/components";
 import { CategoriesListTable } from "@/components/content/categories";
-import { createMultiCategorisFn, deleteCategoryFn, deleteMultiCategoriesFn, getCategoriesFn } from "@/services/categoryApi";
-import { playSoundEffect } from "@/libs/playSound";
+import { useStore } from "@/hooks";
+import { useCreateMultiCategories, useDeleteCategory, useDeleteMultiCategories, useGetCategories } from "@/hooks/category";
 
 
 export function CategoriesList() {
-  const { state: {categoryFilter}, dispatch } = useStore()
+  const { state: {categoryFilter} } = useStore()
 
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["categories", { filter: categoryFilter } ],
-    queryFn: args => getCategoriesFn(args, { 
-      filter: categoryFilter?.fields,
-      pagination: {
-        page: categoryFilter?.page || 1,
-        pageSize: categoryFilter?.limit || 10
-      },
-    }),
-    select: data => data
-  })
-
-  const {
-    mutate: createCategories,
-    isPending
-  } = useMutation({
-    mutationFn: createMultiCategorisFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
+  // Queries
+  const categoriesQuery = useGetCategories({
+    filter: categoryFilter?.fields,
+    pagination: {
+      page: categoryFilter?.page || 1,
+      pageSize: categoryFilter?.limit || 10
     },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created new categories.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["categories"]
-      })
-      playSoundEffect("success")
-    }
   })
 
-  const {
-    mutate: deleteCategory
-  } = useMutation({
-    mutationFn: deleteCategoryFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a category.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["categories"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Mutations
+  const createCategoriesMutation = useCreateMultiCategories()
+  const deleteCategoryMutation = useDeleteCategory()
+  const deleteCategoriesMutation = useDeleteMultiCategories()
 
-  const {
-    mutate: deleteCategories
-  } = useMutation({
-    mutationFn: deleteMultiCategoriesFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete multi categories.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["categories"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Extraction
+  const data = categoriesQuery.try_data.ok_or_throw()
 
 
-  if (isError && error) return <h1>ERROR: {JSON.stringify(error)}</h1>
-
-  if (!data || isLoading) return <SuspenseLoader />
+  if (!data || categoriesQuery.isLoading) return <SuspenseLoader />
 
   function handleCreateManyCategories(buf: ArrayBuffer) {
-    createCategories(buf)
+    createCategoriesMutation.mutate(buf)
   }
 
   function handleDeleteCategory(id: string) {
-    deleteCategory(id)
+    deleteCategoryMutation.mutate(id)
   }
 
   function handleDeleteMultiCategories(ids: string[]) {
-    deleteCategories(ids)
+    deleteCategoriesMutation.mutate(ids)
   }
 
   return <Card>
     <CategoriesListTable 
       categories={data.results} 
       count={data.count} 
-      isLoading={isPending}
+      isLoading={categoriesQuery.isLoading}
       onCreateManyCategories={handleCreateManyCategories} 
       onDelete={handleDeleteCategory}
       onMultiDelete={handleDeleteMultiCategories}
