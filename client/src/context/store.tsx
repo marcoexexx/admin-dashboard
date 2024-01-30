@@ -6,6 +6,7 @@ import AppError, { AppErrorKind } from "@/libs/exceptions"
 import { ProductFilter } from "./product"
 import { ExchangeFilter } from "./exchange"
 import { AccessLogFilter } from "./accessLog"
+import { AuditLogFilter } from "./auditLogs"
 
 
 // TODO: setFilter, setPagination, setInclude
@@ -79,12 +80,7 @@ export type Store = {
   slidebar: boolean
   local: Local
   accessLogFilter?: AccessLogFilter,
-  auditLogFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
+  auditLogFilter?: AuditLogFilter,
   orderFilter?: {
     fields?: any,
     page?: number,

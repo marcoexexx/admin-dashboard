@@ -2,22 +2,32 @@ import getConfig from "@/libs/getConfig";
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { AuditLogsList } from "@/components/content/auditLogs";
+import { Suspense } from "react";
 import { usePermission } from "@/hooks";
 import { getAuditLogsPermissionsFn } from "@/services/permissionsApi";
+
+import AppError, { AppErrorKind } from "@/libs/exceptions";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 
 const appName = getConfig("appName")
 
-export default function ListAuditLogs() {
+
+function ListAuditLogsWrapper() {
   const isAllowedReadAuditLog = usePermission({
     key: "audit-logs-permissions",
     actions: "read",
     queryFn: getAuditLogsPermissionsFn
   })
 
+  if (!isAllowedReadAuditLog) throw AppError.new(AppErrorKind.AccessDeniedError)
 
+  return <AuditLogsList />
+}
+
+
+export default function ListAuditLogs() {
   return (
     <>
       <Helmet>
@@ -37,15 +47,19 @@ export default function ListAuditLogs() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadAuditLog
-      ?  <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <AuditLogsList />
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense>
+                <ListAuditLogsWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
     </>
   )
 }
