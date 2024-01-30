@@ -1,9 +1,9 @@
 import { CreateBrandInput, DeleteBrandInput, UpdateBrandInput } from "@/components/content/brands/forms";
-import { Brand, BrandResponse, HttpListResponse, HttpResponse, QueryOptionArgs } from "./types";
+import { Brand, BrandResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
 import { authApi } from "./authApi";
 
 
-export async function getBrandsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+export async function getBrandsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<Brand>>("/brands", {
     ...opt,
     params: {

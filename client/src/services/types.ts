@@ -509,6 +509,11 @@ export type HttpListResponse<T> = {
   error?: string | string[],
 }
 
+export type Pagination = {
+  page: number,
+  pageSize: number
+}
+
 
 export type QueryOptionArgs = {
   queryKey: any

@@ -1,9 +1,9 @@
 import { CreateTownshipInput, UpdateTownshipInput } from "@/components/content/townships/forms";
 import { authApi } from "./authApi";
-import { HttpListResponse, HttpResponse, QueryOptionArgs, TownshipFees, TownshipResponse } from "./types";
+import { HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, TownshipFees, TownshipResponse } from "./types";
 
 
-export async function getTownshipsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+export async function getTownshipsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<TownshipFees>>("/townships", {
     ...opt,
     params: {

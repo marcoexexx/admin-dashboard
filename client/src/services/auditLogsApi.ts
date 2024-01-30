@@ -1,8 +1,8 @@
 import { authApi } from "./authApi";
-import { AuditLog, HttpListResponse, QueryOptionArgs } from "./types";
+import { AuditLog, HttpListResponse, Pagination, QueryOptionArgs } from "./types";
 
 
-export async function getAuditLogsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+export async function getAuditLogsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<AuditLog>>("/audit-logs", {
     ...opt,
     params: {

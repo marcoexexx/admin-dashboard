@@ -1,9 +1,9 @@
 import { CreateCategoryInput, DeleteCategoryInput, UpdateCategoryInput } from "@/components/content/categories/forms";
-import { Category, CategoryResponse, HttpListResponse, HttpResponse, QueryOptionArgs } from "./types";
+import { Category, CategoryResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
 import { authApi } from "./authApi";
 
 
-export async function getCategoriesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+export async function getCategoriesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<Category>>("/categories", {
     ...opt,
     params: {

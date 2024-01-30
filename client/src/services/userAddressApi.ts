@@ -1,9 +1,9 @@
 import { CreateUserAddressInput, UpdateUserAddressInput } from "@/components/content/user-addresses/forms";
 import { authApi } from "./authApi";
-import { Address, HttpListResponse, HttpResponse, QueryOptionArgs, UserAddressResponse } from "./types";
+import { Address, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, UserAddressResponse } from "./types";
 
 
-export async function getUserAddressesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+export async function getUserAddressesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<Address>>("/addresses", {
     ...opt,
     params: {

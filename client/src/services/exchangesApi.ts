@@ -1,9 +1,10 @@
 import { CreateExchangeInput, DeleteExchangeInput, UpdateExchangeInput } from "@/components/content/exchanges/forms";
-import { Exchange, ExchangeResponse, HttpListResponse, HttpResponse, QueryOptionArgs } from "./types";
+import { Exchange, ExchangeResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
 import { authApi } from "./authApi";
+import { ExchangeFilter } from "@/context/exchange";
 
 
-export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: ExchangeFilter, pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<Exchange>>("/exchanges", {
     ...opt,
     params: {

@@ -1,10 +1,10 @@
 import { CreateRegionInput } from "@/components/content/regions/forms/CreateRegionForm";
 import { authApi } from "./authApi";
-import { HttpListResponse, HttpResponse, QueryOptionArgs, Region, RegionResponse } from "./types";
+import { HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, Region, RegionResponse } from "./types";
 import { UpdateRegionInput } from "@/components/content/regions/forms/UpdateRegionForm";
 
 
-export async function getRegionsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+export async function getRegionsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<Region>>("/regions", {
     ...opt,
     params: {
