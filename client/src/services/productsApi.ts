@@ -4,7 +4,7 @@ import { HttpListResponse, HttpResponse, Pagination, Product, ProductResponse, P
 import { ProductFilter } from "@/context/product";
 
 
-export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pagination }: { filter: ProductFilter, include?: any, pagination: Pagination }) {
+export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pagination }: { filter: ProductFilter["fields"], include?: any, pagination: Pagination }) {
   const { data } = await authApi.get<HttpListResponse<Product>>("/products", {
     ...opt,
     params: {

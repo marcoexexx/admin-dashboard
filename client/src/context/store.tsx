@@ -4,6 +4,10 @@ import { i18n, Local } from "@/i18n"
 
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 import { ProductFilter } from "./product"
+import { ExchangeFilter } from "./exchange"
+
+
+// TODO: setFilter, setPagination, setInclude
 
 
 export type Store = {
@@ -155,15 +159,7 @@ export type Store = {
       _count?: boolean
     }
   },
-  exchangeFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  },
+  exchangeFilter?: ExchangeFilter,
   couponFilter?: {
     fields?: any,
     page?: number,

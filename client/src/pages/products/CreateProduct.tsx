@@ -8,6 +8,7 @@ import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } f
 import { useNavigate } from 'react-router-dom'
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import getConfig from "@/libs/getConfig";
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
@@ -54,18 +55,11 @@ export default function CreateProduct() {
 
       {isAllowedCreateProduct
       ? <Container maxWidth="lg">
-          {/* <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}> */}
-          {/*   <Grid item xs={12} md={4}> */}
-          {/*     <Card> */}
-          {/*       <CardContent> */}
-          {/*         <UploadProductImage /> */}
-          {/*       </CardContent> */}
-          {/*     </Card> */}
-          {/*   </Grid> */}
-
           <Card>
             <CardContent>
-              <CreateProductForm />
+              <ErrorBoundary>
+                <CreateProductForm />
+              </ErrorBoundary>
             </CardContent>
           </Card>
         </Container>

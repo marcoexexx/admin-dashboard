@@ -7,16 +7,14 @@ import { CreateCategoryForm } from "../../categories/forms";
 import { BrandInputField, CatgoryMultiInputField, EditorInputField, SpecificationInputField } from "@/components/input-fields";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { createProductFn } from "@/services/productsApi";
-import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
+import { useCombineQuerys, useStore } from "@/hooks";
 import { queryClient } from "@/components";
-import { getExchangesFn } from "@/services/exchangesApi";
 import { useEffect } from "react";
-import { playSoundEffect } from "@/libs/playSound";
+import { useCreateProduct } from "@/hooks/product";
+import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
 
 
+// TODO: Type enum
 export const productStockStatus = ["Available", "OutOfStock", "AskForStock", "Discontinued"] as const
 export const productStatus = ["Draft", "Pending", "Published"] as const
 export const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"] as const
@@ -57,52 +55,26 @@ export type CreateProductInput = z.infer<typeof createProductSchema>
 export function CreateProductForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
-  const navigate = useNavigate()
-  const from = "/products"
-
-  const {
-    mutate: createProduct
-  } = useMutation({
-    mutationFn: createProductFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new product.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["products"]
-      })
-      playSoundEffect("success")
-    },
-    onError: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed created a new product.",
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    }
-  })
-
   const methods = useForm<CreateProductInput>({
     resolver: zodResolver(createProductSchema)
   })
 
-  const { data: exchangeRate } = useQuery({
-    queryKey: ["exchanges", "latest", methods.getValues("priceUnit")],
-    queryFn: args => getExchangesFn(args, {
-      filter: {
-        from: "MMK",
-        to: methods.getValues("priceUnit"),
-      },
-      pagination: {
-        page: 1,
-        pageSize: 1
-      }
-    }),
-    select: data => data.results
-  })
+  const { handleSubmit, register, formState: { errors } } = methods
+
+  // Mutations
+  const createProductMutation = useCreateProduct()
+
+  // Queries
+  const exchangesQuery = useGetExchangeByLatestUnit(methods.getValues("priceUnit"))
+
+  const { isLoading } = useCombineQuerys(
+    createProductMutation,
+    exchangesQuery
+  )
+
+  // Extraction
+  const exchangeRate  = exchangesQuery.try_data.ok_or_throw()
+
 
   useEffect(() => {
     queryClient.invalidateQueries({
@@ -110,14 +82,13 @@ export function CreateProductForm() {
     })
   }, [methods.watch("priceUnit")])
 
+
   const handleOnCloseModalForm = () => {
     dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
   }
 
-  const { handleSubmit, register, formState: { errors } } = methods
-
   const onSubmit: SubmitHandler<CreateProductInput> = (value) => {
-    createProduct({
+    createProductMutation.mutate({
       ...value,
       status: value.isPending 
         ? "Pending" 
@@ -266,7 +237,7 @@ export function CreateProductForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Create</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={isLoading}>Create</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

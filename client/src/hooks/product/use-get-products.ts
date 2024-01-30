@@ -2,38 +2,26 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { ProductFilter } from "@/context/product";
+import { Pagination } from "@/services/types";
 import { getProductsFn } from "@/services/productsApi";
 import { useQuery } from "@tanstack/react-query";
 
 
 export function useGetProducts({
-  filter
+  filter,
+  pagination,
+  include,
 }: {
-  filter?: ProductFilter
+  filter?: ProductFilter["fields"],
+  include?: any,  // TODO: type fix
+  pagination: Pagination,
   }) {
   const query = useQuery({
     queryKey: ["products", { filter } ],
     queryFn: args => getProductsFn(args, { 
-      filter: filter?.fields,
-      pagination: {
-        page: filter?.page || 1,
-        pageSize: filter?.limit || 10
-      },
-      include: {
-        specification: true,
-        brand: true,
-        categories: {
-          include: {
-            category: true,
-          }
-        },
-        salesCategory: {
-          include: {
-            salesCategory: true
-          }
-        },
-        creator: true
-      }
+      filter,
+      pagination,
+      include,
     }),
     // queryFn: () => Promise.reject(new Error("Some api error")),
     select: data => data

@@ -14,7 +14,28 @@ export function ProductsList() {
 
   // Queries
   const meQuery = useMe()
-  const productsQuery = useGetProducts({ filter: productFilter })
+  const productsQuery = useGetProducts({ 
+    filter: productFilter?.fields, 
+    pagination: {
+      page: productFilter?.fields?.page || 1,
+      pageSize: productFilter?.fields?.limit || 10
+    },
+    include: {
+      specification: true,
+      brand: true,
+      categories: {
+        include: {
+          category: true,
+        }
+      },
+      salesCategory: {
+        include: {
+          salesCategory: true
+        }
+      },
+      creator: true
+    }
+  })
 
   // Mutations
   const createProductsMutation = useCreateMultiProducts()

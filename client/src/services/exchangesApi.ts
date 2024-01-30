@@ -4,7 +4,7 @@ import { authApi } from "./authApi";
 import { ExchangeFilter } from "@/context/exchange";
 
 
-export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: ExchangeFilter, pagination: Pagination, include?: any }) {
+export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: ExchangeFilter["fields"], pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<Exchange>>("/exchanges", {
     ...opt,
     params: {
