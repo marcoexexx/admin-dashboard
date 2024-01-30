@@ -7,7 +7,7 @@ import { CreateCategoryForm } from "../../categories/forms";
 import { BrandInputField, CatgoryMultiInputField, EditorInputField, SpecificationInputField } from "@/components/input-fields";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
-import { useCombineQuerys, useStore } from "@/hooks";
+import { useStore } from "@/hooks";
 import { queryClient } from "@/components";
 import { useEffect } from "react";
 import { useCreateProduct } from "@/hooks/product";
@@ -66,11 +66,6 @@ export function CreateProductForm() {
 
   // Queries
   const exchangesQuery = useGetExchangeByLatestUnit(methods.getValues("priceUnit"))
-
-  const { isLoading } = useCombineQuerys(
-    createProductMutation,
-    exchangesQuery
-  )
 
   // Extraction
   const exchangeRate = exchangesQuery.try_data.ok_or_throw()
@@ -237,7 +232,7 @@ export function CreateProductForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={isLoading}>Create</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={createProductMutation.isPending}>Create</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

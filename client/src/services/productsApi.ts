@@ -4,7 +4,7 @@ import { HttpListResponse, HttpResponse, Pagination, Product, ProductResponse, P
 import { ProductFilter } from "@/context/product";
 
 
-export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pagination }: { filter: ProductFilter["fields"], include?: any, pagination: Pagination }) {
+export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pagination }: { filter: ProductFilter["fields"], include?: ProductFilter["include"], pagination: Pagination }) {
   const { data } = await authApi.get<HttpListResponse<Product>>("/products", {
     ...opt,
     params: {
@@ -20,9 +20,8 @@ export async function getProductsFn(opt: QueryOptionArgs, { filter, include, pag
 }
 
 
-export async function getProductFn(opt: QueryOptionArgs, { productId, include }: { productId: string | undefined, include?: any }) {
+export async function getProductFn(opt: QueryOptionArgs, { productId, include }: { productId: string | undefined, include?: ProductFilter["include"] }) {
   if (!productId) return
-  // TODO: service :: query and filter from ReactQuery
   const { data } = await authApi.get<ProductResponse>(`/products/detail/${productId}`, {
     ...opt,
     params: {

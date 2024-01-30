@@ -7,6 +7,7 @@ import { ProductFilter } from "./product"
 import { ExchangeFilter } from "./exchange"
 import { AccessLogFilter } from "./accessLog"
 import { AuditLogFilter } from "./auditLogs"
+import { BrandFilter } from "./brand"
 
 
 // TODO: setFilter, setPagination, setInclude
@@ -124,15 +125,7 @@ export type Store = {
       _count?: boolean
     }
   },
-  brandFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  },
+  brandFilter?: BrandFilter,
   townshipFilter?: {
     fields?: any,
     page?: number,

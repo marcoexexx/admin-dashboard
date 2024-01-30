@@ -1,23 +1,23 @@
+import { BrandFilter } from "@/context/brand";
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
-import { ProductFilter } from "@/context/product";
 
-import { getProductFn } from "@/services/productsApi";
+import { getBrandFn } from "@/services/brandsApi";
 import { useQuery } from "@tanstack/react-query";
 
 
-export function useGetProduct({
+export function useGetBrand({
   id,
   include,
 }: {
   id: string | undefined,
-  include?: ProductFilter["include"],  // TODO: type fix
+  include?: BrandFilter["include"],
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["products", { id }],
-    queryFn: args => getProductFn(args, { productId: id, include }),
-    select: data => data?.product
+    queryKey: ["brands", { id }],
+    queryFn: args => getBrandFn(args, { brandId: id, include }),
+    select: data => data?.brand
   })
 
 
@@ -31,3 +31,4 @@ export function useGetProduct({
     try_data
   }
 }
+

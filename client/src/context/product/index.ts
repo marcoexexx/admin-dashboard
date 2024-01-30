@@ -20,6 +20,7 @@ export type ProductFilter = {
         product?: boolean,
       }
     },
-    reviews?: boolean
+    reviews?: boolean,
+    creator?: boolean
   }
 }

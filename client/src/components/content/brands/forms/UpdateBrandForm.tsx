@@ -1,15 +1,12 @@
 import { Box, Grid, TextField } from "@mui/material";
+import { MuiButton } from "@/components/ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate, useParams } from "react-router-dom";
-import { queryClient } from "@/components";
-import { MuiButton } from "@/components/ui";
+import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { getBrandFn, updateBrandFn } from "@/services/brandsApi";
-import { playSoundEffect } from "@/libs/playSound";
+import { useGetBrand, useUpdateBrand } from "@/hooks/brand";
+
 
 const updateBrandSchema = object({
   name: string()
@@ -19,56 +16,27 @@ const updateBrandSchema = object({
 export type UpdateBrandInput = z.infer<typeof updateBrandSchema>
 
 export function UpdateBrandForm() {
-  const { state: {modalForm}, dispatch } = useStore()
-
-  const navigate = useNavigate()
   const { brandId } = useParams()
-  const from = "/brands"
 
-  const { 
-    data: brand,
-    isSuccess: isSuccessFetchBrand,
-    fetchStatus: fetchStatusBrand
-  } = useQuery({
-    enabled: !!brandId,
-    queryKey: ["brands", { id: brandId }],
-    queryFn: args => getBrandFn(args, { brandId }),
-    select: data => data?.brand
+  // Quries
+  const brandQuery = useGetBrand({
+    id: brandId,
   })
 
-  const {
-    mutate: updateBrand,
-  } = useMutation({
-    mutationFn: updateBrandFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success updated a brand.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        // queryKey: ["brands", { id: brandId }],
-        queryKey: ["brands"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  // Mutations
+  const updateBrandMutation = useUpdateBrand()
+
+  // Extraction
+  const brand = brandQuery.try_data.ok_or_throw()
+  const brandFetchStatus = brandQuery.fetchStatus
 
   const methods = useForm<UpdateBrandInput>({
     resolver: zodResolver(updateBrandSchema),
   })
 
   useEffect(() => {
-    if (isSuccessFetchBrand && brand && fetchStatusBrand === "idle") methods.setValue("name", brand.name)
-  }, [isSuccessFetchBrand, fetchStatusBrand])
+    if (brandQuery.isSuccess && brand && brandFetchStatus === "idle") methods.setValue("name", brand.name)
+  }, [brandQuery.isSuccess, brandFetchStatus])
 
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods
@@ -78,7 +46,7 @@ export function UpdateBrandForm() {
   }, [setFocus])
 
   const onSubmit: SubmitHandler<UpdateBrandInput> = (value) => {
-    if (brandId) updateBrand({ brandId, brand: value })
+    if (brandId) updateBrandMutation.mutate({ brandId, brand: value })
   }
 
   return (
@@ -98,7 +66,7 @@ export function UpdateBrandForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Save</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={updateBrandMutation.isPending}>Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

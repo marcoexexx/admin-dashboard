@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { UpdateBrandForm } from "@/components/content/brands/forms";
@@ -5,21 +6,37 @@ import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } f
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+
 import getConfig from "@/libs/getConfig";
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
 
 
 const appName = getConfig("appName")
 
-export default function UpdateBrand() {
-  const navigate = useNavigate()
 
+function UpdateBrandWrapper() {
   const isAllowedUpdateBrand = usePermission({
     key: "brand-permissions",
     actions: "update",
     queryFn: getBrandPermissionsFn
   })
+
+  if (!isAllowedUpdateBrand) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return (
+    <Card>
+      <CardContent>
+        <UpdateBrandForm />
+      </CardContent>
+    </Card>
+  )
+}
+
+
+export default function UpdateBrand() {
+  const navigate = useNavigate()
 
   const handleBack = () => {
     navigate(-1)
@@ -53,19 +70,19 @@ export default function UpdateBrand() {
         </Grid>
       </PageTitle>
 
-      {isAllowedUpdateBrand
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12} md={8}>
-              <Card>
-                <CardContent>
-                  <UpdateBrandForm />
-                </CardContent>
-              </Card>
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12} md={8}>
+
+            <ErrorBoundary>
+              <Suspense>
+                <UpdateBrandWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
       
     </>
   )

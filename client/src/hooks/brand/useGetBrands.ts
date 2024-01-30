@@ -1,29 +1,28 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { ProductFilter } from "@/context/product";
-import { Pagination } from "@/services/types";
-import { getProductsFn } from "@/services/productsApi";
 import { useQuery } from "@tanstack/react-query";
+import { getBrandsFn } from "@/services/brandsApi";
+import { Pagination } from "@/services/types";
+import { BrandFilter } from "@/context/brand";
 
 
-export function useGetProducts({
+export function useGetBrands({
   filter,
   pagination,
   include,
 }: {
-  filter?: ProductFilter["fields"],
-  include?: ProductFilter["include"],
+  filter?: BrandFilter["fields"],
+  include?: BrandFilter["include"],
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["products", { filter } ],
-    queryFn: args => getProductsFn(args, { 
+    queryKey: ["brands", { filter } ],
+    queryFn: args => getBrandsFn(args, { 
       filter,
       pagination,
-      include,
+      include
     }),
-    // queryFn: () => Promise.reject(new Error("Some api error")),
     select: data => data
   })
 
@@ -38,3 +37,4 @@ export function useGetProducts({
     try_data
   }
 }
+

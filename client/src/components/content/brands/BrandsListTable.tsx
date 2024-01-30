@@ -182,7 +182,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
                 const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
                 return header.id !== "actions"
                   ? render
-                  : isAllowedUpdateBrand && isAllowedDeleteBrand
+                  : isAllowedUpdateBrand || isAllowedDeleteBrand
                   ? render
                   : null
               })}
@@ -218,7 +218,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
                   </Typography>
                 </TableCell>)}
 
-                {isAllowedUpdateBrand && isAllowedDeleteBrand
+                {isAllowedUpdateBrand || isAllowedDeleteBrand
                 ? <TableCell align="right">
                     {isAllowedUpdateBrand
                     ? <Tooltip title="Edit Product" arrow>
