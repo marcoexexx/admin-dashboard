@@ -2,12 +2,14 @@ import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { UpdateProductForm } from "@/components/content/products/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+
 import getConfig from "@/libs/getConfig";
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
@@ -63,11 +65,13 @@ export default function UpdateBrand() {
           {/*     </Card> */}
           {/*   </Grid> */}
 
-          <Card>
-            <CardContent>
-              <UpdateProductForm />
-            </CardContent>
-          </Card>
+          <ErrorBoundary>
+            <Card>
+              <CardContent>
+                <UpdateProductForm />
+              </CardContent>
+            </Card>
+          </ErrorBoundary>
         </Container>
       : <MiniAccessDenied />}
       

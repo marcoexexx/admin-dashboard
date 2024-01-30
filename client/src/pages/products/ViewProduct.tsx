@@ -1,11 +1,12 @@
 import { PageTitle } from "@/components"
-import { useNavigate, useParams } from 'react-router-dom'
 import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material"
-import { usePermission } from "@/hooks";
-import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { ProductDetail } from "@/components/content/products/detail";
 import { MuiButton } from "@/components/ui";
+import { useNavigate, useParams } from 'react-router-dom'
+import { usePermission } from "@/hooks";
+import { getProductPermissionsFn } from "@/services/permissionsApi";
+
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 import ErrorBoundary from "@/components/ErrorBoundary";
