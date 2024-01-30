@@ -1,8 +1,9 @@
+import { AccessLogFilter } from "@/context/accessLog";
 import { authApi } from "./authApi";
 import { AccessLog, HttpListResponse, Pagination, QueryOptionArgs } from "./types";
 
 
-export async function getAccessLogsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
+export async function getAccessLogsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: AccessLogFilter["fields"], pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<AccessLog>>("/access-logs", {
     ...opt,
     params: {

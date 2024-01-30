@@ -5,7 +5,8 @@ export const AppErrorKind = {
   ApiError: "ApiError",
   NetworkError: "NetworkError",
   NoDataError: "NoDataError",
-  PermissionError: "PermissionError"
+  PermissionError: "PermissionError",
+  AccessDeniedError: "AccessDeniedError"
 } as const
 export type AppErrorKind = typeof AppErrorKind[keyof typeof AppErrorKind]
 

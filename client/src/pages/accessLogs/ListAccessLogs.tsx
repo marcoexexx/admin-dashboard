@@ -1,24 +1,34 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
-import { usePermission } from "@/hooks";
-import { getAccessLogsPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import getConfig from "@/libs/getConfig";
 import { AccessLogsList } from '@/components/content/accessLogs';
+import { usePermission } from "@/hooks";
+import { getAccessLogsPermissionsFn } from '@/services/permissionsApi';
+
+import getConfig from "@/libs/getConfig";
 import ErrorBoundary from '@/components/ErrorBoundary';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
 
 
 const appName = getConfig("appName")
 
-export default function ListAccessLogs() {
+
+function ListAccessLogsWrapper() {
   const isAllowedReadAccessLog = usePermission({
     key: "access-log-permissions",
     actions: "read",
     queryFn: getAccessLogsPermissionsFn
+    // queryFn: () => Promise.reject(new Error("FF"))
   })
 
+  if (!isAllowedReadAccessLog) throw AppError.new(AppErrorKind.AccessDeniedError)
 
+  return <AccessLogsList />
+}
+
+
+export default function ListAccessLogs() {
   return (
     <>
       <Helmet>
@@ -38,17 +48,19 @@ export default function ListAccessLogs() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadAccessLog
-      ?  <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <ErrorBoundary>
-                <AccessLogsList />
-              </ErrorBoundary>
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListAccessLogsWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
     </>
   )
 }

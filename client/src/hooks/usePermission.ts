@@ -1,4 +1,4 @@
-import { QueryFunction, useQuery } from "@tanstack/react-query"
+import { QueryFunction, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { PermissionsResponse } from "@/services/types"
 import { getMeFn } from "@/services/authApi"
 
@@ -47,7 +47,7 @@ export function usePermission({key, actions, enabled, queryFn}: Args) {
     isError: isErrorPermissions,
     isSuccess: isSuccessPermissions,
     error: errorPermissions
-  } = useQuery({
+  } = useSuspenseQuery({
     queryKey: [key],
     queryFn,
     select: (data: PermissionsResponse) => data

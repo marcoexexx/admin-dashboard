@@ -5,6 +5,7 @@ import { i18n, Local } from "@/i18n"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 import { ProductFilter } from "./product"
 import { ExchangeFilter } from "./exchange"
+import { AccessLogFilter } from "./accessLog"
 
 
 // TODO: setFilter, setPagination, setInclude
@@ -77,12 +78,7 @@ export type Store = {
   user?: User
   slidebar: boolean
   local: Local
-  accessLogFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
+  accessLogFilter?: AccessLogFilter,
   auditLogFilter?: {
     fields?: any,
     page?: number,

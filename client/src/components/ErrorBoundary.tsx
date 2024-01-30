@@ -4,6 +4,7 @@ import { Component, ErrorInfo, ReactNode } from "react";
 
 import ErrorPage from "@/pages/error.page";
 import Unauthorized from "@/pages/unauthorized.page";
+import { MiniAccessDenied } from "./MiniAccessDenied";
 
 
 interface ErrorBoundaryProps {
@@ -37,6 +38,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
           case AppErrorKind.InvalidInputError: return <ErrorPage error={this.state.error} />
           case AppErrorKind.PermissionError: return <Unauthorized />
           case AppErrorKind.NoDataError: return <ErrorPage error={this.state.error} />
+          case AppErrorKind.AccessDeniedError: return <MiniAccessDenied />
 
           default: {
             const _unreachable: never = this.state.error.kind
