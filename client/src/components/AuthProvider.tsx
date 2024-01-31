@@ -1,9 +1,7 @@
 import { SuspenseLoader } from '.';
 import { useCookies } from 'react-cookie'
-import { usePermission, useStore } from "@/hooks";
-import { useQuery } from "@tanstack/react-query";
+import { useMe, usePermission, useStore } from "@/hooks";
 import { useEffect } from "react";
-import { getMeFn } from '@/services/authApi';
 import { getDashboardPermissionsFn } from '@/services/permissionsApi';
 
 import AppError, { AppErrorKind } from '@/libs/exceptions';
@@ -18,16 +16,15 @@ export function AuthProvider(props: AuthProviderProps) {
   const { dispatch } = useStore()
   const [cookies] = useCookies(["logged_in"])
 
-  const { data, isSuccess, isLoading, isError, error } = useQuery({
+  const userQuery = useMe({
     enabled: !!cookies.logged_in,
-    queryKey: ["authUser"],
-    queryFn: getMeFn,
-    select: data => data.user,
   })
 
+  const user = userQuery.try_data.ok_or_throw()
+
   useEffect(() => {
-    dispatch({ type: "SET_USER", payload: data })
-  }, [isSuccess])
+    dispatch({ type: "SET_USER", payload: user })
+  }, [userQuery.isSuccess])
 
   const isAllowedReactDashboard = usePermission({
     enabled: !!cookies.logged_in,
@@ -37,9 +34,7 @@ export function AuthProvider(props: AuthProviderProps) {
   })
 
 
-  if (isLoading) return <SuspenseLoader />
-
-  if (isError && error) throw AppError.new(AppErrorKind.ApiError, error.message)
+  if (userQuery.isLoading) return <SuspenseLoader />
 
   if (cookies.logged_in && !isAllowedReactDashboard) throw AppError.new(AppErrorKind.PermissionError)
 

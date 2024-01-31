@@ -1,9 +1,10 @@
 import { CreateCouponInput, DeleteCouponInput, UpdateCouponInput } from "@/components/content/coupons/forms";
 import { Coupon, CouponResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
 import { authApi } from "./authApi";
+import { CouponFilter } from "@/context/coupon";
 
 
-export async function getCouponsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
+export async function getCouponsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: CouponFilter["fields"], pagination: Pagination, include?: CouponFilter["include"] }) {
   const { data } = await authApi.get<HttpListResponse<Coupon>>("/coupons", {
     ...opt,
     params: {
@@ -19,7 +20,7 @@ export async function getCouponsFn(opt: QueryOptionArgs, { filter, pagination, i
 }
 
 
-export async function getCouponFn(opt: QueryOptionArgs, { couponId, include }: { couponId: string | undefined, include: any }) {
+export async function getCouponFn(opt: QueryOptionArgs, { couponId, include }: { couponId: string | undefined, include: CouponFilter["include"] }) {
   if (!couponId) return
   const { data } = await authApi.get<CouponResponse>(`/coupons/detail/${couponId}`, {
     ...opt,

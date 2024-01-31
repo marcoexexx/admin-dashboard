@@ -10,6 +10,9 @@ import { AuditLogFilter } from "./auditLogs"
 import { BrandFilter } from "./brand"
 import { CategoryFilter } from "./category"
 import { UserAddressFilter } from "./userAddress"
+import { CouponFilter } from "./coupon"
+import { UserFilter } from "./user"
+import { OrderFilter } from "./order"
 
 
 // TODO: setFilter, setPagination, setInclude
@@ -84,24 +87,14 @@ export type Store = {
   local: Local
   accessLogFilter?: AccessLogFilter,
   auditLogFilter?: AuditLogFilter,
-  orderFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
+  orderFilter?: OrderFilter,
   potentialOrderFilter?: {
     fields?: any,
     page?: number,
     limit?: number,
     mode?: "insensitive" | "default",
   },
-  userFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
+  userFilter?: UserFilter,
   userAddressFilter?: UserAddressFilter,
   productFilter?: ProductFilter,
   salesCategoryFilter?: {
@@ -134,15 +127,7 @@ export type Store = {
     }
   },
   exchangeFilter?: ExchangeFilter,
-  couponFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  }
+  couponFilter?: CouponFilter
 }
 
 interface OrderFilterActions {

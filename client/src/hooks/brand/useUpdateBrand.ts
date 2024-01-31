@@ -13,7 +13,7 @@ export function useUpdateBrand() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/products"
+  const from = "/brands"
 
   const mutation = useMutation({
     mutationFn: updateBrandFn,

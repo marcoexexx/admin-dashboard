@@ -1,24 +1,37 @@
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { useNavigate } from 'react-router-dom'
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
-import { usePermission } from "@/hooks"; import { MiniAccessDenied } from "@/components/MiniAccessDenied"; import { MuiButton } from "@/components/ui";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import getConfig from "@/libs/getConfig";
-import { getOrderPermissionsFn } from '@/services/permissionsApi';
 import { OrdersList } from '@/components/content/orders';
+import { MuiButton } from "@/components/ui";
+import { useNavigate } from 'react-router-dom'
+import { usePermission } from "@/hooks"
+import { getOrderPermissionsFn } from '@/services/permissionsApi';
+
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import getConfig from "@/libs/getConfig";
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { Suspense } from 'react';
 
 
 const appName = getConfig("appName")
 
-export default function ListOrder() {
-  const navigate = useNavigate()
 
+function ListOrderWrapper() {
   const isAllowedReadOrder = usePermission({
     key: "order-permissions",
     actions: "read",
     queryFn: getOrderPermissionsFn
   })
+
+  if (!isAllowedReadOrder) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <OrdersList />
+}
+
+
+export default function ListOrder() {
+  const navigate = useNavigate()
 
   const isAllowedCreatOrder = usePermission({
     key: "order-permissions",
@@ -62,16 +75,19 @@ export default function ListOrder() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadOrder
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <OrdersList />
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListOrderWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }

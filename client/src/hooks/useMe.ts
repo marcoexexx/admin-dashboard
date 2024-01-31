@@ -2,14 +2,18 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { UserResponse } from "@/services/types";
+import { UserFilter } from "@/context/user";
 import { useQuery } from "@tanstack/react-query";
 import { getMeFn } from "@/services/authApi";
 
 
-export function useMe() {
+export function useMe({enabled, include}: {enabled?: boolean, include?: UserFilter["include"]}) {
   const query = useQuery({
-    queryKey: ["authUser"],
-    queryFn: getMeFn,
+    enabled,
+    queryKey: ["authUser", { include }],
+    queryFn: args => getMeFn(args, {
+      include
+    }),
     select: (data: UserResponse) => data.user,
   })
 

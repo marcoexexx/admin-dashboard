@@ -4,7 +4,7 @@ import { authApi } from "./authApi";
 import { ExchangeFilter } from "@/context/exchange";
 
 
-export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: ExchangeFilter["fields"], pagination: Pagination, include?: any }) {
+export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: ExchangeFilter["fields"], pagination: Pagination, include?: ExchangeFilter["include"] }) {
   const { data } = await authApi.get<HttpListResponse<Exchange>>("/exchanges", {
     ...opt,
     params: {
@@ -20,10 +20,13 @@ export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination,
 }
 
 
-export async function getExchangeFn(opt: QueryOptionArgs, { exchangeId }: { exchangeId: string | undefined }) {
+export async function getExchangeFn(opt: QueryOptionArgs, { exchangeId, include }: { exchangeId: string | undefined, include?: ExchangeFilter["include"] }) {
   if (!exchangeId) return
   const { data } = await authApi.get<ExchangeResponse>(`/exchanges/detail/${exchangeId}`, {
     ...opt,
+    params: {
+      include
+    }
   })
   return data
 }

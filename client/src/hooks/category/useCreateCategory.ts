@@ -13,7 +13,7 @@ export function useCreateCategory() {
   const { state: {modalForm}, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/products"
+  const from = "/categories"
 
   const mutation = useMutation({
     mutationFn: createCategoryFn,

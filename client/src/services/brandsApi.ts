@@ -1,4 +1,4 @@
-import { CreateBrandInput, DeleteBrandInput, UpdateBrandInput } from "@/components/content/brands/forms";
+import { CreateBrandInput, UpdateBrandInput } from "@/components/content/brands/forms";
 import { Brand, BrandResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
 import { authApi } from "./authApi";
 import { BrandFilter } from "@/context/brand";
@@ -60,13 +60,13 @@ export async function updateBrandFn({brandId, brand}: {brandId: string, brand: U
 }
 
 
-export async function deleteMultiBrandsFn(brandIds: DeleteBrandInput["brandId"][]) {
+export async function deleteMultiBrandsFn(brandIds: string[]) {
   const { data } = await authApi.delete<HttpResponse>("/brands/multi", { data: { brandIds } })
   return data
 }
 
 
-export async function deleteBrandFn(brandId: DeleteBrandInput["brandId"]) {
+export async function deleteBrandFn(brandId: string) {
   const { data } = await authApi.delete<HttpResponse>(`/brands/detail/${brandId}`)
   return data
 }

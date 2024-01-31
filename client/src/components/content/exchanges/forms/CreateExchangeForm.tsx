@@ -1,17 +1,12 @@
 import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { MuiButton } from "@/components/ui";
+import { DatePickerField } from "@/components/input-fields";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { queryClient } from "@/components";
-import { MuiButton } from "@/components/ui";
-import { createExchangeFn } from "@/services/exchangesApi";
-import { DatePickerField } from "@/components/input-fields";
 
 import { priceUnit } from '@/components/content/products/forms'
-import { playSoundEffect } from "@/libs/playSound";
+import { useCreateExchange } from "@/hooks/exchange";
 
 
 const createExchangeSchema = object({
@@ -25,35 +20,8 @@ const createExchangeSchema = object({
 export type CreateExchangeInput = z.infer<typeof createExchangeSchema>
 
 export function CreateExchangeForm() {
-  const { state: {modalForm}, dispatch } = useStore()
-
-  const navigate = useNavigate()
-  const from = "/exchanges"
-
-  const {
-    mutate: createExchange,
-  } = useMutation({
-    mutationFn: createExchangeFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new exchange.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["exchanges"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  // Mutations
+  const createExchangeMuttion = useCreateExchange()
 
   const methods = useForm<CreateExchangeInput>({
     resolver: zodResolver(createExchangeSchema)
@@ -62,8 +30,9 @@ export function CreateExchangeForm() {
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<CreateExchangeInput> = (value) => {
-    createExchange({ ...value, date: value.date?.toISOString() })
+    createExchangeMuttion.mutate({ ...value, date: value.date?.toISOString() })
   }
+
 
   return (
     <FormProvider {...methods}>
@@ -123,7 +92,7 @@ export function CreateExchangeForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit">Create</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={createExchangeMuttion.isPending}>Create</MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

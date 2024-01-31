@@ -1,48 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import logging from "../middleware/logging/logging";
-import AppError from "../utils/appError";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
-import { convertNumericStrings } from "../utils/convertNumber";
 import { ChangeUserRoleInput, GetUserByUsernameInput, GetUserInput, UploadImageUserInput, UserFilterPagination } from "../schemas/user.schema";
+import { convertNumericStrings } from "../utils/convertNumber";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { db } from "../utils/db";
 
+import logging from "../middleware/logging/logging";
+import AppError from "../utils/appError";
 
-// TODO: remove this
-export async function getMeProfileHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const userSession = req.user
-
-    if (!userSession) return next(new AppError(400, "Session has expired or user doesn't exist"))
-
-    const user = await db.user.findUnique({
-      where: {
-        id: userSession.id
-      },
-      include: {
-        orders: true,
-        favorites: true,
-        addresses: true,
-        pickupAddresses: {
-          include: {
-            orders: true
-          }
-        },
-        reviews: true,
-        _count: true
-      },
-    })
-
-    res.status(200).json(HttpDataResponse({ user }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
-  }
-}
 
 export async function getMeHandler(
   req: Request,
@@ -50,7 +15,18 @@ export async function getMeHandler(
   next: NextFunction
 ) {
   try {
-    const user = req.user
+    const { include: includes } = convertNumericStrings(req.query)
+    const include = convertStringToBoolean(includes) as UserFilterPagination["include"]
+
+    const session_user = req.user
+    if (!session_user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+
+    const user = await db.user.findUnique({
+      where: {
+        id: session_user.id
+      },
+      include
+    })
 
     res.status(200).json(HttpDataResponse({ user }))
   } catch (err: any) {

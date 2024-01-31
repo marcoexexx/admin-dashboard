@@ -1,17 +1,14 @@
 import { Box, Grid, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { any, boolean, number, object, string, z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate, useParams } from "react-router-dom";
-import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { DatePickerField, ProductInputField } from "@/components/input-fields";
 import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { any, boolean, number, object, string, z } from "zod";
+import { useParams } from "react-router-dom";
+import { useGetCoupon, useUpdateCoupon } from "@/hooks/coupon";
+
 import dayjs from "dayjs";
-import { getCouponFn, updateCouponFn } from "@/services/couponsApi";
-import { playSoundEffect } from "@/libs/playSound";
 
 
 const updateCouponSchema = object({
@@ -30,47 +27,21 @@ const updateCouponSchema = object({
 export type UpdateCouponInput = z.infer<typeof updateCouponSchema>
 
 export function UpdateCouponForm() {
-  const { state: {modalForm}, dispatch } = useStore()
-
-  const navigate = useNavigate()
   const { couponId } = useParams()
-  const from = "/coupons"
 
-  const { 
-    data: coupon,
-    isSuccess: isSuccessFetchCoupon,
-    fetchStatus: fetchStatusCoupon
-  } = useQuery({
-    enabled: !!couponId,
-    queryKey: ["coupons", { id: couponId }],
-    queryFn: args => getCouponFn(args, { couponId, include: {} }),
-    select: data => data?.coupon
+  // Quries
+  const couponQuery = useGetCoupon({
+    id: couponId,
+    include: {}
   })
 
-  const {
-    mutate: updateCoupon,
-  } = useMutation({
-    mutationFn: updateCouponFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success updated a coupon.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["coupons"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  // Mutations
+  const updateCouponMutation = useUpdateCoupon()
+
+  // Extraction
+  const coupon = couponQuery.try_data.ok_or_throw()
+  const couponFetchStatus = couponQuery.fetchStatus
+
 
   const methods = useForm<UpdateCouponInput>({
     resolver: zodResolver(updateCouponSchema),
@@ -80,19 +51,19 @@ export function UpdateCouponForm() {
   })
 
   useEffect(() => {
-    if (isSuccessFetchCoupon && coupon && fetchStatusCoupon === "idle") {
+    if (couponQuery.isSuccess && coupon && couponFetchStatus === "idle") {
       methods.setValue("points", coupon.points)
       methods.setValue("dolla", coupon.dolla)
       methods.setValue("productId", coupon.productId)
       methods.setValue("expiredDate", dayjs(coupon.expiredDate))
       methods.setValue("isUsed", coupon.isUsed)
     }
-  }, [isSuccessFetchCoupon, fetchStatusCoupon])
+  }, [couponQuery.isSuccess, couponFetchStatus])
 
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<UpdateCouponInput> = (value) => {
-    if (couponId) updateCoupon({ couponId, coupon: value })
+    if (couponId) updateCouponMutation.mutate({ couponId, coupon: value })
   }
 
   return (
@@ -136,7 +107,7 @@ export function UpdateCouponForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit">Create</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={updateCouponMutation.isPending}>Save</MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

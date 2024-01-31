@@ -1,6 +1,8 @@
-import { QueryFunction, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { QueryFunction, useSuspenseQuery } from "@tanstack/react-query"
 import { PermissionsResponse } from "@/services/types"
-import { getMeFn } from "@/services/authApi"
+import { useMe } from "."
+
+import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 
 type ExtractPerm<T extends string> = T extends `${infer P}-permissions` ? P : never
@@ -32,37 +34,26 @@ interface Args {
 }
 
 export function usePermission({key, actions, enabled, queryFn}: Args) {
-  const { data: user, isSuccess: isSuccessUser, isError: isErrorUser, error: errorUser } = useQuery({
-    enabled,
-    queryKey: ["authUser"],
-    queryFn: getMeFn,
-    select: data => data.user,
+  const userQuery = useMe({
+    enabled
   })
-
-  const role = user?.role || "*"
-  const resource = key.split("-")[0] as ExtractPerm<PermissionKey>
-
-  const {
-    data: permissions,
-    isError: isErrorPermissions,
-    isSuccess: isSuccessPermissions,
-    error: errorPermissions
-  } = useSuspenseQuery({
+  const permissionsQuery = useSuspenseQuery({
     queryKey: [key],
     queryFn,
     select: (data: PermissionsResponse) => data
   })
 
-  // const isLoading = isLoadingUser || isLoadingPemissions
-  const isSuccess = isSuccessUser || isSuccessPermissions
-  const isError = isErrorUser || isErrorPermissions
-  const error = errorUser || errorPermissions
+  // Extraction
+  const user = userQuery.try_data.ok_or_throw()
+  const permissions = permissionsQuery.data
 
-  if (permissions?.label !== resource && !isSuccess) return false
-  if ((isError && error)) {
-    console.error(error.message)
-    return false
-  }
+  if (permissionsQuery.isError && permissionsQuery.error) throw AppError.new(AppErrorKind.ApiError, permissionsQuery.error.message)
+
+  const role = user?.role || "*"
+  const resource = key.split("-")[0] as ExtractPerm<PermissionKey>
+
+
+  if (permissions?.label !== resource && !userQuery.isSuccess) return false
 
   if (actions === "create" 
     && (permissions?.permissions?.createAllowedRoles?.includes(role) || permissions?.permissions?.createAllowedRoles?.includes("*"))

@@ -11,7 +11,7 @@ export function useGetProduct({
   include,
 }: {
   id: string | undefined,
-  include?: ProductFilter["include"],  // TODO: type fix
+  include?: ProductFilter["include"],
   }) {
   const query = useQuery({
     enabled: !!id,

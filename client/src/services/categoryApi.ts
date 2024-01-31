@@ -1,4 +1,4 @@
-import { CreateCategoryInput, DeleteCategoryInput, UpdateCategoryInput } from "@/components/content/categories/forms";
+import { CreateCategoryInput, UpdateCategoryInput } from "@/components/content/categories/forms";
 import { Category, CategoryResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
 import { authApi } from "./authApi";
 import { CategoryFilter } from "@/context/category";
@@ -58,13 +58,13 @@ export async function updateCategoryFn({categoryId, category}: {categoryId: stri
 }
 
 
-export async function deleteMultiCategoriesFn(categoryIds: DeleteCategoryInput["categoryId"][]) {
+export async function deleteMultiCategoriesFn(categoryIds: string[]) {
   const { data } = await authApi.delete<HttpResponse>("/categories/multi", { data: { categoryIds } })
   return data
 }
 
 
-export async function deleteCategoryFn(categoryId: DeleteCategoryInput["categoryId"]) {
+export async function deleteCategoryFn(categoryId: string) {
   const { data } = await authApi.delete<HttpResponse>(`/categories/detail/${categoryId}`)
   return data
 }

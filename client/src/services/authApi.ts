@@ -2,6 +2,7 @@ import { LoginUserInput, RegisterUserInput } from "@/components/forms/auth";
 import { HttpResponse, LoginResponse, QueryOptionArgs, UserResponse } from "./types";
 import getConfig from "@/libs/getConfig";
 import axios from "axios";
+import { UserFilter } from "@/context/user";
 
 
 const BASE_URL = getConfig("backendEndpoint")
@@ -41,14 +42,13 @@ authApi.interceptors.response.use(
   }
 )
 
-export async function getMeFn() {
-  const res = await authApi.get<UserResponse>("me");
-  return res.data
-}
-
-// TODO: remove this function
-export async function getMeProfileFn() {
-  const res = await authApi.get<UserResponse>("me/profile");
+export async function getMeFn(opt: QueryOptionArgs, { include }: { include?: UserFilter["include"]}) {
+  const res = await authApi.get<UserResponse>("me", {
+    ...opt,
+    params: {
+      include
+    }
+  });
   return res.data
 }
 

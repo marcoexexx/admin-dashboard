@@ -1,26 +1,41 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import { PageTitle, SuspenseLoader } from "@/components";
 import { UpdateExchangeForm } from "@/components/content/exchanges/forms";
+import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { usePermission } from "@/hooks";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
-import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+
 import getConfig from "@/libs/getConfig";
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
 
-export default function UpdateExchange() {
-  const navigate = useNavigate()
 
+function UpdateExchangeWrapper() {
   const isAllowedUpdateExchange = usePermission({
     key: "exchange-permissions",
     actions: "update",
     queryFn: getExchangePermissionsFn
   })
+
+  if (!isAllowedUpdateExchange) throw AppError.new(AppErrorKind.AccessDeniedError)
   
+  return <Card>
+    <CardContent>
+      <UpdateExchangeForm />
+    </CardContent>
+  </Card>
+}
+
+
+export default function UpdateExchange() {
+  const navigate = useNavigate()
+
   const handleBack = () => {
     navigate(-1)
   }
@@ -53,20 +68,19 @@ export default function UpdateExchange() {
         </Grid>
       </PageTitle>
 
-      {isAllowedUpdateExchange
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12} md={8}>
-              <Card>
-                <CardContent>
-                  <UpdateExchangeForm />
-                </CardContent>
-              </Card>
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12} md={8}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <UpdateExchangeWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }

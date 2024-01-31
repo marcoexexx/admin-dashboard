@@ -1,9 +1,6 @@
 import { useRef, useState } from "react"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { getMeFn, logoutUserFn } from "@/services/authApi"
-import { queryClient } from ".."
 import { useNavigate } from "react-router-dom"
-import { useLocalStorage, useStore } from "@/hooks"
+import { useLocalStorage, useMe, useStore } from "@/hooks"
 
 import { Avatar, Badge, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
 import { MuiButton } from "@/components/ui"
@@ -19,6 +16,8 @@ import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import HistoryIcon from '@mui/icons-material/History';
 import MapIcon from '@mui/icons-material/Map';
+import { useUserLogout } from "@/hooks/user"
+import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 
 const UserBoxButton = styled(Button)(({theme}) => ({
@@ -55,28 +54,15 @@ export default function HeaderUserBox() {
 
   const cartsCount = (get<OrderItem[]>("CARTS") || []).length
 
-  const { data: user, isLoading, isError, error } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: getMeFn,
-    select: data => data.user
-  })
+  const userQuery = useMe({})
+  const userLogoutMutation = useUserLogout()
 
-  const { mutate: logout } = useMutation({
-    mutationFn: logoutUserFn,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["authUser"]
-      })
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success logout.",
-        severity: "success"
-      } })
-    }
-  })
+  const try_user = userQuery.try_data
+
 
   const handleLogout = (_: React.MouseEvent<HTMLButtonElement>) => {
     dispatch({ type: "SET_USER", payload: undefined })
-    logout()
+    userLogoutMutation.mutate()
   }
 
   const ref = useRef<any>(null)
@@ -100,32 +86,32 @@ export default function HeaderUserBox() {
   }
 
 
-  if (isError) return <>
+  if (try_user.is_err()) return <>
     <UserBoxButton color="error">
-      <UserBoxLabel>Failed: {error.message}</UserBoxLabel>
+      <UserBoxLabel>Failed: {try_user.value.message}: {try_user.value.kind}</UserBoxLabel>
     </UserBoxButton>
   </>
 
-  if (isLoading || !user) return <>
+  if (userQuery.isLoading || !try_user.value) return <>
     <UserBoxButton color="secondary">
       <Skeleton variant="rounded" width={200} height={60} />
     </UserBoxButton>
   </>
 
 
-  return (
+  if (try_user.is_ok()) return (
     <>
       <Badge badgeContent={cartsCount} color="primary" anchorOrigin={{
         vertical: "top",
         horizontal: "right"
       }}>
         <UserBoxButton color="secondary" ref={ref} onClick={handleOpen}>
-          <Avatar variant="rounded" alt={user.name} src={user.image} />
+          <Avatar variant="rounded" alt={try_user.value.name} src={try_user.value.image} />
           <Hidden mdDown>
             <UserBoxText>
-              <UserBoxLabel>{user.name}</UserBoxLabel>
+              <UserBoxLabel>{try_user.value.name}</UserBoxLabel>
               <UserBoxDescription variant="body2">
-                {user.role}
+                {try_user.value.role}
               </UserBoxDescription>
             </UserBoxText>
           </Hidden>
@@ -150,10 +136,10 @@ export default function HeaderUserBox() {
         }}
       >
         <MenuUserBox sx={{ minWidth: 210 }} display="flex">
-          <Avatar variant="rounded" alt={user.name} src={user.image} />
+          <Avatar variant="rounded" alt={try_user.value.name} src={try_user.value.image} />
           <UserBoxText>
-            <UserBoxLabel variant="body1">{user.name}</UserBoxLabel>
-            <UserBoxDescription variant="body2">{user.role}</UserBoxDescription>
+            <UserBoxLabel variant="body1">{try_user.value.name}</UserBoxLabel>
+            <UserBoxDescription variant="body2">{try_user.value.role}</UserBoxDescription>
           </UserBoxText>
         </MenuUserBox>
 
@@ -229,4 +215,6 @@ export default function HeaderUserBox() {
       </Popover>
     </>
   )
+
+  throw AppError.new(AppErrorKind.NoDataError, "User not found")
 }

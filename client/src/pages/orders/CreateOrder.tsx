@@ -1,24 +1,39 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import { PageTitle, SuspenseLoader } from "@/components";
+import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { CreateOrderForm } from '@/components/content/orders/forms';
 import { usePermission } from "@/hooks";
 import { getOrderPermissionsFn } from "@/services/permissionsApi";
-import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom'
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+
 import getConfig from "@/libs/getConfig";
-import { CreateOrderForm } from '@/components/content/orders/forms';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
 
-export default function CreateOrder() {
+
+function CreateOrderWrapper() {
   const isAllowedCreateOrder = usePermission({
     key: "order-permissions",
     actions: "create",
     queryFn: getOrderPermissionsFn
   })
+
+  if (!isAllowedCreateOrder) throw AppError.new(AppErrorKind.AccessDeniedError)
   
+  return <Card>
+    <CardContent>
+      <CreateOrderForm />
+    </CardContent>
+  </Card>
+}
+
+
+export default function CreateOrder() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -52,20 +67,19 @@ export default function CreateOrder() {
         </Grid>
       </PageTitle>
 
-      {isAllowedCreateOrder
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12} md={8}>
-              <Card>
-                <CardContent>
-                  <CreateOrderForm />
-                </CardContent>
-              </Card>
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12} md={8}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <CreateOrderWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }

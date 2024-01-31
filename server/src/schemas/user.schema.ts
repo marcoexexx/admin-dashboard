@@ -8,12 +8,7 @@ export const userRole = ["Admin", "User", "Shopowner"] as const
 export type UserFilterPagination = {
   filter?: any,
   pagination?: Pagination,
-  include?: {
-    orders?: boolean,
-    addresses?: boolean,
-    favorites?: boolean,
-    reviews?: boolean
-  }
+  include?: any
 }
 
 
