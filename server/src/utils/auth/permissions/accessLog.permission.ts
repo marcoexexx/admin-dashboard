@@ -8,8 +8,5 @@ export const accessLogPermission: Permission<Role> = {
 
   updateAllowedRoles: () => [],
 
-  deleteAllowedRoles: () => ["User", "Shopowner", "Admin"],
+  deleteAllowedRoles: () => ["User"],
 }
-
-
-

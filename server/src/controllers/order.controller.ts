@@ -176,11 +176,17 @@ export async function deleteOrderHandler(
 ) {
   try {
     const { orderId } = req.params
+
+    // @ts-ignore  for mocha testing
+    const userId: string | undefined = req.user?.id || undefined
     
     const [_deletedOrderItems, _deletedPickupAddress, order] = await db.$transaction([
       db.orderItem.deleteMany({
         where: {
-          orderId
+          order: {
+            id: orderId,
+            userId
+          },
         }
       }),
 
@@ -188,7 +194,8 @@ export async function deleteOrderHandler(
         where: {
           orders: {
             some: {
-              id: orderId
+              id: orderId,
+              userId
             }
           }
         }
@@ -196,7 +203,8 @@ export async function deleteOrderHandler(
 
       db.order.delete({
         where: {
-          id: orderId
+          id: orderId,
+          userId
         }
       })
     ])
