@@ -309,7 +309,9 @@ export function CheckoutForm() {
 
       <Hidden lgUp>
         <Grid item xs={12}>
-          <OrderSummary deliveryFee={deliveryFee?.township?.fees} orderItems={cartItems} />
+          <ErrorBoundary>
+            <OrderSummary deliveryFee={deliveryFee?.township?.fees} orderItems={cartItems} />
+          </ErrorBoundary>
         </Grid>
 
         <Grid item xs={12}>
@@ -352,7 +354,9 @@ export function CheckoutForm() {
 
       <Hidden lgDown>
         <Grid item lg={4.7}>
-          <OrderSummary deliveryFee={deliveryFee?.township?.fees} orderItems={cartItems} />
+          <ErrorBoundary>
+            <OrderSummary deliveryFee={deliveryFee?.township?.fees} orderItems={cartItems} />
+          </ErrorBoundary>
         </Grid>
       </Hidden>
 

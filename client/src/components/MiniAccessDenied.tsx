@@ -16,7 +16,7 @@ export function MiniAccessDenied() {
   return (
     <Container maxWidth="lg">
       <Grid container spacing={1} alignItems="center">
-        <Grid item xs={16} md={6}>
+        <Grid item md={6} xs={12}>
           <Box minWidth={300} maxWidth={430}>
             <img
               alt="access-denied-pic"
@@ -25,7 +25,7 @@ export function MiniAccessDenied() {
           </Box>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid item md={6} xs={12}>
           <Box display="flex" flexDirection="column" gap={2}>
             <HeaderWrapper>Access denied!</HeaderWrapper>
             <ContentWrapper>We're sorry, but you do not have required permissions to access page or resource. Please contact the site administrator.</ContentWrapper>

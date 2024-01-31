@@ -13,7 +13,7 @@ export default function ErrorPage({error}: {error?: Error}) {
       <div>
         <p>Brace yourself till we get the error fixed.</p>
         <p>You may also refresh the page or try again later</p>
-        <Link href="#temas" underline='hover'>Home</Link>
+        <Link href="/home" underline='hover'>Home</Link>
       </div>
 
       <div>
