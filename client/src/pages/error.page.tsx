@@ -2,6 +2,8 @@ import { Link } from '@mui/material'
 
 
 export default function ErrorPage({error}: {error?: Error}) {
+  const message = error?.message + ": " + ((error as any)?.response?.data?.message ?? "")
+
   return (
     <div>
       <div>
@@ -19,7 +21,7 @@ export default function ErrorPage({error}: {error?: Error}) {
       <div>
         <h1>Sorry Something went wrong!!</h1>
         { process.env.NODE_ENV === "development" 
-          ? <pre>{error?.message}</pre> 
+          ? <pre>{message}</pre> 
           : <h1>Error code 500</h1>}
       </div>
     </div>

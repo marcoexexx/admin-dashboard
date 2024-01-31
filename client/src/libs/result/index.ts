@@ -63,67 +63,67 @@ export default class Result<T, E extends ToString> {
 
   map<U extends ToString>(op: (x: T) => U): Result<U, E> {
     if (this.is_ok()) return Ok(op(this.value))
-    else if (this.is_err()) Err(this.value)
+    else if (this.is_err()) return Err(this.value)
     throw new UnreachableException(this.value)
   }
 
   map_or<U>(def: U, f: (x: T) => U): U {
     if (this.is_ok()) return f(this.value)
-    else if (this.is_err()) def
+    else if (this.is_err()) return def
     throw new UnreachableException(this.value)
   }
 
   map_or_else<U>(def: (err: E) => U, f: (x: T) => U): U {
     if (this.is_ok()) return f(this.value)
-    else if (this.is_err()) def(this.value)
+    else if (this.is_err()) return def(this.value)
     throw new UnreachableException(this.value)
   }
 
   map_err<U extends ToString>(op: (err: E) => U): Result<T, U> {
     if (this.is_ok()) return Ok(this.value)
-    else if (this.is_err()) Err(op(this.value))
+    else if (this.is_err()) return Err(op(this.value))
     throw new UnreachableException(this.value)
   }
 
   and<U extends ToString>(res: Result<U, E>): Result<U, E> {
     if (this.is_ok()) return res
-    else if (this.is_err()) Err(this.value)
+    else if (this.is_err()) return Err(this.value)
     throw new UnreachableException(this.value)
   }
 
   and_then<U extends ToString>(op: (x: T) => Result<U, E>): Result<U, E> {
     if (this.is_ok()) return op(this.value)
-    else if (this.is_err()) Err(this.value)
+    else if (this.is_err()) return Err(this.value)
     throw new UnreachableException(this.value)
   }
 
   or<U extends ToString>(res: Result<T, U>): Result<T, U> {
     if (this.is_ok()) return Ok(this.value)
-    else if (this.is_err()) res
+    else if (this.is_err()) return res
     throw new UnreachableException(this.value)
   }
 
   or_else<U extends ToString>(op: (err: E) => Result<T, U>): Result<T, U> {
     if (this.is_ok()) return Ok(this.value)
-    else if (this.is_err()) op(this.value)
+    else if (this.is_err()) return op(this.value)
     throw new UnreachableException(this.value)
   }
 
   expect_err(msg: string): E {
     if (this.is_ok()) unwrap_failed(msg, (this.value ?? "undefined value") as typeof this.value & ToString)
-    else if (this.is_err()) this.value
+    else if (this.is_err()) return this.value
     throw new UnreachableException(this.value)
   }
 
   unwrap_err(): E {
     if (this.is_ok()) unwrap_failed("called `Result::unwrap_err()` on an `Ok` value", (this.value ?? "undefined value") as typeof this.value & ToString)
-    else if (this.is_err()) this.value
+    else if (this.is_err()) return this.value
     throw new UnreachableException(this.value)
   }
 
   unwrap_or(def: T): T {
     if (this.is_ok()) return this.value
-    else if (this.is_err()) def
+    else if (this.is_err()) return def
     throw new UnreachableException(this.value)
   }
 

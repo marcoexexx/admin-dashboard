@@ -17,7 +17,7 @@ export function useGetCategories({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["categories", { filter } ],
+    queryKey: ["categories", { filter, pagination, include } ],
     queryFn: args => getCategoriesFn(args, { 
       filter,
       pagination,

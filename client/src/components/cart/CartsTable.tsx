@@ -1,11 +1,12 @@
 import { OrderItem } from "@/services/types"
 import { Alert, Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
-import { RenderImageLabel, RenderProductLabel, RenderQuantityButtons } from "../table-labels"
+import { RenderImageLabel, RenderProductLabelFetch, RenderQuantityButtons } from "../table-labels"
 import { CreateOrderInput } from "../content/orders/forms"
-import { useLocalStorage } from "@/hooks"
+import { useLocalStorage, useStore } from "@/hooks"
 import { useState } from "react"
 import { numberFormat } from "@/libs/numberFormat"
 import { calculateProductDiscount } from "../content/products/detail/ProductDetailTab"
+import AppError from "@/libs/exceptions"
 
 
 const columnData: TableColumnHeader<OrderItem & { discount: number, image: string }>[] = [
@@ -51,7 +52,7 @@ const columnHeader = columnData.concat([
 
 
 interface CartsTableProps {
-  carts: OrderItem[]
+  carts: OrderItem[],
 }
 
 
@@ -60,6 +61,9 @@ export function CartsTable(props: CartsTableProps) {
 
   const [orderCarts, setOrderCarts] = useState(carts)
 
+  const { dispatch } = useStore()
+
+  // TODO: Memo
   const totalAmount = orderCarts.reduce((total, item) => total + item.totalPrice, 0)
   const totalSaving = orderCarts.reduce((total, item) => total + item.saving, 0)
   const originalTotalPrice = orderCarts.reduce((total, item) => total + item.originalTotalPrice, 0)
@@ -119,6 +123,12 @@ export function CartsTable(props: CartsTableProps) {
     setOrderCarts(payload)
   }
 
+  const handleProductFetchOnError = (_err: AppError) => {
+    dispatch({ type: "DISABLE_CHECKOUT" })
+  }
+
+  const handleProductFetchOnSuccess = () => dispatch({ type: "ENABLE_CHECKOUT" })
+
 
   return (
     <Box display="flex" flexDirection="column" gap={2}>
@@ -155,7 +165,7 @@ export function CartsTable(props: CartsTableProps) {
                       >
                         {col.id === "image" && <RenderImageLabel src={row.product?.images[0] || "/default.png"} alt={row.product?.title || "product"} />}
                         {col.id === "discount" && row.product && `${productDiscountPercent} %`}
-                        {col.id === "product" && row.product && <RenderProductLabel product={row.product} />}
+                        {col.id === "product" && row.product && <RenderProductLabelFetch product={row.product} onError={handleProductFetchOnError} onSuccess={handleProductFetchOnSuccess} />}
                         {col.id === "quantity" && <RenderQuantityButtons disabled={isCreatedPotentialOrder} item={row} onIncrement={handleOnIncrement} onDecrement={handleOnDecrement} />}
                         {col.id === "price" && numberFormat(row.price)}
                         {col.id === "totalPrice" && numberFormat(row.originalTotalPrice)}

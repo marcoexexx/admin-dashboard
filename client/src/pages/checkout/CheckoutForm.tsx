@@ -252,7 +252,6 @@ export function CheckoutForm() {
         addressType: value.addressType
       }
 
-      if (deliveryFee && deliveryFee.township) console.log("deli", totalAmount + deliveryFee.township.fees)
       if (deliveryFee && deliveryFee.township) payload.totalPrice = deliveryFee.township.fees + totalAmount
 
       // check address type and add their address data

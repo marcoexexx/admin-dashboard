@@ -1,24 +1,24 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
+import { ProductFilter } from "@/context/product";
 import { Pagination } from "@/services/types";
-import { ExchangeFilter } from "@/context/exchange";
 import { useQuery } from "@tanstack/react-query";
-import { getExchangesFn } from "@/services/exchangesApi";
+import { getUsersFn } from "@/services/usersApi";
 
 
-export function useGetExchanges({
+export function useGetUsers({
   filter,
   pagination,
   include,
 }: {
-  filter?: ExchangeFilter["fields"],
-  include?: ExchangeFilter["include"],
+  filter?: ProductFilter["fields"],
+  include?: ProductFilter["include"],
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["exchanges", { filter, pagination, include } ],
-    queryFn: args => getExchangesFn(args, { 
+    queryKey: ["users", { filter, pagination, include } ],
+    queryFn: args => getUsersFn(args, { 
       filter,
       pagination,
       include

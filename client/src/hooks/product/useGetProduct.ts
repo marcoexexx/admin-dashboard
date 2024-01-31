@@ -14,15 +14,15 @@ export function useGetProduct({
   include?: ProductFilter["include"],
   }) {
   const query = useQuery({
-    enabled: !!id,
-    queryKey: ["products", { id }],
+    enabled: !!id ,
+    queryKey: ["products", { id, include }],
     queryFn: args => getProductFn(args, { productId: id, include }),
     select: data => data?.product
   })
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new(AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new(AppErrorKind.ApiError, (query.error as any)?.response?.data?.message ?? query.error.message)) 
     : Ok(query.data)
 
 

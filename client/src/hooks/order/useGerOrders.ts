@@ -17,7 +17,7 @@ export function useGetOrders({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["orders", { filter } ],
+    queryKey: ["orders", { filter, pagination, include } ],
     queryFn: args => getOrdersFn(args, { 
       filter,
       pagination,

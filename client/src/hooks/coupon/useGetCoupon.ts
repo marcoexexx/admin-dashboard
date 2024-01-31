@@ -15,7 +15,7 @@ export function useGetCoupon({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["coupons", { id }],
+    queryKey: ["coupons", { id, include }],
     queryFn: args => getCouponFn(args, { couponId: id, include }),
     select: data => data?.coupon
   })

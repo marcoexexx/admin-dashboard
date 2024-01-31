@@ -17,7 +17,7 @@ export function useGetAccessLogs({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["access-logs", { filter }],
+    queryKey: ["access-logs", { filter, pagination, include }],
     queryFn: args => getAccessLogsFn(args, { 
       filter,
       pagination,

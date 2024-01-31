@@ -127,7 +127,15 @@ export type Store = {
     }
   },
   exchangeFilter?: ExchangeFilter,
-  couponFilter?: CouponFilter
+  couponFilter?: CouponFilter,
+  disableCheckOut: boolean
+}
+
+interface EnableCheckOutActions {
+  type: "DISABLE_CHECKOUT",
+}
+interface DisableCheckOutActions {
+  type: "ENABLE_CHECKOUT",
 }
 
 interface OrderFilterActions {
@@ -279,6 +287,9 @@ type Action =
   | ModalFormCloseActions
   | AllModalFormCloseActions
 
+  | DisableCheckOutActions
+  | EnableCheckOutActions
+
 type Dispatch = (action: Action) => void
 
 export const StoreContext = createContext<
@@ -403,7 +414,9 @@ const initialState: Store = {
       _count: false,
     },
     mode: "default"
-  }
+  },
+
+  disableCheckOut: true
 }
 
 const stateReducer = (state: Store, action: Action): Store => {
@@ -553,6 +566,20 @@ const stateReducer = (state: Store, action: Action): Store => {
           ...state.productFilter,
           ...action.payload
         }
+      }
+    }
+
+    case "DISABLE_CHECKOUT": {
+      return {
+        ...state,
+        disableCheckOut: true
+      }
+    }
+
+    case "ENABLE_CHECKOUT": {
+      return {
+        ...state,
+        disableCheckOut: false
       }
     }
 

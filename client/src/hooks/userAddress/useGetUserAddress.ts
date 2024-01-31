@@ -15,7 +15,7 @@ export function useGetUserAddress({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["user-addresses", { id }],
+    queryKey: ["user-addresses", { id, include }],
     queryFn: args => getUserAddressFn(args, { userAddressId: id, include }),
     // queryFn: () => Promise.reject(AppError.new(AppErrorKind.PermissionError))
   })

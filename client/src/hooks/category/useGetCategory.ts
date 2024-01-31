@@ -15,7 +15,7 @@ export function useGetCategory({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["categories", { id }],
+    queryKey: ["categories", { id, include }],
     queryFn: args => getCategoryFn(args, { categoryId: id, include }),
     select: data => data?.category
   })

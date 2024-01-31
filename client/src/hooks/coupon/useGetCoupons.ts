@@ -17,7 +17,7 @@ export function useGetCoupons({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["coupons", { filter } ],
+    queryKey: ["coupons", { filter, pagination, include } ],
     queryFn: args => getCouponsFn(args, { 
       filter,
       pagination,

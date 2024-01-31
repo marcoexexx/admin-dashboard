@@ -15,7 +15,7 @@ export function useGetBrand({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["brands", { id }],
+    queryKey: ["brands", { id, include }],
     queryFn: args => getBrandFn(args, { brandId: id, include }),
     select: data => data?.brand
   })

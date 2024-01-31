@@ -1,40 +1,30 @@
 import { Card } from "@mui/material";
-import { useStore } from "@/hooks";
-import { useQuery } from "@tanstack/react-query";
-import { getUsersFn } from "@/services/usersApi";
 import { SuspenseLoader } from "@/components";
 import { UsersListTable } from ".";
-import { getMeFn } from "@/services/authApi";
-import { UserResponse } from "@/services/types";
+import { useCombineQuerys, useMe, useStore } from "@/hooks";
+import { useGetUsers } from "@/hooks/user";
 
 
 export function UsersList() {
   const { state: {userFilter} } = useStore()
 
-  const { data: me, isError: isMeError, isLoading: isMeLoading, error: meError } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: getMeFn,
-    select: (data: UserResponse) => data.user,
+  const meQuery = useMe({})
+  const usersQuery = useGetUsers({
+    filter: userFilter?.fields,
+    pagination: {
+      page: userFilter?.page || 1,
+      pageSize: userFilter?.limit || 10
+    },
   })
 
-  const { data: users, isError: isUsersError, isLoading: isUsersLoading, error: usersError } = useQuery({
-    queryKey: ["users", { filter: userFilter } ],
-    queryFn: args => getUsersFn(args, { 
-      filter: userFilter?.fields,
-      pagination: {
-        page: userFilter?.page || 1,
-        pageSize: userFilter?.limit || 10
-      },
-    }),
-    select: data => data
-  })
+  const me = meQuery.try_data.ok_or_throw()
+  const users = usersQuery.try_data.ok_or_throw()
 
-  const isError = isUsersError || isMeError
-  const isLoading = isUsersLoading || isMeLoading
-  const error = usersError || meError
+  const { isLoading } = useCombineQuerys(
+    meQuery,
+    usersQuery
+  )
 
-
-  if (isError && error) return <h1>ERROR: {error.message}</h1>
 
   if ((!users || !me) || isLoading) return <SuspenseLoader />
 

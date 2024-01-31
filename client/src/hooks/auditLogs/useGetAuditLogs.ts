@@ -17,7 +17,7 @@ export function useGetAuditLogs({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["audit-logs", { filter }],
+    queryKey: ["audit-logs", { filter, pagination, include }],
     queryFn: args => getAuditLogsFn(args, { 
       filter,
       pagination,

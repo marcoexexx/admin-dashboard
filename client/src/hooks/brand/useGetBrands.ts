@@ -17,7 +17,7 @@ export function useGetBrands({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["brands", { filter } ],
+    queryKey: ["brands", { filter, pagination, include } ],
     queryFn: args => getBrandsFn(args, { 
       filter,
       pagination,

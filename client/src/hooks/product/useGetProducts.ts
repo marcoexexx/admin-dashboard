@@ -17,7 +17,7 @@ export function useGetProducts({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["products", { filter } ],
+    queryKey: ["products", { filter, pagination, include } ],
     queryFn: args => getProductsFn(args, { 
       filter,
       pagination,

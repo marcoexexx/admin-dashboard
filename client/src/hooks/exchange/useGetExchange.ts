@@ -15,7 +15,7 @@ export function useGetExchange({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["exchanges", { id }],
+    queryKey: ["exchanges", { id, include }],
     queryFn: args => getExchangeFn(args, { exchangeId: id, include }),
     select: data => data?.exchange
   })

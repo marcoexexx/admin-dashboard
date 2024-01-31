@@ -14,13 +14,17 @@ interface CartsProps {
 export function Carts(props: CartsProps) {
   const { orderItems } = props
 
-  const { dispatch } = useStore()
+  const { dispatch, state: {disableCheckOut: invalidCart} } = useStore()
+
+  const disableCheckOut = invalidCart || !orderItems.length
 
   const navigate = useNavigate()
 
   const handleNavigate = () => {
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: "cart" })
-    navigate("/checkout")
+    if (!disableCheckOut) {
+      dispatch({ type: "CLOSE_MODAL_FORM", payload: "cart" })
+      navigate("/checkout")
+    }
   }
 
 
@@ -33,7 +37,7 @@ export function Carts(props: CartsProps) {
         </Grid>
 
         <Grid item xs={6}>
-          <MuiButton disabled={!orderItems.length} onClick={handleNavigate}>Checkout</MuiButton>
+          <MuiButton disabled={disableCheckOut} onClick={handleNavigate}>Checkout</MuiButton>
         </Grid>
       </Grid>
     </Container>

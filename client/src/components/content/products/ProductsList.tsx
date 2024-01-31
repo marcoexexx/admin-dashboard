@@ -12,7 +12,7 @@ export function ProductsList() {
   const { state: {productFilter} } = useStore()
 
   // Queries
-  const meQuery = useMe()
+  const meQuery = useMe({})
   const productsQuery = useGetProducts({ 
     filter: productFilter?.fields, 
     pagination: {
