@@ -110,13 +110,13 @@ export default class Result<T, E extends ToString> {
   }
 
   expect_err(msg: string): E {
-    if (this.is_ok()) unwrap_failed(msg, this.value as typeof this.value & ToString)
+    if (this.is_ok()) unwrap_failed(msg, (this.value ?? "undefined value") as typeof this.value & ToString)
     else if (this.is_err()) this.value
     throw new UnreachableException(this.value)
   }
 
   unwrap_err(): E {
-    if (this.is_ok()) unwrap_failed("called `Result::unwrap_err()` on an `Ok` value", this.value as typeof this.value & ToString)
+    if (this.is_ok()) unwrap_failed("called `Result::unwrap_err()` on an `Ok` value", (this.value ?? "undefined value") as typeof this.value & ToString)
     else if (this.is_err()) this.value
     throw new UnreachableException(this.value)
   }
