@@ -4,12 +4,11 @@ import { CreateOrderInput } from "@/components/content/orders/forms";
 import { BillingAddressDetailCard } from "./BillingAddressDetailCard";
 import { PickupAddressDetailCard } from "./PickupAddressDetailCard";
 import { PaymentMethodDetailCard } from "./PaymentMethodDetailCard";
-import { useFormContext } from "react-hook-form";
-import { getUserAddressFn } from "@/services/userAddressApi";
-import { useQuery } from "@tanstack/react-query";
 import { SuspenseLoader } from "@/components";
+import { useFormContext } from "react-hook-form";
 import { useEffect } from "react";
-import { useLocalStorage } from "@/hooks";
+import { useCombineQuerys, useLocalStorage } from "@/hooks";
+import { useGetUserAddress } from "@/hooks/userAddress";
 
 
 export function CheckoutOrderConfirmation() {
@@ -19,37 +18,23 @@ export function CheckoutOrderConfirmation() {
 
   const { get, set } = useLocalStorage()
 
-  const { 
-    data: deliveryAddressResponse, 
-    isError: isErrorDeleveryAddressResponse, 
-    isLoading: isLoadingDeleveryAddressResponse, 
-    error: errorDeleveryAddressResponse,
-    isSuccess: isSuccessDeleveryAddressResponse
-  } = useQuery({
-    enabled: !!deliveryAddressId,
-    queryKey: ["user-addresses", { id: deliveryAddressId }],
-    queryFn: args => getUserAddressFn(args, { userAddressId: deliveryAddressId }),
+  // Queries
+  const deliveryAddressQuery = useGetUserAddress({
+    id: deliveryAddressId
+  })
+  const billingAddressQuery = useGetUserAddress({
+    id: billingAddressId
   })
 
-  const { 
-    data: billingAddressResponse, 
-    isError: isErrorBillingAddressResponse, 
-    isLoading: isLoadingBillingAddressResponse, 
-    error: errorBillingAddressResponse,
-    isSuccess: isSuccessBillingAddressResponse
-  } = useQuery({
-    enabled: !!billingAddressId,
-    queryKey: ["user-addresses", { id: billingAddressId }],
-    queryFn: args => getUserAddressFn(args, { userAddressId: billingAddressId }),
-  })
+  const { isLoading, isSuccess } = useCombineQuerys(
+    deliveryAddressQuery,
+    billingAddressQuery
+  )
 
-  const isError = isErrorDeleveryAddressResponse || isErrorBillingAddressResponse
-  const isLoading = isLoadingDeleveryAddressResponse || isLoadingBillingAddressResponse
-  const error = errorDeleveryAddressResponse || errorBillingAddressResponse
-  const isSuccess = isSuccessDeleveryAddressResponse || isSuccessBillingAddressResponse
+  // Extraction
+  const deliveryAddress = deliveryAddressQuery.try_data.ok_or_throw()?.userAddress
+  const billingAddress = billingAddressQuery.try_data.ok_or_throw()?.userAddress
 
-  const deliveryAddress = deliveryAddressResponse?.userAddress
-  const billingAddress = billingAddressResponse?.userAddress
 
   // If deliveryAddress does not exist in database, must remove from localStorage
   useEffect(() => {
@@ -69,8 +54,6 @@ export function CheckoutOrderConfirmation() {
     }
   }, [deliveryAddress])
 
-
-  if (isError && error) return <h1>ERROR: {error.message}</h1>
 
   if (isLoading) return <SuspenseLoader />
 

@@ -9,6 +9,7 @@ import { AccessLogFilter } from "./accessLog"
 import { AuditLogFilter } from "./auditLogs"
 import { BrandFilter } from "./brand"
 import { CategoryFilter } from "./category"
+import { UserAddressFilter } from "./userAddress"
 
 
 // TODO: setFilter, setPagination, setInclude
@@ -101,12 +102,7 @@ export type Store = {
     limit?: number,
     mode?: "insensitive" | "default",
   },
-  userAddressFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
+  userAddressFilter?: UserAddressFilter,
   productFilter?: ProductFilter,
   salesCategoryFilter?: {
     fields?: any,
