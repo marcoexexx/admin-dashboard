@@ -1,120 +1,50 @@
 import { Card } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { SuspenseLoader, queryClient } from "@/components";
+import { SuspenseLoader } from "@/components";
 import { BrandsListTable } from "@/components/content/brands";
-import { createMultiBrandsFn, deleteBrandFn, deleteMultiBrandsFn, getBrandsFn } from "@/services/brandsApi";
-import { playSoundEffect } from "@/libs/playSound";
+
+import { useStore } from "@/hooks";
+import { useCreateMultiBrands, useDeleteBrand, useDeleteMultiBrands, useGetBrands } from "@/hooks/brand";
 
 
 export function BrandsList() {
-  const { state: {brandFilter}, dispatch } = useStore()
+  const { state: {brandFilter} } = useStore()
 
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["brands", { filter: brandFilter } ],
-    queryFn: args => getBrandsFn(args, { 
-      filter: brandFilter?.fields,
-      pagination: {
-        page: brandFilter?.page || 1,
-        pageSize: brandFilter?.limit || 10
-      },
-    }),
-    select: data => data
-  })
-
-  const {
-    mutate: createBrands,
-    isPending
-  } = useMutation({
-    mutationFn: createMultiBrandsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
+  // Queries
+  const brandsQuery = useGetBrands({
+    filter: brandFilter?.fields,
+    pagination: {
+      page: brandFilter?.page || 1,
+      pageSize: brandFilter?.limit || 10
     },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created new brands.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["brands"]
-      })
-      playSoundEffect("success")
-    }
   })
 
-  const {
-    mutate: deleteBrand
-  } = useMutation({
-    mutationFn: deleteBrandFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a brand.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["brands"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Mutations
+  const createBrandsMutation = useCreateMultiBrands()
+  const deleteBrandMutation = useDeleteBrand()
+  const deleteBrandsMutation = useDeleteMultiBrands()
 
-  const {
-    mutate: deleteBrands
-  } = useMutation({
-    mutationFn: deleteMultiBrandsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete multi brands.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["brands"]
-      })
-      playSoundEffect("success")
-    }
-  })
-
-
-  if (isError && error) return <h1>ERROR: {JSON.stringify(error)}</h1>
-
-  if (!data || isLoading) return <SuspenseLoader />
+  // Extraction
+  const data = brandsQuery.try_data.ok_or_throw()
 
   function handleCreateManyBrands(buf: ArrayBuffer) {
-    createBrands(buf)
+    createBrandsMutation.mutate(buf)
   }
 
   function handleDeleteBrand(id: string) {
-    deleteBrand(id)
+    deleteBrandMutation.mutate(id)
   }
 
   function handleDeleteMultiBrands(ids: string[]) {
-    deleteBrands(ids)
+    deleteBrandsMutation.mutate(ids)
   }
+
+
+  if (!data || brandsQuery.isLoading) return <SuspenseLoader />
+
 
   return <Card>
     <BrandsListTable 
-      isLoading={isPending}
+      isLoading={brandsQuery.isLoading}
       brands={data.results} 
       count={data.count} 
       onCreateManyBrands={handleCreateManyBrands} 

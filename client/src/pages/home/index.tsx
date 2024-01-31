@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { SalesCategoryCard } from "@/components/content/sales-categories/dashboard"
-import { useStore } from "@/hooks"
 import { Avatar, Container, Grid, Typography, useTheme } from "@mui/material"
+import { useStore } from "@/hooks"
+
 import getConfig from "@/libs/getConfig"
+
+
+const appName = getConfig("appName")
 
 export default function Home() {
   const { state: {user} } = useStore()
   const theme = useTheme()
-
-  const appName = getConfig("appName")
-
-  // if (1 == 1) throw new Error("Some error from Home")
 
 
   return (

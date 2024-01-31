@@ -1,23 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { getMeProfileFn } from "@/services/authApi";
 import { Card } from "@mui/material";
 import { SuspenseLoader } from "@/components";
 import { PickupAddressListTable } from ".";
+import { useMe } from "@/hooks";
 
 
 export function PickupAddressList() {
-  const { 
-    data, 
-    isLoading,
-    isError,
-    error
-  } = useQuery({
-    queryKey: ["authUserProfile"],
-    queryFn: getMeProfileFn,
-    select: data => data.user,
+  const userQuery = useMe({
+    include: {
+      pickupAddresses: true
+    }
   })
 
-  if (isError && error) return <h1>ERROR: {error.message}</h1>
+  const user = userQuery.try_data.ok_or_throw()
+  const isLoading = userQuery.isLoading
 
   if (isLoading) return <SuspenseLoader />
 
@@ -25,8 +20,8 @@ export function PickupAddressList() {
   return <Card>
     <PickupAddressListTable
       isLoading={isLoading}
-      pickupAddresses={data?.pickupAddresses || []} 
-      count={data?.pickupAddresses?.length || 0} 
+      pickupAddresses={user?.pickupAddresses || []} 
+      count={user?.pickupAddresses?.length || 0} 
     />
   </Card>
 }

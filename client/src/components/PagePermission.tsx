@@ -1,7 +1,7 @@
-import { getMeFn } from "@/services/authApi";
-import { useQuery } from "@tanstack/react-query"
 import { Role } from "@/services/types";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { SuspenseLoader } from ".";
+import { useMe } from "@/hooks";
 
 
 interface PermissionProps {
@@ -12,20 +12,13 @@ export function PagePermission(props: PermissionProps) {
   const { allowedRoles } = props;
   const location = useLocation();
 
-  const {
-    isLoading,
-    isFetching,
-    data: user
-  } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: getMeFn,
-    retry: 1,
-    select: (data) => data.user,
-  })
+  const userQuery = useMe({})
 
-  const loading = isLoading || isFetching;
+  const user = userQuery.try_data.ok_or_throw()
 
-  if (loading) return <h1>Full Loading</h1>
+
+  if (userQuery.isLoading) return <SuspenseLoader />
+
 
   return user && allowedRoles.includes(user.role) 
     ? <Outlet /> 

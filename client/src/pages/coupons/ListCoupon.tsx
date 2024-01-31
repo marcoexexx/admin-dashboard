@@ -1,27 +1,37 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { useNavigate } from 'react-router-dom'
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
+import { MuiButton } from "@/components/ui";
+import { CouponsList } from '@/components/content/coupons';
+import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getCouponsPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import { MuiButton } from "@/components/ui";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+
 import getConfig from "@/libs/getConfig";
-import { CouponsList } from '@/components/content/coupons';
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
 
 
-export default function ListCoupon() {
-  const navigate = useNavigate()
-
+function ListCouponWrapper() {
   const isAllowedReadCoupons = usePermission({
     key: "coupon-permissions",
     actions: "read",
     queryFn: getCouponsPermissionsFn
   })
+
+  if (!isAllowedReadCoupons) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <CouponsList />
+}
+
+
+export default function ListCoupon() {
+  const navigate = useNavigate()
 
   const isAllowedCreateCoupons = usePermission({
     key: "coupon-permissions",
@@ -65,16 +75,19 @@ export default function ListCoupon() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadCoupons
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <CouponsList />
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListCouponWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }

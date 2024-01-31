@@ -1,22 +1,33 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { UsersList } from "@/components/content/users";
 import { usePermission } from "@/hooks";
 import { getUserPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+
+import ErrorBoundary from '@/components/ErrorBoundary';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
 import getConfig from "@/libs/getConfig";
 
 
 const appName = getConfig("appName")
 
-export default function ListUser() {
+
+function ListUserWrapper() {
   const isAllowedReadUser = usePermission({
     key: "user-permissions",
     actions: "read",
     queryFn: getUserPermissionsFn
   })
 
+  if (!isAllowedReadUser) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <UsersList />
+}
+
+
+export default function ListUser() {
   return (
     <>
       <Helmet>
@@ -36,15 +47,19 @@ export default function ListUser() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadUser
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <UsersList />
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListUserWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
     </>
   )
 }

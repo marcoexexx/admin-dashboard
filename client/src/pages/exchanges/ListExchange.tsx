@@ -1,27 +1,37 @@
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { useNavigate } from 'react-router-dom'
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { ExchangesList } from "@/components/content/exchanges";
+import { MuiButton } from "@/components/ui";
+import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getExchangePermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import { MuiButton } from "@/components/ui";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+
 import getConfig from "@/libs/getConfig";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { Suspense } from 'react';
 
 
 const appName = getConfig("appName")
 
 
-export default function ListExchange() {
-  const navigate = useNavigate()
-
+function ListExchangeWrapper() {
   const isAllowedReadExchange = usePermission({
     key: "exchange-permissions",
     actions: "read",
     queryFn: getExchangePermissionsFn
   })
+  
+  if (!isAllowedReadExchange) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <ExchangesList />
+}
+
+
+export default function ListExchange() {
+  const navigate = useNavigate()
 
   const isAllowedCreateExchange = usePermission({
     key: "exchange-permissions",
@@ -65,15 +75,19 @@ export default function ListExchange() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadExchange
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <ExchangesList />
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListExchangeWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
       
     </>
   )

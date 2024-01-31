@@ -3,6 +3,8 @@ import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLab
 import { Brand, Product } from "@/services/types"
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 
+import AppError, { AppErrorKind } from "@/libs/exceptions"
+
 
 const columnHeader: {
   id: string,
@@ -31,9 +33,7 @@ interface ProductRelationshipTableProps {
 export default function ProductRelationshipTable(props: ProductRelationshipTableProps) {
   const { brand, categories, salesCategories } = props
 
-
-  if (!brand) throw new Error("Product should have brand")
-
+  if (!brand) throw AppError.new(AppErrorKind.InvalidInputError, "Product should have brand")
 
   const rows = [
     { 

@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { permissionsAccessLogsHandler, permissionsAuditLogsHandler, permissionsBrandsHandler, permissionsCategoriesHandler, permissionsCouponsHandler, permissionsExchangeHandler, permissionsOrdersHandler, permissionsPickupAddressHandler, permissionsPotetialOrdersHandler, permissionsProductsHandler, permissionsRegionsHandler, permissionsSalesCategoriesHandler, permissionsTownshipsHandler, permissionsUserAddressHandler, permissionsUserHandler } from "../controllers/permission.controller";
+import { permissionsAccessLogsHandler, permissionsAuditLogsHandler, permissionsBrandsHandler, permissionsCategoriesHandler, permissionsCouponsHandler, permissionsDashboardHandler, permissionsExchangeHandler, permissionsOrdersHandler, permissionsPickupAddressHandler, permissionsPotetialOrdersHandler, permissionsProductsHandler, permissionsRegionsHandler, permissionsSalesCategoriesHandler, permissionsTownshipsHandler, permissionsUserAddressHandler, permissionsUserHandler } from "../controllers/permission.controller";
 
 const router = Router()
 
+
+router.get("/dashboard", permissionsDashboardHandler)
 
 router.get("/users", permissionsUserHandler)
 router.get("/exchanges", permissionsExchangeHandler)

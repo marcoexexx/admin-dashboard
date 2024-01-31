@@ -1,9 +1,9 @@
 import { CreateOrderInput, UpdateOrderInput } from "@/components/content/orders/forms";
 import { authApi } from "./authApi";
-import { HttpListResponse, HttpResponse, Order, OrderResponse, QueryOptionArgs } from "./types";
+import { HttpListResponse, HttpResponse, Order, OrderResponse, Pagination, QueryOptionArgs } from "./types";
 
 
-export async function getOrdersFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+export async function getOrdersFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<Order>>("/orders", {
     ...opt,
     params: {

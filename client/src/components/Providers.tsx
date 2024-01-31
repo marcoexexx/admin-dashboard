@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider } from '.';
 import { HelmetProvider } from 'react-helmet-async';
+import ErrorBoundary from './ErrorBoundary';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,11 +33,14 @@ export function Providers(props: ProvidersProps) {
         <StoreProvider>
           <HelmetProvider>
             <QueryClientProvider client={queryClient}>
-              <AuthProvider>
-                <ThemeWrapper>
-                  {children}
-                </ThemeWrapper>
-              </AuthProvider>
+
+              <ErrorBoundary>
+                <AuthProvider>
+                  <ThemeWrapper>
+                    {children}
+                  </ThemeWrapper>
+                </AuthProvider>
+              </ErrorBoundary>
 
               <ReactQueryDevtools />
             </QueryClientProvider>

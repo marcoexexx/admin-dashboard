@@ -1,9 +1,10 @@
 import { CreateUserAddressInput, UpdateUserAddressInput } from "@/components/content/user-addresses/forms";
 import { authApi } from "./authApi";
-import { Address, HttpListResponse, HttpResponse, QueryOptionArgs, UserAddressResponse } from "./types";
+import { Address, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, UserAddressResponse } from "./types";
+import { UserAddressFilter } from "@/context/userAddress";
 
 
-export async function getUserAddressesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+export async function getUserAddressesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: UserAddressFilter["fields"], pagination: Pagination, include?: UserAddressFilter["include"] }) {
   const { data } = await authApi.get<HttpListResponse<Address>>("/addresses", {
     ...opt,
     params: {
@@ -19,10 +20,13 @@ export async function getUserAddressesFn(opt: QueryOptionArgs, { filter, paginat
 }
 
 
-export async function getUserAddressFn(opt: QueryOptionArgs, { userAddressId }: { userAddressId: string | undefined }) {
+export async function getUserAddressFn(opt: QueryOptionArgs, { userAddressId, include }: { userAddressId: string | undefined, include?: UserAddressFilter["include"] }) {
   if (!userAddressId) return
   const { data } = await authApi.get<UserAddressResponse>(`/addresses/detail/${userAddressId}?include[township]=true`, {
     ...opt,
+    params: {
+      include
+    }
   })
   return data
 }

@@ -2,6 +2,21 @@ import { User } from "@/services/types"
 import { createContext, useReducer } from "react"
 import { i18n, Local } from "@/i18n"
 
+import AppError, { AppErrorKind } from "@/libs/exceptions"
+import { ProductFilter } from "./product"
+import { ExchangeFilter } from "./exchange"
+import { AccessLogFilter } from "./accessLog"
+import { AuditLogFilter } from "./auditLogs"
+import { BrandFilter } from "./brand"
+import { CategoryFilter } from "./category"
+import { UserAddressFilter } from "./userAddress"
+import { CouponFilter } from "./coupon"
+import { UserFilter } from "./user"
+import { OrderFilter } from "./order"
+
+
+// TODO: setFilter, setPagination, setInclude
+
 
 export type Store = {
   theme:
@@ -70,67 +85,18 @@ export type Store = {
   user?: User
   slidebar: boolean
   local: Local
-  accessLogFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
-  auditLogFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
-  orderFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
+  accessLogFilter?: AccessLogFilter,
+  auditLogFilter?: AuditLogFilter,
+  orderFilter?: OrderFilter,
   potentialOrderFilter?: {
     fields?: any,
     page?: number,
     limit?: number,
     mode?: "insensitive" | "default",
   },
-  userFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
-  userAddressFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
-  productFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-    include?: {
-      _count?: boolean
-      likedUsers?: boolean,
-      brand?: boolean,
-      specification?: boolean,
-      categories?: {
-        include?: {
-          category?: boolean,
-          product?: boolean,
-        }
-      },
-      salesCategory?: {
-        include?: {
-          salesCategory?: boolean,
-          product?: boolean,
-        }
-      },
-      reviews?: boolean
-    }
-  },
+  userFilter?: UserFilter,
+  userAddressFilter?: UserAddressFilter,
+  productFilter?: ProductFilter,
   salesCategoryFilter?: {
     fields?: any,
     page?: number,
@@ -140,24 +106,8 @@ export type Store = {
       _count?: boolean
     }
   },
-  categoryFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  },
-  brandFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  },
+  categoryFilter?: CategoryFilter,
+  brandFilter?: BrandFilter,
   townshipFilter?: {
     fields?: any,
     page?: number,
@@ -176,24 +126,16 @@ export type Store = {
       _count?: boolean
     }
   },
-  exchangeFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  },
-  couponFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  }
+  exchangeFilter?: ExchangeFilter,
+  couponFilter?: CouponFilter,
+  disableCheckOut: boolean
+}
+
+interface EnableCheckOutActions {
+  type: "DISABLE_CHECKOUT",
+}
+interface DisableCheckOutActions {
+  type: "ENABLE_CHECKOUT",
 }
 
 interface OrderFilterActions {
@@ -345,6 +287,9 @@ type Action =
   | ModalFormCloseActions
   | AllModalFormCloseActions
 
+  | DisableCheckOutActions
+  | EnableCheckOutActions
+
 type Dispatch = (action: Action) => void
 
 export const StoreContext = createContext<
@@ -469,7 +414,9 @@ const initialState: Store = {
       _count: false,
     },
     mode: "default"
-  }
+  },
+
+  disableCheckOut: true
 }
 
 const stateReducer = (state: Store, action: Action): Store => {
@@ -622,10 +569,24 @@ const stateReducer = (state: Store, action: Action): Store => {
       }
     }
 
+    case "DISABLE_CHECKOUT": {
+      return {
+        ...state,
+        disableCheckOut: true
+      }
+    }
+
+    case "ENABLE_CHECKOUT": {
+      return {
+        ...state,
+        disableCheckOut: false
+      }
+    }
+
     default: {
       const _: never = action
       console.warn({ message: "Unhandled action type", _ })
-      throw new Error("Unhandled action type")
+      throw AppError.new(AppErrorKind.InvalidInputError, "Unhandled action type")
     }
   }
 }

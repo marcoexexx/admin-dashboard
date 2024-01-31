@@ -2,13 +2,15 @@ import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { ProductsList } from "@/components/content/products";
-import { usePermission } from "@/hooks";
-import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { MuiButton } from "@/components/ui";
+import { usePermission } from "@/hooks";
+import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { useNavigate } from "react-router-dom";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+
 import getConfig from "@/libs/getConfig";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
@@ -68,7 +70,9 @@ export default function ListProduct() {
       ? <Container maxWidth="lg">
           <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
             <Grid item xs={12}>
-              <ProductsList />
+              <ErrorBoundary>
+                <ProductsList />
+              </ErrorBoundary>
             </Grid>
           </Grid>
         </Container>

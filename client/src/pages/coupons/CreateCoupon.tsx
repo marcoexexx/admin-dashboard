@@ -1,24 +1,39 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import { usePermission } from "@/hooks";
+import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
-import { useNavigate } from 'react-router-dom'
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
-import getConfig from "@/libs/getConfig";
-import { getCouponsPermissionsFn } from '@/services/permissionsApi';
 import { CreateCouponForm } from '@/components/content/coupons/forms';
+import { usePermission } from "@/hooks";
+import { useNavigate } from 'react-router-dom'
+import { getCouponsPermissionsFn } from '@/services/permissionsApi';
+
+import getConfig from "@/libs/getConfig";
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
 
 
 const appName = getConfig("appName")
 
-export default function CreateCoupon() {
+
+function CreateCouponWrapper() {
   const isAllowedCreateCoupon = usePermission({
     key: "coupon-permissions",
     actions: "create",
     queryFn: getCouponsPermissionsFn
   })
+
+  if (!isAllowedCreateCoupon) throw AppError.new(AppErrorKind.AccessDeniedError)
   
+  return <Card>
+      <CardContent>
+        <CreateCouponForm />
+      </CardContent>
+    </Card>
+}
+
+
+export default function CreateCoupon() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -52,20 +67,19 @@ export default function CreateCoupon() {
         </Grid>
       </PageTitle>
 
-      {isAllowedCreateCoupon
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12} md={8}>
-              <Card>
-                <CardContent>
-                  <CreateCouponForm />
-                </CardContent>
-              </Card>
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12} md={8}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <CreateCouponWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }

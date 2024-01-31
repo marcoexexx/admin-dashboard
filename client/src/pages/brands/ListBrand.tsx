@@ -1,32 +1,45 @@
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { useNavigate } from 'react-router-dom'
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { BrandsList } from "@/components/content/brands";
+import { MuiButton } from "@/components/ui";
+import { Suspense } from 'react';
+import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import { MuiButton } from "@/components/ui";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+
 import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
 
-export default function ListBrand() {
-  const navigate = useNavigate()
 
+function ListBrandWrapper() {
   const isAllowedReadBrand = usePermission({
     key: "brand-permissions",
     actions: "read",
     queryFn: getBrandPermissionsFn
   })
 
+  if (!isAllowedReadBrand) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <BrandsList />
+
+}
+
+
+export default function ListBrand() {
+  const navigate = useNavigate()
+
   const isAllowedCreateBrand = usePermission({
     key: "brand-permissions",
     actions: "create",
     queryFn: getBrandPermissionsFn
   })
+
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate("/brands/create")
@@ -63,15 +76,19 @@ export default function ListBrand() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadBrand
-      ?  <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <BrandsList />
-            </Grid>
+       <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListBrandWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
     </>
   )
 }

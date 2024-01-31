@@ -1,9 +1,11 @@
-import { useCookies } from 'react-cookie'
-import { useStore } from "@/hooks";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { getMeFn } from '@/services/authApi';
 import { SuspenseLoader } from '.';
+import { useCookies } from 'react-cookie'
+import { useMe, usePermission, useStore } from "@/hooks";
+import { useEffect } from "react";
+import { getDashboardPermissionsFn } from '@/services/permissionsApi';
+
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -14,21 +16,27 @@ export function AuthProvider(props: AuthProviderProps) {
   const { dispatch } = useStore()
   const [cookies] = useCookies(["logged_in"])
 
-  const query = useQuery({
+  const userQuery = useMe({
     enabled: !!cookies.logged_in,
-    queryKey: ["authUser"],
-    queryFn: getMeFn,
-    select: data => data.user,
   })
 
+  const user = userQuery.try_data.ok_or_throw()
+
   useEffect(() => {
-    dispatch({ type: "SET_USER", payload: query.data })
-  }, [query.isSuccess])
+    dispatch({ type: "SET_USER", payload: user })
+  }, [userQuery.isSuccess])
 
-  if (query.isLoading) return <SuspenseLoader />
+  const isAllowedReactDashboard = usePermission({
+    enabled: !!cookies.logged_in,
+    key: "dashboard-permissions",
+    queryFn: getDashboardPermissionsFn,
+    actions: "read",
+  })
 
-  // TODO: Error page
-  if (query.isError) return <h1>Environment on: {import.meta.env.MODE} Change Error: {query.error.message}</h1>
+
+  if (userQuery.isLoading) return <SuspenseLoader />
+
+  if (cookies.logged_in && !isAllowedReactDashboard) throw AppError.new(AppErrorKind.PermissionError)
 
   return children
 }

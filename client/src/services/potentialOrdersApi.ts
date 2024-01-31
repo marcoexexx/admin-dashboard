@@ -1,9 +1,9 @@
 import { CreatePotentialOrderInput, UpdatePotentialOrderInput } from "@/components/content/potential-orders/forms";
 import { authApi } from "./authApi";
-import { HttpListResponse, HttpResponse, PotentialOrder, PotentialOrderResponse, QueryOptionArgs } from "./types";
+import { HttpListResponse, HttpResponse, Pagination, PotentialOrder, PotentialOrderResponse, QueryOptionArgs } from "./types";
 
 
-export async function getPotentialOrdersFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: any, include?: any }) {
+export async function getPotentialOrdersFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
   const { data } = await authApi.get<HttpListResponse<PotentialOrder>>("/potential-orders", {
     ...opt,
     params: {

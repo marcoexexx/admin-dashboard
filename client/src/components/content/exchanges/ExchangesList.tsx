@@ -1,121 +1,51 @@
 import { Card } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { SuspenseLoader, queryClient } from "@/components";
-import { createMultiExchangesFn, deleteExchangeFn, deleteMultiExchangesFn, getExchangesFn } from "@/services/exchangesApi";
+import { SuspenseLoader } from "@/components";
 import { ExchangesListTable } from ".";
-import { playSoundEffect } from "@/libs/playSound";
+import { useStore } from "@/hooks";
+import { useCreateMultiExchanges, useDeleteExchange, useDeleteMultiExchanges, useGetExchanges } from "@/hooks/exchange";
 
 
 export function ExchangesList() {
-  const { state: {exchangeFilter}, dispatch } = useStore()
+  const { state: {exchangeFilter} } = useStore()
 
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["exchanges", { filter: exchangeFilter } ],
-    queryFn: args => getExchangesFn(args, { 
-      filter: exchangeFilter?.fields,
-      pagination: {
-        page: exchangeFilter?.page || 1,
-        pageSize: exchangeFilter?.limit || 10
-      },
-    }),
-    select: data => data
-  })
-
-  const {
-    mutate: createExchanges,
-    isPending
-  } = useMutation({
-    mutationFn: createMultiExchangesFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
+  // Queries
+  const exchangesQuery = useGetExchanges({
+    filter: exchangeFilter?.fields,
+    pagination: {
+      page: exchangeFilter?.page || 1,
+      pageSize: exchangeFilter?.limit || 10
     },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created new exchange.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["exchanges"]
-      })
-      playSoundEffect("success")
-    }
   })
 
-  const {
-    mutate: deleteExchange
-  } = useMutation({
-    mutationFn: deleteExchangeFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a exchange.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["exchanges"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Mutations
+  const createExchangesMutation = useCreateMultiExchanges()
+  const deleteExchangeMutation = useDeleteExchange()
+  const deleteExchangesMutation = useDeleteMultiExchanges()
 
-  const {
-    mutate: deleteExchanges
-  } = useMutation({
-    mutationFn: deleteMultiExchangesFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete exchanges.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["exchanges"]
-      })
-      playSoundEffect("success")
-    }
-  })
-
-  if (isError && error) return <h1>ERROR: {JSON.stringify(error)}</h1>
-
-  if (!data || isLoading) return <SuspenseLoader />
+  // Extraction
+  const data = exchangesQuery.try_data.ok_or_throw()
 
   function handleCreateManyExchanges(buf: ArrayBuffer) {
-    createExchanges(buf)
+    createExchangesMutation.mutate(buf)
   }
 
   function handleDeleteExchange(id: string) {
-    deleteExchange(id)
+    deleteExchangeMutation.mutate(id)
   }
 
   function handleDeleteMultiExchanges(ids: string[]) {
-    deleteExchanges(ids)
+    deleteExchangesMutation.mutate(ids)
   }
+
+
+  // TODO: Sekelton table loader
+  if (!data || exchangesQuery.isLoading) return <SuspenseLoader />
 
   return <Card>
     <ExchangesListTable
       exchanges={data.results} 
       count={data.count} 
-      isLoading={isPending}
+      isLoading={exchangesQuery.isLoading}
       onCreateManyExchanges={handleCreateManyExchanges} 
       onDelete={handleDeleteExchange}
       onMultiDelete={handleDeleteMultiExchanges}

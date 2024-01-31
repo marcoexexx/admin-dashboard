@@ -8,9 +8,5 @@ export const auditLogPermission: Permission<Role> = {
 
   updateAllowedRoles: () => [],
 
-  deleteAllowedRoles: () => ["User", "Shopowner", "Admin"],
+  deleteAllowedRoles: () => ["User"],
 }
-
-
-
-

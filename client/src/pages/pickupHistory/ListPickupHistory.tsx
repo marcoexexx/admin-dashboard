@@ -1,22 +1,33 @@
-import getConfig from "@/libs/getConfig";
+import { Suspense } from "react";
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import { PickupAddressList } from "@/components/content/pickupAddressHistory";
 import { usePermission } from "@/hooks";
 import { getPickupAddressPermissionsFn } from "@/services/permissionsApi";
-import { PickupAddressList } from "@/components/content/pickupAddressHistory";
+
+import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from "@/libs/exceptions";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 
 const appName = getConfig("appName")
 
-export default function ListPickupHistory() {
+
+function ListPickupHistoryWrapper() {
   const isAllowedReadPickupAddress = usePermission({
     key: "pickup-address-permissions",
     actions: "read",
     queryFn: getPickupAddressPermissionsFn
   })
 
+  if (!isAllowedReadPickupAddress) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <PickupAddressList />
+}
+
+
+export default function ListPickupHistory() {
 
   return (
     <>
@@ -37,15 +48,19 @@ export default function ListPickupHistory() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadPickupAddress
-      ?  <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <PickupAddressList />
-            </Grid>
+       <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListPickupHistoryWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
     </>
   )
 }

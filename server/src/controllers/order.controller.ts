@@ -2,7 +2,7 @@ import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { createEventAction } from "../utils/auditLog";
-import { EventActionType, Resource } from "@prisma/client";
+import { EventActionType, Resource, Role } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
@@ -176,11 +176,17 @@ export async function deleteOrderHandler(
 ) {
   try {
     const { orderId } = req.params
+
+    // @ts-ignore  for mocha testing
+    const user = req.user || undefined
     
     const [_deletedOrderItems, _deletedPickupAddress, order] = await db.$transaction([
       db.orderItem.deleteMany({
         where: {
-          orderId
+          order: {
+            id: orderId,
+            userId: user.role === Role.Admin ? undefined : user.id
+          },
         }
       }),
 
@@ -188,7 +194,8 @@ export async function deleteOrderHandler(
         where: {
           orders: {
             some: {
-              id: orderId
+              id: orderId,
+              userId: user.role === Role.Admin ? undefined : user.id
             }
           }
         }
@@ -196,7 +203,8 @@ export async function deleteOrderHandler(
 
       db.order.delete({
         where: {
-          id: orderId
+          id: orderId,
+          userId: user.role === Role.Admin ? undefined : user.id
         }
       })
     ])
@@ -226,11 +234,17 @@ export async function deleteMultiOrdersHandler(
   try {
     const { orderIds } = req.body
 
+    // @ts-ignore  for mocha testing
+    const user = req.user || undefined
+
     await db.$transaction([
       db.orderItem.deleteMany({
         where: {
-          orderId: {
-            in: orderIds
+          order: {
+            id: {
+              in: orderIds,
+            },
+            userId: user.role === Role.Admin ? undefined : user.id
           }
         }
       }),
@@ -241,7 +255,8 @@ export async function deleteMultiOrdersHandler(
             some: {
               id: {
                 in: orderIds
-              }
+              },
+              userId: user.role === Role.Admin ? undefined : user.id
             }
           }
         }
@@ -251,7 +266,8 @@ export async function deleteMultiOrdersHandler(
         where: {
           id: {
             in: orderIds
-          }
+          },
+          userId: user.role === Role.Admin ? undefined : user.id
         }
       })
     ])

@@ -3,16 +3,12 @@ import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { MuiButton } from "@/components/ui";
 import { DatePickerField } from "@/components/input-fields";
-import { getExchangeFn, updateExchangeFn } from "@/services/exchangesApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate, useParams } from "react-router-dom";
-import { queryClient } from "@/components";
+import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { priceUnit } from "../../products/forms";
-import { playSoundEffect } from "@/libs/playSound";
+import { useGetExchange, useUpdateExchange } from "@/hooks/exchange";
 
 
 const updateExchangeSchema = object({
@@ -26,65 +22,37 @@ const updateExchangeSchema = object({
 export type UpdateExchangeInput = z.infer<typeof updateExchangeSchema>
 
 export function UpdateExchangeForm() {
-  const { state: {modalForm}, dispatch } = useStore()
-
-  const navigate = useNavigate()
   const { exchangeId } = useParams()
-  const from = "/exchanges"
 
-  const { 
-    data: exchange,
-    isSuccess: isSuccessFetchExchange,
-    fetchStatus: fetchStatusExchange
-  } = useQuery({
-    enabled: !!exchangeId,
-    queryKey: ["exchanges", { id: exchangeId }],
-    queryFn: args => getExchangeFn(args, { exchangeId }),
-    select: data => data?.exchange
+  // Queries
+  const exchangeQuery = useGetExchange({
+    id: exchangeId,
   })
 
-  const {
-    mutate: updateExchange,
-  } = useMutation({
-    mutationFn: updateExchangeFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success updated a exchange.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["exchanges"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  // Mutations
+  const updateExchangeMutation = useUpdateExchange()
+
+  // Extraction
+  const exchange = exchangeQuery.try_data.ok_or_throw()
+  const exchangeFetchStatus = exchangeQuery.fetchStatus
 
   const methods = useForm<UpdateExchangeInput>({
     resolver: zodResolver(updateExchangeSchema),
   })
 
   useEffect(() => {
-    if (isSuccessFetchExchange && exchange && fetchStatusExchange === "idle") {
+    if (exchangeQuery.isSuccess && exchange && exchangeFetchStatus === "idle") {
       methods.setValue("date", dayjs(exchange.date))
       methods.setValue("to", exchange.to)
       methods.setValue("from", exchange.from)
       methods.setValue("rate", exchange.rate)
     }
-  }, [isSuccessFetchExchange, fetchStatusExchange])
+  }, [exchangeQuery.isSuccess, exchangeFetchStatus])
 
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<UpdateExchangeInput> = (value) => {
-    if (exchangeId) updateExchange({ exchangeId, exchange: value })
+    if (exchangeId) updateExchangeMutation.mutate({ exchangeId, exchange: value })
   }
 
   return (
@@ -146,7 +114,7 @@ export function UpdateExchangeForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit">Save</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={updateExchangeMutation.isPending}>Save</MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

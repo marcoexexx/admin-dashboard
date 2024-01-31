@@ -1,5 +1,14 @@
 import { queryClient } from "@/components";
-import { getAccessLogsPermissionsFn, getAuditLogsPermissionsFn, getBrandPermissionsFn, getCategoryPermissionsFn, getCouponsPermissionsFn, getExchangePermissionsFn, getOrderPermissionsFn, getPickupAddressPermissionsFn, getPotentialOrderPermissionsFn, getProductPermissionsFn, getRegionPermissionsFn, getSalesCategoryPermissionsFn, getTownshipPermissionsFn, getUserAddressPermissionsFn, getUserPermissionsFn } from "@/services/permissionsApi";
+import { getAccessLogsPermissionsFn, getAuditLogsPermissionsFn, getBrandPermissionsFn, getCategoryPermissionsFn, getCouponsPermissionsFn, getDashboardPermissionsFn, getExchangePermissionsFn, getOrderPermissionsFn, getPickupAddressPermissionsFn, getPotentialOrderPermissionsFn, getProductPermissionsFn, getRegionPermissionsFn, getSalesCategoryPermissionsFn, getTownshipPermissionsFn, getUserAddressPermissionsFn, getUserPermissionsFn } from "@/services/permissionsApi";
+
+export async function dashboardPermissionsLoader() {
+  return queryClient.fetchQuery({
+    queryKey: ["dashboard-permissions"],
+    queryFn: getDashboardPermissionsFn,
+
+    staleTime: 1000 * 60 * 60 * 60 * 24
+  })
+}
 
 export async function userPermissionsLoader() {
   return queryClient.fetchQuery({

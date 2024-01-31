@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { getMeHandler, getMeProfileHandler, uploadImageCoverHandler, uploadImageProfileHandler } from "../controllers/user.controller";
+import { getMeHandler, uploadImageCoverHandler, uploadImageProfileHandler } from "../controllers/user.controller";
 import { resizeProfileImage, uploadProfileImage } from "../upload/singleUpload";
 import { validate } from "../middleware/validate";
 import { uploadImageProfileSchema } from "../schemas/user.schema";
@@ -15,16 +15,10 @@ router.route("/")
   .get(getMeHandler)
 
 
-// TODO: remove this
-router.route("/profile")
-  .get(getMeProfileHandler)
-
-
 // router
 //   .route("/change-password")
 
 
-// TODO: validation
 router.route("/upload/profile-picture")
   .post(
     uploadProfileImage,

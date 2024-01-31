@@ -1,32 +1,50 @@
 import { PlaceholderManagementUserProfile, queryClient } from "@/components"
 import { ProfileCover, RecentActivity } from "@/components/content/me"
-import { getMeProfileFn } from "@/services/authApi"
 import { Container, Grid } from "@mui/material"
-import { useQuery } from "@tanstack/react-query"
+import { useMe } from "@/hooks"
+import { getMeFn } from "@/services/authApi"
 
 
 export async function meProfileLoader() {
   return await queryClient.fetchQuery({
     queryKey: ["authUserProfile"],
-    queryFn: getMeProfileFn,
+    queryFn: (args) => getMeFn(args, {
+      include: {
+        _count: true,
+        orders: true,
+        favorites: true,
+        addresses: true,
+        pickupAddresses: {
+          include: {
+            orders: true
+          }
+        },
+        reviews: true,
+      }
+    }),
   })
 }
 
 export default function ManagementUserProfile() {
-  const { 
-    data: user, 
-    isLoading: isUserLoading,
-    isError: isUserError,
-    error: userError
-  } = useQuery({
-    queryKey: ["authUserProfile"],
-    queryFn: getMeProfileFn,
-    select: data => data.user,
+  const userQuery = useMe({
+    include: {
+      _count: true,
+      orders: true,
+      favorites: true,
+      addresses: true,
+      pickupAddresses: {
+        include: {
+          orders: true
+        }
+      },
+      reviews: true,
+    }
   })
 
-  if (isUserError && userError) return <h1>{userError.message}</h1>
+  const user = userQuery.try_data.ok_or_throw()
 
-  if (!user || isUserLoading) return <PlaceholderManagementUserProfile />
+
+  if (!user || userQuery.isLoading) return <PlaceholderManagementUserProfile />
 
 
   return (

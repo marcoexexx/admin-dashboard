@@ -1,11 +1,14 @@
-import { QueryFunction, useQuery } from "@tanstack/react-query"
-import { useStore } from "."
+import { QueryFunction, useSuspenseQuery } from "@tanstack/react-query"
 import { PermissionsResponse } from "@/services/types"
+import { useMe } from "."
+
+import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 
 type ExtractPerm<T extends string> = T extends `${infer P}-permissions` ? P : never
 
 type PermissionKey = 
+  | "dashboard-permissions"
   | "user-permissions"
   | "exchange-permissions"
   | "category-permissions"
@@ -26,31 +29,31 @@ type PermissionKey =
 interface Args {
   key: PermissionKey,
   actions: "create" | "read" | "update" | "delete"
+  enabled?: boolean
   queryFn?: QueryFunction<PermissionsResponse, PermissionKey[], never> | undefined
 }
 
-export function usePermission({key, actions, queryFn}: Args) {
-  const { state: {user} } = useStore()
-
-  const role = user?.role || "*"
-  const resource = key.split("-")[0] as ExtractPerm<PermissionKey>
-
-  const {
-    data: permissions,
-    isError,
-    isSuccess,
-    error
-  } = useQuery({
+export function usePermission({key, actions, enabled, queryFn}: Args) {
+  const userQuery = useMe({
+    enabled
+  })
+  const permissionsQuery = useSuspenseQuery({
     queryKey: [key],
     queryFn,
     select: (data: PermissionsResponse) => data
   })
 
-  if (permissions?.label !== resource && !isSuccess) return false
-  if ((isError && error)) {
-    console.error(error.message)
-    return false
-  }
+  // Extraction
+  const user = userQuery.try_data.ok_or_throw()
+  const permissions = permissionsQuery.data
+
+  if (permissionsQuery.isError && permissionsQuery.error) throw AppError.new(AppErrorKind.ApiError, permissionsQuery.error.message)
+
+  const role = user?.role || "*"
+  const resource = key.split("-")[0] as ExtractPerm<PermissionKey>
+
+
+  if (permissions?.label !== resource && !userQuery.isSuccess) return false
 
   if (actions === "create" 
     && (permissions?.permissions?.createAllowedRoles?.includes(role) || permissions?.permissions?.createAllowedRoles?.includes("*"))

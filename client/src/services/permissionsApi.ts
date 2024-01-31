@@ -2,6 +2,14 @@ import { PermissionsResponse, QueryOptionArgs } from "./types"
 import { authApi } from "./authApi"
 
 
+export async function getDashboardPermissionsFn(opt: QueryOptionArgs) {
+  const { data } = await authApi.get<PermissionsResponse>("/permissions/dashboard", {
+    ...opt,
+  })
+  return data
+}
+
+
 export async function getUserPermissionsFn(opt: QueryOptionArgs) {
   const { data } = await authApi.get<PermissionsResponse>("/permissions/users", {
     ...opt,

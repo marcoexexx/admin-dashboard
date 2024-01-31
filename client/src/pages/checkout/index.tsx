@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { CheckoutForm } from './CheckoutForm';
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 
 // TODO: Update pickup form :: feature
@@ -33,7 +34,11 @@ export default function Checkout() {
       <Container maxWidth="lg">
         <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
           <Grid item xs={12}>
-            <CheckoutForm />
+
+            <ErrorBoundary>
+              <CheckoutForm />
+            </ErrorBoundary>
+
           </Grid>
         </Grid>
       </Container>

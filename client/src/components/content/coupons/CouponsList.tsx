@@ -1,124 +1,54 @@
 import { Card } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { SuspenseLoader, queryClient } from "@/components";
+import { SuspenseLoader } from "@/components";
 import { CouponsListTable } from ".";
-import { createMultiCouponsFn, deleteCouponFn, deleteMultiCouponsFn, getCouponsFn } from "@/services/couponsApi";
-import { playSoundEffect } from "@/libs/playSound";
+import { useStore } from "@/hooks";
+import { useCreateMultiCoupons, useDeleteCoupon, useDeleteMultiCoupons, useGetCoupons } from "@/hooks/coupon";
 
 
 export function CouponsList() {
-  const { state: {couponFilter}, dispatch } = useStore()
+  const { state: {couponFilter} } = useStore()
 
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["coupons", { filter: couponFilter } ],
-    queryFn: args => getCouponsFn(args, { 
-      filter: couponFilter?.fields,
-      pagination: {
-        page: couponFilter?.page || 1,
-        pageSize: couponFilter?.limit || 10
-      },
-      include: {
-        product: true
-      }
-    }),
-    select: data => data
-  })
-
-  const {
-    mutate: createCoupons,
-    isPending
-  } = useMutation({
-    mutationFn: createMultiCouponsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
+  // Queries
+  const couponsQuery = useGetCoupons({
+    filter: couponFilter?.fields,
+    pagination: {
+      page: couponFilter?.page || 1,
+      pageSize: couponFilter?.limit || 10
     },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created new coupon.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["coupons"]
-      })
-      playSoundEffect("success")
+    include: {
+      product: true
     }
   })
 
-  const {
-    mutate: deleteCoupon
-  } = useMutation({
-    mutationFn: deleteCouponFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a coupon.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["coupons"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Mutations
+  const createCouponsMutation = useCreateMultiCoupons()
+  const deleteCouponMutation = useDeleteCoupon()
+  const deleteCouponsMutation = useDeleteMultiCoupons()
 
-  const {
-    mutate: deleteCoupons
-  } = useMutation({
-    mutationFn: deleteMultiCouponsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete coupons.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["coupons"]
-      })
-      playSoundEffect("success")
-    }
-  })
-
-  if (isError && error) return <h1>ERROR: {error.message}</h1>
-
-  if (!data || isLoading) return <SuspenseLoader />
+  // Extraction
+  const data = couponsQuery.try_data.ok_or_throw()
 
   function handleCreateManyCoupons(buf: ArrayBuffer) {
-    createCoupons(buf)
+    createCouponsMutation.mutate(buf)
   }
 
   function handleDeleteCoupon(id: string) {
-    deleteCoupon(id)
+    deleteCouponMutation.mutate(id)
   }
 
   function handleDeleteMultiCoupons(ids: string[]) {
-    deleteCoupons(ids)
+    deleteCouponsMutation.mutate(ids)
   }
+
+
+  // TODO: Skeleton table loader
+  if (!data || couponsQuery.isLoading) return <SuspenseLoader />
 
   return <Card>
     <CouponsListTable
       coupons={data.results} 
       count={data.count} 
-      isLoading={isPending}
+      isLoading={couponsQuery.isLoading}
       onCreateManyCoupons={handleCreateManyCoupons} 
       onDelete={handleDeleteCoupon}
       onMultiDelete={handleDeleteMultiCoupons}

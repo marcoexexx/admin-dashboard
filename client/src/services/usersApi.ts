@@ -1,20 +1,23 @@
 import { authApi } from "./authApi";
 import { UploadProfilePictureInput } from "@/components/image-uploader";
-import { HttpListResponse, QueryOptionArgs, Role, User, UserResponse } from "./types";
+import { HttpListResponse, Pagination, QueryOptionArgs, Role, User, UserResponse } from "./types";
+import { UserFilter } from "@/context/user";
 
 
-export async function getUsersFn(opt: QueryOptionArgs, { filter, pagination }: { filter: any, pagination: any }) {
+export async function getUsersFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: UserFilter["fields"], pagination: Pagination, include?: UserFilter["include"] }) {
   const { data } = await authApi.get<HttpListResponse<User>>("/users", {
     ...opt,
     params: {
       filter,
-      pagination
+      pagination,
+      include
     },
   })
   return data
 }
 
 
+// TODO: remove
 export async function getUserProfileFn(opt: QueryOptionArgs, { username }: { username: string | undefined }) {
   if (!username) return
   const { data } = await authApi.get<UserResponse>(`/users/profile/${username}`, {
@@ -24,10 +27,13 @@ export async function getUserProfileFn(opt: QueryOptionArgs, { username }: { use
 }
 
 
-export async function getUserFn(opt: QueryOptionArgs, { userId }: { userId: string | undefined }) {
+export async function getUserFn(opt: QueryOptionArgs, { userId, include }: { userId: string | undefined, include?: UserFilter["include"] }) {
   if (!userId) return
   const { data } = await authApi.get<UserResponse>(`/users/detail/${userId}`, {
     ...opt,
+    params: {
+      include
+    }
   })
   return data
 }

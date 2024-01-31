@@ -1,6 +1,10 @@
-import { MuiButton } from "@/components/ui"
 import { Box, Container, Typography, styled } from "@mui/material"
-import { useNavigate } from "react-router-dom"
+import { MuiButton } from "@/components/ui"
+import { queryClient } from "@/components"
+import { useStore } from "@/hooks"
+import { logoutUserFn } from "@/services/authApi"
+import { useMutation } from "@tanstack/react-query"
+
 
 const MainContent = styled(Box)(() => ({
   height: "100%",
@@ -12,10 +16,25 @@ const MainContent = styled(Box)(() => ({
 }))
 
 export default function Unauthorized() {
-  const navigate = useNavigate()
+  const { dispatch } = useStore()
 
-  const handleGoHome = (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate("/home")
+  const { mutate: logout, isPending } = useMutation({
+    mutationFn: logoutUserFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["authUser"]
+      })
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: "Success logout.",
+        severity: "success"
+      } })
+      window.location.href = "/auth/login"
+    }
+  })
+
+  const handleLogout = (_: React.MouseEvent<HTMLButtonElement>) => {
+    dispatch({ type: "SET_USER", payload: undefined })
+    logout()
   }
 
   return (
@@ -33,9 +52,11 @@ export default function Unauthorized() {
       </Container>
 
       <MuiButton
-        onClick={handleGoHome}
+        variant="contained"
+        onClick={handleLogout}
+        loading={isPending}
       >
-        Go home
+        Sign Out
       </MuiButton>
     </MainContent>
   )

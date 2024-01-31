@@ -1,15 +1,12 @@
 import { Box, Grid, TextField } from "@mui/material";
+import { MuiButton } from "@/components/ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { createCategoryFn } from "@/services/categoryApi";
-import { queryClient } from "@/components";
-import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
-import { playSoundEffect } from "@/libs/playSound";
+import { useCreateCategory } from "@/hooks/category";
+
 
 const createCategorySchema = object({
   name: string({ required_error: "Category name is required" })
@@ -19,35 +16,12 @@ const createCategorySchema = object({
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>
 
 export function CreateCategoryForm() {
-  const { state: {modalForm}, dispatch } = useStore()
+  const { dispatch } = useStore()
 
-  const navigate = useNavigate()
-  const from = "/categories"
 
-  const {
-    mutate: createCategory,
-  } = useMutation({
-    mutationFn: createCategoryFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new category.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["categories"]
-      })
-      playSoundEffect("success")
-    },
-    onError: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed created a new category.",
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  // Mutations
+  const createCategoryMutation = useCreateCategory()
+
 
   const methods = useForm<CreateCategoryInput>({
     resolver: zodResolver(createCategorySchema)
@@ -60,7 +34,7 @@ export function CreateCategoryForm() {
   }, [setFocus])
 
   const onSubmit: SubmitHandler<CreateCategoryInput> = (value) => {
-    createCategory(value)
+    createCategoryMutation.mutate(value)
     dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
   }
 
@@ -74,7 +48,7 @@ export function CreateCategoryForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit">Create</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={createCategoryMutation.isPending}>Create</MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

@@ -3,14 +3,11 @@ import cryptoRandomString from 'crypto-random-string';
 
 import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { queryClient } from "@/components";
 import { useLocalStorage, useStore } from "@/hooks";
-import { playSoundEffect } from "@/libs/playSound";
-import { createPotentialOrderFn, deletePotentialOrderFn } from "@/services/potentialOrdersApi";
-import { getUserAddressFn } from "@/services/userAddressApi";
-import { createOrderFn } from "@/services/orderApi";
-import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, stepConnectorClasses, styled, FormGroup, FormControlLabel, Alert, Hidden, Divider } from "@mui/material"
+import { useGetUserAddress } from "@/hooks/userAddress";
+import { useCreatePotentialOrder, useDeletePotentialOrder } from "@/hooks/potentialOrder";
+import { useCreateOrder } from "@/hooks/order";
+import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, FormGroup, FormControlLabel, Alert, Hidden, Divider, stepConnectorClasses, styled } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import { OrderSummary } from "./OrderSummary";
@@ -23,6 +20,7 @@ import { PaymentMethodStep } from "./PaymentMethod";
 import { CreatePotentialOrderInput } from "@/components/content/potential-orders/forms";
 import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
 
+import ErrorBoundary from "@/components/ErrorBoundary";
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
 
@@ -75,7 +73,6 @@ const QontoStepIconRoot = styled('div')<{ ownerState: { active?: boolean } }>(
 function QontoStepIcon(props: StepIconProps) {
   const { active, completed, className } = props;
 
-
   return (
     <QontoStepIconRoot ownerState={{ active }} className={className}>
       {completed ? (
@@ -119,80 +116,6 @@ export function CheckoutForm() {
   const values = get<CreateOrderInput>("PICKUP_FORM")
 
 
-  const {
-    mutate: deletePotentialOrder,
-    isPending: isPendingDeletePotentialOrder,
-    isSuccess: isSuccessDeletePotentialOrder
-  } = useMutation({
-    mutationFn: deletePotentialOrderFn,
-    onSuccess: () => {},
-    onError: () => {},
-  })
-
-
-  const {
-    mutate: createOrder,
-    isPending: isPendingCreateOrder,
-    isSuccess: isSuccessCreateOrder
-  } = useMutation({
-    mutationFn: createOrderFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new Order.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["orders"]
-      })
-      queryClient.invalidateQueries({
-        queryKey: ["products"]
-      })
-      playSoundEffect("success")
-      set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1)
-      // Remove potential order
-      const createdPotentialOrderId = getValues("createdPotentialOrderId")
-      if (createdPotentialOrderId) deletePotentialOrder(createdPotentialOrderId)
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
-
-  const {
-    mutate: createPotentialOrder,
-    isPending: isPendingCreatePotentialOrder,
-  } = useMutation({
-    mutationFn: createPotentialOrderFn,
-    onSuccess: (response) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created or updated a new Potential order.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["potential-orders"]
-      })
-      playSoundEffect("success")
-      setValue("createdPotentialOrderId", response.potentialOrder.id)
-      setValue("pickupAddressId", response.potentialOrder.pickupAddressId || undefined)
-      setActiveStepIdx(prev => prev += 1)
-      set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1)
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err?.response?.data?.error?.map((err: any) => err?.message)}::${err?.response?.data?.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
-
-
   const methods = useForm<CreateOrderInput>({
     resolver: zodResolver(createOrderSchema),
     reValidateMode: "onChange",
@@ -200,18 +123,44 @@ export function CheckoutForm() {
 
   const { getValues, handleSubmit, setValue, watch, formState: {errors} } = methods
 
-  const errorMessage = `Invalid input: ${Object.keys(errors)} errors found!`
-
-
-  const {
-    data: deliveryFee,
-    isSuccess: isSuccessDeliveryFee,
-  } = useQuery({
-    enabled: !!getValues("deliveryAddressId"),
-    queryKey: ["user-addresses", { id: getValues("deliveryAddressId") } ],
-    queryFn: args => getUserAddressFn(args, { userAddressId: deliveryAddressId }),
-    select: data => data?.userAddress
+  // Queries
+  const deliveryFeeQuery = useGetUserAddress({
+    id: getValues("deliveryAddressId")
   })
+
+  // Mutations
+  const deletePotentialOrderMutation = useDeletePotentialOrder()
+  const createOrderMutation = useCreateOrder()
+  const createPotentialOrderMutation = useCreatePotentialOrder()
+
+  // Extraction
+  const errorMessage = `Invalid input: ${Object.keys(errors)} errors found!`
+  const deliveryFee = deliveryFeeQuery.try_data.ok_or_throw()?.userAddress
+
+
+  // After creating the order
+  useEffect(() => {
+    if (createOrderMutation.isSuccess) {
+      set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1)
+      // Remove potential order
+      const createdPotentialOrderId = getValues("createdPotentialOrderId")
+      console.log("Delete potential:", createdPotentialOrderId)
+      if (createdPotentialOrderId) deletePotentialOrderMutation.mutate(createdPotentialOrderId)
+    }
+  }, [createOrderMutation.isSuccess])
+
+
+  // After creating the potential order
+  useEffect(() => {
+    const createdPotentialOrder = createPotentialOrderMutation.try_data.ok_or_throw()
+
+    if (createPotentialOrderMutation.isSuccess && createdPotentialOrder) {
+      setValue("createdPotentialOrderId", createdPotentialOrder.potentialOrder.id)
+      setValue("pickupAddressId", createdPotentialOrder.potentialOrder.pickupAddressId || undefined)
+      setActiveStepIdx(2)
+      set("CHECKOUT_FORM_ACTIVE_STEP", 2)
+    }
+  }, [createPotentialOrderMutation.isSuccess])
 
 
   const totalAmount = useMemo(() => {
@@ -256,16 +205,16 @@ export function CheckoutForm() {
     const totalPrice = fees + totalAmount
 
     setValue("totalPrice", totalPrice)
-  }, [isSuccessDeliveryFee, deliveryFee, totalAmount])
+  }, [deliveryFeeQuery.isSuccess, deliveryFee, totalAmount])
 
   // Go final step
   useEffect(() => {
-    if (isConfirmed && isSuccessCreateOrder && isSuccessDeletePotentialOrder) setActiveStepIdx(prev => prev += 1)
-  }, [isConfirmed, isSuccessCreateOrder, isSuccessDeletePotentialOrder])
+    if (isConfirmed && createOrderMutation.isSuccess && deletePotentialOrderMutation.isSuccess) setActiveStepIdx(prev => prev += 1)
+  }, [isConfirmed, createOrderMutation.isSuccess, deletePotentialOrderMutation.isSuccess])
 
 
   const onSubmit: SubmitHandler<CreateOrderInput> = (value) => {
-    createOrder(value)
+    createOrderMutation.mutate(value)
   }
 
   const checkValidCurrentStepForm = (idx: number) => {
@@ -303,14 +252,13 @@ export function CheckoutForm() {
         addressType: value.addressType
       }
 
-      if (deliveryFee && deliveryFee.township) console.log("deli", totalAmount + deliveryFee.township.fees)
       if (deliveryFee && deliveryFee.township) payload.totalPrice = deliveryFee.township.fees + totalAmount
 
       // check address type and add their address data
       if (value.addressType === "Delivery") payload.deliveryAddressId = value.deliveryAddressId
       else if (value.addressType === "Pickup") payload.pickupAddress = value.pickupAddress
 
-      createPotentialOrder(payload)
+      createPotentialOrderMutation.mutate(payload)
     }
 
     if (checkValidCurrentStepForm(activeStepIdx) && activeStepIdx !== 1) {
@@ -333,8 +281,6 @@ export function CheckoutForm() {
   const isLastStep = activeStepIdx == steps.length - 1
 
   const handleOnCloseModalForm = () => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-
-  const deliveryAddressId = getValues("deliveryAddressId")
 
   const handleGoHome = () => {
     remove("PICKUP_FORM")
@@ -362,7 +308,9 @@ export function CheckoutForm() {
 
       <Hidden lgUp>
         <Grid item xs={12}>
-          <OrderSummary deliveryFee={deliveryFee?.township?.fees} orderItems={cartItems} />
+          <ErrorBoundary>
+            <OrderSummary deliveryFee={deliveryFee?.township?.fees} orderItems={cartItems} />
+          </ErrorBoundary>
         </Grid>
 
         <Grid item xs={12}>
@@ -373,37 +321,41 @@ export function CheckoutForm() {
       <Grid item md={12} lg={7}>
         {activeStepIdx === steps.length
         ? <MuiButton onClick={handleGoHome}>Home</MuiButton>
-        : <FormProvider  {...methods}>
-            <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-              <RenderStepper activeStepIdx={activeStepIdx} />
+        : <ErrorBoundary> 
+            <FormProvider  {...methods}>
+              <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+                <RenderStepper activeStepIdx={activeStepIdx} />
 
-              {isLastStep 
-                ? <FormGroup sx={{ p: 1 }}>
-                  <FormControlLabel 
-                    control={<Checkbox value={isConfirmed} onChange={handleConfirmOrder} />}
-                    label={<Typography>I have read and agreed to the website <Link component={LinkRouter} to="#temas">teams and conditions</Link>.</Typography>} />
-                </FormGroup>
+                {isLastStep 
+                  ? <FormGroup sx={{ p: 1 }}>
+                    <FormControlLabel 
+                      control={<Checkbox value={isConfirmed} onChange={handleConfirmOrder} />}
+                      label={<Typography>I have read and agreed to the website <Link component={LinkRouter} to="#temas">teams and conditions</Link>.</Typography>} />
+                  </FormGroup>
+                  : null}
+
+                {Object.keys(errors).length
+                ? <Alert severity="error">{errorMessage}</Alert>
                 : null}
 
-              {Object.keys(errors).length
-              ? <Alert severity="error">{errorMessage}</Alert>
-              : null}
-
-              <Box mt={2} display="flex" flexDirection="row" alignItems="center" justifyContent="flex-start" gap={1}>
-                <MuiButton disabled={activeStepIdx === 0} onClick={handleBackStep} variant="text">
-                  Back
-                </MuiButton>
-                {isLastStep 
-                  ? <MuiButton onClick={handleNextStep} loading={isPendingCreateOrder && isPendingDeletePotentialOrder} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton> 
-                  : <MuiButton onClick={handleNextStep} type={"button"} loading={isPendingCreatePotentialOrder} variant="outlined">Continue</MuiButton>}
+                <Box mt={2} display="flex" flexDirection="row" alignItems="center" justifyContent="flex-start" gap={1}>
+                  <MuiButton disabled={activeStepIdx === 0} onClick={handleBackStep} variant="text">
+                    Back
+                  </MuiButton>
+                  {isLastStep 
+                    ? <MuiButton onClick={handleNextStep} loading={createOrderMutation.isPending || deletePotentialOrderMutation.isPending} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton> 
+                    : <MuiButton onClick={handleNextStep} type={"button"} loading={createPotentialOrderMutation.isPending} variant="outlined">Continue</MuiButton>}
+                </Box>
               </Box>
-            </Box>
-          </FormProvider>}
+            </FormProvider>
+          </ErrorBoundary>}
       </Grid>
 
       <Hidden lgDown>
         <Grid item lg={4.7}>
-          <OrderSummary deliveryFee={deliveryFee?.township?.fees} orderItems={cartItems} />
+          <ErrorBoundary>
+            <OrderSummary deliveryFee={deliveryFee?.township?.fees} orderItems={cartItems} />
+          </ErrorBoundary>
         </Grid>
       </Hidden>
 

@@ -1,163 +1,66 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { createMultiProductsFn, deleteMultiProductsFn, deleteProductFn, getProductsFn, updateProductFn } from "@/services/productsApi";
-import { getMeFn } from "@/services/authApi";
-import { Card } from "@mui/material";
-import { SuspenseLoader, queryClient } from "@/components";
-import { ProductsListTable } from ".";
+import { useStore, useMe } from "@/hooks";
+import { useCreateMultiProducts, useDeleteMultiProducts, useDeleteProduct, useGetProducts, useUpdateProduct } from "@/hooks/product";
 
+import { Card } from "@mui/material";
+import { ProductsListTable } from ".";
 import { ProductStatus } from "./forms";
-import { Product, UserResponse } from "@/services/types";
-import { playSoundEffect } from "@/libs/playSound";
+import { Product } from "@/services/types";
+import { SuspenseLoader } from "@/components";
 
 
 export function ProductsList() {
-  const { state: {productFilter}, dispatch } = useStore()
+  const { state: {productFilter} } = useStore()
 
-  const { data: me, isError: isMeError, isLoading: isMeLoading, error: meError } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: getMeFn,
-    select: (data: UserResponse) => data.user,
-  })
-
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["products", { filter: productFilter } ],
-    queryFn: args => getProductsFn(args, { 
-      filter: productFilter?.fields,
-      pagination: {
-        page: productFilter?.page || 1,
-        pageSize: productFilter?.limit || 10
+  // Queries
+  const meQuery = useMe({})
+  const productsQuery = useGetProducts({ 
+    filter: productFilter?.fields, 
+    pagination: {
+      page: productFilter?.fields?.page || 1,
+      pageSize: productFilter?.fields?.limit || 10
+    },
+    include: {
+      specification: true,
+      brand: true,
+      categories: {
+        include: {
+          category: true,
+        }
       },
-      include: {
-        specification: true,
-        brand: true,
-        categories: {
-          include: {
-            category: true,
-          }
-        },
-        salesCategory: {
-          include: {
-            salesCategory: true
-          }
-        },
-        creator: true
-      }
-    }),
-    select: data => data
-  })
-
-  const {
-    mutate: createProducts,
-    isPending,
-  } = useMutation({
-    mutationFn: createMultiProductsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created new products.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["products"]
-      })
-      playSoundEffect("success")
+      salesCategory: {
+        include: {
+          salesCategory: true
+        }
+      },
+      creator: true
     }
   })
 
-  const {
-    mutate: deleteProduct
-  } = useMutation({
-    mutationFn: deleteProductFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: err.response.data.status === 403 ? "warning" : "error"
-      } })
-      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a product.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["products"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Mutations
+  const createProductsMutation = useCreateMultiProducts()
+  const deleteProductMutation = useDeleteProduct()
+  const deleteProductsMutation = useDeleteMultiProducts()
+  const statusChangeProductMutation = useUpdateProduct()
 
-  const {
-    mutate: deleteProducts
-  } = useMutation({
-    mutationFn: deleteMultiProductsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: err.response.data.status === 403 ? "warning" : "error"
-      } })
-      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete products.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["products"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Extraction
+  const me = meQuery.try_data.ok_or_throw()
+  const data = productsQuery.try_data.ok_or_throw()
 
-  const {
-    mutate: statusChangeProduct,
-  } = useMutation({
-    mutationFn: updateProductFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: err.response.data.status === 403 ? "warning" : "error"
-      } })
-      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success update product.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["products"]
-      })
-      playSoundEffect("success")
-    }
-  })
 
   function handleCreateManyProducts(data: ArrayBuffer) {
-    createProducts(data)
+    createProductsMutation.mutate(data)
   }
 
   function handleDeleteProduct(id: string) {
-    deleteProduct(id)
+    deleteProductMutation.mutate(id)
   }
 
   function handleDeleteMultiProducts(ids: string[]) {
-    deleteProducts(ids)
+    deleteProductsMutation.mutate(ids)
   }
 
   function handleChangeStatusProduct(product: Product, status: ProductStatus) {
-    statusChangeProduct({ id: product.id, product: {
+    statusChangeProductMutation.mutate({ id: product.id, product: {
       ...product,
       overview: product.overview || undefined,
       description: product.description || undefined,
@@ -174,15 +77,14 @@ export function ProductsList() {
   }
 
 
-  if (isError && error && isMeError && meError) return <h1>ERROR: {error.message}</h1>
-
-  if (!data || isLoading || !me || isMeLoading) return <SuspenseLoader />
+  // TODO: Skeleton table loader
+  if (!me || !data) return <SuspenseLoader />
 
 
   return <Card>
     <ProductsListTable
       me={me}
-      isLoading={isPending}
+      isLoading={productsQuery.isLoading}
       onStatusChange={handleChangeStatusProduct}
       products={data.results} 
       count={data.count} 

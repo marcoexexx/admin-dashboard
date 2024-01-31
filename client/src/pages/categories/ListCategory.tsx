@@ -1,17 +1,35 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { useNavigate } from "react-router-dom";
 import { PageTitle } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
+import { CategoriesList } from "@/components/content/categories";
+import { MuiButton } from "@/components/ui";
+import { useNavigate } from "react-router-dom";
 import { usePermission } from "@/hooks";
 import { getCategoryPermissionsFn } from "@/services/permissionsApi";
-import { CategoriesList } from "@/components/content/categories";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import { MuiButton } from "@/components/ui";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+
 import getConfig from "@/libs/getConfig";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
+
+
+function ListCategoryWrapper() {
+  const isAllowedReadCategory = usePermission({
+    key: "category-permissions",
+    actions: "read",
+    queryFn: getCategoryPermissionsFn
+  })
+
+  if (!isAllowedReadCategory) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <CategoriesList />
+
+}
+
 
 export default function ListCategory() {
   const navigate = useNavigate()
@@ -19,12 +37,6 @@ export default function ListCategory() {
   const isAllowedCreateCategory = usePermission({
     key: "category-permissions",
     actions: "create",
-    queryFn: getCategoryPermissionsFn
-  })
-
-  const isAllowedReadCategory = usePermission({
-    key: "category-permissions",
-    actions: "read",
     queryFn: getCategoryPermissionsFn
   })
 
@@ -64,15 +76,19 @@ export default function ListCategory() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadCategory
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <CategoriesList />
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense>
+                <ListCategoryWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
       
     </>
   )

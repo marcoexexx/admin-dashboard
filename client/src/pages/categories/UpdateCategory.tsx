@@ -1,26 +1,43 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { UpdateCategoryForm } from "@/components/content/categories/forms";
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getCategoryPermissionsFn } from "@/services/permissionsApi";
-import { UpdateCategoryForm } from "@/components/content/categories/forms";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+
 import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 
 const appName = getConfig("appName")
 
-export default function UpdateCategory() {
-  const navigate = useNavigate()
 
+function UpdateCategoryWrapper() {
   const isAllowedUpdateCategory = usePermission({
     key: "category-permissions",
     actions: "update",
     queryFn: getCategoryPermissionsFn
   })
+
+  if (!isAllowedUpdateCategory) throw AppError.new(AppErrorKind.AccessDeniedError)
+
   
+  return <Card>
+    <CardContent>
+      <UpdateCategoryForm />
+    </CardContent>
+  </Card>
+
+}
+
+
+export default function UpdateCategory() {
+  const navigate = useNavigate()
+
   const handleBack = () => {
     navigate(-1)
   }
@@ -53,23 +70,19 @@ export default function UpdateCategory() {
         </Grid>
       </PageTitle>
 
-      {isAllowedUpdateCategory
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12} md={8}>
-              <Card>
-                <CardContent>
-                  <UpdateCategoryForm />
-                </CardContent>
-              </Card>
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12} md={8}>
+
+            <ErrorBoundary>
+              <Suspense>
+                <UpdateCategoryWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }
-
-
-

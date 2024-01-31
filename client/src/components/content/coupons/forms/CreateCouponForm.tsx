@@ -1,15 +1,10 @@
 import { Box, Grid, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { any, boolean, number, object, string, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { DatePickerField, ProductInputField } from "@/components/input-fields";
-import { createCouponFn } from "@/services/couponsApi";
-import { playSoundEffect } from "@/libs/playSound";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { any, boolean, number, object, string, z } from "zod";
+import { useCreateCoupon } from "@/hooks/coupon";
 
 
 const createCouponSchema = object({
@@ -27,35 +22,9 @@ const createCouponSchema = object({
 export type CreateCouponInput = z.infer<typeof createCouponSchema>
 
 export function CreateCouponForm() {
-  const { state: {modalForm}, dispatch } = useStore()
+  // Mutations
+  const createCouponMutation = useCreateCoupon()
 
-  const navigate = useNavigate()
-  const from = "/coupons"
-
-  const {
-    mutate: createCoupon,
-  } = useMutation({
-    mutationFn: createCouponFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new coupon.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["coupons"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
 
   const methods = useForm<CreateCouponInput>({
     resolver: zodResolver(createCouponSchema)
@@ -64,7 +33,7 @@ export function CreateCouponForm() {
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<CreateCouponInput> = (value) => {
-    createCoupon({ ...value, expiredDate: value.expiredDate?.toISOString() })
+    createCouponMutation.mutate({ ...value, expiredDate: value.expiredDate?.toISOString() })
   }
 
   return (
@@ -106,7 +75,7 @@ export function CreateCouponForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit">Create</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={createCouponMutation.isPending}>Create</MuiButton>
         </Grid>
       </Grid>
     </FormProvider>
