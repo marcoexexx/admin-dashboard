@@ -14,7 +14,7 @@ interface AuthProviderProps {
 export function AuthProvider(props: AuthProviderProps) {
   const { children } = props;
   const { dispatch } = useStore()
-  const [cookies, setCookies] = useCookies(["logged_in"])
+  const [cookies, _, removeCookies] = useCookies(["logged_in", "access_token", "refresh_token"])
 
   const userQuery = useMe({
     enabled: !!cookies.logged_in,
@@ -24,7 +24,11 @@ export function AuthProvider(props: AuthProviderProps) {
 
 
   useEffect(() => {
-    if (userQuery.isError) setCookies("logged_in", false)
+    if (userQuery.isError && cookies.logged_in && cookies.access_token && cookies.refresh_token) {
+      removeCookies("logged_in")
+      removeCookies("access_token")
+      removeCookies("refresh_token")
+    }
   }, [userQuery.isError])
 
 
