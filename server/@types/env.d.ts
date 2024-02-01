@@ -1,5 +1,7 @@
 namespace NodeJS {
   interface ProcessEnv {
+    HTTPS: "true" | "false",
+
     HOST: string,
     PORT: number,
     NODE_ENV: "production" | "development" | "test",

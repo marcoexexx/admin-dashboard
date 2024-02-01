@@ -9,8 +9,6 @@ const path = env === "development"
 
 dotenv.config({ path })
 
-show_bannar()
-
 
 import https from 'https'
 import fs from 'fs'
@@ -54,6 +52,8 @@ import { rateLimitMiddleware } from './middleware/rateLimit';
 
 
 validateEnv()
+
+if (!getConfig("hideBanner")) show_bannar()
 
 
 export const app = express()
@@ -160,10 +160,13 @@ if (require.main === module) {
     app
   )
 
-  const server = httpsServer.listen(port, () => {
-    logging.info(`a ${getConfig("nodeEnv")} deplyoment.`)
-    logging.log("🚀 Server is running on", `https://${host}:${port}`)
-  })
+  const isHttps = getConfig("https") === "true"
+
+  const server = (isHttps ? httpsServer : app)
+    .listen(port, () => {
+      logging.info(`a ${getConfig("nodeEnv")} deplyoment.`)
+      logging.log("🚀 Server is running on", `${isHttps ? "https" : "http"}://${host}:${port}`)
+    })
 
   process.on("SIGINT", () => {
     console.log("\n")

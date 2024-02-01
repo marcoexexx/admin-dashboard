@@ -1,8 +1,10 @@
-import { cleanEnv, port, str } from "envalid"
+import { bool, cleanEnv, port, str } from "envalid"
 
 
 const validateEnv = () => {
   cleanEnv(process.env, {
+    HTTPS: bool(),
+
     HOST: str(),
     PORT: port(),
     NODE_ENV: str(),

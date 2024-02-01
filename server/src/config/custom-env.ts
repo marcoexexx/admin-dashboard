@@ -1,4 +1,6 @@
 export const config = {
+  https: process.env.HTTPS,
+
   host: process.env.HOST,
   port: process.env.PORT,
   nodeEnv: process.env.NODE_ENV,
