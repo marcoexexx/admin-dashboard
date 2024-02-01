@@ -3,7 +3,6 @@ import { HttpResponse, LoginResponse, QueryOptionArgs, UserResponse } from "./ty
 import getConfig from "@/libs/getConfig";
 import axios from "axios";
 import { UserFilter } from "@/context/user";
-import { Cookies } from "react-cookie";
 
 
 const BASE_URL = getConfig("backendEndpoint")
@@ -40,8 +39,6 @@ authApi.interceptors.response.use(
       document.location.href = "/auth/login"
     }
 
-    const c = new Cookies()
-    c.remove("logged_in")
     return Promise.reject(err)
   }
 )
