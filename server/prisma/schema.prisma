@@ -237,8 +237,8 @@ model Product {
   images        String[]
   specification Specification[]
   instockStatus ProductStockStatus      @default(AskForStock)
-  dealerPrice   Int
-  marketPrice   Int
+  dealerPrice   Int?
+  marketPrice   Int?
   status        ProductStatus           @default(Draft)
   priceUnit     PriceUnit               @default(MMK)
   likedUsers    Favorites[]
