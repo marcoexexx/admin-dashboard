@@ -2,8 +2,11 @@ import { createClient } from 'redis'
 import getConfig from './getConfig'
 import logging from '../middleware/logging/logging'
 
+
 const redisClient = createClient({
-  url: getConfig("redisUrl")
+  url: getConfig("redisUrl"),
+  // disableOfflineQueue: true,
+  pingInterval: 1000
 })
 
 async function connectRedis() {

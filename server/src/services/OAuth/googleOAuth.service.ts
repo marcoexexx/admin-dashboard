@@ -1,7 +1,8 @@
 import axios from 'axios'
 import qs from 'qs'
-import getConfig from '../utils/getConfig'
-import logging from '../middleware/logging/logging'
+import getConfig from '../../utils/getConfig'
+import AppError, { StatusCode } from '../../utils/appError'
+import Result, { Err, Ok } from '../../utils/result'
 
 
 interface GoogleOAuthToken {
@@ -25,7 +26,7 @@ interface GoogleUserResult {
 }
 
 
-export async function getGoogleAuthToken(code: string): Promise<GoogleOAuthToken> {
+export async function getGoogleAuthToken(code: string): Promise<Result<GoogleOAuthToken, AppError>> {
   const rootUrl = "https://oauth2.googleapis.com/token"
   const { clientID, clientSecret, redirect } = getConfig("googleOAuth")
 
@@ -43,15 +44,14 @@ export async function getGoogleAuthToken(code: string): Promise<GoogleOAuthToken
         "Content-Type": "application/x-www-form-urlencoded"
       }
     })
-    return data
+    return Ok(data)
   } catch (err: any) {
-    logging.error(`Failed to fetch Google Oauth Tokens: ${err.message}`);
-    throw new Error(err);
+    return Err(AppError.new(StatusCode.InternalServerError, `Failed to fetch Google Oauth Tokens: ${err.message}`))
   }
 }
 
 
-export async function getGoogleUser(args: Pick<GoogleOAuthToken, "access_token" | "id_token">): Promise<GoogleUserResult> {
+export async function getGoogleUser(args: Pick<GoogleOAuthToken, "access_token" | "id_token">): Promise<Result<GoogleUserResult, AppError>> {
   const { id_token, access_token } = args
 
   try {
@@ -62,9 +62,8 @@ export async function getGoogleUser(args: Pick<GoogleOAuthToken, "access_token" 
       }
     })
 
-    return data
+    return Ok(data)
   } catch (err: any) {
-    logging.error("Failed to fetch Google Oauth Tokens");
-    throw new Error(err);
+    return Err(AppError.new(StatusCode.InternalServerError, `Failed to fetch Google Oauth Tokens`))
   }
 }

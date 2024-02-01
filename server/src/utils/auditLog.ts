@@ -3,7 +3,7 @@ import redisClient from "./connectRedis";
 import logging from "../middleware/logging/logging";
 
 
-const THROTTLE_TIME = 60 * 1 // 1 minute
+const THROTTLE_TIME = 60 * 5 // 5 minute
 
 export async function createEventAction(db: PrismaClient, data: Prisma.EventActionCreateManyInput) {
   const key = `${data.resource}:${data.action}:${JSON.stringify(data.resourceIds)}`

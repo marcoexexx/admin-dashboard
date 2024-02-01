@@ -1,11 +1,14 @@
+import { StatusCode } from "../utils/appError";
 import { NextFunction, Request, Response } from "express";
-import { HttpListResponse, HttpResponse } from "../utils/helper";
-import { AccessLogFilterPagination, DeleteAccessLogSchema } from "../schemas/accessLog.schema";
-import { db } from "../utils/db";
+import { HttpDataResponse, HttpListResponse } from "../utils/helper";
+import { DeleteAccessLogSchema } from "../schemas/accessLog.schema";
+import { AccessLogService } from "../services/accessLog";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
+import { checkUser } from "../services/checkUser";
+
+
+const service = AccessLogService.new()
 
 
 export async function getAccessLogsHandler(
@@ -15,44 +18,35 @@ export async function getAccessLogsHandler(
 ) {
   try {
     // @ts-ignore  for mocha
-    const user = req.user
+    checkUser(req.user).ok_or_throw()
 
-    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+    const query = convertNumericStrings(req.query)
 
-    const { filter = {}, pagination, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as AccessLogFilterPagination["include"]
-    const {
-      browser,
-      ip,
-      platform,
-      date,
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const { id, browser, ip, platform, date } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { user } = convertStringToBoolean(query.include) ?? {}
 
-    const offset = (page - 1) * pageSize
+    const result = await service.find({
+      filter: {
+        id,
+        browser,
+        ip,
+        platform,
+        date
+      },
+      pagination: { 
+        page, 
+        pageSize
+      },
+      include: {
+        user
+      }
+    })
+    const [count, logs] = result.ok_or_throw()
 
-    const [count, logs] = await db.$transaction([
-      db.accessLog.count(),
-      db.accessLog.findMany({
-        where: {
-          userId: user.id,
-          browser,
-          ip,
-          platform,
-          date,
-        },
-        include,
-        skip: offset,
-        take: pageSize,
-      })
-    ])
-
-    res.status(200).json(HttpListResponse(logs, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(logs, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -64,16 +58,11 @@ export async function deleteAccessLogsHandler(
   try {
     const { accessLogId } = req.params
 
-    await db.accessLog.delete({
-      where: {
-        id: accessLogId
-      }
-    })
+    const result = await service.delete(accessLogId)
+    const accessLog = result.ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ accessLog }))
+  } catch (err) {
+    next(err)
   }
 }

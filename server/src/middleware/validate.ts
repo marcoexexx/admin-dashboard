@@ -1,6 +1,8 @@
 import { AnyZodObject, ZodError } from "zod";
 import { Request, Response, NextFunction } from 'express';
 import { HttpResponse } from "../utils/helper";
+import { StatusCode } from "../utils/appError";
+
 
 export function validate(schema: AnyZodObject) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -14,7 +16,7 @@ export function validate(schema: AnyZodObject) {
       next();
     } catch (err) {
       if (err instanceof ZodError) {
-        return res.status(422).json(HttpResponse(422, "invalid input", err.errors))
+        return res.status(StatusCode.UnprocessableEntity).json(HttpResponse(StatusCode.UnprocessableEntity, "invalid input", err.errors))
       }
 
       next(err)

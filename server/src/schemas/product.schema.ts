@@ -84,8 +84,8 @@ export const createProductSchema = object({
     description: string().max(5000).optional(),
     categories: string().array().default([]),
     instockStatus: z.enum(productStockStatus).default("AskForStock"),
-    dealerPrice: number().min(0),
-    marketPrice: number().min(0),
+    dealerPrice: number().min(0).optional(),
+    marketPrice: number().min(0).optional(),
     priceUnit: z.enum(priceUnit),
     discount: number().max(100).default(0),
     /** Example: How salesCategory work
@@ -123,9 +123,9 @@ export const createMultiProductsSchema = object({
     description: string().max(5000).optional(),
     categories: string().optional(), // by splitting "\n"
     instockStatus: z.enum(productStockStatus).default("AskForStock"),
-    dealerPrice: number().min(0),
+    dealerPrice: number().min(0).optional(),
+    marketPrice: number().min(0).optional(),
     images: string(),
-    marketPrice: number().min(0),
     priceUnit: z.enum(priceUnit).default("MMK"),
     discount: number().max(100).default(0),
     quantity: number().min(0),
@@ -170,8 +170,8 @@ export const updateProductSchema = object({
     description: string().min(0).max(5000).optional(),
     categories: string().array().default([]),
     instockStatus: z.enum(productStockStatus).default("AskForStock"),
-    dealerPrice: number().min(0),
-    marketPrice: number().min(0),
+    dealerPrice: number().min(0).optional(),
+    marketPrice: number().min(0).optional(),
     priceUnit: z.enum(priceUnit).default("MMK"),
     status: z.enum(productStatus).default("Draft"),
 

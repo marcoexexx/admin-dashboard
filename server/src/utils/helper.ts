@@ -1,3 +1,6 @@
+import { StatusCode } from '../utils/appError'
+
+
 /**
  * Error Test
  */
@@ -6,14 +9,14 @@ export async function mayError(): Promise<string> {
 }
 
 
-export function HttpResponse<E extends unknown>(status: number, message: string, error?: E) {
+export function HttpResponse<E extends unknown>(status: StatusCode, message: string, error?: E) {
   return { status, message, error }
 }
 
 export function HttpListResponse<T>(results: Array<T>, count = results.length) {
-  return { status: 200, results, count, error: undefined }
+  return { status: StatusCode.OK, results, count, error: undefined }
 }
 
 export function HttpDataResponse<T>(result: T) {
-  return { status: 200, error: undefined, ...result }
+  return { status: StatusCode.OK, error: undefined, ...result }
 }

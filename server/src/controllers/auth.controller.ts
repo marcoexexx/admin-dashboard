@@ -1,20 +1,21 @@
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
+import redisClient from "../utils/connectRedis";
+import getConfig from "../utils/getConfig";
+import logging from "../middleware/logging/logging";
+import AppError from "../utils/appError";
+import Email from "../utils/email";
 
 import { CookieOptions, NextFunction, Request, Response } from "express";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreateUserInput, LoginUserInput, Role, VerificationEmailInput } from "../schemas/user.schema";
 import { HttpDataResponse, HttpResponse } from "../utils/helper";
 import { signToken, verifyJwt } from "../utils/auth/jwt";
-import { getGoogleAuthToken, getGoogleUser } from "../services/googleOAuth.service";
 import { generateRandomUsername } from "../utils/generateRandomUsername";
 import { createVerificationCode } from "../utils/createVeriicationCode";
 import { db } from "../utils/db";
-import redisClient from "../utils/connectRedis";
-import getConfig from "../utils/getConfig";
-import logging from "../middleware/logging/logging";
-import AppError from "../utils/appError";
-import Email from "../utils/email";
+import { getGoogleAuthToken, getGoogleUser } from '../services/OAuth';
+
 
 const cookieOptions: CookieOptions = {
   httpOnly: true,
@@ -163,16 +164,16 @@ export async function googleOAuthHandler(
 
     if (!code) return next(new AppError(401, "Authorization code not provided!"))
 
-    const { id_token, access_token } = await getGoogleAuthToken(code)
+    const { id_token, access_token } = (await getGoogleAuthToken(code)).ok_or_throw()
 
-    const { name, verified_email, email, picture } = await getGoogleUser({ id_token, access_token })
+    const { name, verified_email, email, picture } = (await getGoogleUser({ id_token, access_token })).ok_or_throw()
 
     if (!verified_email) return next(new AppError(403, "Google account not verified"))
-    //
-    // set Admin if first time create user,
-    const usersExist = await db.user.findMany();
 
-    if (usersExist.length === 0) {
+    // set Admin if first time create user,
+    const usersExist = await db.user.count();
+
+    if (usersExist === 0) {
       role = "Admin"
     }
 
