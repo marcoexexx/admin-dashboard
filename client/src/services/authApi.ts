@@ -3,7 +3,6 @@ import { HttpResponse, LoginResponse, QueryOptionArgs, UserResponse } from "./ty
 import getConfig from "@/libs/getConfig";
 import axios from "axios";
 import { UserFilter } from "@/context/user";
-import AppError, { AppErrorKind } from "@/libs/exceptions";
 
 
 const BASE_URL = getConfig("backendEndpoint")
@@ -31,17 +30,13 @@ authApi.interceptors.response.use(
 
     const msg = res.data.message as string;
 
-    if (msg.includes("not logged in") && !orgReq._retry) {
+    if ((msg.includes("not logged in") || msg.includes("session has expired")) && !orgReq._retry) {
       orgReq._retry = true;
       await refreshAccessTokenFn();
       return authApi(orgReq)
     }
     if (err.response.data.message.includes("not refresh")) {
       document.location.href = "/auth/login"
-    }
-
-    if (msg.includes(`The API is currently under maintenance`)) {
-      return Promise.reject(AppError.new(AppErrorKind.UnderTheMaintenance, msg))
     }
 
     return Promise.reject(err)

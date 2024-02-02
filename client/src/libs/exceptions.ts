@@ -3,6 +3,7 @@ import { ToString } from "./result"
 export const AppErrorKind = {
   InvalidInputError: "InvalidInputError",
   ApiError: "ApiError",
+  InvalidAuthSession: "InvalidAuthSession",
   NetworkError: "NetworkError",
   NoDataError: "NoDataError",
   PermissionError: "PermissionError",

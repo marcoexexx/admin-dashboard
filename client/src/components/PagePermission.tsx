@@ -1,7 +1,7 @@
 import { Role } from "@/services/types";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { SuspenseLoader } from ".";
 import { useMe } from "@/hooks";
+import { SuspenseLoader } from ".";
 
 
 interface PermissionProps {

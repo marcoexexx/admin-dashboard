@@ -28,12 +28,13 @@ type PermissionKey =
 
 interface Args {
   key: PermissionKey,
+  fetchUser: boolean,
   actions: "create" | "read" | "update" | "delete"
   queryFn?: QueryFunction<PermissionsResponse, PermissionKey[], never> | undefined
 }
 
-export function usePermission({key, actions, queryFn}: Args) {
-  const userQuery = useMe({})
+export function usePermission({key, actions, fetchUser, queryFn}: Args) {
+  const userQuery = useMe({ enabled: fetchUser })
   const permissionsQuery = useSuspenseQuery({
     queryKey: [key],
     queryFn,

@@ -14,31 +14,30 @@ interface AuthProviderProps {
 export function AuthProvider(props: AuthProviderProps) {
   const { children } = props;
   const { dispatch } = useStore()
-  const [cookies, setCookies, removeCookies] = useCookies(["logged_in", "access_token", "refresh_token"])
+  const [cookies] = useCookies(["logged_in"])
 
-  const userQuery = useMe({})
+  const meQuery = useMe({
+    enabled: !!cookies.logged_in
+  })
 
-  const user = userQuery.try_data.ok_or_throw()
-
-  useEffect(() => {
-    setCookies("logged_in", false)
-    setCookies("access_token", null)
-    removeCookies("refresh_token")
-  }, [userQuery.isError])
+  const me = meQuery.try_data.ok_or_throw()
+  const { isSuccess, isLoading } = meQuery
 
 
   useEffect(() => {
-    if (userQuery.isSuccess) dispatch({ type: "SET_USER", payload: user })
-  }, [userQuery.isSuccess])
+    if (isSuccess) dispatch({ type: "SET_USER", payload: me })
+  }, [isSuccess])
+
 
   const isAllowedReactDashboard = usePermission({
+    fetchUser: !!cookies.logged_in,
     key: "dashboard-permissions",
     queryFn: getDashboardPermissionsFn,
     actions: "read",
   })
 
 
-  if (userQuery.isLoading) return <SuspenseLoader />
+  if (isLoading) return <SuspenseLoader />
 
   if (cookies.logged_in && !isAllowedReactDashboard) throw AppError.new(AppErrorKind.PermissionError)
 
