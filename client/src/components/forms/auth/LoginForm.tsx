@@ -13,6 +13,7 @@ import { LoadingButton } from "@mui/lab"
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { playSoundEffect } from "@/libs/playSound"
 
+
 export const MuiTextFieldWrapper = styled(TextField)(({theme}) => ({
   '& .MuiOutlinedInput-root': {
     '& fieldset': {
@@ -48,9 +49,9 @@ export type LoginUserInput = z.infer<typeof loginUserSchema>
 export function LoginForm() {
   const { dispatch } = useStore()
   const [cookies] = useCookies(["logged_in"])
+
   const navigate = useNavigate()
-  const location = useLocation()
-  const from = location.pathname || "/dashboard"
+  const from = "/home"
 
   useEffect(() => {
     if (cookies.logged_in) navigate("/home")
