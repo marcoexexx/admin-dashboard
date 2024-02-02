@@ -1,7 +1,6 @@
-// import { Link } from '@mui/material'
+export default function UnderTheMaintenance({message}: {message?: string}) {
+  const remaining_time = message?.match(/\((\d+)sec.\)/)?.[1]
 
-
-export default function UnderTheMaintenance() {
   return (
     <div>
       <div>
@@ -11,7 +10,8 @@ export default function UnderTheMaintenance() {
       <h1>The site is currently down for maintenance</h1>
 
       <div>
-        <h1>We apologize for any inconveniences caused</h1>
+        <h3>{message}</h3>
+        <h1>Refresh after: {remaining_time} secounds</h1>
       </div>
     </div>
   )

@@ -50,6 +50,7 @@ import useragent from 'express-useragent';
 import AppError, { StatusCode } from './utils/appError';
 import logging, { loggingMiddleware } from './middleware/logging/logging'
 import { rateLimitMiddleware } from './middleware/rateLimit';
+import { isMaintenance } from './middleware/isMaintenance';
 
 
 validateEnv()
@@ -96,6 +97,9 @@ app.use(cookieParser())
 // Useragent
 app.use(useragent.express())
 
+// Is under the maintenance
+app.use(isMaintenance)
+
 
 /* Routers */
 app.get("/ping", async (_req: Request, res: Response, _next: NextFunction) => {
@@ -140,7 +144,7 @@ app.all("*", (req: Request, _: Response, next: NextFunction) => {
 // Global error handler
 app.use(
   (error: AppError, _req: Request, res: Response, _next: NextFunction) => {
-    error.status = error.status || 500;
+    error.status = error.status || StatusCode.InternalServerError;
 
     logging.error(error.message)
 

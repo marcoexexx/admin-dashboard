@@ -3,6 +3,7 @@ import { HttpResponse, LoginResponse, QueryOptionArgs, UserResponse } from "./ty
 import getConfig from "@/libs/getConfig";
 import axios from "axios";
 import { UserFilter } from "@/context/user";
+import AppError, { AppErrorKind } from "@/libs/exceptions";
 
 
 const BASE_URL = getConfig("backendEndpoint")
@@ -37,6 +38,10 @@ authApi.interceptors.response.use(
     }
     if (err.response.data.message.includes("not refresh")) {
       document.location.href = "/auth/login"
+    }
+
+    if (msg.includes(`The API is currently under maintenance`)) {
+      return Promise.reject(AppError.new(AppErrorKind.UnderTheMaintenance, msg))
     }
 
     return Promise.reject(err)
