@@ -1,8 +1,9 @@
 import { LoginUserInput, RegisterUserInput } from "@/components/forms/auth";
 import { HttpResponse, LoginResponse, QueryOptionArgs, UserResponse } from "./types";
-import getConfig from "@/libs/getConfig";
-import axios from "axios";
 import { UserFilter } from "@/context/user";
+import axios from "axios";
+import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from "@/libs/exceptions";
 
 
 const BASE_URL = getConfig("backendEndpoint")
@@ -38,6 +39,8 @@ authApi.interceptors.response.use(
     if (err.response.data.message.includes("not refresh")) {
       document.location.href = "/auth/login"
     }
+
+    if (msg.includes("under maintenance")) return Promise.reject(AppError.new(AppErrorKind.UnderTheMaintenance, msg))
 
     return Promise.reject(err)
   }

@@ -3,13 +3,17 @@ import duration from "dayjs/plugin/duration"
 dayjs.extend(duration)
 
 import { tryParseInt } from "@/libs/result/std"
+import { useCountdownTimer } from "@/hooks"
 
 
 export default function UnderTheMaintenance({message}: {message?: string}) {
   const remaining_time = message?.match(/\((\d+)sec.\)/)?.[1] || "0"
 
   const sec = tryParseInt(remaining_time, 10).unwrap_or(0)
-  const dur = dayjs.duration(sec, 'seconds').format("H[h] m[m] s[s]")
+
+  const { time } = useCountdownTimer(sec)
+
+  const dur = dayjs.duration(time, 'seconds').format("H[h] m[m] s[s]")
 
   return (
     <div>
