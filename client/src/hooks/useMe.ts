@@ -5,11 +5,14 @@ import { UserResponse } from "@/services/types";
 import { UserFilter } from "@/context/user";
 import { useQuery } from "@tanstack/react-query";
 import { getMeFn } from "@/services/authApi";
+import { useCookies } from "react-cookie";
 
 
-export function useMe({enabled, include}: {enabled?: boolean, include?: UserFilter["include"]}) {
+export function useMe({include}: {include?: UserFilter["include"]}) {
+  const [cookies] = useCookies(["logged_in"])
+
   const query = useQuery({
-    enabled,
+    enabled: !!cookies.logged_in,
     queryKey: ["authUser", { include }],
     queryFn: args => getMeFn(args, {
       include
