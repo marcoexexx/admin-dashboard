@@ -28,7 +28,7 @@ type PermissionKey =
 
 interface Args {
   key: PermissionKey,
-  fetchUser: boolean,
+  fetchUser?: boolean,
   actions: "create" | "read" | "update" | "delete"
   queryFn?: QueryFunction<PermissionsResponse, PermissionKey[], never> | undefined
 }
