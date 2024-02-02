@@ -2,6 +2,7 @@ import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
 dayjs.extend(duration)
 
+import { MuiButton } from "@/components/ui"
 import { tryParseInt } from "@/libs/result/std"
 import { useCountdownTimer } from "@/hooks"
 
@@ -15,6 +16,11 @@ export default function UnderTheMaintenance({message}: {message?: string}) {
 
   const dur = dayjs.duration(time, 'seconds').format("H[h] m[m] s[s]")
 
+  const handleRefresh = (_: React.MouseEvent<HTMLButtonElement>) => {
+    window.location.reload()
+  }
+
+
   return (
     <div>
       <div>
@@ -26,6 +32,7 @@ export default function UnderTheMaintenance({message}: {message?: string}) {
       <div>
         <h3>{message}</h3>
         <h1>Refresh after: {dur}</h1>
+        <MuiButton disabled={time !== 0} onClick={handleRefresh}>Refresh</MuiButton>
       </div>
     </div>
   )
