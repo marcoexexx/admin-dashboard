@@ -14,20 +14,24 @@ interface AuthProviderProps {
 export function AuthProvider(props: AuthProviderProps) {
   const { children } = props;
   const { dispatch } = useStore()
-  const [cookies] = useCookies(["logged_in"])
+  const [cookies, setCookies, removeCookies] = useCookies(["logged_in", "access_token", "refresh_token"])
 
-  const userQuery = useMe({
-    enabled: !!cookies.logged_in,
-  })
+  const userQuery = useMe({})
 
   const user = userQuery.try_data.ok_or_throw()
 
   useEffect(() => {
-    dispatch({ type: "SET_USER", payload: user })
+    setCookies("logged_in", false)
+    setCookies("access_token", null)
+    removeCookies("refresh_token")
+  }, [userQuery.isError])
+
+
+  useEffect(() => {
+    if (userQuery.isSuccess) dispatch({ type: "SET_USER", payload: user })
   }, [userQuery.isSuccess])
 
   const isAllowedReactDashboard = usePermission({
-    enabled: !!cookies.logged_in,
     key: "dashboard-permissions",
     queryFn: getDashboardPermissionsFn,
     actions: "read",

@@ -1,4 +1,4 @@
-import { Role } from '../../../schemas/user.schema'
+import { Role } from '@prisma/client'
 import { createRoleBasedAccess } from '../rbac'
 
 export * from './brand.permission'
@@ -15,6 +15,6 @@ export * from './userAddress.permission'
 export * from './potentialOrder.permission'
 export * from './pickupAddress.permission'
 
-const roleBasedAccess = createRoleBasedAccess<Role>()
+const roleBasedAccess = createRoleBasedAccess<Role | "*">()
 
 export default roleBasedAccess

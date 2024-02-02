@@ -1,16 +1,17 @@
+import AppError from "../utils/appError";
+import logging from "../middleware/logging/logging";
+
 import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { createEventAction } from "../utils/auditLog";
+import { checkUser } from "../services/checkUser";
 import { EventActionType, Resource, Role } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, OrderFilterPagination, UpdateOrderInput } from "../schemas/order.schema";
 import { LifeCycleOrderConcrate, LifeCycleState } from "../utils/auth/life-cycle-state";
-
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
 
 
 export async function getOrdersHandler(
@@ -177,15 +178,14 @@ export async function deleteOrderHandler(
   try {
     const { orderId } = req.params
 
-    // @ts-ignore  for mocha testing
-    const user = req.user || undefined
+    const sessionUser = checkUser(req.user).ok_or_throw()
     
     const [_deletedOrderItems, _deletedPickupAddress, order] = await db.$transaction([
       db.orderItem.deleteMany({
         where: {
           order: {
             id: orderId,
-            userId: user.role === Role.Admin ? undefined : user.id
+            userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
           },
         }
       }),
@@ -195,7 +195,7 @@ export async function deleteOrderHandler(
           orders: {
             some: {
               id: orderId,
-              userId: user.role === Role.Admin ? undefined : user.id
+              userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
             }
           }
         }
@@ -204,14 +204,14 @@ export async function deleteOrderHandler(
       db.order.delete({
         where: {
           id: orderId,
-          userId: user.role === Role.Admin ? undefined : user.id
+          userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
         }
       })
     ])
 
     // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Order,
       resourceIds: [order.id],
       action: EventActionType.Delete
@@ -235,7 +235,7 @@ export async function deleteMultiOrdersHandler(
     const { orderIds } = req.body
 
     // @ts-ignore  for mocha testing
-    const user = req.user || undefined
+    const sessionUser = checkUser(req.user).ok_or_throw()
 
     await db.$transaction([
       db.orderItem.deleteMany({
@@ -244,7 +244,7 @@ export async function deleteMultiOrdersHandler(
             id: {
               in: orderIds,
             },
-            userId: user.role === Role.Admin ? undefined : user.id
+            userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
           }
         }
       }),
@@ -256,7 +256,7 @@ export async function deleteMultiOrdersHandler(
               id: {
                 in: orderIds
               },
-              userId: user.role === Role.Admin ? undefined : user.id
+              userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
             }
           }
         }
@@ -267,14 +267,14 @@ export async function deleteMultiOrdersHandler(
           id: {
             in: orderIds
           },
-          userId: user.role === Role.Admin ? undefined : user.id
+          userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
         }
       })
     ])
 
     // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Order,
       resourceIds: orderIds,
       action: EventActionType.Delete

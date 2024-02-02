@@ -9,8 +9,6 @@ const path = env === "development"
 
 dotenv.config({ path })
 
-show_bannar()
-
 
 import https from 'https'
 import fs from 'fs'
@@ -21,7 +19,6 @@ import cors from 'cors'
 import validateEnv from './utils/validateEnv'
 import getConfig from './utils/getConfig'
 import cookieParser from 'cookie-parser'
-import AppError, { errorHandler } from './utils/appError'
 import redisClient from './utils/connectRedis'
 
 import authRouter from './routers/auth.route'
@@ -49,11 +46,16 @@ import auditLogRouter from './routers/auditLog.route'
 
 import helmet from 'helmet';
 import useragent from 'express-useragent';
+
+import AppError, { StatusCode } from './utils/appError';
 import logging, { loggingMiddleware } from './middleware/logging/logging'
 import { rateLimitMiddleware } from './middleware/rateLimit';
+import { isMaintenance } from './middleware/isMaintenance';
 
 
 validateEnv()
+
+if (!getConfig("hideBanner")) show_bannar()
 
 
 export const app = express()
@@ -95,6 +97,9 @@ app.use(cookieParser())
 // Useragent
 app.use(useragent.express())
 
+// Is under the maintenance
+app.use(isMaintenance)
+
 
 /* Routers */
 app.get("/ping", async (_req: Request, res: Response, _next: NextFunction) => {
@@ -106,7 +111,7 @@ app.get("/healthcheck", async (_: Request, res: Response, next: NextFunction) =>
   let env = process.env.NODE_ENV
   await redisClient.get("try")
     .then((message) => res.status(200).json({ message, env }))
-    .catch(errorHandler(500, next));
+    .catch(next);
 })
 
 app.use("/api/v1/generate-pk", generatePkRouter)
@@ -133,13 +138,15 @@ app.use("/api/v1/pickup-addresses", pickupAddressRouter)
 
 // Unhandled Route
 app.all("*", (req: Request, _: Response, next: NextFunction) => {
-  next(new AppError(404, `Route ${req.originalUrl} not found`))
+  return next(AppError.new(StatusCode.NotFound, `Route ${req.originalUrl} not found`))
 })
 
 // Global error handler
 app.use(
   (error: AppError, _req: Request, res: Response, _next: NextFunction) => {
-    error.status = error.status || 500;
+    error.status = error.status || StatusCode.InternalServerError;
+
+    logging.error(error.message)
 
     res.status(error.status).json({
       status: error.status,
@@ -160,10 +167,13 @@ if (require.main === module) {
     app
   )
 
-  const server = httpsServer.listen(port, () => {
-    logging.info(`a ${getConfig("nodeEnv")} deplyoment.`)
-    logging.log("🚀 Server is running on", `https://${host}:${port}`)
-  })
+  const isHttps = getConfig("https") === "true"
+
+  const server = (isHttps ? httpsServer : app)
+    .listen(port, () => {
+      logging.info(`a ${getConfig("nodeEnv")} deplyoment.`)
+      logging.log("🚀 Server is running on", `${isHttps ? "https" : "http"}://${host}:${port}`)
+    })
 
   process.on("SIGINT", () => {
     console.log("\n")
