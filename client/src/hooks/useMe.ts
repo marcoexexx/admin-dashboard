@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getMeFn } from "@/services/authApi";
 
 
-export function useMe({enabled = true, include}: {enabled: boolean, include?: UserFilter["include"]}) {
+export function useMe({enabled = true, include}: {enabled?: boolean, include?: UserFilter["include"]}) {
   const query = useQuery({
     enabled,
     queryKey: ["authUser", { include }],
