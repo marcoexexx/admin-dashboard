@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import logging from "./logging/logging";
+import { checkUser } from "../services/checkUser";
+
 import AppError from "../utils/appError";
+import logging from "./logging/logging";
+
 
 export function requiredUser(
   req: Request,
@@ -9,9 +12,7 @@ export function requiredUser(
 ) {
   try {
     // @ts-ignore  for mocha testing
-    const user = req.user
-
-    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+    checkUser(req.user).ok_or_throw()
 
     next()
   } catch (err: any) {

@@ -50,13 +50,13 @@ export function RegisterForm() {
       navigate(from)
       playSoundEffect("success")
     },
-    onError: () => {
+    onError: (err: any) => {
       dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Failed create an acount.",
+        message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
       playSoundEffect("error")
-    }
+    },
   })
 
   const methods = useForm<RegisterUserInput>({

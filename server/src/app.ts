@@ -51,6 +51,7 @@ import AppError, { StatusCode } from './utils/appError';
 import logging, { loggingMiddleware } from './middleware/logging/logging'
 import { rateLimitMiddleware } from './middleware/rateLimit';
 import { isMaintenance } from './middleware/isMaintenance';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 
 validateEnv()
@@ -144,12 +145,10 @@ app.all("*", (req: Request, _: Response, next: NextFunction) => {
 // Global error handler
 app.use(
   (error: AppError, _req: Request, res: Response, _next: NextFunction) => {
-    error.status = error.status || StatusCode.InternalServerError;
-
     logging.error(error.message)
 
     res.status(error.status).json({
-      status: error.status,
+      status: error.status || StatusCode.InternalServerError,
       message: error.message
     })
   }

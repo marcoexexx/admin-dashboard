@@ -43,7 +43,7 @@ export default class AppError extends Error implements ToString {
   isOperational: boolean
 
   constructor(public status: StatusCode, message: string) {
-    super(`${message}: ApiError::${status}`)
+    super(message)
     this.isOperational = true
 
     Error.captureStackTrace(this, this.constructor)

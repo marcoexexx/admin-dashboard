@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import logging from "./logging/logging";
-import AppError from "../utils/appError";
+import { checkUser } from "../services/checkUser";
+
+import AppError, { StatusCode } from "../utils/appError";
+
 
 export function onlyAdminUser(
   req: Request,
@@ -9,17 +11,13 @@ export function onlyAdminUser(
 ) {
   try {
     // @ts-ignore  for mocha testing
-    const user = req.user
+    const user = checkUser(req.user).ok_or_throw()
 
-    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
-
-    if (user.role !== "Admin") return next(new AppError(403, "You do not have permission to access this resource."))
+    if (user.role !== "Admin") return next(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))
 
     next()
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+  } catch (err) {
+    next(err)
   }
 }
 

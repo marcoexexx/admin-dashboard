@@ -1,10 +1,11 @@
-import Result, { Err, Ok } from "../../utils/result";
+import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { AccessLog, Prisma } from "@prisma/client";
 import { AppService, Pagination } from "../type";
 import { db } from "../../utils/db";
+import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
 
 
 /**
@@ -12,19 +13,10 @@ import { db } from "../../utils/db";
  *
  * @remarks
  * This class implements the AppService interface and is designed to handle operations related to access logs.
- *
- * @example
- * ```typescript
- * const accessLogService = AccessLogService.new()
- * const [count, logs] = (await accessLogService.find({
- *   filter: { ... },
- *   pagination: { page: 1, pageSize: 10 },
- *   include: { ... }
- * })).ok_or_throw()
- *
- * ```
  */
 export class AccessLogService implements AppService {
+  private repository = db.accessLog
+
   /**
    * Creates a new instance of AccessLogService.
    * @returns A new instance of AccessLogService.
@@ -40,8 +32,8 @@ export class AccessLogService implements AppService {
 
     const try_data = await db
       .$transaction([
-        db.accessLog.count(),
-        db.accessLog.findMany({
+        this.repository.count(),
+        this.repository.findMany({
           where: filter,
           include,
           skip: offset,
@@ -50,7 +42,7 @@ export class AccessLogService implements AppService {
       ])
       .then(Ok)
       .catch(err => {
-        if (err instanceof PrismaClientKnownRequestError) return Err(AppError.new(StatusCode.BadRequest, (err.meta as any).message))
+        if (err instanceof PrismaClientKnownRequestError) return Err(convertPrismaErrorToAppError(err))
         return Err(AppError.new(StatusCode.InternalServerError, err?.message))
       })
 
@@ -60,16 +52,33 @@ export class AccessLogService implements AppService {
 
   // Delete implements
   async delete(id: string): Promise<Result<AccessLog, AppError>> {
-    const try_delete = await db.accessLog
-      .delete({
-        where: { id }
-      })
-      .then(Ok)
-      .catch(err => {
-        if (err instanceof PrismaClientKnownRequestError) return Err(AppError.new(StatusCode.BadRequest, (err.meta as any).message))
-        return Err(AppError.new(StatusCode.InternalServerError, err?.message))
-      })
+    const tryDelete = as_result_async(this.repository.delete)
+
+    const try_delete = (await tryDelete({ where: { id } })).map_err(err => {
+      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+      return AppError.new(StatusCode.InternalServerError, err?.message)
+    })
 
     return try_delete
+  }
+
+
+  async findUnique(_id: string): Promise<Result<any, AppError>> {
+    return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
+  }
+
+
+  async findFirst(_payload: any): Promise<Result<any, AppError>> {
+    return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
+  }
+
+
+  async create(_payload: any): Promise<Result<any, AppError>> {
+    return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
+  }
+
+
+  async update(_arg: { filter: any; payload: any; }): Promise<Result<any, AppError>> {
+    return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
   }
 }

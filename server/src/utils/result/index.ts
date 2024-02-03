@@ -61,7 +61,7 @@ export default class Result<T, E extends ToString> {
     throw new UnreachableException(this.value)
   }
 
-  map<U extends ToString>(op: (x: T) => U): Result<U, E> {
+  map<U>(op: (x: T) => U): Result<U, E> {
     if (this.is_ok()) return Ok(op(this.value))
     else if (this.is_err()) return Err(this.value)
     throw new UnreachableException(this.value)
@@ -85,13 +85,13 @@ export default class Result<T, E extends ToString> {
     throw new UnreachableException(this.value)
   }
 
-  and<U extends ToString>(res: Result<U, E>): Result<U, E> {
+  and<U>(res: Result<U, E>): Result<U, E> {
     if (this.is_ok()) return res
     else if (this.is_err()) return Err(this.value)
     throw new UnreachableException(this.value)
   }
 
-  and_then<U extends ToString>(op: (x: T) => Result<U, E>): Result<U, E> {
+  and_then<U>(op: (x: T) => Result<U, E>): Result<U, E> {
     if (this.is_ok()) return op(this.value)
     else if (this.is_err()) return Err(this.value)
     throw new UnreachableException(this.value)
