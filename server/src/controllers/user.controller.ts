@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
-import { ChangeUserRoleInput, GetUserByUsernameInput, GetUserInput, UploadImageUserInput, UserFilterPagination } from "../schemas/user.schema";
+import { ChangeUserRoleInput, GetUserByUsernameInput, GetUserInput, UploadImageUserInput } from "../schemas/user.schema";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { db } from "../utils/db";
@@ -15,8 +15,22 @@ export async function getMeHandler(
   next: NextFunction
 ) {
   try {
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as UserFilterPagination["include"]
+
+    const query = convertNumericStrings(req.query)
+
+    const { 
+      _count,
+      reviews,
+      potentialOrders,
+      orders,
+      reward,
+      addresses,
+      favorites,
+      accessLogs,
+      eventActions,
+      createdProducts,
+      pickupAddresses
+    } = convertStringToBoolean(query.include) ?? {}
 
     const session_user = req.user
     if (!session_user) return next(new AppError(400, "Session has expired or user doesn't exist"))
@@ -25,7 +39,19 @@ export async function getMeHandler(
       where: {
         id: session_user.id
       },
-      include
+      include: {
+        _count,
+        reviews,
+        potentialOrders,
+        orders,
+        reward,
+        addresses,
+        favorites,
+        accessLogs,
+        eventActions,
+        createdProducts,
+        pickupAddresses
+      }
     })
 
     res.status(200).json(HttpDataResponse({ user }))
@@ -84,17 +110,32 @@ export async function getUserByUsernameHandler(
 
 
 export async function getUsersHandler(
-  req: Request<{}, {}, {}, UserFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination } = convertNumericStrings(req.query)
-    const { id, name, email } = filter
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const query = convertNumericStrings(req.query)
 
-    const offset = (page - 1) * pageSize
+    const { id, name, email } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { 
+      _count,
+      reviews,
+      potentialOrders,
+      orders,
+      reward,
+      addresses,
+      favorites,
+      accessLogs,
+      eventActions,
+      createdProducts,
+      pickupAddresses
+    } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
+
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     const users = await db.user.findMany({
       where: {
@@ -103,7 +144,21 @@ export async function getUsersHandler(
         email,
       },
       skip: offset,
-      take: pageSize
+      take: pageSize,
+      orderBy,
+      include: {
+        _count,
+        reviews,
+        potentialOrders,
+        orders,
+        reward,
+        addresses,
+        favorites,
+        accessLogs,
+        eventActions,
+        createdProducts,
+        pickupAddresses
+      }
     })
     res.status(200).json(HttpListResponse(users))
   } catch (err) {

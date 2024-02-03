@@ -5,32 +5,27 @@ import { createEventAction } from "../utils/auditLog";
 import { EventActionType, Resource } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { DeleteMultiPickupAddressesInput, GetPickupAddressInput, PickupAddressFilterPagination } from "../schemas/pickupAddress.schema";
+import { DeleteMultiPickupAddressesInput, GetPickupAddressInput } from "../schemas/pickupAddress.schema";
 
 import AppError from "../utils/appError";
 import logging from "../middleware/logging/logging";
 
 
 export async function getPickupAddressesHandler(
-  req: Request<{}, {}, {}, PickupAddressFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as PickupAddressFilterPagination["include"]
-    const {
-      id,
-      username,
-      phone,
-      email,
-      // TODO: date filter
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const query = convertNumericStrings(req.query)
 
-    const offset = (page - 1) * pageSize
+    const { id, username, phone, email } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { _count, user, orders, potentialOrders } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
 
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
     const [count, pickupAddresses] = await db.$transaction([
       db.pickupAddress.count(),
       db.pickupAddress.findMany({
@@ -40,7 +35,12 @@ export async function getPickupAddressesHandler(
           phone,
           email,
         },
-        include,
+        include: {
+          _count,
+          user,
+          orders,
+          potentialOrders
+        },
         orderBy,
         skip: offset,
         take: pageSize,
@@ -57,21 +57,26 @@ export async function getPickupAddressesHandler(
 
 
 export async function getPickupAddressHandler(
-  req: Request<GetPickupAddressInput["params"] & Pick<PickupAddressFilterPagination, "include">>,
+  req: Request<GetPickupAddressInput["params"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { pickupAddressId } = req.params
+    const query = convertNumericStrings(req.query)
 
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as PickupAddressFilterPagination["include"]
+    const { pickupAddressId } = req.params
+    const { _count, user, orders, potentialOrders } = convertStringToBoolean(query.include) ?? {}
 
     const pickupAddress = await db.pickupAddress.findUnique({
       where: {
         id: pickupAddressId
       },
-      include
+      include: {
+        _count,
+        user,
+        orders,
+        potentialOrders
+      }
     })
 
     // Read event action audit log

@@ -1,16 +1,5 @@
 import { boolean, object, string, z } from "zod";
-import { Pagination } from "./types";
 
-
-export type UserAddressFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: {
-  }
-  orderBy?: Record<
-    keyof CreateUserAddressInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
 
 const params = {
   params: object({
@@ -54,6 +43,7 @@ export const deleteMultiUserAddressesSchema = object({
     userAddressIds: string().array()
   })
 })
+
 
 export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>["body"]
 export type DeleteMultiUserAddressesInput = z.infer<typeof deleteMultiUserAddressesSchema>["body"]

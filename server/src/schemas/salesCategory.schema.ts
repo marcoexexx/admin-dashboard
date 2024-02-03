@@ -1,21 +1,5 @@
 import { boolean, number, object, string, z } from "zod";
-import { Pagination } from "./types";
 
-
-export type SalesCategoryFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: {
-    products?: {
-        product?: boolean
-      include?: {
-      }
-    }
-  },
-  orderBy?: Record<
-    keyof CreateSalesCategoryInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
 
 const params = {
   params: object({

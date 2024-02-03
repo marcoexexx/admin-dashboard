@@ -6,7 +6,9 @@ export function convertPrismaErrorToAppError(err: PrismaClientKnownRequestError)
   switch (err.code) {
     case "P2002": return AppError.new(StatusCode.BadRequest, `Already exists`)
 
-    default: return AppError.new(StatusCode.BadRequest, `Unknown resource error`)
+    default: {
+      return AppError.new(StatusCode.BadRequest, `Unknown resource error`)
+    }
   }
 }
 

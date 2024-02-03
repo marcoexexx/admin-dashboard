@@ -1,21 +1,5 @@
 import { object, string, z } from "zod";
-import { Pagination } from "./types";
 
-export type CategoryFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: {
-    _count?: boolean,
-    products: {
-      include?: {
-        product?: boolean
-      }
-    }
-  },
-  orderBy?: Record<
-    keyof CreateCategoryInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
 
 const params = {
   params: object({

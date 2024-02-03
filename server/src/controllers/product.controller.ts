@@ -5,7 +5,7 @@ import { parseExcel } from '../utils/parseExcel';
 import { generateUuid } from '../utils/generateUuid';
 import { createEventAction } from '../utils/auditLog';
 import { Request, Response, NextFunction } from 'express'
-import { CreateMultiProductsInput, CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, ProductFilterPagination, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
+import { CreateMultiProductsInput, CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { LifeCycleProductConcrate, LifeCycleState } from '../utils/auth/life-cycle-state';
@@ -19,21 +19,20 @@ import logging from '../middleware/logging/logging';
 
 // TODO: specification filter
 export async function getProductsHandler(
-  req: Request<{}, {}, {}, ProductFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, include: includes, orderBy } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as ProductFilterPagination["include"]
+
+    const query = convertNumericStrings(req.query)
+
     const {
       id,
-      brand,
       brandId,
       title,
       price,
       overview,
-      categories,
       instockStatus,
       description,
       discount,
@@ -41,20 +40,31 @@ export async function getProductsHandler(
       marketPrice,
       status,
       priceUnit,
-      salesCategory,
+    } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const {
+      _count,
       likedUsers,
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+      salesCategory,
+      brand,
+      coupons,
+      creator,
+      reviews,
+      orderItem,
+      categories,
+      availableSets,
+      specification,
+    } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
 
-    const offset = (page - 1) * pageSize
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     const [ count, products ] = await db.$transaction([
       db.product.count(),
       db.product.findMany({
         where: {
           id,
-          brand,
           brandId,
           title,
           price,
@@ -73,7 +83,19 @@ export async function getProductsHandler(
         orderBy,
         skip: offset,
         take: pageSize,
-        include
+        include: {
+          _count,
+          likedUsers,
+          salesCategory,
+          brand,
+          coupons,
+          creator,
+          reviews,
+          orderItem,
+          categories,
+          availableSets,
+          specification,
+        }
       })
     ])
 
@@ -92,16 +114,40 @@ export async function getProductHandler(
   next: NextFunction
 ) {
   try {
-    const { productId } = req.params
+    const query = convertNumericStrings(req.query)
 
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as ProductFilterPagination["include"]
+    const { productId } = req.params
+    const {
+      _count,
+      likedUsers,
+      salesCategory,
+      brand,
+      coupons,
+      creator,
+      reviews,
+      orderItem,
+      categories,
+      availableSets,
+      specification,
+    } = convertStringToBoolean(query.include) ?? {}
 
     const product = await db.product.findUnique({
       where: {
         id: productId
       },
-      include
+      include: {
+        _count,
+        likedUsers,
+        salesCategory,
+        brand,
+        coupons,
+        creator,
+        reviews,
+        orderItem,
+        categories,
+        availableSets,
+        specification,
+      }
     })
 
     if (!product) return next(new AppError(404, "Product not found"))

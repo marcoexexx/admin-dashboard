@@ -2,30 +2,30 @@ import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library";
-import { AccessLog, Prisma } from "@prisma/client";
+import { EventAction, Prisma } from "@prisma/client";
 import { AppService, Pagination } from "../type";
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
 
 
 /**
- * AccessLogService class provides methods for managing access log data.
+ * AuditService class provides methods for managing access log data.
  *
  * @remarks
  * This class implements the AppService interface and is designed to handle operations related to access logs.
  */
-export class AccessLogService implements AppService {
-  private repository = db.accessLog
+export class AuditService implements AppService {
+  private repository = db.eventAction
 
   /**
-   * Creates a new instance of AccessLogService.
-   * @returns A new instance of AccessLogService.
+   * Creates a new instance of AuditService.
+   * @returns A new instance of AuditService.
    */
-  static new() { return new AccessLogService() }
+  static new() { return new AuditService() }
 
 
   // Find implements
-  async find(arg: { filter?: Prisma.AccessLogWhereInput; pagination: Pagination; include?: Prisma.AccessLogInclude, orderBy?: Prisma.AccessLogOrderByWithRelationInput }): Promise<Result<[number, AccessLog[]], AppError>> {
+  async find(arg: { filter?: Prisma.EventActionWhereInput; pagination: Pagination; include?: Prisma.EventActionInclude; orderBy?: Prisma.EventActionOrderByWithRelationInput }): Promise<Result<[number, EventAction[]], AppError>> {
     const { filter, include, pagination, orderBy = {updatedAt: "desc"} } = arg
     const { page = 1, pageSize = 10 } = pagination
     const offset = (page - 1) * pageSize
@@ -53,7 +53,7 @@ export class AccessLogService implements AppService {
 
 
   // Delete implements
-  async delete(id: string): Promise<Result<AccessLog, AppError>> {
+  async delete(id: string): Promise<Result<EventAction, AppError>> {
     const tryDelete = as_result_async(this.repository.delete)
 
     const try_delete = (await tryDelete({ where: { id } })).map_err(err => {
@@ -85,3 +85,4 @@ export class AccessLogService implements AppService {
     return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
   }
 }
+

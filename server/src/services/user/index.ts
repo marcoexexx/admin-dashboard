@@ -4,7 +4,7 @@ import Email from '../../utils/email';
 import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library";
 import { Prisma, Role, User } from "@prisma/client";
 import { AppService, Pagination } from "../type";
 import { db } from "../../utils/db";
@@ -34,6 +34,7 @@ export class UserService implements AppService {
 
     const try_data = (await tryCreate({ data: payload })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
     })
 
@@ -83,16 +84,14 @@ export class UserService implements AppService {
     } catch (err: any) {
       user.verificationCode = null
 
-      if (err instanceof AppError) return Err(err)
-
-      return Err(AppError.new(StatusCode.InternalServerError, err?.message))
+      return Err(AppError.new(err.status || StatusCode.InternalServerError, err?.message))
     }
   }
 
 
   // Find implements
-  async find(arg: { filter?: Prisma.UserWhereInput; pagination: Pagination; include?: Prisma.UserInclude }): Promise<Result<[number, User[]], AppError>> {
-    const { filter, include, pagination } = arg
+  async find(arg: { filter?: Prisma.UserWhereInput; pagination: Pagination; include?: Prisma.UserInclude, orderBy?: Prisma.UserOrderByWithRelationInput }): Promise<Result<[number, User[]], AppError>> {
+    const { filter, include, pagination, orderBy = {updatedAt: "desc"} } = arg
     const { page = 1, pageSize = 10 } = pagination
     const offset = (page - 1) * pageSize
 
@@ -104,11 +103,13 @@ export class UserService implements AppService {
           include,
           skip: offset,
           take: pagination.pageSize,
+          orderBy
         })
       ])
       .then(Ok)
       .catch(err => {
         if (err instanceof PrismaClientKnownRequestError) return Err(convertPrismaErrorToAppError(err))
+        if (err instanceof PrismaClientValidationError) return Err(AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`))
         return Err(AppError.new(StatusCode.InternalServerError, err?.message))
       })
 
@@ -122,6 +123,7 @@ export class UserService implements AppService {
 
     const try_data = (await tryUnique({ where: { id } })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
     })
 
@@ -135,6 +137,7 @@ export class UserService implements AppService {
 
     const try_data = (await tryFind({ where: payload })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
     })
 
@@ -149,6 +152,7 @@ export class UserService implements AppService {
 
     const try_data = (await tryUpdate({ where: filter, data: payload })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
     })
 
@@ -162,6 +166,7 @@ export class UserService implements AppService {
 
     const try_delete = (await tryDelete({ where: { id } })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
     })
 

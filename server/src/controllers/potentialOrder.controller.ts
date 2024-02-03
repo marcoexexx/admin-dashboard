@@ -5,7 +5,7 @@ import { convertNumericStrings } from "../utils/convertNumber";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { CreatePotentialOrderInput, DeleteMultiPotentialOrdersInput, GetPotentialOrderInput, PotentialOrderFilterPagination, UpdatePotentialOrderInput } from "../schemas/potentialOrder.schema";
+import { CreatePotentialOrderInput, DeleteMultiPotentialOrdersInput, GetPotentialOrderInput, UpdatePotentialOrderInput } from "../schemas/potentialOrder.schema";
 import { EventActionType, Resource } from "@prisma/client";
 
 import AppError from "../utils/appError";
@@ -13,25 +13,20 @@ import logging from "../middleware/logging/logging";
 
 
 export async function getPotentialOrdersHandler(
-  req: Request<{}, {}, {}, PotentialOrderFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as PotentialOrderFilterPagination["include"]
-    const {
-      id,
-      status,
-      startDate,
-      remark,
-      totalPrice,
-      endDate
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const query = convertNumericStrings(req.query)
 
-    const offset = (page - 1) * pageSize
+    const { id, startDate, endDate, status, totalPrice, remark } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { _count, user, deliveryAddress, billingAddress, pickupAddress, orderItems } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
+
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     const [count, potentialOrders] = await db.$transaction([
       db.potentialOrder.count(),
@@ -49,7 +44,14 @@ export async function getPotentialOrdersHandler(
         orderBy,
         skip: offset,
         take: pageSize,
-        include
+        include: {
+          _count,
+          user,
+          deliveryAddress,
+          billingAddress,
+          pickupAddress,
+          orderItems,
+        }
       })
     ])
 
@@ -68,16 +70,23 @@ export async function getPotentialOrderHandler(
   next: NextFunction
 ) {
   try {
-    const { potentialOrderId } = req.params
+    const query = convertNumericStrings(req.query)
 
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as PotentialOrderFilterPagination["include"]
+    const { potentialOrderId } = req.params
+    const { _count, user, deliveryAddress, billingAddress, pickupAddress, orderItems } = convertStringToBoolean(query.include) ?? {}
 
     const potentialOrder = await db.potentialOrder.findUnique({
       where: {
         id: potentialOrderId
       },
-      include
+      include: {
+        _count,
+        user,
+        deliveryAddress,
+        billingAddress,
+        pickupAddress,
+        orderItems,
+      }
     })
 
     // Read event action audit log

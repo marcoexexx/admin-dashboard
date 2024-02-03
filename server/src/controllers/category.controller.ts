@@ -5,7 +5,7 @@ import { createEventAction } from "../utils/auditLog";
 import { db } from "../utils/db";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CategoryFilterPagination, CreateCategoryInput, CreateMultiCategoriesInput, DeleteMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
+import { CreateCategoryInput, CreateMultiCategoriesInput, DeleteMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { EventActionType, Resource } from "@prisma/client";
 
@@ -15,21 +15,19 @@ import fs from 'fs'
 
 
 export async function getCategoriesHandler(
-  req: Request<{}, {}, {}, CategoryFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as CategoryFilterPagination["include"]
-    const {
-      id,
-      name
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const query = convertNumericStrings(req.query)
 
-    const offset = (page - 1) * pageSize
+    const { id, name } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { _count, products } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
+
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     const [count, categories] = await db.$transaction([
       db.category.count(),
@@ -41,7 +39,10 @@ export async function getCategoriesHandler(
         orderBy,
         skip: offset,
         take: pageSize,
-        include
+        include: {
+          _count,
+          products
+        }
       })
     ])
 
@@ -55,21 +56,24 @@ export async function getCategoriesHandler(
 
 
 export async function getCategoryHandler(
-  req: Request<GetCategoryInput["params"] & Pick<CategoryFilterPagination, "include">>,
+  req: Request<GetCategoryInput["params"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { categoryId } = req.params
+    const query = convertNumericStrings(req.query)
 
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as CategoryFilterPagination["include"]
+    const { categoryId } = req.params
+    const { _count, products } = convertStringToBoolean(query.include) ?? {}
 
     const category = await db.category.findUnique({
       where: {
         id: categoryId
       },
-      include
+      include: {
+        _count,
+        products
+      }
     })
 
     // Read event action audit log

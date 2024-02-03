@@ -5,7 +5,7 @@ import { createEventAction } from "../utils/auditLog";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { CreateExchangeInput, CreateMultiExchangesInput, DeleteMultiExchangesInput, ExchangeFilterPagination, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
+import { CreateExchangeInput, CreateMultiExchangesInput, DeleteMultiExchangesInput, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
 import { EventActionType, Resource } from "@prisma/client";
 
 import AppError from "../utils/appError";
@@ -14,24 +14,19 @@ import fs from 'fs'
 
 
 export async function getExchangesHandler(
-  req: Request<{}, {}, {}, ExchangeFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy } = convertNumericStrings(req.query)
-    const {
-      id,
-      from,
-      to,
-      endDate,
-      startDate,
-      rate
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const query = convertNumericStrings(req.query)
 
-    const offset = (page - 1) * pageSize
+    const { id, from, to, startDate, endDate, rate } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const orderBy = query.orderBy ?? {}
+
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     const [count, exchanges] = await db.$transaction([
       db.exchange.count(),

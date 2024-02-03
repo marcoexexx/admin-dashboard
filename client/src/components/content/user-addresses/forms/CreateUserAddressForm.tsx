@@ -1,15 +1,18 @@
 import { Box, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { MuiButton } from "@/components/ui";
+import { EditorInputField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
+import { FormModal } from "@/components/forms";
+import { CreateRegionForm } from "../../regions/forms";
+import { CreateTownshipForm } from "../../townships/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, object, string, z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/components";
-import { MuiButton } from "@/components/ui";
 import { createUserAddressFn } from "@/services/userAddressApi";
 import { useEffect } from "react";
-import { EditorInputField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
 import { playSoundEffect } from "@/libs/playSound";
 
 
@@ -67,6 +70,10 @@ export function CreateUserAddressForm() {
       methods.setValue("email", user.email)
     }
   }, [user])
+
+  const handleOnCloseModalForm = () => {
+    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
+  }
 
   const { handleSubmit, register, formState: { errors } } = methods
 
@@ -143,6 +150,19 @@ export function CreateUserAddressForm() {
           </Grid>
         </Grid>
       </FormProvider>
+
+
+      {modalForm.field === "region"
+      ? <FormModal field='region' title='Create new region' onClose={handleOnCloseModalForm}>
+        <CreateRegionForm />
+      </FormModal>
+      : null}
+
+      {modalForm.field === "townships"
+      ? <FormModal field='townships' title='Create new township' onClose={handleOnCloseModalForm}>
+        <CreateTownshipForm />
+      </FormModal>
+      : null}
     </>
   )
 }

@@ -5,41 +5,50 @@ import { convertNumericStrings } from "../utils/convertNumber";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { CreateUserAddressInput, DeleteMultiUserAddressesInput, GetUserAddressInput, UpdateUserAddressInput, UserAddressFilterPagination } from "../schemas/userAddress.schema";
+import { CreateUserAddressInput, DeleteMultiUserAddressesInput, GetUserAddressInput, UpdateUserAddressInput } from "../schemas/userAddress.schema";
 import { EventActionType, Resource } from "@prisma/client";
 
 import AppError from "../utils/appError";
 import logging from "../middleware/logging/logging";
+import { checkUser } from "../services/checkUser";
 
 
 export async function getUserAddressesHandler(
-  req: Request<{}, {}, {}, UserAddressFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as UserAddressFilterPagination["include"]
-    const {
+
+    const query = convertNumericStrings(req.query)
+
+    const { 
       id,
       username,
       isDefault,
       phone,
       email,
-      region,
-      township,
       fullAddress,
-      remark
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+      remark 
+    } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { 
+      _count,
+      region,
+      user,
+      township,
+      deliveryOrders,
+      deveryPotentialOrders,
+      billingOrders,
+      billingPotentialOrders 
+    } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
 
-    const offset = (page - 1) * pageSize
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     // @ts-ignore  for mocha testing
-    const user = req.user
-
-    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
 
     const [count, userAddresses] = await db.$transaction([
       db.userAddress.count(),
@@ -47,16 +56,26 @@ export async function getUserAddressesHandler(
         where: {
           id,
           username,
-          userId: user.id,
+          userId: sessionUser.id,
           isDefault,
           phone,
           email,
-          region: { name: region },
-          township: { name: township },
+          // TODO: filter
+          // region: { name: region },
+          // township: { name: township },
           fullAddress,
           remark
         },
-        include,
+        include: {
+          _count,
+          region,
+          user,
+          township,
+          deliveryOrders,
+          deveryPotentialOrders,
+          billingOrders,
+          billingPotentialOrders,
+        },
         orderBy,
         skip: offset,
         take: pageSize,
@@ -73,21 +92,39 @@ export async function getUserAddressesHandler(
 
 
 export async function getUserAddressHandler(
-  req: Request<GetUserAddressInput["params"] & Pick<UserAddressFilterPagination, "include">>,
+  req: Request<GetUserAddressInput["params"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { userAddressId } = req.params
+    const query = convertNumericStrings(req.query)
 
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as UserAddressFilterPagination["include"]
+    const { userAddressId } = req.params
+    const { 
+      _count,
+      region,
+      user,
+      township,
+      deliveryOrders,
+      deveryPotentialOrders,
+      billingOrders,
+      billingPotentialOrders 
+    } = convertStringToBoolean(query.include) ?? {}
 
     const userAddress = await db.userAddress.findUnique({
       where: {
         id: userAddressId
       },
-      include
+      include: {
+        _count,
+        region,
+        user,
+        township,
+        deliveryOrders,
+        deveryPotentialOrders,
+        billingOrders,
+        billingPotentialOrders,
+      }
     })
 
     if (userAddress) {

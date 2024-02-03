@@ -3,7 +3,7 @@ import { convertNumericStrings } from "../utils/convertNumber";
 import { parseExcel } from "../utils/parseExcel";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { createEventAction } from "../utils/auditLog";
-import { CreateMultiRegionsInput, CreateRegionInput, DeleteMultiRegionsInput, GetRegionInput, RegionFilterPagination, UpdateRegionInput } from "../schemas/region.schema";
+import { CreateMultiRegionsInput, CreateRegionInput, DeleteMultiRegionsInput, GetRegionInput, UpdateRegionInput } from "../schemas/region.schema";
 import { EventActionType, Resource } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
@@ -15,21 +15,20 @@ import fs from "fs"
 
 
 export async function getRegionsHandler(
-  req: Request<{}, {}, {}, RegionFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as RegionFilterPagination["include"]
-    const {
-      id,
-      name,
-    } = filter
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const query = convertNumericStrings(req.query)
 
-    const offset = (page - 1) * pageSize
+    const { id, name } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { _count, townships, userAddresses } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
+
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     const [count, regions] = await db.$transaction([
       db.region.count(),
@@ -38,7 +37,11 @@ export async function getRegionsHandler(
           id,
           name
         },
-        include,
+        include: {
+          _count,
+          townships,
+          userAddresses
+        },
         orderBy,
         skip: offset,
         take: pageSize,
@@ -55,21 +58,25 @@ export async function getRegionsHandler(
 
 
 export async function getRegionHandler(
-  req: Request<GetRegionInput["params"] & Pick<RegionFilterPagination, "include">>,
+  req: Request<GetRegionInput["params"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { regionId } = req.params
+    const query = convertNumericStrings(req.query)
 
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as RegionFilterPagination["include"]
+    const { regionId } = req.params
+    const { _count, townships, userAddresses } = convertStringToBoolean(query.include) ?? {}
 
     const region = await db.region.findUnique({
       where: {
         id: regionId
       },
-      include
+      include: {
+        _count,
+        townships,
+        userAddresses
+      }
     })
 
     if (region) {

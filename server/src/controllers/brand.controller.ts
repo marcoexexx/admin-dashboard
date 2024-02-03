@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { BrandFilterPagination, CreateBrandInput, CreateMultiBrandsInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
+import { CreateBrandInput, CreateMultiBrandsInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { EventActionType, Resource } from "@prisma/client";
 import { db } from "../utils/db";
@@ -15,21 +15,20 @@ import fs from "fs"
 
 
 export async function getBrandsHandler(
-  req: Request<{}, {}, {}, BrandFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as BrandFilterPagination["include"]
-    const {
-      id,
-      name
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const query = convertNumericStrings(req.query)
 
-    const offset = (page - 1) * pageSize
+    const { id, name } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { _count, products } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
+
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     const [count, brands] = await db.$transaction([
       db.brand.count(),
@@ -38,7 +37,10 @@ export async function getBrandsHandler(
           id,
           name
         },
-        include,
+        include: {
+          _count,
+          products
+        },
         orderBy,
         skip: offset,
         take: pageSize,
@@ -55,21 +57,24 @@ export async function getBrandsHandler(
 
 
 export async function getBrandHandler(
-  req: Request<GetBrandInput["params"] & Pick<BrandFilterPagination, "include">>,
+  req: Request<GetBrandInput["params"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { brandId } = req.params
+    const query = convertNumericStrings(req.query)
 
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as BrandFilterPagination["include"]
+    const { brandId } = req.params
+    const { _count, products } = convertStringToBoolean(query.include) ?? {}
 
     const brand = await db.brand.findUnique({
       where: {
         id: brandId
       },
-      include
+      include: {
+        _count,
+        products
+      }
     })
 
     // Read event action audit log

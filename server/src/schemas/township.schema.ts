@@ -1,16 +1,5 @@
 import { number, object, string, z } from "zod";
-import { Pagination } from "./types";
 
-
-export type TownshipFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: {
-  },
-  orderBy?: Record<
-    keyof CreateTownshipInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
 
 const params = {
   params: object({

@@ -1,5 +1,4 @@
 import { number, object, string, z } from "zod";
-import { Pagination } from "./types";
 
 
 export const paymentMethodProvider = [
@@ -26,16 +25,6 @@ const orderAddressType = [
   "Pickup"
 ] as const
 
-
-export type OrderFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: {
-  },
-  orderBy?: Record<
-    keyof CreateOrderInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
 
 const params = {
   params: object({

@@ -1,15 +1,6 @@
 import { number, object, string, z } from "zod";
-import { Pagination } from "./types";
 import { priceUnit } from "./product.schema";
 
-
-export type ExchangeFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  orderBy?: Record<
-    keyof CreateExchangeInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
 
 const params = {
   params: object({
