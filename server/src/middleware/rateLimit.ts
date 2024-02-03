@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import logging from "./logging/logging";
-import AppError from "../utils/appError";
+import { tryParseInt } from "../utils/result/std";
+
+import AppError, { StatusCode } from "../utils/appError";
 import redisClient from "../utils/connectRedis";
-import { parseInt } from "lodash";
 
 
 /* It allowed 60 requests per 1 minute */
@@ -15,7 +15,7 @@ export async function rateLimitMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  if (!req.ip) return next(new AppError(400, "Unable to determine client IP address."))
+  if (!req.ip) return next(AppError.new(StatusCode.BadRequest, `Unable to determine client IP address.`))
 
   const key = req.ip
   const currentTimestamp = Math.floor(Date.now() / 1000)
@@ -31,7 +31,7 @@ export async function rateLimitMiddleware(
       await redisClient.setEx(key, ALLOWED_EXPIRY_TIME, "1")
       resetTime = currentTimestamp + ALLOWED_EXPIRY_TIME
     } else {
-      if (parseInt(requestCount, 10) > ALLOWED_REQUEST_COUNT) {
+      if (tryParseInt(requestCount, 10).expect("Failed to parse integer `requestcount`") > ALLOWED_REQUEST_COUNT) {
         resetTime = (await redisClient.ttl(key)) + currentTimestamp
         retryAfter = resetTime - currentTimestamp
 
@@ -48,14 +48,12 @@ export async function rateLimitMiddleware(
 
     res.set({
       "X-Rate-Limit-Limit": ALLOWED_REQUEST_COUNT,
-      "X-Rate-Limit-Remaining": requestCount !== null ? ALLOWED_REQUEST_COUNT - parseInt(requestCount, 10) : ALLOWED_REQUEST_COUNT - 0,
+      "X-Rate-Limit-Remaining": requestCount !== null ? ALLOWED_REQUEST_COUNT - tryParseInt(requestCount, 10).expect("Failed to parse integer `requestCount`") : ALLOWED_REQUEST_COUNT - 0,
       "X-Rate-Limit-Reset": ttl
     })
 
     next()
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+  } catch (err) {
+    next(err)
   }
 }

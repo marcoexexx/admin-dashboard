@@ -8,11 +8,11 @@ import { getExchangesFn } from "@/services/exchangesApi";
 
 export function useGetExchangeByLatestUnit(unit: PriceUnit) {
   const query = useQuery({
-    queryKey: ["exchanges", unit],
+    queryKey: ["exchanges", "latest", unit],
     queryFn: args => getExchangesFn(args, {
       filter: {
-        from: "MMK",
-        to: unit
+        to: "MMK",
+        from: unit,
       },
       pagination: {
         page: 1,

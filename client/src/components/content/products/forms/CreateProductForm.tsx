@@ -1,4 +1,4 @@
-import { Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, Switch, TextField } from "@mui/material";
+import { Box, FormControlLabel, FormHelperText, Grid, InputAdornment, MenuItem, OutlinedInput, Switch, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
@@ -12,6 +12,7 @@ import { queryClient } from "@/components";
 import { useEffect } from "react";
 import { useCreateProduct } from "@/hooks/product";
 import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
+import { tryParseInt } from "@/libs/result/std";
 
 
 // TODO: Type enum
@@ -78,6 +79,16 @@ export function CreateProductForm() {
   }, [methods.watch("priceUnit")])
 
 
+  // Calculate percent discount
+  useEffect(() => {
+    const price = methods.getValues("price")
+    const marketPrice = methods.getValues("marketPrice")
+
+    if (!price || !!marketPrice) methods.setValue("discount", 0)
+    if (price && marketPrice) methods.setValue("discount", ((marketPrice - price) / marketPrice) * 100)
+  }, [methods.watch("marketPrice"), methods.watch("price")])
+
+
   const handleOnCloseModalForm = () => {
     dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
   }
@@ -95,6 +106,7 @@ export function CreateProductForm() {
   const handleOnCalculate = (_: React.MouseEvent<HTMLButtonElement>) => {
     const price = methods.getValues("price")
     const rate = exchangeRate?.[0]?.rate || 1
+
     methods.setValue("price", price * rate)
   }
 
@@ -125,11 +137,12 @@ export function CreateProductForm() {
                 endAdornment={
                   <InputAdornment position="end">
                     <MuiButton onClick={handleOnCalculate} variant="outlined" size="small">
-                      Calculate
+                      Convert to MMK
                     </MuiButton>
                   </InputAdornment>
                 }
               />
+              {!!errors.price ? <FormHelperText error id="price-error"></FormHelperText> : <FormHelperText>{`1 ${methods.getValues("priceUnit")} ~ ${exchangeRate?.[0]?.rate} MMK`}</FormHelperText>}
             </Box>
           </Grid>
 
@@ -152,13 +165,13 @@ export function CreateProductForm() {
                   </MenuItem>
                 ))}
               </TextField>
-              <TextField fullWidth {...register("dealerPrice", { valueAsNumber: true })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
+              <TextField fullWidth {...register("dealerPrice", { setValueAs: (v) => !v ? undefined : tryParseInt(v, 10).unwrap_or(0) })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField fullWidth {...register("marketPrice", { valueAsNumber: true })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
+              <TextField fullWidth {...register("marketPrice", { setValueAs: (v) => !v ? undefined : tryParseInt(v, 10).unwrap_or(0) })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
             </Box>
           </Grid>
 
@@ -201,6 +214,7 @@ export function CreateProductForm() {
               <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
               <TextField 
                 fullWidth 
+                focused
                 type="number" 
                 {...register("discount", { valueAsNumber: true })} 
                 inputProps={{

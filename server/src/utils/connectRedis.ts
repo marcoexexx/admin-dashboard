@@ -1,4 +1,5 @@
 import { createClient } from 'redis'
+
 import getConfig from './getConfig'
 import logging from '../middleware/logging/logging'
 

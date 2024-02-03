@@ -3,18 +3,19 @@ import crypto from 'crypto'
 import redisClient from "../utils/connectRedis";
 import getConfig from "../utils/getConfig";
 import logging from "../middleware/logging/logging";
-import AppError from "../utils/appError";
-import Email from "../utils/email";
+import AppError, { StatusCode } from "../utils/appError";
 
 import { CookieOptions, NextFunction, Request, Response } from "express";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreateUserInput, LoginUserInput, Role, VerificationEmailInput } from "../schemas/user.schema";
 import { HttpDataResponse, HttpResponse } from "../utils/helper";
+import { UserService } from '../services/user';
 import { signToken, verifyJwt } from "../utils/auth/jwt";
 import { generateRandomUsername } from "../utils/generateRandomUsername";
-import { createVerificationCode } from "../utils/createVeriicationCode";
 import { db } from "../utils/db";
 import { getGoogleAuthToken, getGoogleUser } from '../services/OAuth';
+
+
+const service = UserService.new()
 
 
 const cookieOptions: CookieOptions = {
@@ -45,67 +46,11 @@ export async function registerUserHandler(
   try {
     const { name, email, password } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = (await service.register({ name, email, password })).ok_or_throw()
 
-    let data = {
-      name,
-      email,
-      username: generateRandomUsername(12),
-      password: hashedPassword,
-      role: "User" as Role,
-      verified: false,
-      reward: {
-        create: {
-          points: 0,
-        }
-      },
-      verificationCode: undefined as undefined | string
-    }
-
-    // set Admin if first time create user,
-    const usersExistCount = await db.user.count();
-    if (usersExistCount === 0) {
-      data.role = "Admin"
-    }
-
-    // check user already exists
-    const userExists = await db.user.findUnique({ 
-      where: {
-        email,
-      }
-    })
-    if (userExists) return next(new AppError(409, "User already exists")) 
-
-    // Email verification
-    const { hashedVerificationCode, verificationCode } = createVerificationCode()
-    data.verificationCode = hashedVerificationCode
-    //
-    // Crete new user
-    const user = await db.user.create({
-      data
-    });
-    const redirectUrl = `${getConfig('origin')}/verify-email/${verificationCode}`
-
-
-    try {
-      await new Email(user, redirectUrl).sendVerificationCode()
-
-      res.status(201).json(HttpDataResponse({ 
-        user,
-        redirectUrl: getConfig("nodeEnv") === "development" ? redirectUrl : undefined
-      }))
-    } catch (err: any) {
-      user.verificationCode = null
-
-      return next(new AppError(500, "There was an error sending email, please try again" + err.message))
-    }
+    res.status(StatusCode.Created).json(HttpDataResponse({ user }))
   } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "User already exists"))
-
-    next(new AppError(500, msg))
+    next(err)
   }
 }
 
@@ -121,25 +66,17 @@ export async function verificationEmailHandler(
       .update(req.params.verificationCode)
       .digest("hex")
 
-    const user = await db.user.findFirst({
-      where: {
-        verificationCode
-      }
+    const user = (await service.findFirst({ verificationCode })).ok_or_throw()
+
+    if (!user) return next(AppError.new(StatusCode.Unauthorized, `Could not verify email`))
+
+    const _updatedUser = await service.update({
+      filter: { id: user.id },
+      payload: { verified: true, verificationCode: null }
     })
+    _updatedUser.ok_or_throw()
 
-    if (!user) return next(new AppError(401, "Could not verify email"))
-
-    await db.user.update({
-      where: {
-        id: user.id
-      },
-      data: {
-        verified: true,
-        verificationCode: null
-      }
-    })
-
-    res.status(200).json(HttpResponse(200, "Email verified successfully"))
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, `Email verified successfully`))
   } catch (err: any) {
     const msg = err?.message || "internal server error"
     logging.error(msg)
