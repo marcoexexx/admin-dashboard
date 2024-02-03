@@ -10,30 +10,25 @@ import { EventActionType, Resource, Role } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, OrderFilterPagination, UpdateOrderInput } from "../schemas/order.schema";
+import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, UpdateOrderInput } from "../schemas/order.schema";
 import { LifeCycleOrderConcrate, LifeCycleState } from "../utils/auth/life-cycle-state";
 
 
 export async function getOrdersHandler(
-  req: Request<{}, {}, {}, OrderFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as OrderFilterPagination["include"]
-    const {
-      id,
-      status,
-      startDate,
-      remark,
-      totalPrice,
-      endDate
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const query = convertNumericStrings(req.query)
 
-    const offset = (page - 1) * pageSize
+    const { id, startDate, endDate, status, totalPrice, remark } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
+
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     const [count, orders] = await db.$transaction([
       db.order.count(),
@@ -51,7 +46,14 @@ export async function getOrdersHandler(
         orderBy,
         skip: offset,
         take: pageSize,
-        include
+        include: {
+          _count,
+          user,
+          orderItems,
+          pickupAddress,
+          billingAddress,
+          deliveryAddress
+        }
       })
     ])
 
@@ -70,16 +72,23 @@ export async function getOrderHandler(
   next: NextFunction
 ) {
   try {
-    const { orderId } = req.params
+    const query = convertNumericStrings(req.query)
 
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as OrderFilterPagination["include"]
+    const { orderId } = req.params
+    const { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } = convertStringToBoolean(query.include) ?? {}
 
     const order = await db.order.findUnique({
       where: {
         id: orderId
       },
-      include
+      include: {
+        _count,
+        user,
+        orderItems,
+        pickupAddress,
+        billingAddress,
+        deliveryAddress
+      }
     })
 
     // Read event action audit log

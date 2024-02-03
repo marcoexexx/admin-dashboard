@@ -5,7 +5,7 @@ import { parseExcel } from "../utils/parseExcel";
 import { generateCouponLabel } from "../utils/generateCouponLabel";
 import { createEventAction } from "../utils/auditLog";
 import { NextFunction, Request, Response } from "express";
-import { CouponFilterPagination, CreateCouponInput, CreateMultiCouponsInput, DeleteMultiCouponsInput, GetCouponInput, UpdateCouponInput } from "../schemas/coupon.schema";
+import { CreateCouponInput, CreateMultiCouponsInput, DeleteMultiCouponsInput, GetCouponInput, UpdateCouponInput } from "../schemas/coupon.schema";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { EventActionType, Resource } from "@prisma/client";
@@ -16,25 +16,20 @@ import logging from "../middleware/logging/logging";
 
 
 export async function getCouponsHandler(
-  req: Request<{}, {}, {}, CouponFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as CouponFilterPagination["include"]
-    const {
-      id,
-      points,
-      dolla,
-      productId,
-      isUsed,
-      expiredDate
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const query = convertNumericStrings(req.query)
 
-    const offset = (page - 1) * pageSize
+    const { id, points, dolla, productId, isUsed, expiredDate } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { reward, product } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
+
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     const [coupons, count] = await db.$transaction([
       db.coupon.findMany({
@@ -49,7 +44,10 @@ export async function getCouponsHandler(
         orderBy,
         skip: offset,
         take: pageSize,
-        include
+        include: {
+          reward,
+          product
+        }
       }),
       db.coupon.count()
     ])
@@ -64,21 +62,24 @@ export async function getCouponsHandler(
 
 
 export async function getCouponHandler(
-  req: Request<GetCouponInput["params"] & Pick<CouponFilterPagination, "include">>,
+  req: Request<GetCouponInput["params"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { couponId } = req.params
+    const query = convertNumericStrings(req.query)
 
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as CouponFilterPagination["include"]
+    const { couponId } = req.params
+    const { reward, product } = convertStringToBoolean(query.include) ?? {}
 
     const coupon = await db.coupon.findUnique({
       where: {
         id: couponId
       },
-      include
+      include: {
+        reward,
+        product
+      }
     })
 
     // Read event action audit log

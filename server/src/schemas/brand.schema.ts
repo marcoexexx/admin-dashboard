@@ -1,17 +1,5 @@
 import { object, string, z } from "zod";
-import { Pagination } from "./types";
 
-export type BrandFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: {
-    _count?: boolean
-    products?: boolean
-  }
-  orderBy?: Record<
-    keyof CreateBrandInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
 
 const params = {
   params: object({
@@ -50,6 +38,7 @@ export const deleteMultiBrandsSchema = object({
     brandIds: string().array()
   })
 })
+
 
 export type CreateBrandInput = z.infer<typeof createBrandSchema>["body"]
 export type CreateMultiBrandsInput = z.infer<typeof createMultiBrandsSchema>["body"]

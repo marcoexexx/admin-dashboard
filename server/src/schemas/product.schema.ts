@@ -1,48 +1,10 @@
 import { boolean, number, object, string, z } from "zod";
-import { Pagination } from "./types";
 
 
 export const productStockStatus = ["Available", "OutOfStock", "AskForStock", "Discontinued"] as const
 export const productStatus = ["Draft", "Pending", "Published"] as const
 export const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"] as const
 
-
-export type ProductFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: {
-    likedUsers?: {
-      include?: {
-        user?: boolean
-      }
-    } | boolean,
-    brand?: boolean,
-    categories?: {
-      include: {
-        category?: boolean
-      }
-    } | boolean,
-    salesCategory?: {
-      include?: {
-        salesCategory?: boolean
-      }
-    } | boolean,
-    specification?: boolean,
-    reviews?: boolean,
-    creator?: boolean,
-    coupons?: boolean,
-    orderItem?: boolean,
-    availableSets?: {
-      include?: {
-        productSet?: boolean,
-        product?: boolean
-      },
-    } | boolean
-  },
-  orderBy?: Record<
-    keyof CreateProductInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
 
 const params = {
   params: object({

@@ -1,21 +1,10 @@
 import { number, object, string, z } from "zod";
-import { Pagination } from "./types";
 import { paymentMethodProvider } from "./order.schema";
 
 
 export const potentialOrderStatus = ["Processing", "Confimed", "Cancelled"] as const
 const potentialOrderAddressType = ["Delivery", "Pickup"] as const
 
-
-export type PotentialOrderFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: {
-  },
-  orderBy?: Record<
-    keyof CreatePotentialOrderInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
 
 const params = {
   params: object({

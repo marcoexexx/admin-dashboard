@@ -1,18 +1,6 @@
 import { boolean, number, object, string, z } from "zod";
-import { Pagination } from "./types";
 
-export type CouponFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: {
-    _count?: boolean
-    reward?: boolean
-    product?: boolean
-  }
-  orderBy?: Record<
-    keyof CreateCouponInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
+
 
 const params = {
   params: object({
@@ -75,6 +63,7 @@ export const deleteMultiCouponsSchema = object({
     couponIds: string().array()
   })
 })
+
 
 export type CreateCouponInput = z.infer<typeof createCouponSchema>["body"]
 export type CreateMultiCouponsInput = z.infer<typeof createMultiCouponsSchema>["body"]

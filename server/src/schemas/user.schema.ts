@@ -1,15 +1,7 @@
 import { object, string, z } from "zod";
-import { Pagination } from "./types";
 
 
 export const userRole = ["Admin", "User", "Shopowner"] as const
-
-
-export type UserFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: any
-}
 
 
 const params = {

@@ -6,7 +6,7 @@ import { createEventAction } from "../utils/auditLog";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper"; 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"; 
-import { CreateMultiTownshipsInput, CreateTownshipInput, DeleteMultiTownshipsInput, GetTownshipInput, TownshipFilterPagination, UpdateTownshipInput } from "../schemas/township.schema";
+import { CreateMultiTownshipsInput, CreateTownshipInput, DeleteMultiTownshipsInput, GetTownshipInput, UpdateTownshipInput } from "../schemas/township.schema";
 import { EventActionType, Resource } from "@prisma/client";
 
 import AppError from "../utils/appError";
@@ -15,23 +15,20 @@ import fs from "fs"
 
 
 export async function getTownshipsHandler(
-  req: Request<{}, {}, {}, TownshipFilterPagination>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as TownshipFilterPagination["include"]
-    const {
-      id,
-      name,
-      fees,
-      region,
-    } = filter
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const query = convertNumericStrings(req.query)
 
-    const offset = (page - 1) * pageSize
+    const { id, name, fees } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { _count, userAddresses, region } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
+
+    // TODO: fix
+    const offset = ((page||1) - 1) * (pageSize||10)
 
     const [count, townships] = await db.$transaction([
       db.townshipFees.count(),
@@ -40,9 +37,12 @@ export async function getTownshipsHandler(
           id,
           name,
           fees,
+        },
+        include: {
+          _count,
+          userAddresses,
           region
         },
-        include,
         orderBy,
         skip: offset,
         take: pageSize,
@@ -59,21 +59,25 @@ export async function getTownshipsHandler(
 
 
 export async function getTownshipHandler(
-  req: Request<GetTownshipInput["params"] & Pick<TownshipFilterPagination, "include">>,
+  req: Request<GetTownshipInput["params"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { townshipId } = req.params
+    const query = convertNumericStrings(req.query)
 
-    const { include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as TownshipFilterPagination["include"]
+    const { townshipId } = req.params
+    const { _count, userAddresses, region } = convertStringToBoolean(query.include) ?? {}
 
     const township = await db.townshipFees.findUnique({
       where: {
         id: townshipId
       },
-      include
+      include: {
+        _count,
+        userAddresses,
+        region
+      }
     })
 
     if (township) {

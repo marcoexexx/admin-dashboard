@@ -1,17 +1,5 @@
 import { object, string, z } from "zod";
-import { Pagination } from "./types";
 
-
-export type RegionFilterPagination = {
-  filter?: any,
-  pagination?: Pagination,
-  include?: {
-    townships?: boolean
-  },
-  orderBy?: Record<
-    keyof CreateRegionInput | "createdAt" | "updatedAt", 
-    "asc" | "desc">
-}
 
 const params = {
   params: object({

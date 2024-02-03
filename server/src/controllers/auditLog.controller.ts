@@ -1,12 +1,14 @@
+import { StatusCode } from "../utils/appError";
+
 import { NextFunction, Request, Response } from "express";
-import { HttpListResponse, HttpResponse } from "../utils/helper";
-import { db } from "../utils/db";
+import { HttpDataResponse, HttpListResponse } from "../utils/helper";
+import { DeleteAuditLogSchema } from "../schemas/auditLog.schema";
+import { AuditService } from "../services/auditLog";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
-import { AuditLogFilterPagination, DeleteAuditLogSchema } from "../schemas/auditLog.schema";
+
+const service = AuditService.new()
 
 
 export async function getAuditLogsHandler(
@@ -15,40 +17,32 @@ export async function getAuditLogsHandler(
   next: NextFunction
 ) {
   try {
-    // @ts-ignore  for mocha
-    const user = req.user
+    const query = convertNumericStrings(req.query)
 
-    const { filter = {}, pagination, orderBy, include: includes } = convertNumericStrings(req.query)
-    const include = convertStringToBoolean(includes) as AuditLogFilterPagination["include"]
-    const {
-      resource,
-      action
-    } = filter || { status: undefined }
-    const { page, pageSize } = pagination ??  // ?? nullish coalescing operator, check only `null` or `undefied`
-      { page: 1, pageSize: 10 }
+    const { id, resource, action } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { user } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
 
-    const offset = (page - 1) * pageSize
+    const [count, logs] = (await service.find({
+      filter: {
+        id,
+        resource,
+        action,
+      },
+      pagination: {
+        page,
+        pageSize,
+      },
+      include: {
+        user
+      },
+      orderBy
+    })).ok_or_throw()
 
-    const [count, logs] = await db.$transaction([
-      db.eventAction.count(),
-      db.eventAction.findMany({
-        where: {
-          userId: user?.id,
-          action,
-          resource,
-        },
-        include,
-        skip: offset,
-        orderBy,
-        take: pageSize,
-      })
-    ])
-
-    res.status(200).json(HttpListResponse(logs, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(logs, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -60,17 +54,10 @@ export async function deleteAuditLogsHandler(
   try {
     const { auditLogId } = req.params
 
-    await db.eventAction.delete({
-      where: {
-        id: auditLogId
-      }
-    })
+    const auditLog = (await service.delete(auditLogId)).ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ auditLog }))
+  } catch (err) {
+    next(err)
   }
 }
-

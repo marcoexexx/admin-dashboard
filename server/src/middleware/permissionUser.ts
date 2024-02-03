@@ -12,13 +12,13 @@ export function permissionUser(
   perm: Permission<Role>
 ) {
   return (
-    _req: Request,
+    req: Request,
     _: Response,
     next: NextFunction
   ) => {
       try {
         // @ts-ignore  for mocha testing
-        const sessionUser = checkUser().ok()
+        const sessionUser = checkUser(req?.user).ok()
 
         const isAllowed = roleBasedAccess.isAuthenticated(perm, sessionUser?.role || "*", action)
 

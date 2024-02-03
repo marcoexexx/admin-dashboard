@@ -7,7 +7,10 @@ import { permissionUser } from "../middleware/permissionUser";
 import { deleteAuditLogSchema } from "../schemas/auditLog.schema";
 import { auditLogPermission } from "../utils/auth/permissions/auditLog.permission";
 
+
 const router = Router()
+router.use(deserializeUser, requiredUser)
+
 
 router.route("")
   .get(
@@ -17,8 +20,6 @@ router.route("")
 
 router.route("/detail/:auditLogId")
   .delete(
-    deserializeUser,
-    requiredUser,
     validate(deleteAuditLogSchema),
     permissionUser("delete", auditLogPermission),
     deleteAuditLogsHandler,
