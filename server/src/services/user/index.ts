@@ -118,10 +118,10 @@ export class UserService implements AppService {
 
 
   // Find One implements
-  async findUnique(id: string): Promise<Result<User | null, AppError>> {
+  async findUnique(id: string, include?: Prisma.UserInclude): Promise<Result<User | null, AppError>> {
     const tryUnique = as_result_async(this.repository.findUnique)
 
-    const try_data = (await tryUnique({ where: { id } })).map_err(err => {
+    const try_data = (await tryUnique({ where: { id }, include })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
@@ -132,10 +132,10 @@ export class UserService implements AppService {
 
 
   // Find first implements
-  async findFirst(payload: Prisma.UserWhereInput): Promise<Result<User | null, AppError>> {
+  async findFirst(payload: Prisma.UserWhereInput, include?: Prisma.UserInclude): Promise<Result<User | null, AppError>> {
     const tryFind = as_result_async(this.repository.findFirst)
 
-    const try_data = (await tryFind({ where: payload })).map_err(err => {
+    const try_data = (await tryFind({ where: payload, include })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)

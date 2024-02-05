@@ -5,10 +5,12 @@ import { getMeHandler, uploadImageCoverHandler, uploadImageProfileHandler } from
 import { resizeProfileImage, uploadProfileImage } from "../upload/singleUpload";
 import { validate } from "../middleware/validate";
 import { uploadImageProfileSchema } from "../schemas/user.schema";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
+
 
 const router = Router()
 
-router.use(deserializeUser, requiredUser)
+router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 
 router.route("/")

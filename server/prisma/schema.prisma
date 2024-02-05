@@ -91,14 +91,14 @@ model User {
   rewardId         String           @unique @db.ObjectId
   username         String           @unique
   password         String
+  blockedUsers     BlockedUser[]    @relation("User")
+  blockedByUsers   BlockedUser[]    @relation("BlockedBy")
   role             Role             @default(User)
   image            String?
   coverImage       String?
   verified         Boolean          @default(false)
   verificationCode String?
   provider         AuthProvider     @default(Local)
-  blockedUser      BlockedUser?     @relation(fields: [blockedUserId], references: [id])
-  blockedUserId    String?          @db.ObjectId
   favorites        Favorites[]
   createdProducts  Product[]        @relation("CreatedBy")
   reviews          Review[]
@@ -116,12 +116,15 @@ model User {
 }
 
 model BlockedUser {
-  id     String  @id @default(auto()) @map("_id") @db.ObjectId
-  users  User[]
-  remark String?
+  blockedBy   User    @relation("BlockedBy", fields: [blockedById], references: [id])
+  blockedById String  @db.ObjectId
+  user        User    @relation("User", fields: [userId], references: [id])
+  userId      String  @db.ObjectId
+  remark      String?
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // @@id([userId, productId])
+  @@unique([userId, blockedById])
 }
 
 model UserAddress {

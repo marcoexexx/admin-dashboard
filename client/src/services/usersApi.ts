@@ -17,7 +17,7 @@ export async function getUsersFn(opt: QueryOptionArgs, { filter, pagination, inc
 }
 
 
-// TODO: remove
+// TODO: remove :: ref: content users/UserProfile.tsx
 export async function getUserProfileFn(opt: QueryOptionArgs, { username }: { username: string | undefined }) {
   if (!username) return
   const { data } = await authApi.get<UserResponse>(`/users/profile/${username}`, {
@@ -41,6 +41,21 @@ export async function getUserFn(opt: QueryOptionArgs, { userId, include }: { use
 
 export async function changeRoleUserFn({ userId, role }: { userId: string, role: Omit<Role, "*"> }) {
   const { data } = await authApi.patch<UserResponse>(`/users/change-role/${userId}`, { role })
+  return data
+}
+
+
+export async function createBlockUserFn({ userId, remark }: { userId: string, remark?: string }) {
+  const { data } = await authApi.patch<UserResponse>(`/users/block-user`, {
+    userId,
+    remark
+  })
+  return data
+}
+
+
+export async function unBlockUserFn({ blockedUserId }: { blockedUserId: string }) {
+  const { data } = await authApi.patch<UserResponse>(`/users/unblock-user/${blockedUserId}`)
   return data
 }
 

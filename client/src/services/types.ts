@@ -203,6 +203,20 @@ export type User = {
   pickupAddresses?: PickupAddress[]
   orders?: Order[]
 
+  // relationship (MM)
+  blockedUsers: {
+    id: string,
+    userId: string,
+    blockedById: string,
+    remark?: string
+  }[],
+  blockedByUsers: {
+    id: string,
+    userId: string,
+    blockedById: string,
+    remark?: string
+  }[],
+
   _count: {
     favorites: number,
     createdProducts: number,

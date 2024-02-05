@@ -9,6 +9,7 @@ export const AppErrorKind = {
   PermissionError: "PermissionError",
   AccessDeniedError: "AccessDeniedError",
   UnderTheMaintenance: "UnderTheMaintenance",
+  BlockedUserError: "BlockedUserError",
 } as const
 export type AppErrorKind = typeof AppErrorKind[keyof typeof AppErrorKind]
 

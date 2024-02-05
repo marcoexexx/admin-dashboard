@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { checkUser } from "../services/checkUser";
+import { db } from "../utils/db";
 
 import AppError, { StatusCode } from "../utils/appError";
 
@@ -10,11 +11,15 @@ export async function checkBlockedUser(
   next: NextFunction
 ) {
   try {
-    const sessionUser = checkUser(req?.user).ok()
+    const sessionUser = checkUser(req?.user).ok_or_throw()
 
-    if (!sessionUser) return next()
+    const isBlocked = await db.blockedUser.findFirst({
+      where: {
+        userId: sessionUser.id
+      }
+    })
 
-    if (sessionUser.blockedUserId !== null) return next(AppError.new(StatusCode.Forbidden, `You are blocked and cannot access this resource.`))
+    if (isBlocked !== null) return next(AppError.new(StatusCode.Forbidden, `You are blocked and cannot access this resource.`))
 
     next()
   } catch (err: any) {

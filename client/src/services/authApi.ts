@@ -42,6 +42,8 @@ authApi.interceptors.response.use(
 
     if (msg.includes("under maintenance")) return Promise.reject(AppError.new(AppErrorKind.UnderTheMaintenance, msg))
 
+    if (msg.includes("You are blocked")) return Promise.reject(AppError.new(AppErrorKind.BlockedUserError, msg))
+
     return Promise.reject(err)
   }
 )

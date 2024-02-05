@@ -25,7 +25,7 @@ export interface AppService {
    * @param id - The arguments for the find operation.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  findUnique(id: string): Promise<Result<any, AppError>>
+  findUnique(id: string, include?: any): Promise<Result<any, AppError>>
 
   /**
    * Find first data by specified criteria.
@@ -33,7 +33,7 @@ export interface AppService {
    * @param payload - The arguments for the find data.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  findFirst(payload: any): Promise<Result<any, AppError>>
+  findFirst(payload: any, include?: any): Promise<Result<any, AppError>>
 
   /**
    * Update data by filter and payload.

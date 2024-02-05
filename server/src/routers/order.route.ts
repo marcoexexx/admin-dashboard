@@ -6,11 +6,12 @@ import { validate } from "../middleware/validate";
 import { orderPermission } from "../utils/auth/permissions";
 import { createOrderHandler, deleteMultiOrdersHandler, deleteOrderHandler, getOrderHandler, getOrdersHandler, updateOrderHandler } from "../controllers/order.controller";
 import { createOrderSchema, deleteMultiOrdersSchema, getOrderSchema, updateOrderSchema } from "../schemas/order.schema";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
 
-router.use(deserializeUser, requiredUser)
+router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 
 router.route("/")

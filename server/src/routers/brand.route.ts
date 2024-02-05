@@ -48,7 +48,6 @@ router.post("/excel-upload",
 
 router.route("/detail/:brandId")
   .get(
-    deserializeUser,
     permissionUser("read", brandPermission),
     validate(getBrandSchema),
     getBrandHandler

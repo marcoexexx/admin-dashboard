@@ -8,6 +8,7 @@ import { regionPermission } from "../utils/auth/permissions";
 import { createRegionSchema, deleteMultiRegionsSchema, getRegionSchema, updateRegionSchema } from "../schemas/region.schema";
 import { createMultiRegionsHandler, createRegionHandler, deleteMultilRegionsHandler, deleteRegionHandler, getRegionHandler, getRegionsHandler, updateRegionHandler } from "../controllers/region.controller";
 
+
 const router = Router()
 
 
@@ -47,7 +48,6 @@ router.post("/excel-upload",
 
 router.route("/detail/:regionId")
   .get(
-    deserializeUser,
     permissionUser("read", regionPermission),
     validate(getRegionSchema),
     getRegionHandler
@@ -69,4 +69,3 @@ router.route("/detail/:regionId")
 
 
 export default router
-

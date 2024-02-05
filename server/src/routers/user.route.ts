@@ -8,6 +8,7 @@ import { onlyAdminUser } from "../middleware/onlyAdminUser";
 import { permissionUser } from "../middleware/permissionUser";
 import { userPermission } from "../utils/auth/permissions";
 
+
 const router = Router()
 
 router.use(deserializeUser, requiredUser)
@@ -43,7 +44,7 @@ router.route("/change-role/:userId")
     changeUserRoleHandler,
   )
 
-router.route("/block-user/:userId")
+router.route("/block-user")
   .patch(
     onlyAdminUser,
     permissionUser("update", userPermission),
@@ -51,7 +52,7 @@ router.route("/block-user/:userId")
     createBlockUserHandler,
   )
 
-router.route("/unblock-user/:userId")
+router.route("/unblock-user/:blockedUserId")
   .patch(
     onlyAdminUser,
     permissionUser("update", userPermission),

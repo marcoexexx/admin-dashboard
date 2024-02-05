@@ -15,6 +15,9 @@ export function UsersList() {
       page: userFilter?.page || 1,
       pageSize: userFilter?.limit || 10
     },
+    include: {
+      blockedUsers: true,
+    }
   })
 
   const me = meQuery.try_data.ok_or_throw()

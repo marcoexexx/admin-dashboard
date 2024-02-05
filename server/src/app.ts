@@ -101,9 +101,6 @@ app.use(useragent.express())
 // Is under the maintenance
 app.use(isMaintenance)
 
-// Check user is blocked
-app.use(checkBlockedUser)
-
 
 /* Routers */
 app.get("/ping", async (_req: Request, res: Response, _next: NextFunction) => {

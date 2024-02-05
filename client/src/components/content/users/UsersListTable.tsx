@@ -1,13 +1,14 @@
 import { Box, Card, CardContent, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { UsersActions } from ".";
-import { RenderProileAvatar, RenderUsernameLabel } from "@/components/table-labels";
+import { RenderProileAvatar, RenderToggleBlockUserButton, RenderUsernameLabel } from "@/components/table-labels";
 import { User } from "@/services/types";
 
 import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { getUserPermissionsFn } from "@/services/permissionsApi";
+
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 
 const columnData: TableColumnHeader<User>[] = [
@@ -17,9 +18,19 @@ const columnData: TableColumnHeader<User>[] = [
     name: "Name"
   },
   {
+    id: "email",
+    align: "right",
+    name: "Email"
+  },
+  {
     id: "role",
     align: "right",
     name: "Role"
+  },
+  {
+    id: "blockedUsers",
+    align: "right",
+    name: "Blocked"
   }
 ]
 
@@ -77,6 +88,7 @@ export function UsersListTable(props: UsersListTableProps) {
     queryFn: getUserPermissionsFn
   })
 
+
   return (
     <Card>
       <CardContent>
@@ -124,9 +136,10 @@ export function UsersListTable(props: UsersListTableProps) {
                         gutterBottom
                         noWrap
                       >
-                        {key === "name"
-                        ? <RenderUsernameLabel user={row} me={me} />
-                        : row[key] as string}
+                        {key === "name" ? <RenderUsernameLabel user={row} me={me} /> : null}
+                        {key === "email" ? row.email : null}
+                        {key === "role" ? row.role : null}
+                        {key === "blockedUsers" ? <RenderToggleBlockUserButton user={row} me={me} /> : null}
                       </Typography>
                     </TableCell>
                   )

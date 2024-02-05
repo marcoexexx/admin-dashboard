@@ -8,6 +8,7 @@ import { validate } from "../middleware/validate";
 import { createSalesCategorySchema, deleteMultiSalesCategoriesSchema, getSalesCategorySchema, updateSalesCategorySchema } from "../schemas/salesCategory.schema";
 import { uploadExcel } from "../upload/excelUpload";
 
+
 const router = Router()
 
 
@@ -47,7 +48,6 @@ router.post("/excel-upload",
 
 router.route("/detail/:salesCategoryId")
   .get(
-    deserializeUser,
     permissionUser("read", salesCategoryPermission),
     validate(getSalesCategorySchema),
     getSalesCategoryHandler
