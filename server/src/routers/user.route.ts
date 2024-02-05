@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { changeUserRoleHandler, getUserByUsernameHandler, getUserHandler, getUsersHandler } from "../controllers/user.controller";
-import { changeUserRoleSchema, getUserByUsernameSchema, getUserSchema } from "../schemas/user.schema";
+import { changeUserRoleHandler, createBlockUserHandler, getUserByUsernameHandler, getUserHandler, getUsersHandler, removeBlockedUserHandler } from "../controllers/user.controller";
+import { getUserByUsernameSchema, getUserSchema, updateUserSchema } from "../schemas/user.schema";
 import { validate } from "../middleware/validate";
 import { onlyAdminUser } from "../middleware/onlyAdminUser";
 import { permissionUser } from "../middleware/permissionUser";
 import { userPermission } from "../utils/auth/permissions";
+
 
 const router = Router()
 
@@ -39,8 +40,24 @@ router.route("/change-role/:userId")
   .patch(
     onlyAdminUser,
     permissionUser("update", userPermission),
-    validate(changeUserRoleSchema),
+    validate(updateUserSchema.changeUserRole),
     changeUserRoleHandler,
+  )
+
+router.route("/block-user")
+  .patch(
+    onlyAdminUser,
+    permissionUser("update", userPermission),
+    validate(updateUserSchema.createBlockUser),
+    createBlockUserHandler,
+  )
+
+router.route("/unblock-user/:blockedUserId")
+  .patch(
+    onlyAdminUser,
+    permissionUser("update", userPermission),
+    validate(updateUserSchema.removeBlockdUser),
+    removeBlockedUserHandler,
   )
 
 

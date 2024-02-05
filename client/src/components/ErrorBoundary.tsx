@@ -7,6 +7,7 @@ import ErrorPage from "@/pages/error.page";
 import Unauthorized from "@/pages/unauthorized.page";
 import UnderTheMaintenance from "@/pages/maintenance.page";
 import InvalidAuthSessionPage from "@/pages/invalidAuthSession.page";
+import BlockedUserErrorPage from "@/pages/blockedUserError.page";
 
 
 interface ErrorBoundaryProps {
@@ -43,6 +44,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
           case AppErrorKind.AccessDeniedError: return <MiniAccessDenied />
           case AppErrorKind.UnderTheMaintenance: return <UnderTheMaintenance message={this.state.error.message} />
           case AppErrorKind.InvalidAuthSession: return <InvalidAuthSessionPage />
+          case AppErrorKind.BlockedUserError: return <BlockedUserErrorPage />
 
           default: {
             const _unreachable: never = this.state.error.kind

@@ -51,7 +51,7 @@ import AppError, { StatusCode } from './utils/appError';
 import logging, { loggingMiddleware } from './middleware/logging/logging'
 import { rateLimitMiddleware } from './middleware/rateLimit';
 import { isMaintenance } from './middleware/isMaintenance';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { checkBlockedUser } from './middleware/checkBlockedUser';
 
 
 validateEnv()

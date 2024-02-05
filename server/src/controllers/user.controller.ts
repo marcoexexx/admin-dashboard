@@ -1,12 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
-import { ChangeUserRoleInput, GetUserByUsernameInput, GetUserInput, UploadImageUserInput } from "../schemas/user.schema";
+import { ChangeUserRoleInput, CreateBlockUserInput, GetUserByUsernameInput, GetUserInput, RemoveBlockedUserInput, UploadImageUserInput } from "../schemas/user.schema";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { db } from "../utils/db";
 
 import logging from "../middleware/logging/logging";
-import AppError from "../utils/appError";
+import AppError, { StatusCode } from "../utils/appError";
+import { checkUser } from "../services/checkUser";
+import { Role } from "@prisma/client";
 
 
 export async function getMeHandler(
@@ -130,7 +132,9 @@ export async function getUsersHandler(
       accessLogs,
       eventActions,
       createdProducts,
-      pickupAddresses
+      pickupAddresses,
+      blockedUsers,
+      blockedByUsers,
     } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
@@ -157,7 +161,9 @@ export async function getUsersHandler(
         accessLogs,
         eventActions,
         createdProducts,
-        pickupAddresses
+        pickupAddresses,
+        blockedUsers,
+        blockedByUsers
       }
     })
     res.status(200).json(HttpListResponse(users))
@@ -169,7 +175,7 @@ export async function getUsersHandler(
 
 // must use after, onlyAdmin middleware
 export async function changeUserRoleHandler(
-  req: Request<GetUserInput, {}, ChangeUserRoleInput>,
+  req: Request<ChangeUserRoleInput["params"], {}, ChangeUserRoleInput["body"]>,
   res: Response,
   next: NextFunction
 ) {
@@ -190,6 +196,56 @@ export async function changeUserRoleHandler(
       data: {
         role
       }
+    })
+
+    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function createBlockUserHandler(
+  req: Request<{}, {}, CreateBlockUserInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  const { userId, remark } = req.body
+
+  try {
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    if (sessionUser.role !== Role.Admin) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
+
+    const updatedUser = await db.blockedUser.create({
+      data: {
+        userId,
+        blockedById: sessionUser.id,
+        remark
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function removeBlockedUserHandler(
+  req: Request<RemoveBlockedUserInput["params"]>,
+  res: Response,
+  next: NextFunction
+) {
+  const { blockedUserId } = req.params
+
+  try {
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    if (sessionUser.role !== Role.Admin) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
+
+    const updatedUser = await db.blockedUser.delete({ 
+      where: {
+        id: blockedUserId,
+      },
     })
 
     res.status(200).json(HttpDataResponse({ user: updatedUser }))

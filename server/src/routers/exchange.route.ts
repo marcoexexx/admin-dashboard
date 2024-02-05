@@ -8,19 +8,17 @@ import { createExchangeSchema, deleteMultiExchangesSchema, getExchangeSchema, up
 import { createExchangeHandler, createMultiExchangesHandler, deleteExchangeHandler, deleteMultiExchangesHandler, getExchangeHandler, getExchangesHandler, updateExchangeHandler } from "../controllers/exchange.controller";
 import { uploadExcel } from "../upload/excelUpload";
 
+
 const router = Router()
+router.use(deserializeUser, requiredUser)
 
 
 router.route("")
   .get(
-    deserializeUser,
-    requiredUser,
     permissionUser("read", exchangePermission),
     getExchangesHandler,
   )
   .post(
-    deserializeUser,
-    requiredUser,
     permissionUser("create", exchangePermission),
     validate(createExchangeSchema),
     createExchangeHandler
@@ -29,8 +27,6 @@ router.route("")
 
 router.route("/multi")
   .delete(
-    deserializeUser,
-    requiredUser,
     permissionUser("delete", exchangePermission),
     validate(deleteMultiExchangesSchema),
     deleteMultiExchangesHandler
@@ -39,8 +35,6 @@ router.route("/multi")
 
 // Upload Routes
 router.post("/excel-upload",
-  deserializeUser,
-  requiredUser,
   permissionUser("create", exchangePermission),
   uploadExcel,
   createMultiExchangesHandler
@@ -49,22 +43,16 @@ router.post("/excel-upload",
 
 router.route("/detail/:exchangeId")
   .get(
-    deserializeUser,
-    requiredUser,
     permissionUser("read", exchangePermission),
     validate(getExchangeSchema),
     getExchangeHandler
   )
   .patch(
-    deserializeUser, 
-    requiredUser, 
     permissionUser("update", exchangePermission),
     validate(updateExchangeSchema), 
     updateExchangeHandler
   )
   .delete(
-    deserializeUser,
-    requiredUser,
     validate(getExchangeSchema),
     permissionUser("delete", exchangePermission),
     deleteExchangeHandler

@@ -7,6 +7,7 @@ import { deleteAccessLogsHandler, getAccessLogsHandler } from "../controllers/ac
 import { getAccessLogSchema } from "../schemas/accessLog.schema";
 import { validate } from "../middleware/validate";
 
+
 const router = Router()
 
 router.use(deserializeUser, requiredUser)

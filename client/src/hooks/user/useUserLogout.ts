@@ -24,7 +24,7 @@ export function useUserLogout() {
   })
 
   const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(AppError.new(AppErrorKind.ApiError, mutation.error.message)) 
+    ? Err(AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message)) 
     : Ok(mutation.data)
 
   return {

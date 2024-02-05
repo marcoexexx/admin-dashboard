@@ -29,7 +29,6 @@ export async function getProductsHandler(
 
     const {
       id,
-      brandId,
       title,
       price,
       overview,
@@ -59,26 +58,24 @@ export async function getProductsHandler(
 
     // TODO: fix
     const offset = ((page||1) - 1) * (pageSize||10)
+    
+    console.log(req.query)
 
     const [ count, products ] = await db.$transaction([
       db.product.count(),
       db.product.findMany({
         where: {
           id,
-          brandId,
           title,
           price,
           overview,
-          categories,
           instockStatus,
           description,
+          discount,
           dealerPrice,
           marketPrice,
           status,
           priceUnit,
-          salesCategory,
-          discount,
-          likedUsers,
         },
         orderBy,
         skip: offset,
@@ -92,8 +89,8 @@ export async function getProductsHandler(
           creator,
           reviews,
           orderItem,
-          categories,
           availableSets,
+          categories,
           specification,
         }
       })

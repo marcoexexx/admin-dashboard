@@ -3,34 +3,30 @@ import Result, { Err, Ok } from "@/libs/result"
 
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
-import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
-import { deleteBrandFn } from "@/services/brandsApi"
+import { createBlockUserFn } from "@/services/usersApi"
 
 
-export function useDeleteBrand() {
+export function useBlockUser() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: deleteBrandFn,
+    mutationFn: createBlockUserFn,
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: ["users"]
+      })
+      dispatch({ type: "OPEN_TOAST", payload: {
+        message: "Success blocked.",
+        severity: "success"
+      } })
+    },
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
-      playSoundEffect("error")
     },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a brand.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["brands"]
-      })
-      playSoundEffect("success")
-    }
   })
 
   const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError

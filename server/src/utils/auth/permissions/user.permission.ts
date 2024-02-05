@@ -1,6 +1,7 @@
 import { Role } from "../../../schemas/user.schema";
 import { Permission } from "../rbac";
 
+
 export const userPermission: Permission<Role> = {
   createAllowedRoles: () => ["Admin"],
 
@@ -10,5 +11,3 @@ export const userPermission: Permission<Role> = {
 
   deleteAllowedRoles: () => ["Admin"],
 }
-
-
