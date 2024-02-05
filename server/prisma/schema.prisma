@@ -97,6 +97,8 @@ model User {
   verified         Boolean          @default(false)
   verificationCode String?
   provider         AuthProvider     @default(Local)
+  BlockedUser      BlockedUser?     @relation(fields: [blockedUserId], references: [id])
+  blockedUserId    String?          @db.ObjectId
   favorites        Favorites[]
   createdProducts  Product[]        @relation("CreatedBy")
   reviews          Review[]
@@ -111,6 +113,15 @@ model User {
   updatedAt DateTime @updatedAt
 
   @@unique([email])
+}
+
+model BlockedUser {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  users  User[]
+  remark String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model UserAddress {
