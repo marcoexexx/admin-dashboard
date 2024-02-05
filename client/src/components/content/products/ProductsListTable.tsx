@@ -162,6 +162,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
         marketPrice: product.marketPrice,
         dealerPrice: product.dealerPrice,
         discount: product.discount,
+        isDiscountItem: product.isDiscountItem,
         "brand.name": product.brand!.name
       } as Record<string, string | number | boolean | Date | undefined>
 

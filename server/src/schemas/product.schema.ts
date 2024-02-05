@@ -50,6 +50,7 @@ export const createProductSchema = object({
     marketPrice: number().min(0).optional(),
     priceUnit: z.enum(priceUnit),
     discount: number().max(100).default(0),
+    isDiscountItem: boolean().default(false),
     /** Example: How salesCategory work
      * sale: { name: "11.11", startDate, endDate, isActivate }
      * product,
@@ -90,6 +91,7 @@ export const createMultiProductsSchema = object({
     images: string(),
     priceUnit: z.enum(priceUnit).default("MMK"),
     discount: number().max(100).default(0),
+    isDiscountItem: boolean().default(false),
     quantity: number().min(0),
     status: z.enum(productStatus).default("Draft"),
 
@@ -133,6 +135,7 @@ export const updateProductSchema = object({
     categories: string().array().default([]),
     instockStatus: z.enum(productStockStatus).default("AskForStock"),
     dealerPrice: number().min(0).optional(),
+    isDiscountItem: boolean().default(false),
     marketPrice: number().min(0).optional(),
     priceUnit: z.enum(priceUnit).default("MMK"),
     status: z.enum(productStatus).default("Draft"),

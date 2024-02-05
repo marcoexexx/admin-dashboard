@@ -26,10 +26,11 @@ const updateProductSchema = object({
     name: string({ required_error: "Specification name is required" }),
     value: string({ required_error: "Specification value is required" }),
   }).array(),
-  overview: string().min(0).max(5000).optional(),
-  description: string().min(0).max(5000).optional(),
+  overview: string().max(5000).optional(),
+  description: string().max(5000).optional(),
   categories: string().array().default([]),
   discount: number().max(100).default(0),
+  isDiscountItem: boolean().default(false),
   instockStatus: z.enum(productStockStatus).default("AskForStock"),
   dealerPrice: number().min(0).optional(),
   marketPrice: number().min(0).optional(),
@@ -109,7 +110,7 @@ export function UpdateProductForm() {
           ? product[key]?.map(({category: {id}}) => id)
           : product[key]
 
-        methods.setValue(key, value)
+        methods.setValue(key, value ? value : undefined)
       })
       if (product.brandId) methods.setValue("brandId", product.brandId)
     }
@@ -267,6 +268,12 @@ export function UpdateProductForm() {
           </Grid>
 
           <Grid item xs={12}>
+            <FormControlLabel
+              label="Discounted item"
+              control={<Switch 
+                {...register("isDiscountItem")}
+              />}
+            />
             <FormControlLabel
               label="Request review"
               control={<Switch 

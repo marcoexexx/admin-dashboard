@@ -58,8 +58,6 @@ export async function getProductsHandler(
 
     // TODO: fix
     const offset = ((page||1) - 1) * (pageSize||10)
-    
-    console.log(req.query)
 
     const [ count, products ] = await db.$transaction([
       db.product.count(),
@@ -189,6 +187,7 @@ export async function createProductHandler(
       categories,
       quantity,
       discount,
+      isDiscountItem,
       status
     } = req.body;
 
@@ -227,6 +226,7 @@ export async function createProductHandler(
         },
         quantity,
         discount,
+        isDiscountItem,
         creatorId: user.id
       }
     })
@@ -271,7 +271,7 @@ export async function createMultiProductsHandler(
 
     const products = await Promise.all(data.map(product => {
       const sale = (product["sales.name"] && product["sales.discount"]) ? {
-        name: product["sales.name"].toString(),
+        name: product["sales.name"],
         startDate: product["sales.startDate"] || new Date(),
         get endDate() { return product["sales.endDate"] || new Date(new Date(this.startDate).getTime() + 1000 * 60 * 60 * 24 * 5) }, // default: 5 days
         discount: product["sales.discount"],
@@ -342,6 +342,8 @@ export async function createMultiProductsHandler(
         },
         update: {
           price: product.price,
+          discount: product.discount,
+          isDiscountItem: product.isDiscountItem,
           dealerPrice: product.dealerPrice,
           marketPrice: product.marketPrice,
           salesCategory: {
@@ -356,7 +358,7 @@ export async function createMultiProductsHandler(
                     isActive: sale.isActive,
                     description: sale.description
                   }
-                } 
+                },
               },
               discount: sale.discount,
             } : undefined,
@@ -639,6 +641,8 @@ export async function updateProductHandler(
       marketPrice,
       priceUnit,
       categories,
+      discount,
+      isDiscountItem,
       status
     } = req.body
 
@@ -694,6 +698,8 @@ export async function updateProductHandler(
           dealerPrice,
           marketPrice,
           status: productState,
+          discount,
+          isDiscountItem,
           priceUnit,
           categories: {
             create: categories.map(id => ({

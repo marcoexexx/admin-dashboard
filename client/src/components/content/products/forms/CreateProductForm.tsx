@@ -44,6 +44,7 @@ const createProductSchema = object({
   priceUnit: z.enum(priceUnit).default("MMK"),
   salesCategory: object({}).array().default([]),
   discount: number().max(100).default(0),
+  isDiscountItem: boolean().default(false),
   quantity: number().min(0),
   isPending: boolean().default(false),
   status: z.enum(productStatus).default("Draft"),
@@ -237,6 +238,12 @@ export function CreateProductForm() {
           </Grid>
 
           <Grid item xs={12}>
+            <FormControlLabel
+              label="Discounted item"
+              control={<Switch 
+                {...register("isDiscountItem")}
+              />}
+            />
             <FormControlLabel
               label="Request review"
               control={<Switch 

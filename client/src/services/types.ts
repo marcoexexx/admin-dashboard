@@ -296,6 +296,7 @@ export type Product = {
   quantity: number
   itemCode?: string
   discount: number
+  isDiscountItem: boolean
 
 
   // relationship
