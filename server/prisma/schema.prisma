@@ -243,30 +243,31 @@ enum PriceUnit {
 }
 
 model Product {
-  id            String                  @id @default(auto()) @map("_id") @db.ObjectId
-  brand         Brand                   @relation(fields: [brandId], references: [id])
-  brandId       String                  @db.ObjectId
-  title         String
-  price         Float
-  images        String[]
-  specification Specification[]
-  instockStatus ProductStockStatus      @default(AskForStock)
-  dealerPrice   Int?
-  marketPrice   Int?
-  status        ProductStatus           @default(Draft)
-  priceUnit     PriceUnit               @default(MMK)
-  likedUsers    Favorites[]
-  quantity      Int
-  reviews       Review[]
-  creator       User?                   @relation("CreatedBy", fields: [creatorId], references: [id])
-  creatorId     String?                 @db.ObjectId
-  itemCode      String?
-  categories    ProductCategory[]
-  salesCategory ProductSalesCategory[]
-  coupons       Coupon[]
-  orderItem     OrderItem[]
-  availableSets ProductRecommendation[]
-  discount      Float                   @default(0.0)
+  id             String                  @id @default(auto()) @map("_id") @db.ObjectId
+  brand          Brand                   @relation(fields: [brandId], references: [id])
+  brandId        String                  @db.ObjectId
+  title          String
+  price          Float
+  images         String[]
+  specification  Specification[]
+  instockStatus  ProductStockStatus      @default(AskForStock)
+  dealerPrice    Int?
+  marketPrice    Int?
+  status         ProductStatus           @default(Draft)
+  priceUnit      PriceUnit               @default(MMK)
+  likedUsers     Favorites[]
+  quantity       Int
+  reviews        Review[]
+  creator        User?                   @relation("CreatedBy", fields: [creatorId], references: [id])
+  creatorId      String?                 @db.ObjectId
+  itemCode       String?
+  categories     ProductCategory[]
+  salesCategory  ProductSalesCategory[]
+  coupons        Coupon[]
+  orderItem      OrderItem[]
+  availableSets  ProductRecommendation[]
+  discount       Float                   @default(0.0)
+  isDiscountItem Boolean                 @default(false)
 
   overview    String?
   description String?
