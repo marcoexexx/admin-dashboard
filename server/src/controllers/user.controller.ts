@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
-import { ChangeUserRoleInput, GetUserByUsernameInput, GetUserInput, UploadImageUserInput } from "../schemas/user.schema";
+import { ChangeUserRoleInput, CreateBlockUserInput, GetUserByUsernameInput, GetUserInput, RemoveBlockedUserInput, UploadImageUserInput } from "../schemas/user.schema";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { db } from "../utils/db";
@@ -169,7 +169,7 @@ export async function getUsersHandler(
 
 // must use after, onlyAdmin middleware
 export async function changeUserRoleHandler(
-  req: Request<GetUserInput, {}, ChangeUserRoleInput>,
+  req: Request<ChangeUserRoleInput["params"], {}, ChangeUserRoleInput["body"]>,
   res: Response,
   next: NextFunction
 ) {
@@ -190,6 +190,55 @@ export async function changeUserRoleHandler(
       data: {
         role
       }
+    })
+
+    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function createBlockUserHandler(
+  req: Request<{}, {}, CreateBlockUserInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  const { userId, remark } = req.body
+
+  try {
+    const updatedUser = await db.user.update({ 
+      where: {
+        id: userId,
+      },
+      data: {
+        BlockedUser: {
+          create: {
+            remark
+          }
+        }
+      }
+    })
+
+    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function removeBlockedUserHandler(
+  req: Request<RemoveBlockedUserInput["params"]>,
+  res: Response,
+  next: NextFunction
+) {
+  const { blockedUserId } = req.params
+
+  try {
+    const updatedUser = await db.blockedUser.delete({ 
+      where: {
+        id: blockedUserId,
+      },
     })
 
     res.status(200).json(HttpDataResponse({ user: updatedUser }))

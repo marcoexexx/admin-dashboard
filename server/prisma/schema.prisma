@@ -97,7 +97,7 @@ model User {
   verified         Boolean          @default(false)
   verificationCode String?
   provider         AuthProvider     @default(Local)
-  BlockedUser      BlockedUser?     @relation(fields: [blockedUserId], references: [id])
+  blockedUser      BlockedUser?     @relation(fields: [blockedUserId], references: [id])
   blockedUserId    String?          @db.ObjectId
   favorites        Favorites[]
   createdProducts  Product[]        @relation("CreatedBy")
