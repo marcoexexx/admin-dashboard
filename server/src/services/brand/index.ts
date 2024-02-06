@@ -28,7 +28,6 @@ export class BrandService implements AppService {
   static new() { return new BrandService() }
 
 
-  // Find implements
   async find(arg: { filter?: Prisma.BrandWhereInput; pagination: Pagination; include?: Prisma.BrandInclude, orderBy?: Prisma.BrandOrderByWithRelationInput }): Promise<Result<[number, Brand[]], AppError>> {
     const { filter, include, pagination, orderBy = {updatedAt: "desc"} } = arg
     const { page = 1, pageSize = 10 } = pagination
@@ -56,7 +55,6 @@ export class BrandService implements AppService {
   }
 
 
-  // Delete implements
   async delete(id: string): Promise<Result<Brand, AppError>> {
     const tryDelete = as_result_async(this.repository.delete)
 
@@ -112,7 +110,7 @@ export class BrandService implements AppService {
     const tryCreateOrUpdate = async (brand: CreateMultiBrandsInput[number]) => (await tryUpsert({
       where: { name: brand.name },
       create: { name: brand.name },
-      update: {}
+      update: { updatedAt: new Date() }
     })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
@@ -125,8 +123,16 @@ export class BrandService implements AppService {
   }
 
 
-  async update(_arg: { filter: any; payload: any; }): Promise<Result<Brand, AppError>> {
-    return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
+  async update(arg: { filter: Prisma.BrandWhereUniqueInput; payload: Prisma.BrandUpdateInput; }): Promise<Result<Brand, AppError>> {
+    const tryUpdate = as_result_async(this.repository.update)
+
+    const try_data = (await tryUpdate({ where: arg.filter, data: arg.payload })).map_err(err => {
+      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
+      return AppError.new(StatusCode.InternalServerError, err?.message)
+    })
+
+    return try_data
   }
 
 
