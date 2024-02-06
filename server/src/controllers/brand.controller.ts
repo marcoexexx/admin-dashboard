@@ -1,17 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CreateBrandInput, CreateMultiBrandsInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { CreateBrandInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
 import { EventActionType, Resource } from "@prisma/client";
+import { BrandService } from "../services/brand";
 import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { parseExcel } from "../utils/parseExcel";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { createEventAction } from "../utils/auditLog";
+import { checkUser } from "../services/checkUser";
 
-import AppError from "../utils/appError";
+import AppError, { StatusCode } from "../utils/appError";
 import logging from "../middleware/logging/logging";
-import fs from "fs"
+
+
+const service = BrandService.new()
 
 
 export async function getBrandsHandler(
@@ -27,31 +29,25 @@ export async function getBrandsHandler(
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    // TODO: fix
-    const offset = ((page||1) - 1) * (pageSize||10)
+    const [count, brands] = (await service.find({
+      filter: {
+        id,
+        name
+      },
+      pagination: {
+        page,
+        pageSize,
+      },
+      include: {
+        _count,
+        products
+      },
+      orderBy
+    })).ok_or_throw()
 
-    const [count, brands] = await db.$transaction([
-      db.brand.count(),
-      db.brand.findMany({
-        where: {
-          id,
-          name
-        },
-        include: {
-          _count,
-          products
-        },
-        orderBy,
-        skip: offset,
-        take: pageSize,
-      })
-    ])
-
-    res.status(200).json(HttpListResponse(brands, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(brands, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -62,36 +58,27 @@ export async function getBrandHandler(
   next: NextFunction
 ) {
   try {
+    const sessionUser = checkUser(req?.user).ok()
     const query = convertNumericStrings(req.query)
 
     const { brandId } = req.params
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
 
-    const brand = await db.brand.findUnique({
-      where: {
-        id: brandId
-      },
-      include: {
-        _count,
-        products
-      }
-    })
+    const brand = (await service.findUnique(brandId, { _count, products })).ok_or_throw()
 
     // Read event action audit log
     if (brand) {
-      if (req?.user?.id) createEventAction(db, {
-        userId: req.user.id,
+      if (sessionUser?.id) createEventAction(db, {
+        userId: sessionUser.id,
         resource: Resource.Brand,
         resourceIds: [brand.id],
         action: EventActionType.Read
       })
     }
 
-    res.status(200).json(HttpDataResponse({ brand }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ brand }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -104,38 +91,22 @@ export async function createMultiBrandsHandler(
   try {
     const excelFile = req.file
 
-    if (!excelFile) return res.status(204)
+    if (!excelFile) return res.status(StatusCode.NoContent)
 
-    const buf = fs.readFileSync(excelFile.path)
-    const data = parseExcel(buf) as CreateMultiBrandsInput
-
-    // Update not affected
-    const brands = await Promise.all(data.map(brand => db.brand.upsert({
-      where: {
-        name: brand.name
-      },
-      create: {
-        name: brand.name
-      },
-      update: {}
-    })))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const brands = (await service.excelUpload(excelFile)).ok_or_throw()
 
     // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
+    if (sessionUser?.id) createEventAction(db, {
       resource: Resource.Brand,
-      userId: req.user.id,
+      userId: sessionUser.id,
       action: EventActionType.Create,
       resourceIds: brands.map(brand => brand.id),
     })
 
-    res.status(201).json(HttpListResponse(brands))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Brand already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(brands))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -148,26 +119,20 @@ export async function createBrandHandler(
   try {
     const { name } = req.body
 
-    const brand = await db.brand.create({
-      data: { name },
-    })
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const brand = (await service.create({ name })).ok_or_throw()
 
     // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Brand,
       resourceIds: [brand.id],
       action: EventActionType.Create
     })
 
-    res.status(201).json(HttpDataResponse({ brand }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Brand already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpDataResponse({ brand }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -180,15 +145,12 @@ export async function deleteBrandHandler(
   try {
     const { brandId } = req.params
 
-    const brand = await db.brand.delete({
-      where: {
-        id: brandId
-      }
-    })
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const brand = (await service.delete(brandId)).ok_or_throw()
 
     // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Brand,
       resourceIds: [brand.id],
       action: EventActionType.Delete
@@ -211,27 +173,27 @@ export async function deleteMultiBrandsHandler(
   try {
     const { brandIds } = req.body
 
-    await db.brand.deleteMany({
-      where: {
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const tryDeleteMany = await service.deleteMany({
+      filter: {
         id: {
           in: brandIds
         }
       }
     })
+    tryDeleteMany.ok_or_throw()
 
     // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Brand,
       resourceIds: brandIds,
       action: EventActionType.Delete
     })
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+  } catch (err) {
+    next(err)
   }
 }
 

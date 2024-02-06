@@ -12,6 +12,14 @@ export interface AppService {
   create(payload: any): Promise<Result<any, AppError>>
 
   /**
+   * Create multi data with excel upload
+   *
+   * @param file {Express.Multer.File} - The arguments for the create data.
+   * @returns A promise that resolves to a Result containing either the data or an AppError.
+   */
+  excelUpload(file: Express.Multer.File): Promise<Result<any, AppError>>
+
+  /**
    * Finds all data based on the specified criteria.
    *
    * @param arg - The arguments for the find operation.
@@ -50,6 +58,14 @@ export interface AppService {
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
   delete(id: string): Promise<Result<any, AppError>>
+
+  /**
+   * Delete multi records data by id.
+   *
+   * @param filter - The arguments for the find operation.
+   * @returns A promise that resolves to a Result containing either the data or an AppError.
+   */
+  deleteMany(args: { filter: any }): Promise<Result<any, AppError>>
 }
 
 

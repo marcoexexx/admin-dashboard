@@ -42,6 +42,10 @@ export class UserService implements AppService {
   }
 
 
+  async excelUpload(_file: Express.Multer.File): Promise<Result<any, AppError>> {
+    return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
+  }
+
   // Create implements
   async register(payload: { name: string, email: string, password: string }): Promise<Result<User, AppError>> {
     const { name, email, password } = payload
@@ -171,6 +175,12 @@ export class UserService implements AppService {
     })
 
     return try_delete
+  }
+
+
+  // Delete Many implements
+  async deleteMany(_arg: { filter: any; }): Promise<Result<any, AppError>> {
+    return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
   }
 }
 

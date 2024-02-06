@@ -26,10 +26,16 @@ export function unwrap_failed<E extends ToString>(msg: string, err: E): never {
 }
 
 export default class Result<T, E extends ToString> {
+  private _type: "ok" | "err"
+  private value: T | E
+
   constructor(
-    public _type: "ok" | "err",
-    public value: T | E
-  ) {}
+    _type: "ok" | "err",
+    value: T | E
+  ) {
+    this._type = _type
+    this.value = value
+  }
 
   is_ok(): this is Result<T, never> {
     if  (this._type === "ok") return true

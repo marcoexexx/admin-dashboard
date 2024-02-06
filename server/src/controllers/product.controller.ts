@@ -2,7 +2,6 @@ import { db } from '../utils/db'
 import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 import { parseExcel } from '../utils/parseExcel';
-import { generateUuid } from '../utils/generateUuid';
 import { createEventAction } from '../utils/auditLog';
 import { Request, Response, NextFunction } from 'express'
 import { CreateMultiProductsInput, CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
@@ -271,7 +270,7 @@ export async function createMultiProductsHandler(
 
     const products = await Promise.all(data.map(product => {
       const sale = (product["sales.name"] && product["sales.discount"]) ? {
-        name: product["sales.name"],
+        name: product["sales.name"].toString(),
         startDate: product["sales.startDate"] || new Date(),
         get endDate() { return product["sales.endDate"] || new Date(new Date(this.startDate).getTime() + 1000 * 60 * 60 * 24 * 5) }, // default: 5 days
         discount: product["sales.discount"],
@@ -281,9 +280,10 @@ export async function createMultiProductsHandler(
 
       const task = db.product.upsert({
         where: {
-          id: product.id || generateUuid()
+          id: product.id
         },
         create: {
+          id: product.id,
           title: product.title,
           overview: product.overview,
           instockStatus: product.instockStatus,
@@ -296,6 +296,7 @@ export async function createMultiProductsHandler(
           images: (product?.images || "")?.split("\n").filter(Boolean),
           quantity: product.quantity,
           discount: product.discount,
+          isDiscountItem: product.isDiscountItem,
           brand: {
             connectOrCreate: {
               where: { name: product["brand.name"] },
@@ -387,7 +388,6 @@ export async function createMultiProductsHandler(
     next(new AppError(500, msg))
   }
 }
-
 
 export async function deleteProductSaleCategoryHandler(
   req: Request<GetProductSaleCategoryInput["params"]>,

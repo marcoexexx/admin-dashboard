@@ -66,12 +66,12 @@ export class AccessLogService implements AppService {
   }
 
 
-  async findUnique(_id: string): Promise<Result<any, AppError>> {
+  async findUnique(_id: string, _include?: Prisma.AccessLogInclude): Promise<Result<any, AppError>> {
     return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
   }
 
 
-  async findFirst(_payload: any): Promise<Result<any, AppError>> {
+  async findFirst(_payload: any, _include?: Prisma.AccessLogInclude): Promise<Result<any, AppError>> {
     return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
   }
 
@@ -81,7 +81,16 @@ export class AccessLogService implements AppService {
   }
 
 
+  async excelUpload(_file: Express.Multer.File): Promise<Result<any, AppError>> {
+    return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
+  }
+
   async update(_arg: { filter: any; payload: any; }): Promise<Result<any, AppError>> {
+    return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
+  }
+
+
+  async deleteMany(_arg: { filter: any; }): Promise<Result<any, AppError>> {
     return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
   }
 }
