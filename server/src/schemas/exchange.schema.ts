@@ -31,6 +31,7 @@ export const updateExchangeSchema = object({
 
 export const createMultiExchangesSchema = object({
   body: object({
+    id: string({ required_error: "Id is required" }),
     from: z.enum(priceUnit).default("MMK"),
     to: z.enum(priceUnit).default("USD"),
     rate: number({ required_error: "rate is required" })

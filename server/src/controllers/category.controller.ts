@@ -8,9 +8,7 @@ import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helpe
 import { CreateCategoryInput, DeleteMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
 import { EventActionType, Resource } from "@prisma/client";
 import { CategoryService } from "../services/category";
-
-import AppError, { StatusCode } from "../utils/appError";
-import logging from "../middleware/logging/logging";
+import { StatusCode } from "../utils/appError";
 
 
 const service = CategoryService.new()
@@ -130,7 +128,7 @@ export async function createMultiCategoriesHandler(
       action: EventActionType.Create
     })
 
-    res.status(StatusCode.Created).json(HttpResponse(StatusCode.Created, "Success"))
+    res.status(StatusCode.Created).json(HttpListResponse(categories))
   } catch (err) {
     next(err)
   }
@@ -156,7 +154,7 @@ export async function deleteCategoryHandler(
       action: EventActionType.Delete
     })
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+    res.status(StatusCode.OK).json(HttpDataResponse({ category }))
   } catch (err) {
     next(err)
   }

@@ -1,16 +1,16 @@
 import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { parseExcel } from "../utils/parseExcel";
 import { createEventAction } from "../utils/auditLog";
+import { checkUser } from "../services/checkUser";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { CreateExchangeInput, CreateMultiExchangesInput, DeleteMultiExchangesInput, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
+import { CreateExchangeInput, DeleteMultiExchangesInput, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
 import { EventActionType, Resource } from "@prisma/client";
+import { ExchangeService } from "../services/exchange";
+import { StatusCode } from "../utils/appError";
 
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
-import fs from 'fs'
+
+const service = ExchangeService.new()
 
 
 export async function getExchangesHandler(
@@ -25,33 +25,27 @@ export async function getExchangesHandler(
     const { page, pageSize } = query.pagination ?? {}
     const orderBy = query.orderBy ?? {}
 
-    // TODO: fix
-    const offset = ((page||1) - 1) * (pageSize||10)
-
-    const [count, exchanges] = await db.$transaction([
-      db.exchange.count(),
-      db.exchange.findMany({
-        where: {
-          id,
-          from,
-          to,
-          date: {
-            lte: endDate,
-            gte: startDate
-          },
-          rate
+    const [count, exchanges] = (await service.find({
+      filter: {
+        id,
+        from,
+        to,
+        date: {
+          lte: endDate,
+          gte: startDate
         },
-        orderBy,
-        skip: offset,
-        take: pageSize,
-      })
-    ])
+        rate
+      },
+      pagination: {
+        page,
+        pageSize
+      },
+      orderBy
+    })).ok_or_throw()
 
-    res.status(200).json(HttpListResponse(exchanges, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(exchanges, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -64,27 +58,22 @@ export async function getExchangeHandler(
   try {
     const { exchangeId } = req.params
 
-    const exchange = await db.exchange.findUnique({
-      where: {
-        id: exchangeId
-      }
-    })
+    const sessionUser = checkUser(req?.user).ok()
+    const exchange = (await service.findUnique(exchangeId)).ok_or_throw()
 
     // Read event action audit log
     if (exchange) {
-      if (req?.user?.id) createEventAction(db, {
-        userId: req.user?.id,
+      if (sessionUser?.id) createEventAction(db, {
+        userId: sessionUser?.id,
         resource: Resource.Exchange,
         resourceIds: [exchange.id],
         action: EventActionType.Read
       })
     }
 
-    res.status(200).json(HttpDataResponse({ exchange }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ exchange }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -96,28 +85,32 @@ export async function updateExchangeHandler(
 ) {
   try {
     const { exchangeId } = req.params
-    const data = req.body
+    const { to, from, rate, date } = req.body
 
-    const exchange = await db.exchange.update({
-      where: {
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const exchange = (await service.update({
+      filter: {
         id: exchangeId
       },
-      data
-    })
+      payload: {
+        to,
+        from,
+        rate,
+        date,
+      }
+    })).ok_or_throw()
 
     // Update event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Exchange,
       resourceIds: [exchange.id],
       action: EventActionType.Update
     })
 
-    res.status(200).json(HttpDataResponse({ exchange }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ exchange }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -130,31 +123,25 @@ export async function createExchangeHandler(
   try {
     const { from, to, rate, date } = req.body
 
-    const exchange = await db.exchange.create({
-      data: {
-        from,
-        date,
-        to,
-        rate
-      },
-    })
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const exchange = (await service.create({
+      from,
+      date,
+      to,
+      rate
+    })).ok_or_throw()
 
     // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Exchange,
       resourceIds: [exchange.id],
       action: EventActionType.Create
     })
 
-    res.status(201).json(HttpDataResponse({ exchange }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Exchange already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpDataResponse({ exchange }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -167,31 +154,22 @@ export async function createMultiExchangesHandler(
   try {
     const excelFile = req.file
 
-    if (!excelFile) return res.status(204)
+    if (!excelFile) return res.status(StatusCode.NoContent)
 
-    const buf = fs.readFileSync(excelFile.path)
-    const data = parseExcel(buf) as CreateMultiExchangesInput
-
-    const exchanges = await Promise.all(data.map((exchange) => db.exchange.create({
-      data: { ...exchange },
-    })))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const exchanges = (await service.excelUpload(excelFile)).ok_or_throw()
 
     // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Exchange,
       resourceIds: exchanges.map(exchange => exchange.id),
       action: EventActionType.Create
     })
 
-    res.status(201).json(HttpResponse(201, "Success"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Exchange already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpListResponse(exchanges))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -204,6 +182,7 @@ export async function deleteExchangeHandler(
   try {
     const { exchangeId } = req.params
     
+    const sessionUser = checkUser(req?.user).ok_or_throw()
     const exchange = await db.exchange.delete({
       where: {
         id: exchangeId
@@ -211,18 +190,16 @@ export async function deleteExchangeHandler(
     })
 
     // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Exchange,
       resourceIds: [exchange.id],
       action: EventActionType.Delete
     })
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ exchange }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -234,28 +211,27 @@ export async function deleteMultiExchangesHandler(
 ) {
   try {
     const { exchangeIds } = req.body
-    
-    await db.exchange.deleteMany({
-      where: {
+
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _tryDeleteExchanges = await service.deleteMany({
+      filter: {
         id: {
           in: exchangeIds
         }
       }
     })
+    _tryDeleteExchanges.ok_or_throw()
 
     // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Exchange,
       resourceIds: exchangeIds,
       action: EventActionType.Delete
     })
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+  } catch (err) {
+    next(err)
   }
 }
-
