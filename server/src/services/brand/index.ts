@@ -13,7 +13,7 @@ import { parseExcel } from "../../utils/parseExcel";
 
 
 /**
- * AccessLogService class provides methods for managing access log data.
+ * BrandService class provides methods for managing access log data.
  *
  * @remarks
  * This class implements the AppService interface and is designed to handle operations related to access logs.
