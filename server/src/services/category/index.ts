@@ -107,9 +107,9 @@ export class CategoryService implements AppService {
 
     const tryUpsert = as_result_async(this.repository.upsert)
 
-    const tryCreateOrUpdate = async (brand: CreateMultiCategoriesInput[number]) => (await tryUpsert({
-      where: { name: brand.name },
-      create: { name: brand.name },
+    const tryCreateOrUpdate = async (category: CreateMultiCategoriesInput[number]) => (await tryUpsert({
+      where: { name: category.name },
+      create: { name: category.name },
       update: { updatedAt: new Date() }
     })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
@@ -136,7 +136,7 @@ export class CategoryService implements AppService {
   }
 
 
-  async deleteMany(arg: { filter: Prisma.CategoryWhereInput }): Promise<Result<any, AppError>> {
+  async deleteMany(arg: { filter: Prisma.CategoryWhereInput }): Promise<Result<Prisma.BatchPayload, AppError>> {
     const tryDeleteMany = as_result_async(this.repository.deleteMany)
 
     const try_data = (await tryDeleteMany({ where: arg.filter })).map_err(err => {
