@@ -136,7 +136,7 @@ export class BrandService implements AppService {
   }
 
 
-  async deleteMany(arg: { filter: Prisma.BrandWhereInput }): Promise<Result<any, AppError>> {
+  async deleteMany(arg: { filter: Prisma.BrandWhereInput }): Promise<Result<Prisma.BatchPayload, AppError>> {
     const tryDeleteMany = as_result_async(this.repository.deleteMany)
 
     const try_data = (await tryDeleteMany({ where: arg.filter })).map_err(err => {
