@@ -8,8 +8,7 @@ import { MuiButton } from "@/components/ui";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { ProductsActions } from ".";
 import { FormModal } from "@/components/forms";
-import { RenderBrandLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
-import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLabel";
+import { RenderBrandLabel, RenderCategoryLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
 import { ProductStatus } from "./forms";
 import { Product, User } from "@/services/types";
 
