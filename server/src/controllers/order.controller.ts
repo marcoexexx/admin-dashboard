@@ -1,17 +1,19 @@
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
+import AppError, { StatusCode } from "../utils/appError";
 
 import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { createEventAction } from "../utils/auditLog";
 import { checkUser } from "../services/checkUser";
-import { EventActionType, Resource, Role } from "@prisma/client";
+import { EventActionType, Resource } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, UpdateOrderInput } from "../schemas/order.schema";
 import { LifeCycleOrderConcrate, LifeCycleState } from "../utils/auth/life-cycle-state";
+import { OrderService } from "../services/order";
+
+
+const service = OrderService.new()
 
 
 export async function getOrdersHandler(
@@ -27,41 +29,35 @@ export async function getOrdersHandler(
     const { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    // TODO: fix
-    const offset = ((page||1) - 1) * (pageSize||10)
-
-    const [count, orders] = await db.$transaction([
-      db.order.count(),
-      db.order.findMany({
-        where: {
-          id,
-          updatedAt: {
-            gte: startDate,
-            lte: endDate
-          },
-          status,
-          totalPrice,
-          remark,
+    const [count, orders] = (await service.find({
+      filter: {
+        id,
+        updatedAt: {
+          gte: startDate,
+          lte: endDate
         },
-        orderBy,
-        skip: offset,
-        take: pageSize,
-        include: {
-          _count,
-          user,
-          orderItems,
-          pickupAddress,
-          billingAddress,
-          deliveryAddress
-        }
-      })
-    ])
+        status,
+        totalPrice,
+        remark,
+      },
+      pagination: {
+        page,
+        pageSize
+      },
+      include: {
+        _count,
+        user,
+        orderItems,
+        pickupAddress,
+        billingAddress,
+        deliveryAddress
+      },
+      orderBy
+    })).ok_or_throw()
 
-    res.status(200).json(HttpListResponse(orders, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(orders, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -77,35 +73,22 @@ export async function getOrderHandler(
     const { orderId } = req.params
     const { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } = convertStringToBoolean(query.include) ?? {}
 
-    const order = await db.order.findUnique({
-      where: {
-        id: orderId
-      },
-      include: {
-        _count,
-        user,
-        orderItems,
-        pickupAddress,
-        billingAddress,
-        deliveryAddress
-      }
-    })
+    const sessionUser = checkUser(req?.user).ok()
+    const order = (await service.findUnique(orderId, { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress })).ok_or_throw()
 
     // Read event action audit log
     if (order) {
-      if (req?.user?.id) createEventAction(db, {
-        userId: req.user.id,
+      if (sessionUser?.id) createEventAction(db, {
+        userId: sessionUser.id,
         resource: Resource.Order,
         resourceIds: [order.id],
         action: EventActionType.Read
       })
     }
 
-    res.status(200).json(HttpDataResponse({ order }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ order }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -119,45 +102,44 @@ export async function createOrderHandler(
     const { orderItems, totalPrice, addressType, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
 
     // @ts-ignore  for mocha testing
-    const userId: string | undefined = req.user?.id || undefined
+    const sessionUser = checkUser(req?.user).ok()
+    const userId = sessionUser?.id
 
-    const order = await db.order.create({
-        data: {
-          addressType,
-          orderItems: {
-            create: await Promise.all(orderItems.map(async item => {
-              // update product quantity
-              await db.product.update({
-                where: {
-                  id: item.productId
-                },
-                data: {
-                  quantity: {
-                    decrement: item.quantity
-                  }
-                }
-              })
-
-              return {
-                productId: item.productId,
-                price: item.price,
-                quantity: item.quantity,
-                totalPrice: item.totalPrice,
-                saving: item.saving,
-                originalTotalPrice: item.price * item.quantity,
+    const order = (await service.create({
+      addressType,
+      orderItems: {
+        create: await Promise.all(orderItems.map(async item => {
+          // update product quantity
+          await db.product.update({
+            where: {
+              id: item.productId
+            },
+            data: {
+              quantity: {
+                decrement: item.quantity
               }
-            }))
-          },
-          userId,
-          totalPrice,
-          status,
-          deliveryAddressId,
-          billingAddressId,
-          pickupAddressId,
-          paymentMethodProvider,
-          remark,
-        }
-    })
+            }
+          })
+
+          return {
+            productId: item.productId,
+            price: item.price,
+            quantity: item.quantity,
+            totalPrice: item.totalPrice,
+            saving: item.saving,
+            originalTotalPrice: item.price * item.quantity,
+          }
+        }))
+      },
+      userId,
+      totalPrice,
+      status,
+      deliveryAddressId,
+      billingAddressId,
+      pickupAddressId,
+      paymentMethodProvider,
+      remark,
+    })).ok_or_throw()
 
     // Create event action audit log
     if (userId) createEventAction(db, {
@@ -167,14 +149,9 @@ export async function createOrderHandler(
       action: EventActionType.Create
     })
 
-    res.status(201).json(HttpDataResponse({ order }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "order already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpDataResponse({ order }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -188,36 +165,8 @@ export async function deleteOrderHandler(
     const { orderId } = req.params
 
     const sessionUser = checkUser(req.user).ok_or_throw()
+    const order = (await service.delete(orderId, { sessionUser })).ok_or_throw()
     
-    const [_deletedOrderItems, _deletedPickupAddress, order] = await db.$transaction([
-      db.orderItem.deleteMany({
-        where: {
-          order: {
-            id: orderId,
-            userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
-          },
-        }
-      }),
-
-      db.pickupAddress.deleteMany({
-        where: {
-          orders: {
-            some: {
-              id: orderId,
-              userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
-            }
-          }
-        }
-      }),
-
-      db.order.delete({
-        where: {
-          id: orderId,
-          userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
-        }
-      })
-    ])
-
     // Delete event action audit log
     createEventAction(db, {
       userId: sessionUser.id,
@@ -226,11 +175,9 @@ export async function deleteOrderHandler(
       action: EventActionType.Delete
     })
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ order }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -245,41 +192,8 @@ export async function deleteMultiOrdersHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req.user).ok_or_throw()
-
-    await db.$transaction([
-      db.orderItem.deleteMany({
-        where: {
-          order: {
-            id: {
-              in: orderIds,
-            },
-            userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
-          }
-        }
-      }),
-
-      db.pickupAddress.deleteMany({
-        where: {
-          orders: {
-            some: {
-              id: {
-                in: orderIds
-              },
-              userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
-            }
-          }
-        }
-      }),
-
-      db.order.deleteMany({
-        where: {
-          id: {
-            in: orderIds
-          },
-          userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
-        }
-      })
-    ])
+    const _deletedOrders = await service.deleteMany(orderIds, { sessionUser })
+    _deletedOrders.ok_or_throw()
 
     // Delete event action audit log
     createEventAction(db, {
@@ -289,11 +203,9 @@ export async function deleteMultiOrdersHandler(
       action: EventActionType.Delete
     })
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -308,67 +220,51 @@ export async function updateOrderHandler(
     const { orderId } = req.params
     const data = req.body
 
-    const originalOrderState = await db.order.findUnique({
-      where: {
-        id: orderId
-      },
-      select: {
-        status: true
-      }
-    })
+    const originalOrderState = (await service.findUnique(orderId, undefined, { status: true })).ok_or_throw()
 
-    if (!originalOrderState) return next(new AppError(404, "Order not found"))
+    if (!originalOrderState) return next(AppError.new(StatusCode.NotFound, `Order not found`))
 
     const orderLifeCycleState = new LifeCycleState<LifeCycleOrderConcrate>({ resource: "order", state: originalOrderState.status })
     const orderState = orderLifeCycleState.changeState(data.status)
 
-    const [_, order] = await db.$transaction([
-      db.orderItem.deleteMany({
-        where: {
-          orderId
-        }
-      }),
-      db.order.update({
-        where: {
-          id: orderId,
+    // @ts-ignore  for mocha testing
+    const sessionUser = checkUser(req.user).ok_or_throw()
+    const order = (await service.update({
+      filter: {
+        id: orderId
+      },
+      payload: {
+        orderItems: {
+          create: data.orderItems.map(item => ({
+            productId: item.productId,
+            price: item.price,
+            quantity: item.quantity,
+            totalPrice: item.totalPrice,
+            saving: item.saving,
+            originalTotalPrice: item.price * item.quantity
+          }))
         },
-        data: {
-          orderItems: {
-            create: data.orderItems.map(item => ({
-              productId: item.productId,
-              price: item.price,
-              quantity: item.quantity,
-              totalPrice: item.totalPrice,
-              saving: item.saving,
-              originalTotalPrice: item.price * item.quantity
-            }))
-          },
-          totalPrice: data.totalPrice,
-          addressType: data.addressType,
-          status: orderState,
-          deliveryAddressId: data.deliveryAddressId,
-          billingAddressId: data.billingAddressId,
-          pickupAddressId: data.pickupAddressId,
-          paymentMethodProvider: data.paymentMethodProvider,
-          remark: data.remark,
-        }
-      })
-    ])
+        totalPrice: data.totalPrice,
+        addressType: data.addressType,
+        status: orderState,
+        deliveryAddressId: data.deliveryAddressId,
+        billingAddressId: data.billingAddressId,
+        pickupAddressId: data.pickupAddressId,
+        paymentMethodProvider: data.paymentMethodProvider,
+        remark: data.remark,
+      },
+    })).ok_or_throw()
 
     // Update event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Order,
       resourceIds: [order.id],
       action: EventActionType.Update
     })
 
-    res.status(200).json(HttpDataResponse({ order }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ order }))
   } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    const status = err?.status || 500
-
-    logging.error(msg)
-    next(new AppError(status, msg))
+    next(err)
   }
 }
