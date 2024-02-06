@@ -1,5 +1,5 @@
 import { OrderStatus } from "@prisma/client"
-import AppError from "../../appError"
+import AppError, { StatusCode } from "../../appError"
 
 
 type OrderLifeCycleStateContext = {
@@ -22,9 +22,9 @@ type OrderLifeCycleStatusHandler = () => OrderLifeCycleStateContext
 export const handleTryOnProcessOrderStatus: OrderLifeCycleStatusHandler = () => ({
   [OrderStatus.Processing]: () => OrderStatus.Processing,
   [OrderStatus.Pending]: () => OrderStatus.Pending,
-  [OrderStatus.Shipped]: () => { throw new AppError(403, "Cannot change the `Shipped` status while the order is in processing.") },
+  [OrderStatus.Shipped]: () => { throw AppError.new(StatusCode.Forbidden, "Cannot change the `Shipped` status while the order is in processing.") },
   [OrderStatus.Cancelled]: () => OrderStatus.Cancelled,
-  [OrderStatus.Delivered]: () => { throw new AppError(403, "Cannot change the `delivered` status is not allowed during order processing.") }
+  [OrderStatus.Delivered]: () => { throw AppError.new(StatusCode.Forbidden, "Cannot change the `delivered` status is not allowed during order processing.") }
 })
 
 
@@ -39,7 +39,7 @@ export const handleTryOnPendingOrderStatus: OrderLifeCycleStatusHandler = () => 
   [OrderStatus.Pending]: () => OrderStatus.Pending,
   [OrderStatus.Shipped]: () => OrderStatus.Shipped,
   [OrderStatus.Cancelled]: () => OrderStatus.Cancelled,
-  [OrderStatus.Delivered]: () => { throw new AppError(403, "Unable to mark as delivered while the order is still in a pending state.") }
+  [OrderStatus.Delivered]: () => { throw AppError.new(StatusCode.Forbidden, "Unable to mark as delivered while the order is still in a pending state.") }
 })
 
 
@@ -53,7 +53,7 @@ export const handleTryOnShippedOrderStatus: OrderLifeCycleStatusHandler = () => 
   [OrderStatus.Processing]: () => OrderStatus.Processing,
   [OrderStatus.Pending]: () => OrderStatus.Pending,
   [OrderStatus.Shipped]: () => OrderStatus.Shipped,
-  [OrderStatus.Cancelled]: () => { throw new AppError(403, "Unable to cancel the order as it has already been shipped.") },
+  [OrderStatus.Cancelled]: () => { throw AppError.new(StatusCode.Forbidden, "Unable to cancel the order as it has already been shipped.") },
   [OrderStatus.Delivered]: () => OrderStatus.Delivered
 })
 
@@ -67,9 +67,9 @@ export const handleTryOnShippedOrderStatus: OrderLifeCycleStatusHandler = () => 
 export const handleTryOnCancelledOrderStatus: OrderLifeCycleStatusHandler = () => ({
   [OrderStatus.Processing]: () => OrderStatus.Processing,
   [OrderStatus.Pending]: () => OrderStatus.Pending,
-  [OrderStatus.Shipped]: () => { throw new AppError(403, "Unable to request shipment for a cancelled order.")},
+  [OrderStatus.Shipped]: () => { throw AppError.new(StatusCode.Forbidden, "Unable to request shipment for a cancelled order.")},
   [OrderStatus.Cancelled]: () => OrderStatus.Cancelled,
-  [OrderStatus.Delivered]: () => { throw new AppError(403, "Unable to request delivery for a cancelled order.") }
+  [OrderStatus.Delivered]: () => { throw AppError.new(StatusCode.Forbidden, "Unable to request delivery for a cancelled order.") }
 })
 
 
@@ -83,6 +83,6 @@ export const handleTryOnDeliveredOrderStatus: OrderLifeCycleStatusHandler = () =
   [OrderStatus.Processing]: () => OrderStatus.Processing,
   [OrderStatus.Pending]: () => OrderStatus.Pending,
   [OrderStatus.Shipped]: () => OrderStatus.Shipped,
-  [OrderStatus.Cancelled]: () => { throw new AppError(403, "Unable to cancel the order as it has already been delivered.") },
+  [OrderStatus.Cancelled]: () => { throw AppError.new(StatusCode.Forbidden, "Unable to cancel the order as it has already been delivered.") },
   [OrderStatus.Delivered]: () => OrderStatus.Delivered
 })

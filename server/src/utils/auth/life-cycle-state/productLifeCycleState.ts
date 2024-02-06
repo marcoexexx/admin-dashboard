@@ -1,5 +1,5 @@
 import { ProductStatus } from "@prisma/client"
-import AppError from "../../appError"
+import AppError, { StatusCode } from "../../appError"
 
 
 type ProductLifeCycleStateContext = {
@@ -19,7 +19,7 @@ type ProductLifeCycleStatusHandler = () => ProductLifeCycleStateContext
  */
 export const handleTryOnDraftProductStatus: ProductLifeCycleStatusHandler = () => ({
   [ProductStatus.Pending]: () => ProductStatus.Pending,
-  [ProductStatus.Published]: () => { throw new AppError(403, "Can not publish `Draft` status.") },
+  [ProductStatus.Published]: () => { throw AppError.new(StatusCode.Forbidden, "Can not publish `Draft` status.") },
   [ProductStatus.Draft]: () => ProductStatus.Draft,
 })
 
@@ -44,7 +44,7 @@ export const handleTryOnPendingProductStatus: ProductLifeCycleStatusHandler = ()
  * @throws {AppError} Throws an error if the state change encounters an issue.
  */
 export const handleTryOnPublishedProductStatus: ProductLifeCycleStatusHandler = () => ({
-  [ProductStatus.Pending]: () => { throw new AppError(403, "Published product can not be Pending status.") },
+  [ProductStatus.Pending]: () => { throw AppError.new(StatusCode.Forbidden, "Published product can not be Pending status.") },
   [ProductStatus.Published]: () => ProductStatus.Published,
   [ProductStatus.Draft]: () => ProductStatus.Draft,
 })
