@@ -1,17 +1,17 @@
-import { parseExcel } from "../utils/parseExcel";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { createEventAction } from "../utils/auditLog";
+import { checkUser } from "../services/checkUser";
 import { db } from "../utils/db";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CreateCategoryInput, CreateMultiCategoriesInput, DeleteMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { CreateCategoryInput, DeleteMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
 import { EventActionType, Resource } from "@prisma/client";
+import { CategoryService } from "../services/category";
+import { StatusCode } from "../utils/appError";
 
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
-import fs from 'fs'
+
+const service = CategoryService.new()
 
 
 export async function getCategoriesHandler(
@@ -27,30 +27,25 @@ export async function getCategoriesHandler(
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    const offset = ((page||1) - 1) * (pageSize||10)
+    const [count, categories] = (await service.find({
+      filter: {
+        id,
+        name
+      },
+      pagination: {
+        page,
+        pageSize
+      },
+      include: {
+        _count,
+        products
+      },
+      orderBy
+    })).ok_or_throw()
 
-    const [count, categories] = await db.$transaction([
-      db.category.count(),
-      db.category.findMany({
-        where: {
-          id,
-          name
-        },
-        orderBy,
-        skip: offset,
-        take: pageSize,
-        include: {
-          _count,
-          products
-        }
-      })
-    ])
-
-    res.status(200).json(HttpListResponse(categories, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(categories, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -66,31 +61,22 @@ export async function getCategoryHandler(
     const { categoryId } = req.params
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
 
-    const category = await db.category.findUnique({
-      where: {
-        id: categoryId
-      },
-      include: {
-        _count,
-        products
-      }
-    })
+    const sessionUser = checkUser(req?.user).ok()
+    const category = (await service.findUnique(categoryId, {_count, products})).ok_or_throw()
 
     // Read event action audit log
     if (category) {
-      if (req?.user?.id) createEventAction(db, {
-        userId: req.user.id,
+      if (sessionUser?.id) createEventAction(db, {
+        userId: sessionUser.id,
         resource: Resource.Category,
         resourceIds: [category.id],
         action: EventActionType.Read
       })
     }
 
-    res.status(200).json(HttpDataResponse({ category }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ category }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -102,26 +88,21 @@ export async function createCategoryHandler(
 ) {
   try {
     const { name } = req.body
-    const category = await db.category.create({
-      data: { name },
-    })
+
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const category = (await service.create({ name })).ok_or_throw()
 
     // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Category,
       resourceIds: [category.id],
       action: EventActionType.Create
     })
 
-    res.status(200).json(HttpDataResponse({ category }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Category already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpDataResponse({ category }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -134,38 +115,22 @@ export async function createMultiCategoriesHandler(
   try {
     const excelFile = req.file
 
-    if (!excelFile) return res.status(204)
+    if (!excelFile) return res.status(StatusCode.NoContent)
 
-    const buf = fs.readFileSync(excelFile.path)
-    const data = parseExcel(buf) as CreateMultiCategoriesInput
-
-    // Update not affected
-    const categories = await Promise.all(data.map(category => db.category.upsert({
-      where: {
-        name: category.name
-      },
-      create: {
-        name: category.name
-      },
-      update: {}
-    })))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const categories = (await service.excelUpload(excelFile)).ok_or_throw()
 
     // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Category,
       resourceIds: categories.map(category => category.id),
       action: EventActionType.Create
     })
 
-    res.status(201).json(HttpResponse(201, "Success"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Category already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpListResponse(categories))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -178,25 +143,20 @@ export async function deleteCategoryHandler(
   try {
     const { categoryId } = req.params
     
-    const category = await db.category.delete({
-      where: {
-        id: categoryId
-      }
-    })
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const category = (await service.delete(categoryId)).ok_or_throw()
 
     // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Category,
       resourceIds: [category.id],
       action: EventActionType.Delete
     })
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ category }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -209,27 +169,27 @@ export async function deleteMultiCategoriesHandler(
   try {
     const { categoryIds } = req.body
 
-    await db.category.deleteMany({
-      where: {
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _tryDeleteCategories = await service.deleteMany({
+      filter: {
         id: {
           in: categoryIds
         }
       }
     })
+    _tryDeleteCategories.ok_or_throw()
 
     // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Category,
       resourceIds: categoryIds,
       action: EventActionType.Delete
     })
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -241,27 +201,28 @@ export async function updateCategoryHandler(
 ) {
   try {
     const { categoryId } = req.params
-    const data = req.body
+    const { name } = req.body
 
-    const category = await db.category.update({
-      where: {
-        id: categoryId,
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const category = (await service.update({
+      filter: {
+        id: categoryId
       },
-      data
-    })
+      payload: {
+        name
+      }
+    })).ok_or_throw()
 
     // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Category,
       resourceIds: [category.id],
       action: EventActionType.Update
     })
 
-    res.status(200).json(HttpDataResponse({ category }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ category }))
+  } catch (err) {
+    next(err)
   }
 }

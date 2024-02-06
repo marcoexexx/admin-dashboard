@@ -3,14 +3,13 @@ import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helpe
 import { CreateBrandInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
 import { EventActionType, Resource } from "@prisma/client";
 import { BrandService } from "../services/brand";
+import { StatusCode } from "../utils/appError";
 import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { createEventAction } from "../utils/auditLog";
 import { checkUser } from "../services/checkUser";
 
-import AppError, { StatusCode } from "../utils/appError";
-import logging from "../middleware/logging/logging";
 
 
 const service = BrandService.new()
@@ -104,7 +103,7 @@ export async function createMultiBrandsHandler(
       resourceIds: brands.map(brand => brand.id),
     })
 
-    res.status(StatusCode.OK).json(HttpListResponse(brands))
+    res.status(StatusCode.Created).json(HttpListResponse(brands))
   } catch (err) {
     next(err)
   }
@@ -156,11 +155,9 @@ export async function deleteBrandHandler(
       action: EventActionType.Delete
     })
 
-    res.status(200).json(HttpDataResponse({ brand }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ brand }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -205,27 +202,21 @@ export async function updateBrandHandler(
 ) {
   try {
     const { brandId } = req.params
-    const data = req.body
+    const { name } = req.body
 
-    const brand = await db.brand.update({
-      where: {
-        id: brandId,
-      },
-      data
-    })
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const brand = (await service.update({ filter: {id: brandId}, payload: { name } })).ok_or_throw()
 
     // Update event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user?.id,
+    if (sessionUser?.id) createEventAction(db, {
+      userId: sessionUser.id,
       resource: Resource.Brand,
       resourceIds: [brand.id],
       action: EventActionType.Update
     })
 
-    res.status(200).json(HttpDataResponse({ brand }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ brand }))
+  } catch (err) {
+    next(err)
   }
 }

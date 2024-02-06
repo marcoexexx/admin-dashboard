@@ -3,33 +3,33 @@ import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library";
-import { Brand, Prisma } from "@prisma/client";
+import { Exchange, Prisma } from "@prisma/client";
 import { AppService, Pagination } from "../type";
-import { CreateMultiBrandsInput } from "../../schemas/brand.schema";
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
 import { parseExcel } from "../../utils/parseExcel";
+import { CreateMultiExchangesInput } from "../../schemas/exchange.schema";
 
 
 
 /**
- * BrandService class provides methods for managing access log data.
+ * ExchangeService class provides methods for managing access log data.
  *
  * @remarks
  * This class implements the AppService interface and is designed to handle operations related to access logs.
  */
-export class BrandService implements AppService {
-  private repository = db.brand
+export class ExchangeService implements AppService {
+  private repository = db.exchange
 
   /**
-   * Creates a new instance of BrandService.
-   * @returns A new instance of BrandService.
+   * Creates a new instance of ExchangeService.
+   * @returns A new instance of ExchangeService.
    */
-  static new() { return new BrandService() }
+  static new() { return new ExchangeService() }
 
 
-  async find(arg: { filter?: Prisma.BrandWhereInput; pagination: Pagination; include?: Prisma.BrandInclude, orderBy?: Prisma.BrandOrderByWithRelationInput }): Promise<Result<[number, Brand[]], AppError>> {
-    const { filter, include, pagination, orderBy = {updatedAt: "desc"} } = arg
+  async find(arg: { filter?: Prisma.ExchangeWhereInput; pagination: Pagination; orderBy?: Prisma.ExchangeOrderByWithRelationInput }): Promise<Result<[number, Exchange[]], AppError>> {
+    const { filter, pagination, orderBy = {updatedAt: "desc"} } = arg
     const { page = 1, pageSize = 10 } = pagination
     const offset = (page - 1) * pageSize
 
@@ -38,7 +38,6 @@ export class BrandService implements AppService {
         this.repository.count(),
         this.repository.findMany({
           where: filter,
-          include,
           skip: offset,
           take: pagination.pageSize,
           orderBy
@@ -55,7 +54,7 @@ export class BrandService implements AppService {
   }
 
 
-  async delete(id: string): Promise<Result<Brand, AppError>> {
+  async delete(id: string): Promise<Result<Exchange, AppError>> {
     const tryDelete = as_result_async(this.repository.delete)
 
     const try_delete = (await tryDelete({ where: { id } })).map_err(err => {
@@ -68,10 +67,10 @@ export class BrandService implements AppService {
   }
 
 
-  async findUnique(id: string, include?: Prisma.BrandInclude): Promise<Result<Brand | null, AppError>> {
+  async findUnique(id: string): Promise<Result<Exchange | null, AppError>> {
     const tryUnique = as_result_async(this.repository.findUnique)
 
-    const try_data = (await tryUnique({ where: { id }, include })).map_err(err => {
+    const try_data = (await tryUnique({ where: { id } })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
@@ -81,12 +80,12 @@ export class BrandService implements AppService {
   }
 
 
-  async findFirst(_payload: any, _include?: Prisma.BrandInclude): Promise<Result<Brand | null, AppError>> {
+  async findFirst(_payload: any): Promise<Result<Exchange | null, AppError>> {
     return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
   }
 
 
-  async create(payload: Prisma.BrandCreateInput): Promise<Result<Brand, AppError>> {
+  async create(payload: Prisma.ExchangeCreateInput): Promise<Result<Exchange, AppError>> {
     const tryCreate = as_result_async(this.repository.create)
 
     const try_data = (await tryCreate({ data: payload })).map_err(err => {
@@ -101,16 +100,30 @@ export class BrandService implements AppService {
 
   // Data create by uploading excel 
   // Update not affected
-  async excelUpload(file: Express.Multer.File): Promise<Result<Brand[], AppError>> {
+  async excelUpload(file: Express.Multer.File): Promise<Result<Exchange[], AppError>> {
     const buf = fs.readFileSync(file.path)
-    const data = parseExcel(buf) as CreateMultiBrandsInput
+    const data = parseExcel(buf) as CreateMultiExchangesInput
 
     const tryUpsert = as_result_async(this.repository.upsert)
 
-    const tryCreateOrUpdate = async (brand: CreateMultiBrandsInput[number]) => (await tryUpsert({
-      where: { name: brand.name },
-      create: { name: brand.name },
-      update: { updatedAt: new Date() }
+    const tryCreateOrUpdate = async (exchange: CreateMultiExchangesInput[number]) => (await tryUpsert({
+      where: { 
+        id: exchange.id
+      },
+      create: { 
+        id: exchange.id,
+        to: exchange.to,
+        from: exchange.from,
+        rate: exchange.rate,
+        date: exchange.date
+      },
+      update: { 
+        to: exchange.to,
+        from: exchange.from,
+        rate: exchange.rate,
+        date: exchange.date,
+        updatedAt: new Date() 
+      }
     })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
@@ -123,7 +136,7 @@ export class BrandService implements AppService {
   }
 
 
-  async update(arg: { filter: Prisma.BrandWhereUniqueInput; payload: Prisma.BrandUpdateInput; }): Promise<Result<Brand, AppError>> {
+  async update(arg: { filter: Prisma.ExchangeWhereUniqueInput; payload: Prisma.ExchangeUpdateInput; }): Promise<Result<Exchange, AppError>> {
     const tryUpdate = as_result_async(this.repository.update)
 
     const try_data = (await tryUpdate({ where: arg.filter, data: arg.payload })).map_err(err => {
@@ -136,7 +149,7 @@ export class BrandService implements AppService {
   }
 
 
-  async deleteMany(arg: { filter: Prisma.BrandWhereInput }): Promise<Result<Prisma.BatchPayload, AppError>> {
+  async deleteMany(arg: { filter: Prisma.ExchangeWhereInput }): Promise<Result<Prisma.BatchPayload, AppError>> {
     const tryDeleteMany = as_result_async(this.repository.deleteMany)
 
     const try_data = (await tryDeleteMany({ where: arg.filter })).map_err(err => {
@@ -148,3 +161,4 @@ export class BrandService implements AppService {
     return try_data
   }
 }
+
