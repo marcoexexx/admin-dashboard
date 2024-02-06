@@ -3,33 +3,33 @@ import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library";
-import { Coupon, Prisma } from "@prisma/client";
+import { Exchange, Prisma } from "@prisma/client";
 import { AppService, Pagination } from "../type";
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
 import { parseExcel } from "../../utils/parseExcel";
-import { CreateMultiCouponsInput } from "../../schemas/coupon.schema";
+import { CreateMultiExchangesInput } from "../../schemas/exchange.schema";
 
 
 
 /**
- * CouponService class provides methods for managing access log data.
+ * ExchangeService class provides methods for managing access log data.
  *
  * @remarks
  * This class implements the AppService interface and is designed to handle operations related to access logs.
  */
-export class CouponService implements AppService {
-  private repository = db.coupon
+export class ExchangeService implements AppService {
+  private repository = db.exchange
 
   /**
-   * Creates a new instance of CouponService.
-   * @returns A new instance of CouponService.
+   * Creates a new instance of ExchangeService.
+   * @returns A new instance of ExchangeService.
    */
-  static new() { return new CouponService() }
+  static new() { return new ExchangeService() }
 
 
-  async find(arg: { filter?: Prisma.CouponWhereInput; pagination: Pagination; include?: Prisma.CouponInclude, orderBy?: Prisma.CouponOrderByWithRelationInput }): Promise<Result<[number, Coupon[]], AppError>> {
-    const { filter, include, pagination, orderBy = {updatedAt: "desc"} } = arg
+  async find(arg: { filter?: Prisma.ExchangeWhereInput; pagination: Pagination; orderBy?: Prisma.ExchangeOrderByWithRelationInput }): Promise<Result<[number, Exchange[]], AppError>> {
+    const { filter, pagination, orderBy = {updatedAt: "desc"} } = arg
     const { page = 1, pageSize = 10 } = pagination
     const offset = (page - 1) * pageSize
 
@@ -38,7 +38,6 @@ export class CouponService implements AppService {
         this.repository.count(),
         this.repository.findMany({
           where: filter,
-          include,
           skip: offset,
           take: pagination.pageSize,
           orderBy
@@ -55,7 +54,7 @@ export class CouponService implements AppService {
   }
 
 
-  async delete(id: string): Promise<Result<Coupon, AppError>> {
+  async delete(id: string): Promise<Result<Exchange, AppError>> {
     const tryDelete = as_result_async(this.repository.delete)
 
     const try_delete = (await tryDelete({ where: { id } })).map_err(err => {
@@ -68,10 +67,10 @@ export class CouponService implements AppService {
   }
 
 
-  async findUnique(id: string, include?: Prisma.CouponInclude): Promise<Result<Coupon | null, AppError>> {
+  async findUnique(id: string): Promise<Result<Exchange | null, AppError>> {
     const tryUnique = as_result_async(this.repository.findUnique)
 
-    const try_data = (await tryUnique({ where: { id }, include })).map_err(err => {
+    const try_data = (await tryUnique({ where: { id } })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
@@ -81,12 +80,12 @@ export class CouponService implements AppService {
   }
 
 
-  async findFirst(_payload: any, _include?: Prisma.CouponInclude): Promise<Result<Coupon | null, AppError>> {
+  async findFirst(_payload: any): Promise<Result<Exchange | null, AppError>> {
     return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
   }
 
 
-  async create(payload: Prisma.CouponCreateManyInput): Promise<Result<Coupon, AppError>> {
+  async create(payload: Prisma.ExchangeCreateInput): Promise<Result<Exchange, AppError>> {
     const tryCreate = as_result_async(this.repository.create)
 
     const try_data = (await tryCreate({ data: payload })).map_err(err => {
@@ -101,24 +100,30 @@ export class CouponService implements AppService {
 
   // Data create by uploading excel 
   // Update not affected
-  async excelUpload(file: Express.Multer.File): Promise<Result<Coupon[], AppError>> {
+  async excelUpload(file: Express.Multer.File): Promise<Result<Exchange[], AppError>> {
     const buf = fs.readFileSync(file.path)
-    const data = parseExcel(buf) as CreateMultiCouponsInput
+    const data = parseExcel(buf) as CreateMultiExchangesInput
 
     const tryUpsert = as_result_async(this.repository.upsert)
 
-    const tryCreateOrUpdate = async (coupon: CreateMultiCouponsInput[number]) => (await tryUpsert({
+    const tryCreateOrUpdate = async (exchange: CreateMultiExchangesInput[number]) => (await tryUpsert({
       where: { 
-        label: coupon.label
+        id: exchange.id
       },
       create: { 
-        label: coupon.label,
-        points: coupon.points,
-        dolla: coupon.dolla,
-        isUsed: coupon.isUsed,
-        expiredDate: coupon.expiredDate,
+        id: exchange.id,
+        to: exchange.to,
+        from: exchange.from,
+        rate: exchange.rate,
+        date: exchange.date
       },
-      update: { updatedAt: new Date() }
+      update: { 
+        to: exchange.to,
+        from: exchange.from,
+        rate: exchange.rate,
+        date: exchange.date,
+        updatedAt: new Date() 
+      }
     })).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
@@ -131,7 +136,7 @@ export class CouponService implements AppService {
   }
 
 
-  async update(arg: { filter: Prisma.CouponWhereUniqueInput; payload: Prisma.CouponUncheckedUpdateManyInput; }): Promise<Result<Coupon, AppError>> {
+  async update(arg: { filter: Prisma.ExchangeWhereUniqueInput; payload: Prisma.ExchangeUpdateInput; }): Promise<Result<Exchange, AppError>> {
     const tryUpdate = as_result_async(this.repository.update)
 
     const try_data = (await tryUpdate({ where: arg.filter, data: arg.payload })).map_err(err => {
@@ -144,7 +149,7 @@ export class CouponService implements AppService {
   }
 
 
-  async deleteMany(arg: { filter: Prisma.CouponWhereInput }): Promise<Result<Prisma.BatchPayload, AppError>> {
+  async deleteMany(arg: { filter: Prisma.ExchangeWhereInput }): Promise<Result<Prisma.BatchPayload, AppError>> {
     const tryDeleteMany = as_result_async(this.repository.deleteMany)
 
     const try_data = (await tryDeleteMany({ where: arg.filter })).map_err(err => {
