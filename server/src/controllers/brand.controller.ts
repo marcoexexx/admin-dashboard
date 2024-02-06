@@ -103,7 +103,7 @@ export async function createMultiBrandsHandler(
       resourceIds: brands.map(brand => brand.id),
     })
 
-    res.status(StatusCode.OK).json(HttpListResponse(brands))
+    res.status(StatusCode.Created).json(HttpListResponse(brands))
   } catch (err) {
     next(err)
   }
