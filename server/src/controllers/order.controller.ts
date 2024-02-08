@@ -192,8 +192,22 @@ export async function deleteMultiOrdersHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req.user).ok_or_throw()
-    const _deletedOrders = await service.deleteMany(orderIds, { sessionUser })
+    const _deletedOrders = await service.deleteMany({
+      filter: {
+      }
+    })
     _deletedOrders.ok_or_throw()
+
+    // //
+    // const _tryDeleteExchanges = await service.deleteMany({
+    //   filter: {
+    //     id: {
+    //       in: exchangeIds
+    //     }
+    //   }
+    // })
+    // _tryDeleteExchanges.ok_or_throw()
+    // //
 
     // Delete event action audit log
     createEventAction(db, {

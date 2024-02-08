@@ -28,7 +28,6 @@ enum AuthProvider {
   Facebook
 }
 
-// TODO: rename to AuditLogResource
 enum Resource {
   User
   Brand
@@ -43,6 +42,59 @@ enum Resource {
   SalesCategory
   Township
   UserAddress
+}
+
+enum ProductStockStatus {
+  Available
+  OutOfStock
+  AskForStock
+  Discontinued
+}
+
+enum PriceUnit {
+  MMK
+  USD
+  SGD
+  THB
+  KRW
+}
+
+enum PaymentMethodProvider {
+  Cash
+  AYAPay
+  CBPay
+  KBZPay
+  OnePay
+  UABPay
+  WavePay
+  BankTransfer
+}
+
+enum AddressType {
+  Delivery
+  Pickup
+}
+
+enum OrderStatus {
+  Pending
+  Processing
+  Shipped
+  Delivered
+  Cancelled
+}
+
+enum PotentialOrderStatus {
+  Processing
+  Confimed
+  Cancelled
+}
+
+// TODO: rename to AuditLogAction
+enum AuditLogAction {
+  Create
+  Read
+  Update
+  Delete
 }
 
 model Exchange {
@@ -66,7 +118,7 @@ model Coupon {
   expiredDate DateTime
   isUsed      Boolean  @default(false)
   image       String?
-  reward      Reward?  @relation(fields: [rewardId], references: [id])
+  reward      Reward?  @relation(fields: [rewardId], references: [id], onDelete: Cascade)
   rewardId    String?  @db.ObjectId
 
   createdAt DateTime @default(now())
@@ -107,7 +159,7 @@ model User {
   pickupAddresses  PickupAddress[]
   orders           Order[]
   potentialOrders  PotentialOrder[]
-  eventActions     EventAction[]
+  auditLogs        AuditLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -116,15 +168,14 @@ model User {
 }
 
 model BlockedUser {
-  blockedBy   User    @relation("BlockedBy", fields: [blockedById], references: [id])
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  blockedBy   User    @relation("BlockedBy", fields: [blockedById], references: [id], onDelete: Cascade)
   blockedById String  @db.ObjectId
-  user        User    @relation("User", fields: [userId], references: [id])
+  user        User    @relation("User", fields: [userId], references: [id], onDelete: Cascade)
   userId      String  @db.ObjectId
   remark      String?
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
 
-  // @@id([userId, productId])
-  @@unique([userId, blockedById])
+  @@unique([userId, blockedById], name: "userId_blockedById")
 }
 
 model UserAddress {
@@ -138,7 +189,7 @@ model UserAddress {
   township       TownshipFees @relation(fields: [townshipFeesId], references: [id])
   townshipFeesId String       @db.ObjectId
   fullAddress    String
-  user           User         @relation(fields: [userId], references: [id])
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String       @db.ObjectId
   billingOrders  Order[]      @relation("billingAddress")
   deliveryOrders Order[]      @relation("deliveryAddress")
@@ -157,7 +208,7 @@ model PickupAddress {
   phone           String
   email           String?
   date            DateTime
-  user            User?            @relation(fields: [userId], references: [id])
+  user            User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String?          @db.ObjectId
   orders          Order[]
   potentialOrders PotentialOrder[]
@@ -167,13 +218,13 @@ model PickupAddress {
 }
 
 model Favorites {
-  user      User    @relation(fields: [userId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   userId    String  @db.ObjectId
   productId String  @db.ObjectId
 
-  // @@id([userId, productId])
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  @@unique([userId, productId])
 }
 
 model Brand {
@@ -207,39 +258,24 @@ model SalesCategory {
 }
 
 model ProductSalesCategory {
-  product         Product       @relation(fields: [productId], references: [id])
-  salesCategory   SalesCategory @relation(fields: [salesCategoryId], references: [id])
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  salesCategory   SalesCategory @relation(fields: [salesCategoryId], references: [id], onDelete: Cascade)
   productId       String        @db.ObjectId
   salesCategoryId String        @db.ObjectId
   discount        Float
 
-  // @@id([salesCategoryId, productId])
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  @@unique([salesCategoryId, productId], name: "salesCategoryId_productId")
 }
 
 model ProductCategory {
-  product    Product  @relation(fields: [productId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   productId  String   @db.ObjectId
   categoryId String   @db.ObjectId
 
-  // @@id([categoryId, productId])
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-}
-
-enum ProductStockStatus {
-  Available
-  OutOfStock
-  AskForStock
-  Discontinued
-}
-
-enum PriceUnit {
-  MMK
-  USD
-  SGD
-  THB
-  KRW
+  @@unique([categoryId, productId], name: "categoryId_productId")
 }
 
 model Product {
@@ -258,7 +294,7 @@ model Product {
   likedUsers     Favorites[]
   quantity       Int
   reviews        Review[]
-  creator        User?                   @relation("CreatedBy", fields: [creatorId], references: [id])
+  creator        User?                   @relation("CreatedBy", fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId      String?                 @db.ObjectId
   itemCode       String?
   categories     ProductCategory[]
@@ -289,9 +325,9 @@ model ProductSet {
 
 model ProductRecommendation {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  product      Product    @relation(fields: [productId], references: [id])
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId    String     @db.ObjectId
-  productSet   ProductSet @relation(fields: [productSetId], references: [id])
+  productSet   ProductSet @relation(fields: [productSetId], references: [id], onDelete: Cascade)
   productSetId String     @db.ObjectId
 
   createdAt DateTime @default(now())
@@ -302,7 +338,7 @@ model Specification {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   value     String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String  @db.ObjectId
 
   createdAt DateTime @default(now())
@@ -314,30 +350,16 @@ model Review {
   comment   String
   user      User    @relation(fields: [userId], references: [id])
   userId    String  @db.ObjectId
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String  @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-enum OrderStatus {
-  Pending
-  Processing
-  Shipped
-  Delivered
-  Cancelled
-}
-
-enum PotentialOrderStatus {
-  Processing
-  Confimed
-  Cancelled
-}
-
 model AccessLog {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  user     User     @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String   @db.ObjectId
   browser  String
   ip       String
@@ -348,26 +370,9 @@ model AccessLog {
   updatedAt DateTime @updatedAt
 }
 
-enum PaymentMethodProvider {
-  Cash
-  AYAPay
-  CBPay
-  KBZPay
-  OnePay
-  UABPay
-  WavePay
-  BankTransfer
-}
-
-enum AddressType {
-  Delivery
-  Pickup
-}
-
-// Admin team only
 model PotentialOrder {
   id         String               @id @default(auto()) @map("_id") @db.ObjectId
-  user       User?                @relation(fields: [userId], references: [id])
+  user       User?                @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String?              @db.ObjectId
   orderItems OrderItem[]
   status     PotentialOrderStatus @default(Processing)
@@ -390,7 +395,7 @@ model PotentialOrder {
 
 model Order {
   id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  user       User?       @relation(fields: [userId], references: [id])
+  user       User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String?     @db.ObjectId
   orderItems OrderItem[]
   status     OrderStatus @default(Pending)
@@ -420,7 +425,7 @@ model OrderItem {
   quantity           Int
   product            Product         @relation(fields: [productId], references: [id])
   productId          String          @db.ObjectId
-  order              Order?          @relation(fields: [orderId], references: [id])
+  order              Order?          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId            String?         @db.ObjectId
   potentialOrder     PotentialOrder? @relation(fields: [potentialOrderId], references: [id])
   potentialOrderId   String?         @db.ObjectId
@@ -451,23 +456,14 @@ model Region {
   updatedAt DateTime @updatedAt
 }
 
-// TODO: rename to AuditLogAction
-enum EventActionType {
-  Create
-  Read
-  Update
-  Delete
-}
-
-// TODO: rename to AuditLog
-model EventAction {
-  id          String          @id @default(auto()) @map("_id") @db.ObjectId
-  action      EventActionType
+model AuditLog {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  action      AuditLogAction
   resource    Resource
   resourceIds String[]
-  user        User            @relation(fields: [userId], references: [id])
-  userId      String          @db.ObjectId
-  timestamp   DateTime        @default(now())
+  user        User           @relation(fields: [userId], references: [id])
+  userId      String         @db.ObjectId
+  timestamp   DateTime       @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

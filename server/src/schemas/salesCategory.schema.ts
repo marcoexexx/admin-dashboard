@@ -41,6 +41,7 @@ export const updateProductSaleCategorySchema = object({
 export const createMultiSalesCategoriesSchema = object({
   body: object({
     name: string({ required_error: "Category name is required" }),
+    image: string().optional(),
     startDate: string({ required_error: "startDate is required" }),
     endDate: string({ required_error: "endDate is required" }),
     isActive: boolean().default(true),

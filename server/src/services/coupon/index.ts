@@ -3,20 +3,18 @@ import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library";
-import { Coupon, Prisma } from "@prisma/client";
 import { AppService, Pagination } from "../type";
+import { CreateMultiCouponsInput } from "../../schemas/coupon.schema";
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
 import { parseExcel } from "../../utils/parseExcel";
-import { CreateMultiCouponsInput } from "../../schemas/coupon.schema";
-
 
 
 /**
- * CouponService class provides methods for managing access log data.
+ * CouponService class provides methods for managing coupon data.
  *
  * @remarks
- * This class implements the AppService interface and is designed to handle operations related to access logs.
+ * This class implements the AppService interface and is designed to handle operations related to coupon.
  */
 export class CouponService implements AppService {
   private repository = db.coupon
@@ -27,133 +25,177 @@ export class CouponService implements AppService {
    */
   static new() { return new CouponService() }
 
+  async tryCount(): Promise<Result<number, AppError>> {
+    const opt = as_result_async(this.repository.count)
 
-  async find(arg: { filter?: Prisma.CouponWhereInput; pagination: Pagination; include?: Prisma.CouponInclude, orderBy?: Prisma.CouponOrderByWithRelationInput }): Promise<Result<[number, Coupon[]], AppError>> {
-    const { filter, include, pagination, orderBy = {updatedAt: "desc"} } = arg
+    const result = (await opt()).map_err(err => {
+      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
+      return AppError.new(StatusCode.InternalServerError, err?.message)
+    })
+
+    return result
+  }
+
+  async tryFindManyWithCount(...args: [{ pagination: Pagination; }, ...Parameters<typeof this.repository.findMany>]): Promise<
+    Result<[number, Awaited<ReturnType<typeof this.repository.findMany>>], AppError>
+  > {
+    const [{pagination}, arg] = args
     const { page = 1, pageSize = 10 } = pagination
     const offset = (page - 1) * pageSize
 
-    const try_data = await db
-      .$transaction([
-        this.repository.count(),
-        this.repository.findMany({
-          where: filter,
-          include,
-          skip: offset,
-          take: pagination.pageSize,
-          orderBy
-        })
-      ])
-      .then(Ok)
-      .catch(err => {
-        if (err instanceof PrismaClientKnownRequestError) return Err(convertPrismaErrorToAppError(err))
-        if (err instanceof PrismaClientValidationError) return Err(AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`))
-        return Err(AppError.new(StatusCode.InternalServerError, err?.message))
-      })
+    const opt = as_result_async(this.repository.findMany)
 
-    return try_data
+    const count = await this.tryCount()
+    if (count.is_err()) return Err(count.unwrap_err())
+
+    const result = (await opt({ ...arg, skip: offset, take: pageSize })).map_err(err => {
+      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
+      return AppError.new(StatusCode.InternalServerError, err?.message)
+    })
+    if (result.is_err()) return Err(result.unwrap_err())
+
+    return Ok([count.unwrap(), result.unwrap()])
   }
 
 
-  async delete(id: string): Promise<Result<Coupon, AppError>> {
-    const tryDelete = as_result_async(this.repository.delete)
+  async tryFindUnique(...args: Parameters<typeof this.repository.findUnique>): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.findUnique>>, AppError>
+  > {
+    const [arg] = args
 
-    const try_delete = (await tryDelete({ where: { id } })).map_err(err => {
+    const opt = as_result_async(this.repository.findUnique)
+
+    const result = (await opt(arg)).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
     })
 
-    return try_delete
+    return result
   }
 
 
-  async findUnique(id: string, include?: Prisma.CouponInclude): Promise<Result<Coupon | null, AppError>> {
-    const tryUnique = as_result_async(this.repository.findUnique)
+  async tryFindFirst(...args: Parameters<typeof this.repository.findFirst>): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.findFirst>>, AppError>
+  > {
+    const [arg] = args
 
-    const try_data = (await tryUnique({ where: { id }, include })).map_err(err => {
+    const opt = as_result_async(this.repository.findFirst)
+
+    const result = (await opt(arg)).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
     })
 
-    return try_data
+    return result
   }
 
 
-  async findFirst(_payload: any, _include?: Prisma.CouponInclude): Promise<Result<Coupon | null, AppError>> {
-    return Err(AppError.new(StatusCode.InternalServerError, `This feature is not implemented yet.`))
-  }
+  async tryCreate(...args: Parameters<typeof this.repository.create>): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.create>>, AppError>
+  > {
+    const [arg] = args
 
+    const opt = as_result_async(this.repository.create)
 
-  async create(payload: Prisma.CouponCreateManyInput): Promise<Result<Coupon, AppError>> {
-    const tryCreate = as_result_async(this.repository.create)
-
-    const try_data = (await tryCreate({ data: payload })).map_err(err => {
+    const result = (await opt(arg)).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
     })
 
-    return try_data
+    return result
   }
 
 
   // Data create by uploading excel 
   // Update not affected
-  async excelUpload(file: Express.Multer.File): Promise<Result<Coupon[], AppError>> {
+  async tryExcelUpload(file: Express.Multer.File): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.upsert>>[], AppError>
+  > {
     const buf = fs.readFileSync(file.path)
     const data = parseExcel(buf) as CreateMultiCouponsInput
 
-    const tryUpsert = as_result_async(this.repository.upsert)
+    const opt = as_result_async(this.repository.upsert)
 
-    const tryCreateOrUpdate = async (coupon: CreateMultiCouponsInput[number]) => (await tryUpsert({
-      where: { 
-        label: coupon.label
-      },
-      create: { 
-        label: coupon.label,
-        points: coupon.points,
-        dolla: coupon.dolla,
-        isUsed: coupon.isUsed,
-        expiredDate: coupon.expiredDate,
-      },
-      update: { updatedAt: new Date() }
-    })).map_err(err => {
-      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
-      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
-      return AppError.new(StatusCode.InternalServerError, err?.message)
-    }).ok_or_throw()
+    const opts = async (coupon: CreateMultiCouponsInput[number]) => {
+      const result = (await opt({
+        where: {
+          label: coupon.label,
+        },
+        create: {
+          label: coupon.label,
+          points: coupon.points,
+          dolla: coupon.dolla,
+          productId: coupon.productId,
+          isUsed: coupon.isUsed,
+          expiredDate: coupon.expiredDate
+        },
+        update: { updatedAt: new Date() }
+      })).map_err(err => {
+        if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+        if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
+        return AppError.new(StatusCode.InternalServerError, err?.message)
+      })
+      return result.ok_or_throw()
+    }
 
-    const result = await Promise.all(data.map(tryCreateOrUpdate))
+    const result = await Promise.all(data.map(opts))
 
     return Ok(result)
   }
 
 
-  async update(arg: { filter: Prisma.CouponWhereUniqueInput; payload: Prisma.CouponUncheckedUpdateManyInput; }): Promise<Result<Coupon, AppError>> {
-    const tryUpdate = as_result_async(this.repository.update)
+  async tryUpdate(...args: Parameters<typeof this.repository.update>): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.update>>, AppError>
+  > {
+    const [arg] = args
 
-    const try_data = (await tryUpdate({ where: arg.filter, data: arg.payload })).map_err(err => {
+    const opt = as_result_async(this.repository.update)
+
+    const result = (await opt(arg)).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
     })
 
-    return try_data
+    return result
   }
 
 
-  async deleteMany(arg: { filter: Prisma.CouponWhereInput }): Promise<Result<Prisma.BatchPayload, AppError>> {
-    const tryDeleteMany = as_result_async(this.repository.deleteMany)
+  async tryDelete(...args: Parameters<typeof this.repository.delete>): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.delete>>, AppError>
+  > {
+    const [arg] = args
 
-    const try_data = (await tryDeleteMany({ where: arg.filter })).map_err(err => {
+    const opt = as_result_async(this.repository.delete)
+
+    const result = (await opt(arg)).map_err(err => {
       if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
       if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
       return AppError.new(StatusCode.InternalServerError, err?.message)
     })
 
-    return try_data
+    return result
+  }
+
+
+  async tryDeleteMany(...args: Parameters<typeof this.repository.deleteMany>): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.deleteMany>>, AppError>
+  > {
+    const [arg] = args
+
+    const opt = as_result_async(this.repository.deleteMany)
+
+    const result = (await opt(arg)).map_err(err => {
+      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
+      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
+      return AppError.new(StatusCode.InternalServerError, err?.message)
+    })
+
+    return result
   }
 }
-

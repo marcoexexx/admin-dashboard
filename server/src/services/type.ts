@@ -1,15 +1,21 @@
+import { AuditLog, User } from "@prisma/client"
 import AppError from "../utils/appError"
 import Result from "../utils/result"
 
 
 export interface AppService {
   /**
-   * Create a new
+   * Get totle of data
    *
-   * @param payload - The arguments for the create data.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  create(payload: any): Promise<Result<any, AppError>>
+  tryCount(): Promise<Result<number, AppError>>
+  /**
+   * Create a new
+   *
+   * @returns A promise that resolves to a Result containing either the data or an AppError.
+   */
+  tryCreate(args: any): Promise<Result<any, AppError>>
 
   /**
    * Create multi data with excel upload
@@ -17,55 +23,54 @@ export interface AppService {
    * @param file {Express.Multer.File} - The arguments for the create data.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  excelUpload(file: Express.Multer.File): Promise<Result<any, AppError>>
+  tryExcelUpload(file: Express.Multer.File): Promise<Result<any, AppError>>
 
   /**
    * Finds all data based on the specified criteria.
    *
-   * @param arg - The arguments for the find operation.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  find(arg: { filter?: any , pagination: Pagination, include?: any }): Promise<Result<any, AppError>>
+  tryFindManyWithCount(args: any): Promise<Result<any, AppError>>
 
   /**
    * Find unique one data by id.
    *
-   * @param id - The arguments for the find operation.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  findUnique(id: string, include?: any): Promise<Result<any, AppError>>
+  tryFindUnique(args: any): Promise<Result<any, AppError>>
 
   /**
    * Find first data by specified criteria.
    *
-   * @param payload - The arguments for the find data.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  findFirst(payload: any, include?: any): Promise<Result<any, AppError>>
+  tryFindFirst(args: any): Promise<Result<any, AppError>>
 
   /**
    * Update data by filter and payload.
    *
-   * @param arg - The arguments for the find and update data operation.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  update(arg: { filter: any, payload: any }): Promise<Result<any, AppError>>
+  tryUpdate(args: any): Promise<Result<any, AppError>>
 
   /**
    * Delete data by id.
    *
-   * @param id - The arguments for the find operation.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  delete(id: string): Promise<Result<any, AppError>>
+  tryDelete(args: any): Promise<Result<any, AppError>>
 
   /**
    * Delete multi records data by id.
    *
-   * @param filter - The arguments for the find operation.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  deleteMany(args: { filter: any }): Promise<Result<any, AppError>>
+  tryDeleteMany(args: any): Promise<Result<any, AppError>>
+}
+
+
+export interface Auditable {
+  audit(user: User): Promise<Result<AuditLog, AppError>>
 }
 
 
