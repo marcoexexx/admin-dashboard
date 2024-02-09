@@ -1,30 +1,27 @@
-import fs from "fs";
 import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
 import { AppService, Auditable, Pagination } from "../type";
-import { CreateMultiCategoriesInput } from "../../schemas/category.schema";
 import { AuditLog, AuditLogAction, User } from "@prisma/client";
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
-import { parseExcel } from "../../utils/parseExcel";
 
 
 /**
- * CategoryService class provides methods for managing category data.
+ * UserAddressService class provides methods for managing user address data.
  *
  * @remarks
- * This class implements the AppService interface and is designed to handle operations related to categories.
+ * This class implements the AppService interface and is designed to handle operations related to user address.
  */
-export class CategoryService implements AppService, Auditable {
-  private repository = db.category
+export class UserAddressService implements AppService, Auditable {
+  private repository = db.userAddress
   public log?: { action: AuditLogAction; resourceIds: string[] }
 
   /**
-   * Creates a new instance of CategoryService.
-   * @returns A new instance of CategoryService.
+   * Creates a new instance of UserAddressService.
+   * @returns A new instance of UserAddressService.
    */
-  static new() { return new CategoryService() }
+  static new() { return new UserAddressService() }
 
 
   async tryCount(): Promise<Result<number, AppError>> {
@@ -170,26 +167,10 @@ export class CategoryService implements AppService, Auditable {
 
   // Data create by uploading excel 
   // Update not affected
-  async tryExcelUpload(file: Express.Multer.File): Promise<
+  async tryExcelUpload(_file: Express.Multer.File): Promise<
     Result<Awaited<ReturnType<typeof this.repository.upsert>>[], AppError>
   > {
-    const buf = fs.readFileSync(file.path)
-    const data = parseExcel(buf) as CreateMultiCategoriesInput
-
-    const tryUpsert = as_result_async(this.repository.upsert)
-
-    const opts = async (category: CreateMultiCategoriesInput[number]) => {
-      const result = (await tryUpsert({
-        where: { name: category.name },
-        create: { name: category.name },
-        update: { updatedAt: new Date() }
-      })).map_err(convertPrismaErrorToAppError)
-      return result.ok_or_throw()
-    }
-
-    const result = await Promise.all(data.map(opts))
-
-    return Ok(result)
+    return Err(AppError.new(StatusCode.ServiceUnavailable, `This feature is not implemented yet.`))
   }
 
 

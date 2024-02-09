@@ -1,8 +1,8 @@
 import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
-import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library";
-import { AppService, Pagination } from "../type";
+import { AppService, Auditable, Pagination } from "../type";
+import { AuditLog, AuditLogAction, User } from "@prisma/client";
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
 
@@ -13,8 +13,9 @@ import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAp
  * @remarks
  * This class implements the AppService interface and is designed to handle operations related to productSalesCategory.
  */
-export class ProductSalesCategoryService implements AppService {
+export class ProductSalesCategoryService implements AppService, Auditable {
   private repository = db.productSalesCategory
+  public log?: { action: AuditLogAction; resourceIds: string[] }
 
   /**
    * Creates a new instance of ProductSalesCategoryService.
@@ -22,15 +23,16 @@ export class ProductSalesCategoryService implements AppService {
    */
   static new() { return new ProductSalesCategoryService() }
 
+
   async tryCount(): Promise<Result<number, AppError>> {
     const opt = as_result_async(this.repository.count)
 
-    const result = (await opt()).map_err(err => {
-      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
-      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
-      return AppError.new(StatusCode.InternalServerError, err?.message)
-    })
+    const result = (await opt()).map_err(convertPrismaErrorToAppError)
 
+    this.log = {
+      action: AuditLogAction.Read,
+      resourceIds: []
+    }
     return result
   }
 
@@ -47,14 +49,14 @@ export class ProductSalesCategoryService implements AppService {
     const count = await this.tryCount()
     if (count.is_err()) return Err(count.unwrap_err())
 
-    const result = (await opt({ ...arg, skip: offset, take: pageSize })).map_err(err => {
-      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
-      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
-      return AppError.new(StatusCode.InternalServerError, err?.message)
-    })
+    const result = (await opt({ ...arg, skip: offset, take: pageSize })).map_err(convertPrismaErrorToAppError)
     if (result.is_err()) return Err(result.unwrap_err())
 
-    return Ok([count.unwrap(), result.unwrap()])
+    this.log = {
+      action: AuditLogAction.Read,
+      resourceIds: result.ok_or_throw().map(x => x.id)
+    }
+    return Ok([count.ok_or_throw(), result.ok_or_throw()])
   }
 
 
@@ -65,12 +67,13 @@ export class ProductSalesCategoryService implements AppService {
 
     const opt = as_result_async(this.repository.findUnique)
 
-    const result = (await opt(arg)).map_err(err => {
-      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
-      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
-      return AppError.new(StatusCode.InternalServerError, err?.message)
-    })
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
+    const _res = result.ok()
+    if (_res) this.log = {
+      action: AuditLogAction.Read,
+      resourceIds: [_res.id]
+    }
     return result
   }
 
@@ -82,12 +85,13 @@ export class ProductSalesCategoryService implements AppService {
 
     const opt = as_result_async(this.repository.findFirst)
 
-    const result = (await opt(arg)).map_err(err => {
-      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
-      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
-      return AppError.new(StatusCode.InternalServerError, err?.message)
-    })
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
+    const _res = result.ok()
+    if (_res) this.log = {
+      action: AuditLogAction.Read,
+      resourceIds: [_res.id]
+    }
     return result
   }
 
@@ -99,18 +103,13 @@ export class ProductSalesCategoryService implements AppService {
 
     const opt = as_result_async(this.repository.create)
 
-    const result = (await opt(arg)).map_err(err => {
-      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
-      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
-      return AppError.new(StatusCode.InternalServerError, err?.message)
-    })
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
+    this.log = {
+      action: AuditLogAction.Create,
+      resourceIds: [result.ok_or_throw().id]
+    }
     return result
-  }
-
-
-  async tryExcelUpload(_args: any): Promise<Result<any, AppError>> {
-    return Err(AppError.new(StatusCode.ServiceUnavailable, `This feature is not implemented yet.`))
   }
 
 
@@ -121,12 +120,12 @@ export class ProductSalesCategoryService implements AppService {
 
     const opt = as_result_async(this.repository.update)
 
-    const result = (await opt(arg)).map_err(err => {
-      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
-      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
-      return AppError.new(StatusCode.InternalServerError, err?.message)
-    })
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
+    this.log = {
+      action: AuditLogAction.Update,
+      resourceIds: [result.ok_or_throw().id]
+    }
     return result
   }
 
@@ -138,12 +137,12 @@ export class ProductSalesCategoryService implements AppService {
 
     const opt = as_result_async(this.repository.delete)
 
-    const result = (await opt(arg)).map_err(err => {
-      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
-      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
-      return AppError.new(StatusCode.InternalServerError, err?.message)
-    })
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
+    this.log = {
+      action: AuditLogAction.Delete,
+      resourceIds: [result.ok_or_throw().id]
+    }
     return result
   }
 
@@ -155,13 +154,26 @@ export class ProductSalesCategoryService implements AppService {
 
     const opt = as_result_async(this.repository.deleteMany)
 
-    const result = (await opt(arg)).map_err(err => {
-      if (err instanceof PrismaClientKnownRequestError) return convertPrismaErrorToAppError(err)
-      if (err instanceof PrismaClientValidationError) return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`)
-      return AppError.new(StatusCode.InternalServerError, err?.message)
-    })
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
+    const _res = (arg?.where?.id as any)?.in
+    if (Array.isArray(_res) && _res.length) this.log = {
+      action: AuditLogAction.Delete,
+      resourceIds: _res
+    }
     return result
   }
-}
 
+
+  // Data create by uploading excel 
+  // Update not affected
+  async tryExcelUpload(_args: any): Promise<Result<any, AppError>> {
+    return Err(AppError.new(StatusCode.ServiceUnavailable, `This feature is not implemented yet.`))
+  }
+
+
+  async audit(_user: User): Promise<Result<AuditLog, AppError>> {
+    console.log({ log: this.log })
+    return Err(AppError.new(StatusCode.ServiceUnavailable, `This feature is not implemented yet.`))
+  }
+}

@@ -3,7 +3,7 @@ import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
 import { AppService, Auditable, Pagination } from "../type";
-import { CreateMultiCategoriesInput } from "../../schemas/category.schema";
+import { CreateMultiTownshipsInput } from "../../schemas/township.schema";
 import { AuditLog, AuditLogAction, User } from "@prisma/client";
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
@@ -11,20 +11,20 @@ import { parseExcel } from "../../utils/parseExcel";
 
 
 /**
- * CategoryService class provides methods for managing category data.
+ * TownshipService class provides methods for managing township data.
  *
  * @remarks
- * This class implements the AppService interface and is designed to handle operations related to categories.
+ * This class implements the AppService interface and is designed to handle operations related to townships.
  */
-export class CategoryService implements AppService, Auditable {
-  private repository = db.category
+export class TownshipService implements AppService, Auditable {
+  private repository = db.townshipFees
   public log?: { action: AuditLogAction; resourceIds: string[] }
 
   /**
-   * Creates a new instance of CategoryService.
-   * @returns A new instance of CategoryService.
+   * Creates a new instance of TownshipService.
+   * @returns A new instance of TownshipService.
    */
-  static new() { return new CategoryService() }
+  static new() { return new TownshipService() }
 
 
   async tryCount(): Promise<Result<number, AppError>> {
@@ -174,14 +174,17 @@ export class CategoryService implements AppService, Auditable {
     Result<Awaited<ReturnType<typeof this.repository.upsert>>[], AppError>
   > {
     const buf = fs.readFileSync(file.path)
-    const data = parseExcel(buf) as CreateMultiCategoriesInput
+    const data = parseExcel(buf) as CreateMultiTownshipsInput
 
-    const tryUpsert = as_result_async(this.repository.upsert)
+    const opt = as_result_async(this.repository.upsert)
 
-    const opts = async (category: CreateMultiCategoriesInput[number]) => {
-      const result = (await tryUpsert({
-        where: { name: category.name },
-        create: { name: category.name },
+    const opts = async (township: CreateMultiTownshipsInput[number]) => {
+      const result = (await opt({
+        where: { name: township.name },
+        create: { 
+          name: township.name,
+          fees: township.fees
+        },
         update: { updatedAt: new Date() }
       })).map_err(convertPrismaErrorToAppError)
       return result.ok_or_throw()
@@ -189,6 +192,10 @@ export class CategoryService implements AppService, Auditable {
 
     const result = await Promise.all(data.map(opts))
 
+    this.log = {
+      action: AuditLogAction.Create,
+      resourceIds: result.map(x => x.id)
+    }
     return Ok(result)
   }
 

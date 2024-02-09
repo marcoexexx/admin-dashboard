@@ -1,4 +1,4 @@
-import { AuditLog, User } from "@prisma/client"
+import { AuditLog, AuditLogAction, User } from "@prisma/client"
 import AppError from "../utils/appError"
 import Result from "../utils/result"
 
@@ -70,6 +70,7 @@ export interface AppService {
 
 
 export interface Auditable {
+  log?: { action: AuditLogAction; resourceIds: string[] }
   audit(user: User): Promise<Result<AuditLog, AppError>>
 }
 
