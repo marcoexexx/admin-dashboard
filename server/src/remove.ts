@@ -4,7 +4,7 @@ const prisma = new PrismaClient()
 
 
 async function main() {
-  await prisma.eventAction.deleteMany({
+  await prisma.auditLog.deleteMany({
     where: {
       user: {
         role: {
