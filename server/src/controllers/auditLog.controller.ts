@@ -3,12 +3,12 @@ import { StatusCode } from "../utils/appError";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { DeleteAuditLogSchema } from "../schemas/auditLog.schema";
-import { AuditService } from "../services/auditLog";
+import { AuditLogService } from "../services/auditLog";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 
 
-const service = AuditService.new()
+const service = AuditLogService.new()
 
 
 export async function getAuditLogsHandler(
@@ -24,21 +24,16 @@ export async function getAuditLogsHandler(
     const { user } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    const [count, logs] = (await service.find({
-      filter: {
-        id,
-        resource,
-        action,
+    const [count, logs] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize},
       },
-      pagination: {
-        page,
-        pageSize,
-      },
-      include: {
-        user
-      },
-      orderBy
-    })).ok_or_throw()
+      {
+        where: { id, resource, action },
+        include: { user },
+        orderBy
+      }
+    )).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpListResponse(logs, count))
   } catch (err) {
@@ -54,7 +49,7 @@ export async function deleteAuditLogsHandler(
   try {
     const { auditLogId } = req.params
 
-    const auditLog = (await service.delete(auditLogId)).ok_or_throw()
+    const auditLog = (await service.tryDelete({ where: {id: auditLogId} })).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ auditLog }))
   } catch (err) {

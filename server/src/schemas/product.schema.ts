@@ -24,6 +24,7 @@ export const getProductSaleCategorySchema = object({
 })
 
 
+// TODO: Remove
 export const likeProductByUserSchema = object({
   ...params,
   body: object({

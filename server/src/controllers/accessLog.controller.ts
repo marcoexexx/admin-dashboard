@@ -26,23 +26,23 @@ export async function getAccessLogsHandler(
     const { page, pageSize } = query.pagination ?? {}
     const { user } = convertStringToBoolean(query.include) ?? {}
 
-    const result = await service.find({
-      filter: {
-        id,
-        browser,
-        ip,
-        platform,
-        date
+    const [count, logs] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
       },
-      pagination: { 
-        page, 
-        pageSize
-      },
-      include: {
-        user
+      {
+        where: {
+          id,
+          browser,
+          ip,
+          platform,
+          date
+        },
+        include: {
+          user
+        }
       }
-    })
-    const [count, logs] = result.ok_or_throw()
+    )).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpListResponse(logs, count))
   } catch (err) {
@@ -58,8 +58,7 @@ export async function deleteAccessLogsHandler(
   try {
     const { accessLogId } = req.params
 
-    const result = await service.delete(accessLogId)
-    const accessLog = result.ok_or_throw()
+    const accessLog = (await service.tryDelete({ where: { id: accessLogId } })).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ accessLog }))
   } catch (err) {

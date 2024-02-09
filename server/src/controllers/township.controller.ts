@@ -1,17 +1,14 @@
-import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { parseExcel } from "../utils/parseExcel";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { createEventAction } from "../utils/auditLog";
+import { checkUser } from "../services/checkUser";
+import { CreateTownshipInput, DeleteMultiTownshipsInput, GetTownshipInput, UpdateTownshipInput } from "../schemas/township.schema";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper"; 
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"; 
-import { CreateMultiTownshipsInput, CreateTownshipInput, DeleteMultiTownshipsInput, GetTownshipInput, UpdateTownshipInput } from "../schemas/township.schema";
-import { EventActionType, Resource } from "@prisma/client";
+import { TownshipService } from "../services/township";
+import { StatusCode } from "../utils/appError";
 
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
-import fs from "fs"
+
+const service = TownshipService.new()
 
 
 export async function getTownshipsHandler(
@@ -27,33 +24,20 @@ export async function getTownshipsHandler(
     const { _count, userAddresses, region } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    // TODO: fix
-    const offset = ((page||1) - 1) * (pageSize||10)
+    const [count, townships] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
+      },
+      {
+        where: {id, name, fees},
+        include: {_count, userAddresses, region},
+        orderBy
+      }
+    )).ok_or_throw()
 
-    const [count, townships] = await db.$transaction([
-      db.townshipFees.count(),
-      db.townshipFees.findMany({
-        where: {
-          id,
-          name,
-          fees,
-        },
-        include: {
-          _count,
-          userAddresses,
-          region
-        },
-        orderBy,
-        skip: offset,
-        take: pageSize,
-      })
-    ])
-
-    res.status(200).json(HttpListResponse(townships, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(townships, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -69,7 +53,8 @@ export async function getTownshipHandler(
     const { townshipId } = req.params
     const { _count, userAddresses, region } = convertStringToBoolean(query.include) ?? {}
 
-    const township = await db.townshipFees.findUnique({
+    const sessionUser = checkUser(req?.user).ok()
+    const township = (await service.tryFindUnique({
       where: {
         id: townshipId
       },
@@ -78,23 +63,16 @@ export async function getTownshipHandler(
         userAddresses,
         region
       }
-    })
+    })).ok_or_throw()
 
-    if (township) {
-      // Read event action audit log
-      if (req?.user?.id) createEventAction(db, {
-        userId: req.user.id,
-        resource: Resource.Township,
-        resourceIds: [township.id],
-        action: EventActionType.Read
-      })
+    if (township && sessionUser) {
+      const _auditLog = await service.audit(sessionUser)
+      _auditLog.ok_or_throw()
     }
 
-    res.status(200).json(HttpDataResponse({ township }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ township }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -107,39 +85,18 @@ export async function createMultiTownshipsHandler(
   try {
     const excelFile = req.file
 
-    if (!excelFile) return res.status(204)
+    if (!excelFile) return res.status(StatusCode.NoContent)
 
-    const buf = fs.readFileSync(excelFile.path)
-    const data = parseExcel(buf) as CreateMultiTownshipsInput
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const townships = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
-    // Update not affected
-    const townships = await Promise.all(data.map(township => db.townshipFees.upsert({
-      where: {
-        name: township.name
-      },
-      create: {
-        name: township.name,
-        fees: township.fees,
-      },
-      update: {}
-    })))
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.Township,
-      resourceIds: townships.map(township => township.id),
-      action: EventActionType.Create
-    })
-
-    res.status(201).json(HttpResponse(201, "Success"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Township already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpListResponse(townships))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -152,26 +109,18 @@ export async function createTownshipHandler(
   try {
     const { name, fees } = req.body
 
-    const township = await db.townshipFees.create({
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const township = (await service.tryCreate({
       data: { name, fees },
-    })
+    })).ok_or_throw()
 
-    // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.Township,
-      resourceIds: [township.id],
-      action: EventActionType.Create
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(201).json(HttpDataResponse({ township }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Township already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpDataResponse({ township }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -184,25 +133,20 @@ export async function deleteTownshipHandler(
   try {
     const { townshipId } = req.params
 
-    const township = await db.townshipFees.delete({
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const township = (await service.tryDelete({
       where: {
         id: townshipId
       }
-    })
+    })).ok_or_throw()
 
-    // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.Township,
-      resourceIds: [township.id],
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ township }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -215,27 +159,23 @@ export async function deleteMultilTownshipsHandler(
   try {
     const { townshipIds } = req.body
 
-    await db.townshipFees.deleteMany({
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _deleteTownshipFees = await service.tryDeleteMany({
       where: {
         id: {
           in: townshipIds
         }
       }
     })
+    _deleteTownshipFees.ok_or_throw()
 
-    // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.Township,
-      resourceIds: townshipIds,
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -247,32 +187,20 @@ export async function updateTownshipHandler(
 ) {
   try {
     const { townshipId } = req.params
-    const data = req.body
+    const { name, fees } = req.body
 
-    const [townships] = await db.$transaction([
-      db.townshipFees.update({
-        where: {
-          id: townshipId,
-        },
-        data: {
-          name: data.name,
-          fees: data.fees
-        }
-      })
-    ])
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const township = (await service.tryUpdate({
+      where: { id: townshipId },
+      data: { name, fees }
+    })).ok_or_throw()
 
-    // Update event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.Township,
-      resourceIds: [townships.id],
-      action: EventActionType.Update
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ townships }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ township }))
+  } catch (err) {
+    next(err)
   }
 }

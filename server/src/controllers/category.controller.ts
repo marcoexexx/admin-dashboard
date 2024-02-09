@@ -1,12 +1,9 @@
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { createEventAction } from "../utils/auditLog";
 import { checkUser } from "../services/checkUser";
-import { db } from "../utils/db";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CreateCategoryInput, DeleteMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
-import { EventActionType, Resource } from "@prisma/client";
 import { CategoryService } from "../services/category";
 import { StatusCode } from "../utils/appError";
 
@@ -27,21 +24,16 @@ export async function getCategoriesHandler(
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    const [count, categories] = (await service.find({
-      filter: {
-        id,
-        name
+    const [count, categories] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
       },
-      pagination: {
-        page,
-        pageSize
-      },
-      include: {
-        _count,
-        products
-      },
-      orderBy
-    })).ok_or_throw()
+      {
+        where: {id, name},
+        include: {_count, products},
+        orderBy
+      }
+    )).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpListResponse(categories, count))
   } catch (err) {
@@ -62,17 +54,10 @@ export async function getCategoryHandler(
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
-    const category = (await service.findUnique(categoryId, {_count, products})).ok_or_throw()
+    const category = (await service.tryFindUnique({ where: {id: categoryId}, include: {_count, products} })).ok_or_throw()
 
-    // Read event action audit log
-    if (category) {
-      if (sessionUser?.id) createEventAction(db, {
-        userId: sessionUser.id,
-        resource: Resource.Category,
-        resourceIds: [category.id],
-        action: EventActionType.Read
-      })
-    }
+    // Create audit log
+    if (category && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ category }))
   } catch (err) {
@@ -90,15 +75,11 @@ export async function createCategoryHandler(
     const { name } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const category = (await service.create({ name })).ok_or_throw()
+    const category = (await service.tryCreate({ data: {name} })).ok_or_throw()
 
-    // Create event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Category,
-      resourceIds: [category.id],
-      action: EventActionType.Create
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.Created).json(HttpDataResponse({ category }))
   } catch (err) {
@@ -118,15 +99,11 @@ export async function createMultiCategoriesHandler(
     if (!excelFile) return res.status(StatusCode.NoContent)
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const categories = (await service.excelUpload(excelFile)).ok_or_throw()
+    const categories = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
-    // Create event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Category,
-      resourceIds: categories.map(category => category.id),
-      action: EventActionType.Create
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.Created).json(HttpListResponse(categories))
   } catch (err) {
@@ -144,15 +121,11 @@ export async function deleteCategoryHandler(
     const { categoryId } = req.params
     
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const category = (await service.delete(categoryId)).ok_or_throw()
+    const category = (await service.tryDelete({ where: {id: categoryId} })).ok_or_throw()
 
-    // Delete event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Category,
-      resourceIds: [category.id],
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ category }))
   } catch (err) {
@@ -170,8 +143,8 @@ export async function deleteMultiCategoriesHandler(
     const { categoryIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _tryDeleteCategories = await service.deleteMany({
-      filter: {
+    const _tryDeleteCategories = await service.tryDeleteMany({
+      where: {
         id: {
           in: categoryIds
         }
@@ -179,13 +152,9 @@ export async function deleteMultiCategoriesHandler(
     })
     _tryDeleteCategories.ok_or_throw()
 
-    // Delete event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Category,
-      resourceIds: categoryIds,
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
   } catch (err) {
@@ -204,22 +173,18 @@ export async function updateCategoryHandler(
     const { name } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const category = (await service.update({
-      filter: {
+    const category = (await service.tryUpdate({
+      where: {
         id: categoryId
       },
-      payload: {
+      data: {
         name
       }
     })).ok_or_throw()
 
-    // Delete event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Category,
-      resourceIds: [category.id],
-      action: EventActionType.Update
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ category }))
   } catch (err) {

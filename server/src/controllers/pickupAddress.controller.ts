@@ -1,9 +1,6 @@
-import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { createEventAction } from "../utils/auditLog";
 import { checkUser } from "../services/checkUser";
-import { EventActionType, Resource } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { DeleteMultiPickupAddressesInput, GetPickupAddressInput } from "../schemas/pickupAddress.schema";
@@ -27,25 +24,16 @@ export async function getPickupAddressesHandler(
     const { _count, user, orders, potentialOrders } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    const [count, pickupAddresses] = (await service.find({
-      filter: {
-        id,
-        username,
-        phone,
-        email,
+    const [count, pickupAddresses] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
       },
-      pagination: {
-        page,
-        pageSize
-      },
-      include: {
-        _count,
-        user,
-        orders,
-        potentialOrders
-      },
-      orderBy
-    })).ok_or_throw()
+      {
+        where: { id, username, phone, email },
+        include: { _count, user, orders, potentialOrders },
+        orderBy
+      }
+    )).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpListResponse(pickupAddresses, count))
   } catch (err) {
@@ -66,17 +54,13 @@ export async function getPickupAddressHandler(
     const { _count, user, orders, potentialOrders } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
-    const pickupAddress = (await service.findUnique(pickupAddressId, { _count, user, orders, potentialOrders })).ok_or_throw()
+    const pickupAddress = (await service.tryFindUnique({ 
+      where: {id: pickupAddressId}, 
+      include: { _count, user, orders, potentialOrders } 
+    } )).ok_or_throw()
 
-    // Read event action audit log
-    if (pickupAddress) {
-      if (sessionUser?.id) createEventAction(db, {
-        userId: sessionUser.id,
-        resource: Resource.PickupAddress,
-        resourceIds: [pickupAddress.id],
-        action: EventActionType.Read
-      })
-    }
+    // Create audit log
+    if (pickupAddress && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ pickupAddress }))
   } catch (err) {
@@ -94,15 +78,11 @@ export async function deletePickupAddressHandler(
     const { pickupAddressId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const pickupAddress = (await service.delete(pickupAddressId)).ok_or_throw()
+    const pickupAddress = (await service.tryDelete({ where: {id: pickupAddressId} })).ok_or_throw()
 
-    // Delete event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.PickupAddress,
-      resourceIds: [pickupAddress.id],
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ pickupAddress }))
   } catch (err) {
@@ -120,8 +100,8 @@ export async function deleteMultiPickupAddressesHandler(
     const { pickupAddressIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _deletedPickedAddress = await service.deleteMany({
-      filter: {
+    const _deletedPickedAddress = await service.tryDeleteMany({
+      where: {
         id: {
           in: pickupAddressIds
         }
@@ -129,13 +109,9 @@ export async function deleteMultiPickupAddressesHandler(
     })
     _deletedPickedAddress.ok_or_throw()
 
-    // Delete event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.PickupAddress,
-      resourceIds: pickupAddressIds,
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
   } catch (err) {

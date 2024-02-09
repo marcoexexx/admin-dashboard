@@ -1,16 +1,14 @@
-import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { createEventAction } from "../utils/auditLog";
 import { convertNumericStrings } from "../utils/convertNumber";
+import { checkUser } from "../services/checkUser";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreateUserAddressInput, DeleteMultiUserAddressesInput, GetUserAddressInput, UpdateUserAddressInput } from "../schemas/userAddress.schema";
-import { EventActionType, Resource } from "@prisma/client";
+import { StatusCode } from "../utils/appError";
+import { UserAddressService } from "../services/userAddresses";
 
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
-import { checkUser } from "../services/checkUser";
+
+const service = UserAddressService.new()
 
 
 export async function getUserAddressesHandler(
@@ -44,15 +42,13 @@ export async function getUserAddressesHandler(
     } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    // TODO: fix
-    const offset = ((page||1) - 1) * (pageSize||10)
-
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
-
-    const [count, userAddresses] = await db.$transaction([
-      db.userAddress.count(),
-      db.userAddress.findMany({
+    const [count, userAddresses] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
+      },
+      {
         where: {
           id,
           username,
@@ -60,9 +56,6 @@ export async function getUserAddressesHandler(
           isDefault,
           phone,
           email,
-          // TODO: filter
-          // region: { name: region },
-          // township: { name: township },
           fullAddress,
           remark
         },
@@ -76,17 +69,13 @@ export async function getUserAddressesHandler(
           billingOrders,
           billingPotentialOrders,
         },
-        orderBy,
-        skip: offset,
-        take: pageSize,
-      })
-    ])
+        orderBy
+      }
+    )).ok_or_throw()
 
-    res.status(200).json(HttpListResponse(userAddresses, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(userAddresses, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -111,7 +100,9 @@ export async function getUserAddressHandler(
       billingPotentialOrders 
     } = convertStringToBoolean(query.include) ?? {}
 
-    const userAddress = await db.userAddress.findUnique({
+    // @ts-ignore  for mocha testing
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const userAddress = (await service.tryFindUnique({
       where: {
         id: userAddressId
       },
@@ -125,23 +116,16 @@ export async function getUserAddressHandler(
         billingOrders,
         billingPotentialOrders,
       }
-    })
+    })).ok_or_throw()
 
     if (userAddress) {
-      // Read event action audit log
-      if (req?.user?.id) createEventAction(db, {
-        userId: req.user.id,
-        resource: Resource.UserAddress,
-        resourceIds: [userAddress.id],
-        action: EventActionType.Read
-      })
+      const _auditLog = await service.audit(sessionUser)
+      _auditLog.ok_or_throw()
     }
 
-    res.status(200).json(HttpDataResponse({ userAddress }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ userAddress }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -155,11 +139,8 @@ export async function createUserAddressHandler(
     const { username, isDefault, phone, email,  regionId, townshipFeesId, fullAddress, remark } = req.body
 
     // @ts-ignore  for mocha testing
-    const user = req.user
-
-    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
-
-    const userAddress = await db.userAddress.create({
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const userAddress = (await service.tryCreate({
       data: { 
         isDefault,
         username,
@@ -167,28 +148,19 @@ export async function createUserAddressHandler(
         email,
         regionId,
         townshipFeesId,
-        userId: user.id,
+        userId: sessionUser.id,
         fullAddress,
         remark
       },
-    })
+    })).ok_or_throw()
 
-    // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.UserAddress,
-      resourceIds: [userAddress.id],
-      action: EventActionType.Create
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(201).json(HttpDataResponse({ userAddress }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "User address already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpDataResponse({ userAddress }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -201,25 +173,21 @@ export async function deleteUserAddressHandler(
   try {
     const { userAddressId } = req.params
 
-    const userAddress = await db.userAddress.delete({
+    // @ts-ignore  for mocha testing
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const userAddress = (await service.tryDelete({
       where: {
         id: userAddressId
       }
-    })
+    })).ok_or_throw()
 
-    // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.UserAddress,
-      resourceIds: [userAddress.id],
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ userAddress }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -232,27 +200,24 @@ export async function deleteMultiUserAddressesHandler(
   try {
     const { userAddressIds } = req.body
 
-    await db.userAddress.deleteMany({
+    // @ts-ignore  for mocha testing
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _deleteUserAddresses = await service.tryDeleteMany({
       where: {
         id: {
           in: userAddressIds
         }
       }
     })
+    _deleteUserAddresses.ok_or_throw()
 
-    // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.UserAddress,
-      resourceIds: userAddressIds,
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -266,26 +231,22 @@ export async function updateUserAddressHandler(
     const { userAddressId } = req.params
     const data = req.body
 
-    const userAddress = await db.userAddress.update({
+    // @ts-ignore  for mocha testing
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const userAddress = (await service.tryUpdate({
       where: {
         id: userAddressId,
       },
       data
-    })
+    })).ok_or_throw()
 
-    // Update event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.UserAddress,
-      resourceIds: [userAddress.id],
-      action: EventActionType.Update
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ userAddress }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ userAddress }))
+  } catch (err) {
+    next(err)
   }
 }
 

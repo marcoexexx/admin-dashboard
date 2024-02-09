@@ -5,9 +5,11 @@
 ## Error handling
 - [ ] potential-orders
 - [ ] products
+- [ ] Get: NotFound handle
 
 ## Region & Township
 - [ ] excel create many townships
+- [ ] check product is still exits before order
 
 - [ ] exece upload permission
 - [ ] create, delete :: pickup

@@ -1,4 +1,5 @@
 import { AuditLog, AuditLogAction, User } from "@prisma/client"
+import { PartialShallow } from "lodash"
 import AppError from "../utils/appError"
 import Result from "../utils/result"
 
@@ -21,9 +22,10 @@ export interface AppService {
    * Create multi data with excel upload
    *
    * @param file {Express.Multer.File} - The arguments for the create data.
+   * @param uploadBy {User} - The arguments for the uploadBy user.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  tryExcelUpload(file: Express.Multer.File): Promise<Result<any, AppError>>
+  tryExcelUpload(file: Express.Multer.File, uploadBy?: User): Promise<Result<any, AppError>>
 
   /**
    * Finds all data based on the specified criteria.
@@ -71,7 +73,7 @@ export interface AppService {
 
 export interface Auditable {
   log?: { action: AuditLogAction; resourceIds: string[] }
-  audit(user: User): Promise<Result<AuditLog, AppError>>
+  audit(user: User, config?: PartialShallow<Auditable["log"]>): Promise<Result<AuditLog, AppError>>
 }
 
 

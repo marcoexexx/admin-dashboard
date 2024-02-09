@@ -3,9 +3,8 @@ import AppError, { StatusCode } from "../utils/appError";
 import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { createEventAction } from "../utils/auditLog";
 import { checkUser } from "../services/checkUser";
-import { EventActionType, Resource } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, UpdateOrderInput } from "../schemas/order.schema";
@@ -29,31 +28,32 @@ export async function getOrdersHandler(
     const { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    const [count, orders] = (await service.find({
-      filter: {
-        id,
-        updatedAt: {
-          gte: startDate,
-          lte: endDate
+    const [count, orders] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
+      },
+      {
+        where: {
+          id,
+          updatedAt: {
+            gte: startDate,
+            lte: endDate
+          },
+          status,
+          totalPrice,
+          remark,
         },
-        status,
-        totalPrice,
-        remark,
-      },
-      pagination: {
-        page,
-        pageSize
-      },
-      include: {
-        _count,
-        user,
-        orderItems,
-        pickupAddress,
-        billingAddress,
-        deliveryAddress
-      },
-      orderBy
-    })).ok_or_throw()
+        include: {
+          _count,
+          user,
+          orderItems,
+          pickupAddress,
+          billingAddress,
+          deliveryAddress
+        },
+        orderBy
+      }
+    )).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpListResponse(orders, count))
   } catch (err) {
@@ -74,17 +74,10 @@ export async function getOrderHandler(
     const { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
-    const order = (await service.findUnique(orderId, { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress })).ok_or_throw()
+    const order = (await service.tryFindUnique({ where: {id: orderId}, include: { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } }, )).ok_or_throw()
 
-    // Read event action audit log
-    if (order) {
-      if (sessionUser?.id) createEventAction(db, {
-        userId: sessionUser.id,
-        resource: Resource.Order,
-        resourceIds: [order.id],
-        action: EventActionType.Read
-      })
-    }
+    // Create audit log
+    if (order && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ order }))
   } catch (err) {
@@ -105,49 +98,46 @@ export async function createOrderHandler(
     const sessionUser = checkUser(req?.user).ok()
     const userId = sessionUser?.id
 
-    const order = (await service.create({
-      addressType,
-      orderItems: {
-        create: await Promise.all(orderItems.map(async item => {
-          // update product quantity
-          await db.product.update({
-            where: {
-              id: item.productId
-            },
-            data: {
-              quantity: {
-                decrement: item.quantity
+    const order = (await service.tryCreate({
+      data: {
+        addressType,
+        orderItems: {
+          create: await Promise.all(orderItems.map(async item => {
+            // update product quantity
+            await db.product.update({
+              where: {
+                id: item.productId
+              },
+              data: {
+                quantity: {
+                  decrement: item.quantity
+                }
               }
-            }
-          })
+            })
 
-          return {
-            productId: item.productId,
-            price: item.price,
-            quantity: item.quantity,
-            totalPrice: item.totalPrice,
-            saving: item.saving,
-            originalTotalPrice: item.price * item.quantity,
-          }
-        }))
-      },
-      userId,
-      totalPrice,
-      status,
-      deliveryAddressId,
-      billingAddressId,
-      pickupAddressId,
-      paymentMethodProvider,
-      remark,
+            return {
+              productId: item.productId,
+              price: item.price,
+              quantity: item.quantity,
+              totalPrice: item.totalPrice,
+              saving: item.saving,
+              originalTotalPrice: item.price * item.quantity,
+            }
+          }))
+        },
+        userId,
+        totalPrice,
+        status,
+        deliveryAddressId,
+        billingAddressId,
+        pickupAddressId,
+        paymentMethodProvider,
+        remark,
+      }
     })).ok_or_throw()
 
-    // Create event action audit log
-    if (userId) createEventAction(db, {
-      userId: userId,
-      resource: Resource.Order,
-      resourceIds: [order.id],
-      action: EventActionType.Create
-    })
+    // Create audit log
+    if (sessionUser) (await service.audit(sessionUser)).ok_or_throw()
 
     res.status(StatusCode.Created).json(HttpDataResponse({ order }))
   } catch (err) {
@@ -165,15 +155,16 @@ export async function deleteOrderHandler(
     const { orderId } = req.params
 
     const sessionUser = checkUser(req.user).ok_or_throw()
-    const order = (await service.delete(orderId, { sessionUser })).ok_or_throw()
+    const order = (await service.tryDelete({ 
+      where: {
+        id: orderId,
+        userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
+      } 
+    })).ok_or_throw()
     
-    // Delete event action audit log
-    createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Order,
-      resourceIds: [order.id],
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ order }))
   } catch (err) {
@@ -192,30 +183,19 @@ export async function deleteMultiOrdersHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req.user).ok_or_throw()
-    const _deletedOrders = await service.deleteMany({
-      filter: {
+    const _deletedOrders = await service.tryDeleteMany({
+      where: {
+        id: {
+          in: orderIds,
+        },
+        userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
       }
     })
     _deletedOrders.ok_or_throw()
 
-    // //
-    // const _tryDeleteExchanges = await service.deleteMany({
-    //   filter: {
-    //     id: {
-    //       in: exchangeIds
-    //     }
-    //   }
-    // })
-    // _tryDeleteExchanges.ok_or_throw()
-    // //
-
-    // Delete event action audit log
-    createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Order,
-      resourceIds: orderIds,
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
   } catch (err) {
@@ -234,7 +214,10 @@ export async function updateOrderHandler(
     const { orderId } = req.params
     const data = req.body
 
-    const originalOrderState = (await service.findUnique(orderId, undefined, { status: true })).ok_or_throw()
+    const originalOrderState = (await service.tryFindUnique({ 
+      where: { id: orderId },
+      select: { status: true }
+    })).ok_or_throw()
 
     if (!originalOrderState) return next(AppError.new(StatusCode.NotFound, `Order not found`))
 
@@ -242,22 +225,12 @@ export async function updateOrderHandler(
     const orderState = orderLifeCycleState.changeState(data.status)
 
     // @ts-ignore  for mocha testing
-    const sessionUser = checkUser(req.user).ok_or_throw()
-    const order = (await service.update({
-      filter: {
+    const sessionUser = checkUser(req.user).ok()
+    const order = (await service.tryUpdate({
+      where: {
         id: orderId
       },
-      payload: {
-        orderItems: {
-          create: data.orderItems.map(item => ({
-            productId: item.productId,
-            price: item.price,
-            quantity: item.quantity,
-            totalPrice: item.totalPrice,
-            saving: item.saving,
-            originalTotalPrice: item.price * item.quantity
-          }))
-        },
+      data: {
         totalPrice: data.totalPrice,
         addressType: data.addressType,
         status: orderState,
@@ -269,13 +242,11 @@ export async function updateOrderHandler(
       },
     })).ok_or_throw()
 
-    // Update event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Order,
-      resourceIds: [order.id],
-      action: EventActionType.Update
-    })
+    // Create audit log
+    if (sessionUser) {
+      const _auditLog = await service.audit(sessionUser)
+      _auditLog.ok_or_throw()
+    }
 
     res.status(StatusCode.OK).json(HttpDataResponse({ order }))
   } catch (err: any) {

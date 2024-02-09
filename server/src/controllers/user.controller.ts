@@ -1,14 +1,16 @@
+import AppError, { StatusCode } from "../utils/appError";
+
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { ChangeUserRoleInput, CreateBlockUserInput, GetUserByUsernameInput, GetUserInput, RemoveBlockedUserInput, UploadImageUserInput } from "../schemas/user.schema";
+import { Role } from "@prisma/client";
+import { UserService } from "../services/user";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { db } from "../utils/db";
-
-import logging from "../middleware/logging/logging";
-import AppError, { StatusCode } from "../utils/appError";
 import { checkUser } from "../services/checkUser";
-import { Role } from "@prisma/client";
+
+
+const service = UserService.new()
 
 
 export async function getMeHandler(
@@ -29,17 +31,16 @@ export async function getMeHandler(
       addresses,
       favorites,
       accessLogs,
-      eventActions,
+      auditLogs,
       createdProducts,
       pickupAddresses
     } = convertStringToBoolean(query.include) ?? {}
 
-    const session_user = req.user
-    if (!session_user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
 
-    const user = await db.user.findUnique({
+    const user = (await service.tryFindUnique({
       where: {
-        id: session_user.id
+        id: sessionUser.id
       },
       include: {
         _count,
@@ -50,17 +51,15 @@ export async function getMeHandler(
         addresses,
         favorites,
         accessLogs,
-        eventActions,
+        auditLogs,
         createdProducts,
         pickupAddresses
       }
-    })
+    })).ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ user }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ user }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -73,17 +72,15 @@ export async function getUserHandler(
   try {
     const { userId } = req.params
 
-    const user = await db.user.findUnique({
+    const user = (await service.tryFindUnique({
       where: {
         id: userId
-      }
-    })
+      },
+    })).ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ user }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ user }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -96,17 +93,15 @@ export async function getUserByUsernameHandler(
   try {
     const { username } = req.params
 
-    const user = await db.user.findUnique({
+    const user = (await service.tryFindUnique({
       where: {
         username
       }
-    })
+    })).ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ user }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ user }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -119,7 +114,7 @@ export async function getUsersHandler(
   try {
     const query = convertNumericStrings(req.query)
 
-    const { id, name, email } = query.filter ?? {}
+    const { id, name, email, username } = query.filter ?? {}
     const { page, pageSize } = query.pagination ?? {}
     const { 
       _count,
@@ -130,7 +125,7 @@ export async function getUsersHandler(
       addresses,
       favorites,
       accessLogs,
-      eventActions,
+      auditLogs,
       createdProducts,
       pickupAddresses,
       blockedUsers,
@@ -138,42 +133,38 @@ export async function getUsersHandler(
     } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    // TODO: fix
-    const offset = ((page||1) - 1) * (pageSize||10)
-
-    const users = await db.user.findMany({
-      where: {
-        id,
-        name,
-        email,
+    const users = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
       },
-      skip: offset,
-      take: pageSize,
-      orderBy,
-      include: {
-        _count,
-        reviews,
-        potentialOrders,
-        orders,
-        reward,
-        addresses,
-        favorites,
-        accessLogs,
-        eventActions,
-        createdProducts,
-        pickupAddresses,
-        blockedUsers,
-        blockedByUsers
+      {
+        where: {id, name, email, username},
+        include: {
+          _count,
+          reviews,
+          potentialOrders,
+          orders,
+          reward,
+          addresses,
+          favorites,
+          accessLogs,
+          auditLogs,
+          createdProducts,
+          pickupAddresses,
+          blockedUsers,
+          blockedByUsers
+        },
+        orderBy
       }
-    })
-    res.status(200).json(HttpListResponse(users))
+    )).ok_or_throw()
+
+    res.status(StatusCode.OK).json(HttpListResponse(users))
   } catch (err) {
     next(err)
   }
 }
 
 
-// must use after, onlyAdmin middleware
 export async function changeUserRoleHandler(
   req: Request<ChangeUserRoleInput["params"], {}, ChangeUserRoleInput["body"]>,
   res: Response,
@@ -183,22 +174,19 @@ export async function changeUserRoleHandler(
   const { role } = req.body
 
   try {
-    const userExist = await db.user.findUnique({ where: {
-      id: userId
-    }});
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    if (sessionUser.role !== Role.Admin) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
 
-    if (!userExist) return next(new AppError(404, "User not found"))
-
-    const updatedUser = await db.user.update({ 
+    const user = (await service.tryUpdate({ 
       where: {
-        id: userExist.id
+        id: userId
       },
       data: {
         role
       }
-    })
+    })).ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ user }))
   } catch (err) {
     next(err)
   }
@@ -216,15 +204,31 @@ export async function createBlockUserHandler(
     const sessionUser = checkUser(req?.user).ok_or_throw()
     if (sessionUser.role !== Role.Admin) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
 
-    const updatedUser = await db.blockedUser.create({
+    const user = (await service.tryUpdate({
+      where: { id: userId },
       data: {
-        userId,
-        blockedById: sessionUser.id,
-        remark
+        // TODO
+        blockedUsers: {
+          upsert: {
+            where: {
+              userId_blockedById: {
+                userId,
+                blockedById: sessionUser.id
+              }
+            },
+            create: {
+              blockedById: sessionUser.id,
+              remark
+            },
+            update: {
+              remark,
+            }
+          }
+        }
       }
-    })
+    }))
 
-    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ user }))
   } catch (err) {
     next(err)
   }
@@ -242,13 +246,22 @@ export async function removeBlockedUserHandler(
     const sessionUser = checkUser(req?.user).ok_or_throw()
     if (sessionUser.role !== Role.Admin) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
 
-    const updatedUser = await db.blockedUser.delete({ 
-      where: {
-        id: blockedUserId,
-      },
-    })
+    const user = (await service.tryUpdate({
+      where: { id: blockedUserId },
+      data: {
+        // TODO
+        blockedByUsers: {
+          delete: {
+            userId_blockedById: {
+              userId: sessionUser.id,
+              blockedById: blockedUserId
+            }
+          }
+        }
+      }
+    }))
 
-    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ user }))
   } catch (err) {
     next(err)
   }
@@ -262,22 +275,20 @@ export async function uploadImageCoverHandler(
 ) {
   try {
     // @ts-ignore  for mocha testing
-    const user = req.user
-
-    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
 
     const { image } = req.body
 
-    const updatedUser = await db.user.update({
+    const user = (await service.tryUpdate({
       where: {
-        id: user.id
+        id: sessionUser.id
       },
       data: {
         coverImage: image
       }
-    })
+    })).ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ user }))
   } catch (err) {
     next(err)
   }
@@ -291,22 +302,20 @@ export async function uploadImageProfileHandler(
 ) {
   try {
     // @ts-ignore  for mocha testing
-    const user = req.user
-
-    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
 
     const { image } = req.body
 
-    const updatedUser = await db.user.update({
+    const user = (await service.tryUpdate({
       where: {
-        id: user.id
+        id: sessionUser.id
       },
       data: {
         image
       }
-    })
+    })).ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ user: updatedUser }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ user }))
   } catch (err) {
     next(err)
   }
