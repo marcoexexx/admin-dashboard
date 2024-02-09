@@ -343,6 +343,8 @@ model Specification {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([name, productId], name: "name_productId")
 }
 
 model Review {
