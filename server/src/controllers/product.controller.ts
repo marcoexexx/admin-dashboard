@@ -239,7 +239,7 @@ export async function createMultiProductsHandler(
 
     const excelFile = req.file
 
-    if (!excelFile) return res.status(204)
+    if (!excelFile) return res.status(StatusCode.NoContent)
 
     const products = (await service.tryExcelUpload(excelFile, sessionUser)).ok_or_throw()
 

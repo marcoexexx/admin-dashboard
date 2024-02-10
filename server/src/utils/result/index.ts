@@ -133,6 +133,12 @@ export default class Result<T, E extends ToString> {
     throw new UnreachableException(this.value)
   }
 
+  unwrap_or_else(op: (err: E) => T): T {
+    if (this.is_ok()) return this.value
+    else if (this.is_err()) return op(this.value)
+    throw new UnreachableException(this.value)
+  }
+
 
   ok_or_throw(): T {
     if (this.is_ok()) return this.value

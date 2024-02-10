@@ -73,7 +73,7 @@ export interface AppService {
 
 export interface Auditable {
   log?: { action: AuditLogAction; resourceIds: string[] }
-  audit(user: User, config?: PartialShallow<Auditable["log"]>): Promise<Result<AuditLog, AppError>>
+  audit(user: User, config?: PartialShallow<Auditable["log"]>): Promise<Result<AuditLog | undefined, AppError>>
 }
 
 
