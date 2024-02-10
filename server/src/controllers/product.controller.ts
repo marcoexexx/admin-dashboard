@@ -1,6 +1,5 @@
 import AppError, { StatusCode } from '../utils/appError';
 
-import { db } from '../utils/db'
 import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 import { checkUser } from '../services/checkUser';
@@ -338,7 +337,7 @@ export async function deleteProductHandler(
       select: {
         status: true
       }
-    }))
+    })).ok_or_throw()
     if (!_product) return next(AppError.new(StatusCode.Forbidden,  `Deletion is restricted for product in non-drift states.`))
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
@@ -373,7 +372,8 @@ export async function deleteMultiProductHandler(
       where: {
         id: {
           in: productIds
-        }
+        },
+        status: ProductStatus.Draft
       }
     })
     _deleteProducts.ok_or_throw()
@@ -413,14 +413,14 @@ export async function updateProductHandler(
       status
     } = req.body
 
-    const originalProductState = await db.product.findUnique({
+    const originalProductState = (await service.tryFindUnique({
       where: {
         id: productId,
       },
       select: {
         status: true
       }
-    })
+    })).ok_or_throw()
     if (!originalProductState) return next(AppError.new(StatusCode.NotFound, `Product ${productId} not found.`))
 
     const productLifeCycleState = new LifeCycleState<LifeCycleProductConcrate>({ resource: "product", state: originalProductState.status })
