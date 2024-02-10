@@ -17,8 +17,6 @@ export function convertPrismaErrorToAppError<E extends Error>(err: E): AppError 
       case "P2025": return AppError.new(StatusCode.BadRequest, `Not found`)
 
       default: {
-        logging.error(`Code: ${err.code}`)
-        console.error(err.meta)
         return AppError.new(StatusCode.BadRequest, `Unknown resource error`)
       }
     }
