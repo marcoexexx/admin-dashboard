@@ -4,7 +4,7 @@ import AppError, { StatusCode } from "../../utils/appError";
 
 import { AppService, Auditable, Pagination } from "../type";
 import { CreateMultiProductsInput } from "../../schemas/product.schema";
-import { AuditLog, AuditLogAction, Prisma, Resource, User } from "@prisma/client";
+import { AuditLog, AuditLogAction, Prisma, ProductStatus, Resource, User } from "@prisma/client";
 import { PartialShallow } from "lodash";
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
@@ -191,7 +191,10 @@ export class ProductService implements AppService, Auditable {
       } : null
 
       const result = (await opt({
-        where: { id: product.id },
+        where: { 
+          id: product.id,
+          status: ProductStatus.Draft
+        },
         create: { 
           id: product.id,
           title: product.title,
