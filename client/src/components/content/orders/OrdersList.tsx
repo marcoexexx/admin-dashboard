@@ -42,7 +42,6 @@ export function OrdersList() {
     updateOrderMutation.mutate({ orderId: order.id, order: {
       ...order,
       status,
-      orderItems: order.orderItems || [],
       deliveryAddressId: order.deliveryAddressId || undefined,
       pickupAddressId: order.pickupAddressId || undefined,
       billingAddressId: order.billingAddressId,

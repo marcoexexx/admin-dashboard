@@ -25,7 +25,6 @@ const updateOrderSchema = object({
   status: z.enum(orderStatus).default("Pending"),
   deliveryAddressId: string().optional(),
   totalPrice: number().min(0),
-  pickupAddress: string().optional(),
   pickupAddressId: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
   paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),

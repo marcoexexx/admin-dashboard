@@ -3,8 +3,6 @@
 
 # TODO
 ## Error handling
-- [ ] potential-orders
-- [ ] products
 - [ ] Get: NotFound handle :: server handler
 
 ## Region & Township
@@ -16,4 +14,3 @@
 - [ ] read only for Shopowner
 
 - [ ] Validate :: filter, pagination, include
-- [ ] z.coerce.number(),  z.preprocess(x => x === "true" || x, z.boolean())

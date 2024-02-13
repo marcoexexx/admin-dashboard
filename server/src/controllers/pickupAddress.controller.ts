@@ -24,12 +24,13 @@ export async function getPickupAddressesHandler(
     const { _count, user, orders, potentialOrders } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
+    const sessionUser = checkUser(req?.user).ok_or_throw()
     const [count, pickupAddresses] = (await service.tryFindManyWithCount(
       {
         pagination: {page, pageSize}
       },
       {
-        where: { id, username, phone, email },
+        where: { id, username, phone, email, userId: sessionUser.id },
         include: { _count, user, orders, potentialOrders },
         orderBy
       }
