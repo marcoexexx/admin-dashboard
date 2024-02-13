@@ -1,5 +1,5 @@
 import { authApi } from "./authApi";
-import { CreateSalesCategoryInput, DeleteSalesCategoryInput, UpdateSalesCategoryInput } from "@/components/content/sales-categories/forms";
+import { CreateSalesCategoryInput, UpdateSalesCategoryInput } from "@/components/content/sales-categories/forms";
 import { HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, SalesCategory, SalesCategoryResponse } from "./types";
 import { SalesCategoryFilter } from "@/context/salesCategory";
 
@@ -61,13 +61,13 @@ export async function updateSalesCategoryFn({salesCategoryId, salesCategory}: {s
 }
 
 
-export async function deleteMultiSalesCategoriesFn(categoryIds: DeleteSalesCategoryInput["salesCategoryId"][]) {
+export async function deleteMultiSalesCategoriesFn(categoryIds: string[]) {
   const { data } = await authApi.delete<HttpResponse>("/sales-categories/multi", { data: { salesCategoryIds: categoryIds } })
   return data
 }
 
 
-export async function deleteSalesCategoryFn(salesCategoryId: DeleteSalesCategoryInput["salesCategoryId"]) {
+export async function deleteSalesCategoryFn(salesCategoryId: string) {
   const { data } = await authApi.delete<HttpResponse>(`/sales-categories/detail/${salesCategoryId}`)
   return data
 }
