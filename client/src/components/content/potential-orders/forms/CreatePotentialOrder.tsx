@@ -29,12 +29,7 @@ const createPotentialOrderSchema = object({
   }).array(),
   deliveryAddressId: string().optional(),
   totalPrice: number().min(0),
-  pickupAddress: object({
-    username: string({ required_error: "username is required" }),
-    phone: string({ required_error: "phone number is required" }),
-    email: string().optional(),
-    date: z.any()
-  }).optional(),
+  pickupAddressId: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
   paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
   remark: string().optional(),

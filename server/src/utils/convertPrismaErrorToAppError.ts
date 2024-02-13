@@ -4,8 +4,9 @@ import logging from "../middleware/logging/logging"
 
 
 export function convertPrismaErrorToAppError<E extends Error>(err: E): AppError {
+  logging.error(err)
+
   if (err instanceof PrismaClientKnownRequestError) {
-    logging.error(err.name, err.meta)
     switch (err.code) {
       case "P2002": return AppError.new(StatusCode.BadRequest, `Already exists`)
 

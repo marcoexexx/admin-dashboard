@@ -5,7 +5,7 @@
 ## Error handling
 - [ ] potential-orders
 - [ ] products
-- [ ] Get: NotFound handle
+- [ ] Get: NotFound handle :: server handler
 
 ## Region & Township
 - [ ] excel create many townships

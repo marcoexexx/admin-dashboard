@@ -32,7 +32,7 @@ export default function AddressInformationStep() {
 
 
   const handleChangeAddressType = (addressType: OrderAddressType) => (_: React.MouseEvent<HTMLDivElement>) => {
-    if (addressType === "Delivery") setValue("pickupAddress", undefined)
+    if (addressType === "Delivery") setValue("pickupAddressId", undefined)
     if (addressType === "Pickup") setValue("deliveryAddressId", undefined)
     setValue("addressType", addressType)
   }

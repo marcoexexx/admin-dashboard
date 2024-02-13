@@ -1,5 +1,6 @@
 import { CreateOrderInput } from "@/components/content/orders/forms";
 import { DatePickerField } from "@/components/input-fields";
+import AppError, { AppErrorKind } from "@/libs/exceptions";
 import { FormControl, Grid, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 
@@ -7,7 +8,9 @@ import { Controller, useFormContext } from "react-hook-form";
 export function PickupAddressForm() {
   const { control } = useFormContext<CreateOrderInput>()
 
+  return <h1>Not abailable right now</h1>
 
+  // TODO: Fix Autocomplete pickup address
   return <Grid container gap={1}>
     <Grid item xs={12} sm={5.9}>
       <Controller

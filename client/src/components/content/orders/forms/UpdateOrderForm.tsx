@@ -15,22 +15,17 @@ const paymentMethodProvider = [
 
 
 const updateOrderSchema = object({
-  orderItems: object({
-    price: number(),
-    quantity: number(),
-    productId: string(),
-    totalPrice: number().min(0),
-    saving: number()
-  }).array().min(0),
+  // orderItems: object({
+  //   price: number(),
+  //   quantity: number(),
+  //   productId: string(),
+  //   totalPrice: number().min(0),
+  //   saving: number()
+  // }).array().min(0),
   status: z.enum(orderStatus).default("Pending"),
   deliveryAddressId: string().optional(),
   totalPrice: number().min(0),
-  pickupAddress: object({
-    username: string({ required_error: "username is required" }),
-    phone: string({ required_error: "phone number is required" }),
-    email: string().optional(),
-    date: z.any()
-  }).optional(),
+  pickupAddress: string().optional(),
   pickupAddressId: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
   paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),

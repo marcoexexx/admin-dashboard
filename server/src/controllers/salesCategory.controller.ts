@@ -53,18 +53,17 @@ export async function getSalesCategoriesInProductHandler(
   try {
     const { productId } = req.params
 
-    const salesCategories = (await _salesService.tryFindManyWithCount(
+    const [count, salesCategories] = (await _salesService.tryFindManyWithCount(
       {
         pagination: { page: 1, pageSize: 10 }
       }, 
       {
         where: { productId },
         include: { salesCategory: true },
-        select: { salesCategory: true }
       }
     )).ok_or_throw()
 
-    res.status(StatusCode.OK).json(HttpListResponse(salesCategories))
+    res.status(StatusCode.OK).json(HttpListResponse(salesCategories, count))
   } catch (err) {
     next(err)
   }
