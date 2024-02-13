@@ -1,9 +1,10 @@
 import { CreateTownshipInput, UpdateTownshipInput } from "@/components/content/townships/forms";
 import { authApi } from "./authApi";
 import { HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, TownshipFees, TownshipResponse } from "./types";
+import { TownshipFilter } from "@/context/township";
 
 
-export async function getTownshipsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
+export async function getTownshipsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: TownshipFilter["fields"], pagination: Pagination, include?: TownshipFilter["include"] }) {
   const { data } = await authApi.get<HttpListResponse<TownshipFees>>("/townships", {
     ...opt,
     params: {
@@ -19,10 +20,13 @@ export async function getTownshipsFn(opt: QueryOptionArgs, { filter, pagination,
 }
 
 
-export async function getTownshipFn(opt: QueryOptionArgs, { townshipId }: { townshipId: string | undefined }) {
+export async function getTownshipFn(opt: QueryOptionArgs, { townshipId, include }: { townshipId?: string, include?: TownshipFilter["include"] }) {
   if (!townshipId) return
   const { data } = await authApi.get<TownshipResponse>(`/townships/detail/${townshipId}`, {
     ...opt,
+    params: {
+      include
+    }
   })
   return data
 }

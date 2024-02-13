@@ -1,107 +1,32 @@
 import { Card } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { SuspenseLoader, queryClient } from "@/components";
-import { createMultiTownshipsFn, deleteMultiTownshipsFn, deleteTownshipFn, getTownshipsFn } from "@/services/TownshipsApi";
+import { SuspenseLoader } from "@/components";
 import { TownshipsListTable } from ".";
-import { playSoundEffect } from "@/libs/playSound";
+import { useStore } from "@/hooks";
+import { useCreateMultiTownships, useDeleteMultiTownships, useDeleteTownship, useGetTownships } from "@/hooks/township";
 
 
 export function TownshipsList() {
-  const { state: {townshipFilter}, dispatch } = useStore()
+  const { state: {townshipFilter} } = useStore()
 
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["townships", { filter: townshipFilter } ],
-    queryFn: args => getTownshipsFn(args, { 
-      filter: townshipFilter?.fields,
-      pagination: {
-        page: townshipFilter?.page || 1,
-        pageSize: townshipFilter?.limit || 10
-      },
-      include: {
-        region: true
-      }
-    }),
-    select: data => data
-  })
-
-  const {
-    mutate: createTownships,
-    isPending
-  } = useMutation({
-    mutationFn: createMultiTownshipsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
+  // Quries
+  const { try_data, isError, isLoading, error } = useGetTownships({
+    filter: townshipFilter?.fields,
+    pagination: {
+      page: townshipFilter?.page || 1,
+      pageSize: townshipFilter?.limit || 10
     },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created new cities.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["townships"]
-      })
-      playSoundEffect("success")
+    include: {
+      region: true
     }
   })
 
-  const {
-    mutate: deleteTownship
-  } = useMutation({
-    mutationFn: deleteTownshipFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a township.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["townships"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Mutations
+  const { mutate: createTownships } = useCreateMultiTownships()
+  const { mutate: deleteTownship } = useDeleteTownship()
+  const { mutate: deleteTownships } = useDeleteMultiTownships()
 
-  const {
-    mutate: deleteTownships
-  } = useMutation({
-    mutationFn: deleteMultiTownshipsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete multi cities.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["townships"]
-      })
-      playSoundEffect("success")
-    }
-  })
-
-
-  if (isError && error) return <h1>ERROR: {error.message}</h1>
-
-  if (!data || isLoading) return <SuspenseLoader />
+  // Extraction
+  const townships = try_data.ok_or_throw()
 
   function handleCreateManyTownships(buf: ArrayBuffer) {
     createTownships(buf)
@@ -115,11 +40,16 @@ export function TownshipsList() {
     deleteTownships(ids)
   }
 
+
+  if (isError && error) return <h1>ERROR: {error.message}</h1>
+
+  if (!townships || isLoading) return <SuspenseLoader />
+
   return <Card>
     <TownshipsListTable
-      isLoading={isPending}
-      townships={data.results} 
-      count={data.count} 
+      isLoading={isLoading}
+      townships={townships.results} 
+      count={townships.count} 
       onCreateManyTownships={handleCreateManyTownships} 
       onDelete={handleDeleteTownship}
       onMultiDelete={handleDeleteMultiTownships}
