@@ -4,12 +4,9 @@ import { MuiButton } from "@/components/ui";
 import { DatePickerField, EditorInputField } from "@/components/input-fields";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, object, string, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { createSalesCategoryFn } from "@/services/salesCategoryApi";
-import { queryClient } from "@/components";
 import { useEffect } from "react";
+import { useCreateSalesCategory } from "@/hooks/salsCategory";
 
 
 const createSalesCategorySchema = object({
@@ -24,33 +21,9 @@ const createSalesCategorySchema = object({
 export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>
 
 export function CreateSalesCategoryForm() {
-  const { state: {modalForm}, dispatch } = useStore()
+  const { dispatch } = useStore()
 
-  const navigate = useNavigate()
-  const from = "/sales-categories"
-
-  const {
-    mutate: createSalesCategory,
-  } = useMutation({
-    mutationFn: createSalesCategoryFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new sales category.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["sales-categories"]
-      })
-    },
-    onError: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed created a new sales category.",
-        severity: "error"
-      } })
-    },
-  })
+  const { mutate: createSalesCategory } = useCreateSalesCategory()
 
   const methods = useForm<CreateSalesCategoryInput>({
     resolver: zodResolver(createSalesCategorySchema)

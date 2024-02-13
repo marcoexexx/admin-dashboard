@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useStore } from '@/hooks';
-import { getProductsFn } from '@/services/productsApi';
-import { useQuery } from '@tanstack/react-query';
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiButton } from '@/components/ui';
 import { Product } from '@/services/types';
+import { useEffect, useState } from 'react';
+import { useStore } from '@/hooks';
+import { useGetProducts } from '@/hooks/product';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
@@ -28,22 +27,18 @@ export function ProductInputField({updateField = false}: ProductInputFieldProps)
   const { dispatch } = useStore()
 
   const {
-    data: products,
+    try_data,
     isLoading,
     isError,
     error
-  } = useQuery({
-    queryKey: ["products"],
-    queryFn: args => getProductsFn(args, {
-      filter: {},
-      pagination: {
-        page: 1,
-        pageSize: 100 * 1000
-      },
-      include: {}
-    }),
-    select: data => data.results
+  } = useGetProducts({
+    filter: {},
+    pagination: {
+      page: 1,
+      pageSize: 100 * 100
+    }
   })
+  const products = try_data.ok()?.results
 
   const defaultProductId = getValues("productId")
   const defaultProduct = defaultProductId

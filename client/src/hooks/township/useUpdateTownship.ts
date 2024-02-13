@@ -6,7 +6,7 @@ import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
 import { useNavigate } from "react-router-dom"
-import { updateTownshipFn } from "@/services/TownshipsApi"
+import { updateTownshipFn } from "@/services/townshipsApi"
 
 
 export function useUpdateTownship() {

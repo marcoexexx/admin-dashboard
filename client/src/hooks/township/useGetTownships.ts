@@ -3,7 +3,7 @@ import Result, { Err, Ok } from "@/libs/result";
 
 import { Pagination } from "@/services/types";
 import { TownshipFilter } from "@/context/township";
-import { getTownshipsFn } from "@/services/TownshipsApi";
+import { getTownshipsFn } from "@/services/townshipsApi";
 import { useQuery } from "@tanstack/react-query";
 
 

@@ -11,7 +11,6 @@
 
 # TODO
  - ## IMPORTANT
- - [ ] useQuery hooks
  - [ ] product all publish by superadmin only
  - [ ] product all remove sale and add sale by excel or table action button
 

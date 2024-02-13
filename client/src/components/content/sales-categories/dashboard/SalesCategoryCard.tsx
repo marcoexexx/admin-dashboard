@@ -2,9 +2,8 @@ import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { MuiButton } from "@/components/ui";
 import { AddDashboardCard, DashboardCard, SuspenseLoader } from "@/components";
 import { SalesCategory } from "@/services/types";
-import { useQuery } from "@tanstack/react-query";
-import { getSalesCategoriesFn } from "@/services/salesCategoryApi";
 import { usePermission, useStore } from "@/hooks";
+import { useGetSalesCategories } from "@/hooks/salsCategory";
 import { useNavigate } from "react-router-dom";
 import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 
@@ -16,17 +15,14 @@ export function SalesCategoryCard() {
 
   const navigate = useNavigate()
 
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["sales-categories", { filter: salesCategoryFilter } ],
-    queryFn: args => getSalesCategoriesFn(args, { 
-      filter: salesCategoryFilter?.fields,
-      pagination: {
-        page: salesCategoryFilter?.page || 1,
-        pageSize: salesCategoryFilter?.limit || 2
-      },
-    }),
-    select: data => data.results
+  const { try_data, isLoading } = useGetSalesCategories({
+    filter: salesCategoryFilter?.fields,
+    pagination: {
+      page: salesCategoryFilter?.page || 1,
+      pageSize: salesCategoryFilter?.limit || 2
+    },
   })
+  const sales = try_data.ok_or_throw()?.results
 
   const isAllowedCreateSalesCategory = usePermission({
     key: "sales-category-permissions",
@@ -38,14 +34,13 @@ export function SalesCategoryCard() {
     navigate("/sales-categories/create")
   }
 
-  if (isError && error) return <h1>{error.message}</h1>
 
-  if (isLoading || !data) return <SuspenseLoader />
+  if (isLoading || !sales) return <SuspenseLoader />
 
-  const firstSalesCategory: SalesCategory | undefined = data[0]
+  const firstSalesCategory: SalesCategory | undefined = sales[0]
   const secondSalesCategory = isAllowedCreateSalesCategory
     ? null
-    : data[1]
+    : sales[1]
 
 
   return (

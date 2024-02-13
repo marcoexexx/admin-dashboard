@@ -3,7 +3,7 @@ import Result, { Err, Ok } from "@/libs/result";
 
 import { TownshipFilter } from "@/context/township";
 import { useQuery } from "@tanstack/react-query";
-import { getTownshipFn } from "@/services/TownshipsApi";
+import { getTownshipFn } from "@/services/townshipsApi";
 
 
 export function useGetTownship({

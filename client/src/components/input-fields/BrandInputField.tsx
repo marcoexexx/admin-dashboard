@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { getBrandsFn } from '@/services/brandsApi';
-import { useQuery } from '@tanstack/react-query';
 import { useStore } from '@/hooks';
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -9,6 +7,7 @@ import { Brand } from '@/services/types';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { useGetBrands } from '@/hooks/brand';
 
 
 const InnerPaper = styled(Paper)(() => ({
@@ -28,21 +27,18 @@ export function BrandInputField({updateField = false}: BrandInputFieldProps) {
   const { dispatch } = useStore()
 
   const {
-    data: brands,
+    try_data,
     isLoading,
     isError,
     error
-  } = useQuery({
-    queryKey: ["brands"],
-    queryFn: args => getBrandsFn(args, {
-      filter: {},
-      pagination: {
-        page: 1,
-        pageSize: 100 * 1000
-      }
-    }),
-    select: data => data.results
+  } = useGetBrands({
+    filter: {},
+    pagination: {
+      page: 1,
+      pageSize: 100 * 1000
+    }
   })
+  const brands = try_data.ok()?.results
 
   const defaultBrandId = getValues("brandId")
   const defaultBrand = defaultBrandId

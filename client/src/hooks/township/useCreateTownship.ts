@@ -6,7 +6,7 @@ import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
 import { useNavigate } from "react-router-dom"
-import { createBrandFn } from "@/services/brandsApi"
+import { createTownshipFn } from "@/services/townshipsApi"
 
 
 export function useCreateTownship() {
@@ -16,7 +16,7 @@ export function useCreateTownship() {
   const from = "/townships"
 
   const mutation = useMutation({
-    mutationFn: createBrandFn,
+    mutationFn: createTownshipFn,
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success created a new township.",
@@ -25,7 +25,7 @@ export function useCreateTownship() {
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["township"]
+        queryKey: ["townships"]
       })
       playSoundEffect("success")
     },

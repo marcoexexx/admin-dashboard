@@ -25,10 +25,10 @@ function CreateRegionWrapper() {
   if (!isAllowedCreateRegion) throw AppError.new(AppErrorKind.AccessDeniedError)
 
   return <Card>
-      <CardContent>
-        <CreateRegionForm />
-      </CardContent>
-    </Card>
+    <CardContent>
+      <CreateRegionForm />
+    </CardContent>
+  </Card>
 }
 
 

@@ -1,7 +1,6 @@
 import { SuspenseLoader } from "@/components";
-import { getUserProfileFn } from "@/services/usersApi";
 import { Card } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useGetUserByUsername } from "@/hooks/user";
 
 
 interface UserProfileProps {
@@ -11,21 +10,12 @@ interface UserProfileProps {
 export function UserProfile(props: UserProfileProps) {
   const { username } = props
 
-  const {
-    data: user,
-    isError: isUserError,
-    isLoading: isUserLoading,
-    error: userError
-  } = useQuery({
-    enabled: !!username,
-    queryKey: ["users", { id: username }],
-    queryFn: args => getUserProfileFn(args, { username }),
-    select: data => data?.user
-  })
+  const { try_data, isLoading } = useGetUserByUsername({ username })
+
+  const user = try_data.ok_or_throw()
 
 
-  if (isUserError && userError) return <h1>ERROR: {userError.message}: {(userError as any).response.data.message}</h1>
-  if (!user || isUserLoading) return <SuspenseLoader />
+  if (!user || isLoading) return <SuspenseLoader />
 
   return (
     <Card>

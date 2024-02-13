@@ -9,7 +9,7 @@ export function TownshipsList() {
   const { state: {townshipFilter} } = useStore()
 
   // Quries
-  const { try_data, isError, isLoading, error } = useGetTownships({
+  const { try_data, isLoading } = useGetTownships({
     filter: townshipFilter?.fields,
     pagination: {
       page: townshipFilter?.page || 1,
@@ -40,8 +40,6 @@ export function TownshipsList() {
     deleteTownships(ids)
   }
 
-
-  if (isError && error) return <h1>ERROR: {error.message}</h1>
 
   if (!townships || isLoading) return <SuspenseLoader />
 

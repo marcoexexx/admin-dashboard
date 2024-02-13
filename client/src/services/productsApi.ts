@@ -32,7 +32,7 @@ export async function getProductFn(opt: QueryOptionArgs, { productId, include }:
 }
 
 
-export async function getProductSaleCategories(opt: QueryOptionArgs, { productId }: { productId: string | undefined }) {
+export async function getProductSaleCategoriesFn(opt: QueryOptionArgs, { productId }: { productId: string | undefined }) {
   if (!productId) return
   const { data } = await authApi.get<HttpListResponse<ProductSalesCategoriesResponse>>(`/products/detail/${productId}/sales`, {
     ...opt,
@@ -41,14 +41,14 @@ export async function getProductSaleCategories(opt: QueryOptionArgs, { productId
 }
 
 
-export async function createProductSaleCategory({ productId, salesCategoryId, discount }: { productId: string, salesCategoryId: string, discount: number }) {
+export async function createProductSaleCategoryFn({ productId, salesCategoryId, discount }: { productId: string, salesCategoryId: string, discount: number }) {
   if (!productId && !salesCategoryId) return
   const res = await authApi.post(`/products/detail/${productId}/sales`, { salesCategoryId, discount })
   return res.data
 }
 
 
-export async function deleteProductSaleCategory({ productId, productSaleCategoryId }: { productId: string, productSaleCategoryId: string }) {
+export async function deleteProductSaleCategoryFn({ productId, productSaleCategoryId }: { productId: string, productSaleCategoryId: string }) {
   if (!productId) return
   const data = await authApi.delete(`/products/detail/${productId}/sales/detail/${productSaleCategoryId}`)
   return data

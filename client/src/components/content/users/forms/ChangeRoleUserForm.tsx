@@ -1,15 +1,11 @@
 import { Box, Grid, MenuItem, Skeleton, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { MuiButton } from "@/components/ui";
+import { useParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate, useParams } from "react-router-dom";
-import { queryClient } from "@/components";
 import { useEffect } from "react";
-import { changeRoleUserFn, getUserFn } from "@/services/usersApi";
-import { playSoundEffect } from "@/libs/playSound";
+import { useChangeRoleUser, useGetUser } from "@/hooks/user";
 
 
 const userRoles = ["Admin", "User", "Shopowner"]
@@ -23,54 +19,21 @@ const updateUserSchema = object({
 export type UpdateUserInput = z.infer<typeof updateUserSchema>
 
 export function ChangeRoleUserForm() {
-  const { state: {modalForm}, dispatch } = useStore()
-
-  const navigate = useNavigate()
   const { userId } = useParams()
-  const from = "/users/list"
 
-  const { 
-    data: user,
-    isSuccess: isSuccessFetchUser,
-  } = useQuery({
-    enabled: !!userId,
-    queryKey: ["users", { id: userId }],
-    queryFn: args => getUserFn(args, { userId }),
-    select: data => data?.user
-  })
+  const { try_data, isSuccess } = useGetUser({ id: userId })
+  const { mutate: changeRoleUser } = useChangeRoleUser()
 
-  const {
-    mutate: changeRoleUser,
-  } = useMutation({
-    mutationFn: changeRoleUserFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success updated a user.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["users"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  const user = try_data.ok_or_throw()
+
 
   const methods = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema),
   })
 
   useEffect(() => {
-    if (isSuccessFetchUser && user) methods.setValue("role", "Shopowner", { shouldValidate: true })
-  }, [isSuccessFetchUser])
+    if (isSuccess && user) methods.setValue("role", "Shopowner", { shouldValidate: true })
+  }, [isSuccess])
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods
 

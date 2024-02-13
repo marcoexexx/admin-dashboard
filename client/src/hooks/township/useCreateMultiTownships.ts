@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
-import { createMultiTownshipsFn } from "@/services/TownshipsApi"
+import { createMultiTownshipsFn } from "@/services/townshipsApi"
 
 
 export function useCreateMultiTownships() {

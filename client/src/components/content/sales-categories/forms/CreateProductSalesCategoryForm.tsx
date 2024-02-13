@@ -5,12 +5,9 @@ import { SalesCategoriesInputField } from "@/components/input-fields";
 import { ProductSalesCategoriesResponse } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, string, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { queryClient } from "@/components";
-import { createProductSaleCategory, updateProductSaleCategoryFn } from "@/services/productsApi";
+import { useCombineQuerys, useStore } from "@/hooks";
 import { useEffect } from "react";
-import { playSoundEffect } from "@/libs/playSound";
+import { useCreateProductSalesCategory, useUpdateProductSalesCategory } from "@/hooks/salsCategory";
 
 
 const createProductSalesCategorySchema = object({
@@ -32,57 +29,13 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
   const { dispatch } = useStore()
   const { productId, defaultValues, setDefaultValues } = props
 
-  const {
-    mutate: createSalesCategory,
-  } = useMutation({
-    mutationFn: createProductSaleCategory,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new sales category.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["product-sales-categories"]
-      })
-      setDefaultValues(undefined)
-      methods.reset()
-      playSoundEffect("success")
-    },
-    onError: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed created a new sales category.",
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  const createProductSalesCategoryMutation = useCreateProductSalesCategory()
+  const updateProductSalesCategoryMutation = useUpdateProductSalesCategory()
 
-  const {
-    mutate: updateSalesCategory,
-  } = useMutation({
-    mutationFn: updateProductSaleCategoryFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success updated a new sales category.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["product-sales-categories"]
-      })
-      setDefaultValues(undefined)
-      methods.reset()
-      playSoundEffect("success")
-    },
-    onError: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed updated a new sales category.",
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  const { mutate: createSalesCategory } = createProductSalesCategoryMutation
+  const { mutate: updateSalesCategory } = updateProductSalesCategoryMutation
+
+  const { isSuccess } = useCombineQuerys(createProductSalesCategoryMutation, updateProductSalesCategoryMutation)
 
   const methods = useForm<CreateProductSalesCategoryInput>({
     resolver: zodResolver(createProductSalesCategorySchema)
@@ -97,6 +50,13 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
       setValue("discount", defaultValues.discount)
     }
   }, [defaultValues])
+
+  useEffect(() => {
+    if (isSuccess) {
+      setDefaultValues(undefined)
+      methods.reset()
+    }
+  }, [isSuccess])
 
 
   const onSubmit: SubmitHandler<CreateProductSalesCategoryInput> = (value) => {
