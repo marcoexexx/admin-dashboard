@@ -12,10 +12,10 @@ import { CategoryFilter } from "./category"
 import { UserAddressFilter } from "./userAddress"
 import { CouponFilter } from "./coupon"
 import { UserFilter } from "./user"
-import { OrderFilter } from "./order"
-
-
-// TODO: setFilter, setPagination, setInclude
+import { OrderFilter, PotentialOrderFilter } from "./order"
+import { SalesCategoryFilter } from "./salesCategory"
+import { TownshipFilter } from "./township"
+import { RegionFilter } from "./region"
 
 
 export type Store = {
@@ -88,44 +88,15 @@ export type Store = {
   accessLogFilter?: AccessLogFilter,
   auditLogFilter?: AuditLogFilter,
   orderFilter?: OrderFilter,
-  potentialOrderFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
+  potentialOrderFilter?: PotentialOrderFilter,
   userFilter?: UserFilter,
   userAddressFilter?: UserAddressFilter,
   productFilter?: ProductFilter,
-  salesCategoryFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-    include?: {
-      _count?: boolean
-    }
-  },
+  salesCategoryFilter?: SalesCategoryFilter,
   categoryFilter?: CategoryFilter,
   brandFilter?: BrandFilter,
-  townshipFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  },
-  regionFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  },
+  townshipFilter?: TownshipFilter,
+  regionFilter?: RegionFilter,
   exchangeFilter?: ExchangeFilter,
   couponFilter?: CouponFilter,
   disableCheckOut: boolean
@@ -364,7 +335,6 @@ const initialState: Store = {
     limit: 10,
     mode: "default",
     include: {
-      _count: false,
     },
   },
   regionFilter: {
@@ -372,7 +342,6 @@ const initialState: Store = {
     limit: 10,
     mode: "default",
     include: {
-      _count: false,
     },
   },
   brandFilter: {
