@@ -1,24 +1,35 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { useNavigate } from 'react-router-dom'
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
+import { MuiButton } from "@/components/ui"; import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { RegionsList } from '@/components/content/regions';
+import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getRegionPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied"; import { MuiButton } from "@/components/ui"; import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+
 import getConfig from "@/libs/getConfig";
-import { RegionsList } from '@/components/content/regions';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
 
-export default function ListRegion() {
-  const navigate = useNavigate()
-
+function ListRegionWrapper() {
   const isAllowedReadRegion = usePermission({
     key: "region-permissions",
     actions: "read",
     queryFn: getRegionPermissionsFn
   })
+
+  if (!isAllowedReadRegion) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <RegionsList />
+}
+
+
+export default function ListRegion() {
+  const navigate = useNavigate()
 
   const isAllowedCreateRegion = usePermission({
     key: "region-permissions",
@@ -61,15 +72,19 @@ export default function ListRegion() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadRegion
-      ?  <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <RegionsList />
-            </Grid>
+       <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListRegionWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
     </>
   )
 }

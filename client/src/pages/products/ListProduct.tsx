@@ -1,19 +1,32 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { ProductsList } from "@/components/content/products";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { MuiButton } from "@/components/ui";
 import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { useNavigate } from "react-router-dom";
 
 import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from '@/libs/exceptions';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
+
+function ListProductWrapper() {
+  const isAllowedReadProduct = usePermission({
+    key: "product-permissions",
+    actions: "read",
+    queryFn: getProductPermissionsFn
+  })
+
+  if (!isAllowedReadProduct) throw AppError.new(AppErrorKind.AccessDeniedError) 
+
+  return <ProductsList />
+}
 
 
 export default function ListProduct() {
@@ -25,11 +38,6 @@ export default function ListProduct() {
     queryFn: getProductPermissionsFn
   })
 
-  const isAllowedReadProduct = usePermission({
-    key: "product-permissions",
-    actions: "read",
-    queryFn: getProductPermissionsFn
-  })
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate("/products/create")
@@ -66,17 +74,19 @@ export default function ListProduct() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadProduct
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <ErrorBoundary>
-                <ProductsList />
-              </ErrorBoundary>
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListProductWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
     </>
   )
 }

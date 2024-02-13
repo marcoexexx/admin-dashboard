@@ -1,13 +1,36 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components";
+import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import { ChangeRoleUserForm } from "@/components/content/users/forms";
+import { getUserPermissionsFn } from '@/services/permissionsApi';
+import { usePermission } from '@/hooks';
+
 import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
+
+function UpdateUserWrapper() {
+  const isAllowedUpdateUser = usePermission({
+    key: "user-permissions",
+    actions: "update",
+    queryFn: getUserPermissionsFn
+  })
+
+  if (!isAllowedUpdateUser) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return  <Card>
+    <CardContent>
+      <ChangeRoleUserForm />
+    </CardContent>
+  </Card>
+}
+
 
 export default function UpdateUser() {
   return (
@@ -39,11 +62,13 @@ export default function UpdateUser() {
       <Container maxWidth="lg">
         <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
           <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <ChangeRoleUserForm />
-              </CardContent>
-            </Card>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <UpdateUserWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
         </Grid>
       </Container>

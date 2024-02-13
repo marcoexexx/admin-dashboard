@@ -1,26 +1,36 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { useNavigate } from 'react-router-dom'
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
-import { usePermission } from "@/hooks";
-import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { SalesCategoriesList } from "@/components/content/sales-categories";
 import { MuiButton } from "@/components/ui";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import { useNavigate } from 'react-router-dom'
+import { usePermission } from "@/hooks";
+import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
+
 import getConfig from "@/libs/getConfig";
+import ErrorBoundary from '@/components/ErrorBoundary';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
 
 const appName = getConfig("appName")
 
-export default function ListSalesCategory() {
-  const navigate = useNavigate()
-
+function ListSalesCategoryWrapper() {
   const isAllowedReadSalesCategory = usePermission({
     key: "sales-category-permissions",
     actions: "read",
     queryFn: getSalesCategoryPermissionsFn
   })
+
+  if (!isAllowedReadSalesCategory) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return  <SalesCategoriesList />
+}
+
+
+export default function ListSalesCategory() {
+  const navigate = useNavigate()
 
   const isAllowedCreateSalesCategory = usePermission({
     key: "sales-category-permissions",
@@ -64,16 +74,19 @@ export default function ListSalesCategory() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadSalesCategory
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <SalesCategoriesList />
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListSalesCategoryWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }

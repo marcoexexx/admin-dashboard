@@ -27,7 +27,6 @@ function ListBrandWrapper() {
   if (!isAllowedReadBrand) throw AppError.new(AppErrorKind.AccessDeniedError)
 
   return <BrandsList />
-
 }
 
 

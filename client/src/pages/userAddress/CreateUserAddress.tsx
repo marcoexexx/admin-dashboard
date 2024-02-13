@@ -1,24 +1,38 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components";
+import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { CreateUserAddressForm } from '@/components/content/user-addresses/forms';
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getUserAddressPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+
 import getConfig from "@/libs/getConfig";
-import { CreateUserAddressForm } from '@/components/content/user-addresses/forms';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 
 const appName = getConfig("appName")
 
-export default function CreateUserAddress() {
+function CreateUserAddressWrapper() {
   const isAllowedCreateUserAddress = usePermission({
     key: "user-permissions",
     actions: "create",
     queryFn: getUserAddressPermissionsFn
   })
   
+  if (!isAllowedCreateUserAddress) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <Card>
+    <CardContent>
+      <CreateUserAddressForm />
+    </CardContent>
+  </Card>
+}
+
+
+export default function CreateUserAddress() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -52,20 +66,17 @@ export default function CreateUserAddress() {
         </Grid>
       </PageTitle>
 
-      {isAllowedCreateUserAddress
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12} md={8}>
-              <Card>
-                <CardContent>
-                  <CreateUserAddressForm />
-                </CardContent>
-              </Card>
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12} md={8}>
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <CreateUserAddressWrapper />
+              </Suspense>
+            </ErrorBoundary>
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }

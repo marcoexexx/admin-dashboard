@@ -1,10 +1,10 @@
-export * from './useGetBrands'
-export * from './useGetBrand'
+export * from './useGetTownships'
+export * from './useGetTownship'
 
-export * from './useCreateBrand'
-export * from './useCreateMultiBrands'
+export * from './useCreateTownship'
+export * from './useCreateMultiTownships'
 
-export * from './useDeleteBrand'
-export * from './useDeleteMultiBrands'
+export * from './useDeleteTownship'
+export * from './useDeleteMultiTownships'
 
-export * from './useUpdateBrand'
+export * from './useUpdateTownship'

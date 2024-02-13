@@ -1,27 +1,35 @@
-import { PageTitle } from "@/components"
+import { Suspense } from "react";
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material"
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { ProductDetail } from "@/components/content/products/detail";
 import { MuiButton } from "@/components/ui";
 import { useNavigate, useParams } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 
+import AppError, { AppErrorKind } from "@/libs/exceptions";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
-import ErrorBoundary from "@/components/ErrorBoundary";
 
+
+function ViewProductReadWrapper({productId}: {productId: string | undefined}) {
+  const isAllowedReadProduct = usePermission({
+    key: "product-permissions",
+    actions: "read",
+    queryFn: getProductPermissionsFn
+  })
+
+  if (!isAllowedReadProduct) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <ProductDetail productId={productId} />
+}
 
 export default function ViewProduct() {
   const { productId } = useParams()
 
   const navigate = useNavigate()
 
-  const isAllowedReadProduct = usePermission({
-    key: "product-permissions",
-    actions: "read",
-    queryFn: getProductPermissionsFn
-  })
 
   const isAllowedUpdateProduct = usePermission({
     key: "product-permissions",
@@ -71,13 +79,13 @@ export default function ViewProduct() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadProduct
-      ? <Container maxWidth="lg">
-          <ErrorBoundary>
-            <ProductDetail productId={productId} />
-          </ErrorBoundary>
-        </Container>
-      : <MiniAccessDenied />}
+      <Container maxWidth="lg">
+        <ErrorBoundary>
+          <Suspense fallback={<SuspenseLoader />}>
+            <ViewProductReadWrapper productId={productId} />
+          </Suspense>
+        </ErrorBoundary>
+      </Container>
     </>
   )
 }

@@ -1,26 +1,36 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { useNavigate } from 'react-router-dom'
+import { PageTitle, SuspenseLoader } from "@/components"
+import { MuiButton } from "@/components/ui";
+import { UserAddressesList } from '@/components/content/user-addresses';
 import { Container, Grid, Typography } from "@mui/material"
 import { usePermission } from "@/hooks";
+import { useNavigate } from 'react-router-dom'
 import { getUserAddressPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import { MuiButton } from "@/components/ui";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+
 import getConfig from "@/libs/getConfig";
-import { UserAddressesList } from '@/components/content/user-addresses';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
 
 const appName = getConfig("appName")
 
-export default function ListUserAddress() {
-  const navigate = useNavigate()
-
+function ListUserAddressWrapper() {
   const isAllowedReadUserAddress = usePermission({
     key: "address-permissions",
     actions: "read",
     queryFn: getUserAddressPermissionsFn
   })
+
+  if (!isAllowedReadUserAddress) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <UserAddressesList />
+}
+
+
+export default function ListUserAddress() {
+  const navigate = useNavigate()
 
   const isAllowedCreateUserAddress = usePermission({
     key: "address-permissions",
@@ -63,15 +73,19 @@ export default function ListUserAddress() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadUserAddress
-      ?  <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <UserAddressesList />
-            </Grid>
+       <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListUserAddressWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
     </>
   )
 }

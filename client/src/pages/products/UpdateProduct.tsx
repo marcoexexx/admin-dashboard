@@ -1,27 +1,40 @@
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components";
+import { PageTitle, SuspenseLoader } from "@/components";
 import { UpdateProductForm } from "@/components/content/products/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getProductPermissionsFn } from "@/services/permissionsApi";
 
 import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
 
-export default function UpdateBrand() {
-  const navigate = useNavigate()
-
+function UpdateProductWrapper() {
   const isAllowedUpdateProduct = usePermission({
     key: "product-permissions",
     actions: "update",
     queryFn: getProductPermissionsFn
   })
+
+  if (!isAllowedUpdateProduct) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <Card>
+    <CardContent>
+      <UpdateProductForm />
+    </CardContent>
+  </Card>
+}
+
+
+export default function UpdateProduct() {
+  const navigate = useNavigate()
+
 
   const handleBack = () => {
     navigate(-1)
@@ -54,18 +67,13 @@ export default function UpdateBrand() {
         </Grid>
       </PageTitle>
 
-      {isAllowedUpdateProduct
-      ? <Container maxWidth="lg">
-          <ErrorBoundary>
-            <Card>
-              <CardContent>
-                <UpdateProductForm />
-              </CardContent>
-            </Card>
-          </ErrorBoundary>
-        </Container>
-      : <MiniAccessDenied />}
-      
+      <Container maxWidth="lg">
+        <ErrorBoundary>
+          <Suspense fallback={<SuspenseLoader />}>
+            <UpdateProductWrapper />
+          </Suspense>
+        </ErrorBoundary>
+      </Container>
     </>
   )
 }
