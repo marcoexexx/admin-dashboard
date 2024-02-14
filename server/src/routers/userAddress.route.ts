@@ -6,11 +6,12 @@ import { permissionUser } from "../middleware/permissionUser";
 import { userAddressPermission } from "../utils/auth/permissions";
 import { createUserAddressSchema, deleteMultiUserAddressesSchema, getUserAddressSchema, updateUserAddressSchema } from "../schemas/userAddress.schema";
 import { createUserAddressHandler, deleteMultiUserAddressesHandler, deleteUserAddressHandler, getUserAddressHandler, getUserAddressesHandler, updateUserAddressHandler } from "../controllers/userAddress.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
 
-router.use(deserializeUser, requiredUser)
+router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 
 router.route("")

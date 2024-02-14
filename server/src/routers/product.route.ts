@@ -10,6 +10,7 @@ import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
 import { uploadExcel } from "../upload/excelUpload";
 import { createSaleCategoryForProductHandler, getSalesCategoriesInProductHandler } from "../controllers/salesCategory.controller";
 import { createProductSalesCategorySchema, updateProductSaleCategorySchema } from "../schemas/salesCategory.schema";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
@@ -23,6 +24,7 @@ router.route("")
   .post(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("create", productPermission), 
     validate(createProductSchema), 
     createProductHandler
@@ -33,6 +35,7 @@ router.route("/multi")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("delete", productPermission),
     validate(deleteMultiProductsSchema),
     deleteMultiProductHandler,
@@ -43,6 +46,7 @@ router.route("/multi")
 router.post("/excel-upload",
   deserializeUser,
   requiredUser,
+  checkBlockedUser,
   permissionUser("create", productPermission),
   uploadExcel,
   createMultiProductsHandler,
@@ -57,6 +61,7 @@ router.route("/detail/:productId")
   .delete(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("delete", productPermission),
     validate(getProductSchema), 
     deleteProductHandler
@@ -64,6 +69,7 @@ router.route("/detail/:productId")
   .patch(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("update", productPermission),
     validate(updateProductSchema), 
     updateProductHandler
@@ -78,6 +84,7 @@ router.route("/detail/:productId/sales")
   .post(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("create", salesCategoryPermission),
     validate(createProductSalesCategorySchema),
     createSaleCategoryForProductHandler
@@ -92,6 +99,7 @@ router.route("/detail/:productId/sales/detail/:productSaleCategoryId")
   .delete(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("update", productPermission),
     validate(getProductSaleCategorySchema), 
     deleteProductSaleCategoryHandler
@@ -99,6 +107,7 @@ router.route("/detail/:productId/sales/detail/:productSaleCategoryId")
   .patch(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("update", productPermission),
     validate(updateProductSaleCategorySchema), 
     updateProductSalesCategoryHandler
@@ -109,6 +118,7 @@ router.route("/like/:productId")
   .patch(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     // permissionUser("update", productPermission),   /* Should not access update permission!! */
     validate(likeProductByUserSchema), 
     likeProductByUserHandler
@@ -119,6 +129,7 @@ router.route("/unlike/:productId")
   .patch(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     // permissionUser("update", productPermission),   /* Should not access update permission!! */
     validate(likeProductByUserSchema), 
     unLikeProductByUserHandler
@@ -129,6 +140,7 @@ router.route("/upload/:productId")
   .post(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("update", productPermission),
     uploadProductImage,
     resizeProductImages,

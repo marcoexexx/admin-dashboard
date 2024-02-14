@@ -6,11 +6,12 @@ import { permissionUser } from "../middleware/permissionUser";
 import { pickupAddressPermission } from "../utils/auth/permissions";
 import { createPickupAddressSchema, deleteMultiPickupAddressesSchema, getPickupAddressSchema } from "../schemas/pickupAddress.schema";
 import { createPickupAddressHandler, deleteMultiPickupAddressesHandler, deletePickupAddressHandler, getPickupAddressHandler, getPickupAddressesHandler } from "../controllers/pickupAddress.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
 
-router.use(deserializeUser, requiredUser)
+router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 
 router.route("")

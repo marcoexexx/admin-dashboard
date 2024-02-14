@@ -7,6 +7,7 @@ import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { createSalesCategorySchema, deleteMultiSalesCategoriesSchema, getSalesCategorySchema, updateSalesCategorySchema } from "../schemas/salesCategory.schema";
 import { uploadExcel } from "../upload/excelUpload";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
@@ -20,6 +21,7 @@ router.route("")
   .post(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("create", salesCategoryPermission),
     validate(createSalesCategorySchema),
     createSalesCategoryHandler
@@ -30,6 +32,7 @@ router.route("/multi")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("delete", salesCategoryPermission),
     validate(deleteMultiSalesCategoriesSchema),
     deleteMultiSalesCategoriesHandler
@@ -40,6 +43,7 @@ router.route("/multi")
 router.post("/excel-upload",
   deserializeUser,
   requiredUser,
+  checkBlockedUser,
   permissionUser("create", salesCategoryPermission),
   uploadExcel,
   createMultiSalesCategoriesHandler
@@ -55,6 +59,7 @@ router.route("/detail/:salesCategoryId")
   .patch(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("update", salesCategoryPermission),
     validate(updateSalesCategorySchema), 
     updateSalesCategoryHandler
@@ -62,6 +67,7 @@ router.route("/detail/:salesCategoryId")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("delete", salesCategoryPermission),
     validate(getSalesCategorySchema),
     deleteSalesCategoryHandler

@@ -11,11 +11,17 @@ export async function checkBlockedUser(
   next: NextFunction
 ) {
   try {
-    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok()
 
-    const isBlocked = await db.blockedUser.findFirst({
+    if (!sessionUser) return next()
+
+    const isBlocked = await db.user.findFirst({
       where: {
-        userId: sessionUser.id
+        blockedUsers: {
+          some: {
+            userId: sessionUser.id
+          }
+        }
       }
     })
 

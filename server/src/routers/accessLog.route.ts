@@ -6,11 +6,12 @@ import { accessLogPermission } from "../utils/auth/permissions/accessLog.permiss
 import { deleteAccessLogsHandler, getAccessLogsHandler } from "../controllers/accessLog.controller";
 import { getAccessLogSchema } from "../schemas/accessLog.schema";
 import { validate } from "../middleware/validate";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
 
-router.use(deserializeUser, requiredUser)
+router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 
 router.route("")

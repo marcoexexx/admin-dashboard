@@ -6,10 +6,11 @@ import { validate } from "../middleware/validate";
 import { permissionUser } from "../middleware/permissionUser";
 import { deleteAuditLogSchema } from "../schemas/auditLog.schema";
 import { auditLogPermission } from "../utils/auth/permissions/auditLog.permission";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
-router.use(deserializeUser, requiredUser)
+router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 
 router.route("")

@@ -7,11 +7,12 @@ import { validate } from "../middleware/validate";
 import { createCouponHandler, createMultiCouponsHandler, deleteCouponHandler, deleteMultiCouponsHandler, getCouponHandler, getCouponsHandler, updateCouponHandler } from "../controllers/coupon.controller";
 import { createCouponSchema, deleteMultiCouponsSchema, getCouponSchema, updateCouponSchema } from "../schemas/coupon.schema";
 import { uploadExcel } from "../upload/excelUpload";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
 
-router.use(deserializeUser, requiredUser)
+router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 
 router.route("/")

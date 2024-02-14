@@ -7,6 +7,7 @@ import { createCategoryHandler, createMultiCategoriesHandler, deleteCategoryHand
 import { validate } from "../middleware/validate"
 import { createCategorySchema, deleteMultiCategoriesSchema, getCategorySchema, updateCategorySchema } from "../schemas/category.schema"
 import { uploadExcel } from "../upload/excelUpload"
+import { checkBlockedUser } from "../middleware/checkBlockedUser"
 
 const router = Router()
 
@@ -19,6 +20,7 @@ router.route("")
   .post(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("create", categoryPermission),
     validate(createCategorySchema),
     createCategoryHandler
@@ -29,6 +31,7 @@ router.route("/multi")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("delete", categoryPermission),
     validate(deleteMultiCategoriesSchema),
     deleteMultiCategoriesHandler
@@ -39,6 +42,7 @@ router.route("/multi")
 router.post("/excel-upload",
   deserializeUser,
   requiredUser,
+  checkBlockedUser,
   permissionUser("create", categoryPermission),
   uploadExcel,
   createMultiCategoriesHandler
@@ -54,6 +58,7 @@ router.route("/detail/:categoryId")
   .patch(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("update", categoryPermission),
     validate(updateCategorySchema), 
     updateCategoryHandler
@@ -61,6 +66,7 @@ router.route("/detail/:categoryId")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("delete", categoryPermission),
     validate(getCategorySchema),
     deleteCategoryHandler

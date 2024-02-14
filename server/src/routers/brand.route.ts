@@ -7,6 +7,7 @@ import { requiredUser } from "../middleware/requiredUser";
 import { permissionUser } from "../middleware/permissionUser";
 import { brandPermission } from "../utils/auth/permissions/brand.permission";
 import { uploadExcel } from "../upload/excelUpload";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
@@ -20,6 +21,7 @@ router.route("")
   .post(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("create", brandPermission),
     validate(createBrandSchema),
     createBrandHandler
@@ -30,6 +32,7 @@ router.route("/multi")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("delete", brandPermission),
     validate(deleteMultiBrandsSchema),
     deleteMultiBrandsHandler
@@ -40,6 +43,7 @@ router.route("/multi")
 router.post("/excel-upload",
   deserializeUser,
   requiredUser,
+  checkBlockedUser,
   permissionUser("create", brandPermission),
   uploadExcel,
   createMultiBrandsHandler,
@@ -55,6 +59,7 @@ router.route("/detail/:brandId")
   .patch(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("update", brandPermission),
     validate(updateBrandSchema), 
     updateBrandHandler
@@ -62,6 +67,7 @@ router.route("/detail/:brandId")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     validate(getBrandSchema),
     permissionUser("delete", brandPermission),
     deleteBrandHandler

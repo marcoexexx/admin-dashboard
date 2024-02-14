@@ -13,7 +13,7 @@ export function RenderToggleBlockUserButton({user, me}: {user: User, me: User}) 
 
 
   const handleToggleBlock = (_: React.MouseEvent<HTMLButtonElement>) => {
-    if (blocked) unblockUserMutation.mutate({ blockedUserId: blocked.id })
+    if (blocked) unblockUserMutation.mutate({ blockedUserId: blocked.userId })
     else blockUserMutation.mutate({ userId: user.id })
   }
 

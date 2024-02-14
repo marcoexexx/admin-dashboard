@@ -7,6 +7,7 @@ import { uploadExcel } from "../upload/excelUpload";
 import { regionPermission } from "../utils/auth/permissions";
 import { createRegionSchema, deleteMultiRegionsSchema, getRegionSchema, updateRegionSchema } from "../schemas/region.schema";
 import { createMultiRegionsHandler, createRegionHandler, deleteMultilRegionsHandler, deleteRegionHandler, getRegionHandler, getRegionsHandler, updateRegionHandler } from "../controllers/region.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
@@ -20,6 +21,7 @@ router.route("")
   .post(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("create", regionPermission),
     validate(createRegionSchema),
     createRegionHandler
@@ -30,6 +32,7 @@ router.route("/multi")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("delete", regionPermission),
     validate(deleteMultiRegionsSchema),
     deleteMultilRegionsHandler
@@ -40,6 +43,7 @@ router.route("/multi")
 router.post("/excel-upload",
   deserializeUser,
   requiredUser,
+  checkBlockedUser,
   permissionUser("create", regionPermission),
   uploadExcel,
   createMultiRegionsHandler,
@@ -55,6 +59,7 @@ router.route("/detail/:regionId")
   .patch(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("update", regionPermission),
     validate(updateRegionSchema), 
     updateRegionHandler
@@ -62,6 +67,7 @@ router.route("/detail/:regionId")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     validate(getRegionSchema),
     permissionUser("delete", regionPermission),
     deleteRegionHandler

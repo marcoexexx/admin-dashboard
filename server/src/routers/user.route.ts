@@ -7,11 +7,12 @@ import { validate } from "../middleware/validate";
 import { onlyAdminUser } from "../middleware/onlyAdminUser";
 import { permissionUser } from "../middleware/permissionUser";
 import { userPermission } from "../utils/auth/permissions";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
 
-router.use(deserializeUser, requiredUser)
+router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 
 router.route("")

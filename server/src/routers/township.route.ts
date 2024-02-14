@@ -7,6 +7,7 @@ import { uploadExcel } from "../upload/excelUpload";
 import { createMultiTownshipsHandler, createTownshipHandler, deleteMultilTownshipsHandler, deleteTownshipHandler, getTownshipHandler, getTownshipsHandler, updateTownshipHandler } from "../controllers/township.controller";
 import { createTownshipSchema, deleteMultiTownshipsSchema, getTownshipSchema, updateTownshipSchema } from "../schemas/township.schema";
 import { townshipPermission } from "../utils/auth/permissions";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
 const router = Router()
@@ -20,6 +21,7 @@ router.route("")
   .post(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("create", townshipPermission),
     validate(createTownshipSchema),
     createTownshipHandler
@@ -30,6 +32,7 @@ router.route("/multi")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     permissionUser("delete", townshipPermission),
     validate(deleteMultiTownshipsSchema),
     deleteMultilTownshipsHandler
@@ -40,6 +43,7 @@ router.route("/multi")
 router.post("/excel-upload",
   deserializeUser,
   requiredUser,
+  checkBlockedUser,
   permissionUser("create", townshipPermission),
   uploadExcel,
   createMultiTownshipsHandler,
@@ -55,6 +59,7 @@ router.route("/detail/:townshipId")
   .patch(
     deserializeUser, 
     requiredUser, 
+    checkBlockedUser,
     permissionUser("update", townshipPermission),
     validate(updateTownshipSchema), 
     updateTownshipHandler
@@ -62,6 +67,7 @@ router.route("/detail/:townshipId")
   .delete(
     deserializeUser,
     requiredUser,
+    checkBlockedUser,
     validate(getTownshipSchema),
     permissionUser("delete", townshipPermission),
     deleteTownshipHandler

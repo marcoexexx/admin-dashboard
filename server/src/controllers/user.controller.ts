@@ -133,7 +133,7 @@ export async function getUsersHandler(
     } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    const users = (await service.tryFindManyWithCount(
+    const [count, users] = (await service.tryFindManyWithCount(
       {
         pagination: {page, pageSize}
       },
@@ -158,7 +158,7 @@ export async function getUsersHandler(
       }
     )).ok_or_throw()
 
-    res.status(StatusCode.OK).json(HttpListResponse(users))
+    res.status(StatusCode.OK).json(HttpListResponse(users, count))
   } catch (err) {
     next(err)
   }
@@ -205,24 +205,12 @@ export async function createBlockUserHandler(
     if (sessionUser.role !== Role.Admin) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
 
     const user = (await service.tryUpdate({
-      where: { id: userId },
+      where: { id: sessionUser.id },
       data: {
-        // TODO
-        blockedUsers: {
-          upsert: {
-            where: {
-              userId_blockedById: {
-                userId,
-                blockedById: sessionUser.id
-              }
-            },
-            create: {
-              blockedById: sessionUser.id,
-              remark
-            },
-            update: {
-              remark,
-            }
+        blockedByUsers: {
+          create: {
+            userId,
+            remark
           }
         }
       }
@@ -247,14 +235,13 @@ export async function removeBlockedUserHandler(
     if (sessionUser.role !== Role.Admin) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
 
     const user = (await service.tryUpdate({
-      where: { id: blockedUserId },
+      where: { id: sessionUser.id },
       data: {
-        // TODO
         blockedByUsers: {
           delete: {
             userId_blockedById: {
-              userId: sessionUser.id,
-              blockedById: blockedUserId
+              userId: blockedUserId,
+              blockedById: sessionUser.id
             }
           }
         }
