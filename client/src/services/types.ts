@@ -559,6 +559,8 @@ export type ExchangeResponse = Omit<HttpResponse, "message"> & { exchange: Excha
 
 export type UserAddressResponse = Omit<HttpResponse, "message"> & { userAddress: Address };
 
+export type PickupAddressResponse = Omit<HttpResponse, "message"> & { pickupAddress: PickupAddress };
+
 export type PotentialOrderResponse = Omit<HttpResponse, "message"> & { potentialOrder: PotentialOrder };
 
 export type OrderResponse = Omit<HttpResponse, "message"> & { order: Order };

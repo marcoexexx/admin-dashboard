@@ -2,7 +2,7 @@ import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
 import { AppService, Auditable, Pagination } from "../type";
-import { AuditLog, AuditLogAction, Prisma, Resource, User } from "@prisma/client";
+import { AuditLog, AuditLogAction, User } from "@prisma/client";
 import { PartialShallow } from "lodash";
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
@@ -175,24 +175,11 @@ export class PotentialOrderService implements AppService, Auditable {
   }
 
 
-  async audit(user: User, log: PartialShallow<Auditable["log"]> = this.log): Promise<Result<AuditLog | undefined, AppError>> {
-    if (!log) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit log for this resource: log is undefined`))
-    if (!log.action) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit for this resource: action is undefined`)) 
-    if (!Array.isArray(log.resourceIds) || !log.resourceIds.length) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit for this resource: action is undefined`)) 
-
-    const payload: Prisma.AuditLogUncheckedCreateInput = {
-      userId: user.id,
-      resource: Resource.Product,
-      action: log.action,
-      resourceIds: log.resourceIds
-    }
-
-    // const auditlog = (await createAuditLog(payload))
-    //   .or_else(err => err.status === StatusCode.NotModified ? Ok(undefined) : Err(err))
-    const auditlog = Ok(undefined)
-    console.log({ payload })
-
-    return Ok(auditlog.ok_or_throw())
+  /**
+    * Auditlog not create on pickup address service
+    */
+  async audit(_user: User, _log: PartialShallow<Auditable["log"]> = this.log): Promise<Result<AuditLog | undefined, AppError>> {
+    return Ok(undefined)
   }
 }
 

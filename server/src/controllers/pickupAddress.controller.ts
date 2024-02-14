@@ -3,7 +3,7 @@ import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { checkUser } from "../services/checkUser";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { DeleteMultiPickupAddressesInput, GetPickupAddressInput } from "../schemas/pickupAddress.schema";
+import { CreatePickupAddressInput, DeleteMultiPickupAddressesInput, GetPickupAddressInput } from "../schemas/pickupAddress.schema";
 import { PickupAddressService } from "../services/pickupAddress";
 import { StatusCode } from "../utils/appError";
 
@@ -64,6 +64,37 @@ export async function getPickupAddressHandler(
     if (pickupAddress && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ pickupAddress }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function createPickupAddressHandler(
+  req: Request<{}, {}, CreatePickupAddressInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { username, phone, email, date } = req.body
+
+    // @ts-ignore  for mocha testing
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const pickupAddress = (await service.tryCreate({
+      data: { 
+        username,
+        phone,
+        email,
+        date,
+        userId: sessionUser.id
+      },
+    })).ok_or_throw()
+
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
+
+    res.status(StatusCode.Created).json(HttpDataResponse({ pickupAddress }))
   } catch (err) {
     next(err)
   }

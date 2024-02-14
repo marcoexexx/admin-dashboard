@@ -5,15 +5,11 @@ import { DatePickerField, RegionInputField, TownshipByRegionInputField } from "@
 import { FormModal } from "@/components/forms";
 import { CreateRegionForm } from "../../regions/forms";
 import { CreateTownshipForm } from "../../townships/forms";
-import { Resource } from "@/context/cacheKey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { queryClient } from "@/components";
 import { useEffect } from "react";
-import { playSoundEffect } from "@/libs/playSound";
+import { useCreatePickupAddress } from "@/hooks/pickupAddress";
 
 
 const createPickupAddressSchema = object({
@@ -28,34 +24,7 @@ export type CreatePickupAddressInput = z.infer<typeof createPickupAddressSchema>
 export function CreatePickupAddressForm() {
   const { state: {modalForm, user}, dispatch } = useStore()
 
-  const navigate = useNavigate()
-  const from = "/pickup-addresses"
-
-  const {
-    mutate: createPickupAddress,
-  } = useMutation({
-    // mutationFn: createPickupAddressFn,
-    mutationFn: (_: CreatePickupAddressInput) => Promise.reject(undefined),
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new pickup address.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: [Resource.UserAddress]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  const { mutate: createPickupAddress } = useCreatePickupAddress()
 
   const methods = useForm<CreatePickupAddressInput>({
     resolver: zodResolver(createPickupAddressSchema)

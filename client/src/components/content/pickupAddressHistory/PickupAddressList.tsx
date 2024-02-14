@@ -1,18 +1,23 @@
 import { Card } from "@mui/material";
 import { SuspenseLoader } from "@/components";
 import { PickupAddressListTable } from ".";
-import { useMe } from "@/hooks";
+import { useStore } from "@/hooks";
+import { useGetPickupAddresses } from "@/hooks/pickupAddress";
 
 
 export function PickupAddressList() {
-  const userQuery = useMe({
-    include: {
-      pickupAddresses: true
-    }
+  const { state: {pickupAddressFilter} } = useStore()
+
+  const { try_data, isLoading } = useGetPickupAddresses({
+    filter: pickupAddressFilter?.fields,
+    pagination: {
+      page: pickupAddressFilter?.page || 1,
+      pageSize: pickupAddressFilter?.limit || 10
+    },
+    include: undefined
   })
 
-  const user = userQuery.try_data.ok_or_throw()
-  const isLoading = userQuery.isLoading
+  const pickupAddresses = try_data.ok_or_throw()?.results
 
   if (isLoading) return <SuspenseLoader />
 
@@ -20,8 +25,8 @@ export function PickupAddressList() {
   return <Card>
     <PickupAddressListTable
       isLoading={isLoading}
-      pickupAddresses={user?.pickupAddresses || []} 
-      count={user?.pickupAddresses?.length || 0} 
+      pickupAddresses={pickupAddresses || []} 
+      count={pickupAddresses?.length || 0} 
     />
   </Card>
 }
