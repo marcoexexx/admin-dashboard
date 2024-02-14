@@ -134,8 +134,14 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
     const idx = cart.findIndex(i => i.productId === item.productId)
 
     if (idx !== -1) {
+      const originalTotalPrice = (cart[idx].quantity + 1) * cart[idx].price
+      const totalPrice = (cart[idx].quantity + 1) * productDiscountAmount
+
       cart[idx] = { ...item,
-        quantity: item.quantity + cart[idx].quantity
+        quantity: cart[idx].quantity + 1,
+        originalTotalPrice,
+        totalPrice,
+        saving: originalTotalPrice - totalPrice,
       }
     } else {
       cart.push(item)
