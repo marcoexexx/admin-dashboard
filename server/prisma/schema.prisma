@@ -16,12 +16,6 @@ enum ProductStatus {
   Published
 }
 
-enum Role {
-  Admin
-  Shopowner
-  User
-}
-
 enum AuthProvider {
   Local
   Google
@@ -89,12 +83,35 @@ enum PotentialOrderStatus {
   Cancelled
 }
 
-// TODO: rename to AuditLogAction
-enum AuditLogAction {
+enum OperationAction {
   Create
   Read
   Update
   Delete
+}
+
+model Role {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String       @unique
+  remark      String?
+  permissions Permission[]
+  users       User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Permission {
+  id       String          @id @default(auto()) @map("_id") @db.ObjectId
+  action   OperationAction
+  resource Resource
+  role     Role            @relation(fields: [roleId], references: [id])
+  roleId   String          @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([action, resource], name: "action_resource")
 }
 
 model Exchange {
@@ -135,31 +152,45 @@ model Reward {
   updatedAt DateTime @updatedAt
 }
 
+model ShopownerProvider {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  name   String  @unique
+  remark String?
+  users  User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
-  id               String           @id @default(auto()) @map("_id") @db.ObjectId
-  name             String
-  email            String
-  reward           Reward           @relation(fields: [rewardId], references: [id])
-  rewardId         String           @unique @db.ObjectId
-  username         String           @unique
-  password         String
-  blockedUsers     BlockedUser[]    @relation("User")
-  blockedByUsers   BlockedUser[]    @relation("BlockedBy")
-  role             Role             @default(User)
-  image            String?
-  coverImage       String?
-  verified         Boolean          @default(false)
-  verificationCode String?
-  provider         AuthProvider     @default(Local)
-  favorites        Favorites[]
-  createdProducts  Product[]        @relation("CreatedBy")
-  reviews          Review[]
-  accessLogs       AccessLog[]
-  addresses        UserAddress[]
-  pickupAddresses  PickupAddress[]
-  orders           Order[]
-  potentialOrders  PotentialOrder[]
-  auditLogs        AuditLog[]
+  id                  String             @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  email               String
+  role                Role               @relation(fields: [roleId], references: [id])
+  roleId              String             @db.ObjectId
+  isSuperuser         Boolean            @default(false)
+  shopownerProvider   ShopownerProvider? @relation(fields: [shopownerProviderId], references: [id])
+  shopownerProviderId String?            @db.ObjectId
+  reward              Reward             @relation(fields: [rewardId], references: [id])
+  rewardId            String             @unique @db.ObjectId
+  username            String             @unique
+  password            String
+  blockedUsers        BlockedUser[]      @relation("User")
+  blockedByUsers      BlockedUser[]      @relation("BlockedBy")
+  image               String?
+  coverImage          String?
+  verified            Boolean            @default(false)
+  verificationCode    String?
+  provider            AuthProvider       @default(Local)
+  favorites           Favorites[]
+  createdProducts     Product[]          @relation("CreatedBy")
+  reviews             Review[]
+  accessLogs          AccessLog[]
+  addresses           UserAddress[]
+  pickupAddresses     PickupAddress[]
+  orders              Order[]
+  potentialOrders     PotentialOrder[]
+  auditLogs           AuditLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -459,13 +490,13 @@ model Region {
 }
 
 model AuditLog {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
-  action      AuditLogAction
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  action      OperationAction
   resource    Resource
   resourceIds String[]
-  user        User           @relation(fields: [userId], references: [id])
-  userId      String         @db.ObjectId
-  timestamp   DateTime       @default(now())
+  user        User            @relation(fields: [userId], references: [id])
+  userId      String          @db.ObjectId
+  timestamp   DateTime        @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
