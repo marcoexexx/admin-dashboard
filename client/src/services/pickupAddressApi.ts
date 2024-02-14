@@ -1,7 +1,7 @@
 import { authApi } from "./authApi";
 import { HttpListResponse, HttpResponse, Pagination, PickupAddress, PickupAddressResponse, QueryOptionArgs } from "./types";
 import { PickupAddressFilter } from "@/context/pickupAddress";
-import { CreatePickupAddressInput, UpdatePickupAddressInput } from "@/components/content/pickupAddressHistory/forms";
+import { CreatePickupAddressInput } from "@/components/content/pickupAddressHistory/forms";
 
 
 export async function getPickupAddressesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: PickupAddressFilter["fields"], pagination: Pagination, include?: PickupAddressFilter["include"] }) {
@@ -38,10 +38,10 @@ export async function createPickupAddressFn(address: CreatePickupAddressInput) {
 }
 
 
-export async function updatePickupAddressFn({pickupAddressId, address}: {pickupAddressId: string, address: UpdatePickupAddressInput}) {
-  const { data } = await authApi.patch<PickupAddressResponse>(`/pickup-addresses/detail/${pickupAddressId}`, address)
-  return data
-}
+// export async function updatePickupAddressFn({pickupAddressId, address}: {pickupAddressId: string, address: UpdatePickupAddressInput}) {
+//   const { data } = await authApi.patch<PickupAddressResponse>(`/pickup-addresses/detail/${pickupAddressId}`, address)
+//   return data
+// }
 
 
 export async function deleteMultiPickupAddressesFn(userAddressIds: string[]) {

@@ -7,9 +7,10 @@ import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
 import { useNavigate } from "react-router-dom"
-import { updatePickupAddressFn } from "@/services/pickupAddressApi"
+// import { updatePickupAddressFn } from "@/services/pickupAddressApi"
 
 
+// TODO: Update pickup
 export function useUpdatePickupAddress() {
   const { state: {modalForm}, dispatch } = useStore()
 
@@ -17,7 +18,8 @@ export function useUpdatePickupAddress() {
   const from = "/pickup-address-history"
 
   const mutation = useMutation({
-    mutationFn: updatePickupAddressFn,
+    // mutationFn: updatePickupAddressFn,
+    mutationFn: async () => Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable)),
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success updated a pickup address.",
