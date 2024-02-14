@@ -116,7 +116,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
     const originalTotalPrice = initialQuality * product.price
     const totalPrice = initialQuality * productDiscountAmount
 
-    const newPayload: Omit<OrderItem, "createdAt" | "updatedAt"> = {
+    const item: OrderItem = {
       id: crypto.randomUUID(),  // For unique item, not necessary for api
       product,
       productId: product.id,
@@ -125,11 +125,23 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       originalTotalPrice,
       totalPrice,
       saving: originalTotalPrice - totalPrice,
+
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }
 
-    const payload = get<OrderItem[]>("CARTS") || []
+    const cart = get<OrderItem[]>("CARTS") || []
+    const idx = cart.findIndex(i => i.productId === item.productId)
 
-    set("CARTS", [...payload, newPayload])
+    if (idx !== -1) {
+      cart[idx] = { ...item,
+        quantity: item.quantity + cart[idx].quantity
+      }
+    } else {
+      cart.push(item)
+    }
+
+    set("CARTS", cart)
 
     dispatch({
       type: "OPEN_MODAL_FORM",
