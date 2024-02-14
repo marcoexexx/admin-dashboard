@@ -1,3 +1,4 @@
+import { PermissionKey } from "@/context/cacheKey";
 import { Suspense } from "react";
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material"
@@ -15,7 +16,7 @@ import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
 function ViewProductReadWrapper({productId}: {productId: string | undefined}) {
   const isAllowedReadProduct = usePermission({
-    key: "product-permissions",
+    key: PermissionKey.Product,
     actions: "read",
     queryFn: getProductPermissionsFn
   })
@@ -32,7 +33,7 @@ export default function ViewProduct() {
 
 
   const isAllowedUpdateProduct = usePermission({
-    key: "product-permissions",
+    key: PermissionKey.Product,
     actions: "update",
     queryFn: getProductPermissionsFn
   })

@@ -2,6 +2,7 @@ import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { MuiButton } from "@/components/ui";
 import { AddDashboardCard, DashboardCard, SuspenseLoader } from "@/components";
 import { SalesCategory } from "@/services/types";
+import { PermissionKey } from "@/context/cacheKey";
 import { usePermission, useStore } from "@/hooks";
 import { useGetSalesCategories } from "@/hooks/salsCategory";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +26,7 @@ export function SalesCategoryCard() {
   const sales = try_data.ok_or_throw()?.results
 
   const isAllowedCreateSalesCategory = usePermission({
-    key: "sales-category-permissions",
+    key: PermissionKey.SalesCategory,
     actions: "create",
     queryFn: getSalesCategoryPermissionsFn
   })

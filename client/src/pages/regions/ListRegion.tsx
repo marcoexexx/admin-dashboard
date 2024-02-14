@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
@@ -17,7 +18,7 @@ const appName = getConfig("appName")
 
 function ListRegionWrapper() {
   const isAllowedReadRegion = usePermission({
-    key: "region-permissions",
+    key: PermissionKey.Region,
     actions: "read",
     queryFn: getRegionPermissionsFn
   })
@@ -32,7 +33,7 @@ export default function ListRegion() {
   const navigate = useNavigate()
 
   const isAllowedCreateRegion = usePermission({
-    key: "region-permissions",
+    key: PermissionKey.Region,
     actions: "create",
     queryFn: getRegionPermissionsFn
   })

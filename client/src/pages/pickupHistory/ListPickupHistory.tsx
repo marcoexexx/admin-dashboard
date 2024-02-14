@@ -1,3 +1,4 @@
+import { PermissionKey } from "@/context/cacheKey";
 import { Suspense } from "react";
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
@@ -16,7 +17,7 @@ const appName = getConfig("appName")
 
 function ListPickupHistoryWrapper() {
   const isAllowedReadPickupAddress = usePermission({
-    key: "pickup-address-permissions",
+    key: PermissionKey.PickupAddress,
     actions: "read",
     queryFn: getPickupAddressPermissionsFn
   })

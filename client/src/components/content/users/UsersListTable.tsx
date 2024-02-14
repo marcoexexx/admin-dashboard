@@ -1,8 +1,8 @@
 import { Box, Card, CardContent, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { UsersActions } from ".";
+import { PermissionKey } from "@/context/cacheKey";
 import { RenderProileAvatar, RenderToggleBlockUserButton, RenderUsernameLabel } from "@/components/table-labels";
 import { User } from "@/services/types";
-
+import { UsersActions } from ".";
 import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
@@ -83,7 +83,7 @@ export function UsersListTable(props: UsersListTableProps) {
   }
 
   const isAllowedUpdateUser = usePermission({
-    key: "user-permissions",
+    key: PermissionKey.User,
     actions: "update",
     queryFn: getUserPermissionsFn
   })

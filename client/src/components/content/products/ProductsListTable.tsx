@@ -1,8 +1,3 @@
-import { useState } from "react"
-import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { getProductPermissionsFn } from "@/services/permissionsApi";
-import { useNavigate } from "react-router-dom";
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, MenuItem, Select, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme, Theme } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
@@ -11,6 +6,12 @@ import { FormModal } from "@/components/forms";
 import { RenderBrandLabel, RenderCategoryLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
 import { ProductStatus } from "./forms";
 import { Product, User } from "@/services/types";
+import { PermissionKey } from "@/context/cacheKey";
+import { useState } from "react"
+import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
+import { getProductPermissionsFn } from "@/services/permissionsApi";
+import { useNavigate } from "react-router-dom";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
@@ -229,19 +230,19 @@ export function ProductsListTable(props: ProductsListTableProps) {
   const onlyAdminAccess = useOnlyAdmin()
 
   const isAllowedUpdateProduct = usePermission({
-    key: "product-permissions",
+    key: PermissionKey.Product,
     actions: "update",
     queryFn: getProductPermissionsFn,
   })
 
   const isAllowedDeleteProduct = usePermission({
-    key: "product-permissions",
+    key: PermissionKey.Product,
     actions: "update",
     queryFn: getProductPermissionsFn,
   })
 
   const isAllowedCreateProduct = usePermission({
-    key: "product-permissions",
+    key: PermissionKey.Product,
     actions: "create",
     queryFn: getProductPermissionsFn,
   })

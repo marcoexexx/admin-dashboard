@@ -8,9 +8,30 @@ import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory
 import { exchangePermission } from "../utils/auth/permissions/exchange.permission";
 import { accessLogPermission } from "../utils/auth/permissions/accessLog.permission";
 import { couponPermission } from "../utils/auth/permissions/coupon.permisson";
+import { auditLogPermission } from "../utils/auth/permissions/auditLog.permission";
 
 import mapValues from "lodash/mapValues";
-import { auditLogPermission } from "../utils/auth/permissions/auditLog.permission";
+
+
+const PermissionResource = {
+  AccessLog: "access-logs",
+  AuditLog: "audit-logs",
+  Brand: "brands",
+  Category: "categories",
+  Coupon: "coupons",
+  Exchange: "exchanges",
+  Order: "orders",
+  PickupAddress: "pickup-addresses",
+  PotentialOrder: "potential-orders",
+  Product: "products",
+  Region: "regions",
+  SalesCategory: "sales-categories",
+  Township: "townships",
+  UserAddress: "user-addresses",
+  User: "users",
+  AuthUser: "authUser",
+  Dashboard: "dashboard"
+} as const
 
 
 export async function permissionsDashboardHandler(
@@ -23,7 +44,7 @@ export async function permissionsDashboardHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "dashboard" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Dashboard }))
   } catch (err) {
     next(err)
   }
@@ -40,7 +61,7 @@ export async function permissionsUserHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "user" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.User }))
   } catch (err) {
     next(err)
   }
@@ -57,7 +78,7 @@ export async function permissionsExchangeHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "exchange" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Exchange }))
   } catch (err) {
     next(err)
   }
@@ -74,7 +95,7 @@ export async function permissionsProductsHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "product" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Product }))
   } catch (err) {
     next(err)
   }
@@ -91,7 +112,7 @@ export async function permissionsBrandsHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "brand" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Brand }))
   } catch (err) {
     next(err)
   }
@@ -108,7 +129,7 @@ export async function permissionsCategoriesHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "category" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Category }))
   } catch (err) {
     next(err)
   }
@@ -125,7 +146,7 @@ export async function permissionsSalesCategoriesHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "sales-category" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.SalesCategory }))
   } catch (err) {
     next(err)
   }
@@ -142,7 +163,7 @@ export async function permissionsAccessLogsHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "access-log" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.AccessLog }))
   } catch (err) {
     next(err)
   }
@@ -159,7 +180,7 @@ export async function permissionsAuditLogsHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "audit-log" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.AuditLog }))
   } catch (err) {
     next(err)
   }
@@ -176,7 +197,7 @@ export async function permissionsPotetialOrdersHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "potential-order" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.PotentialOrder }))
   } catch (err) {
     next(err)
   }
@@ -193,7 +214,7 @@ export async function permissionsOrdersHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "order" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Order }))
   } catch (err) {
     next(err)
   }
@@ -210,7 +231,7 @@ export async function permissionsPickupAddressHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "pickup-addresse" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.PickupAddress }))
   } catch (err) {
     next(err)
   }
@@ -227,7 +248,7 @@ export async function permissionsUserAddressHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "addresse" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.UserAddress }))
   } catch (err) {
     next(err)
   }
@@ -244,7 +265,7 @@ export async function permissionsTownshipsHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "township" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Township }))
   } catch (err) {
     next(err)
   }
@@ -261,7 +282,7 @@ export async function permissionsRegionsHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "region" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Region }))
   } catch (err) {
     next(err)
   }
@@ -278,7 +299,7 @@ export async function permissionsCouponsHandler(
 
     res
       .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: "coupon" }))
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Coupon }))
   } catch (err) {
     next(err)
   }

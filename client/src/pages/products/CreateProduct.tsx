@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
@@ -17,7 +18,7 @@ const appName = getConfig("appName")
 
 function CreateProductWrapper() {
   const isAllowedCreateProduct = usePermission({
-    key: "product-permissions",
+    key: PermissionKey.Product,
     actions: "create",
     queryFn: getProductPermissionsFn
   })

@@ -1,6 +1,7 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
+import { PermissionKey } from "@/context/cacheKey";
 import { MuiButton } from "@/components/ui";
 import { RenderRegionLabel } from "@/components/table-labels";
 import { TownshipFees } from "@/services/types";
@@ -131,19 +132,19 @@ export function TownshipsListTable(props: TownshipsListTableProps) {
   }
 
   const isAllowedDeleteTownship = usePermission({
-    key: "township-permissions",
+    key: PermissionKey.Township,
     actions: "delete",
     queryFn: getTownshipPermissionsFn
   })
 
   const isAllowedUpdateTownship = usePermission({
-    key: "township-permissions",
+    key: PermissionKey.Township,
     actions: "update",
     queryFn: getTownshipPermissionsFn
   })
 
   const isAllowedCreateTownship = usePermission({
-    key: "township-permissions",
+    key: PermissionKey.Township,
     actions: "create",
     queryFn: getTownshipPermissionsFn
   })

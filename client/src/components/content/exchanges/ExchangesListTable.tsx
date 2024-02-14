@@ -1,4 +1,6 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { PermissionKey } from "@/context/cacheKey";
+import { Exchange } from "@/services/types";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
 import { MuiButton } from "@/components/ui";
@@ -12,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { Exchange } from "@/services/types";
 
 
 const columnData: TableColumnHeader<Exchange>[] = [
@@ -135,19 +136,19 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
   }
 
   const isAllowedUpdateExchange = usePermission({
-    key: "exchange-permissions",
+    key: PermissionKey.Exchange,
     actions: "update",
     queryFn: getExchangePermissionsFn
   })
 
   const isAllowedDeleteExchange = usePermission({
-    key: "exchange-permissions",
+    key: PermissionKey.Exchange,
     actions: "delete",
     queryFn: getExchangePermissionsFn
   })
 
   const isAllowedCreateExchange = usePermission({
-    key: "exchange-permissions",
+    key: PermissionKey.Exchange,
     actions: "create",
     queryFn: getExchangePermissionsFn
   })

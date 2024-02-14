@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
@@ -19,7 +20,7 @@ const appName = getConfig("appName")
 
 function ListExchangeWrapper() {
   const isAllowedReadExchange = usePermission({
-    key: "exchange-permissions",
+    key: PermissionKey.Exchange,
     actions: "read",
     queryFn: getExchangePermissionsFn
   })
@@ -34,7 +35,7 @@ export default function ListExchange() {
   const navigate = useNavigate()
 
   const isAllowedCreateExchange = usePermission({
-    key: "exchange-permissions",
+    key: PermissionKey.Exchange,
     actions: "create",
     queryFn: getExchangePermissionsFn
   })

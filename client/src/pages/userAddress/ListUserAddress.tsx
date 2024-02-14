@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
@@ -18,7 +19,7 @@ const appName = getConfig("appName")
 
 function ListUserAddressWrapper() {
   const isAllowedReadUserAddress = usePermission({
-    key: "address-permissions",
+    key: PermissionKey.UserAddress,
     actions: "read",
     queryFn: getUserAddressPermissionsFn
   })
@@ -33,7 +34,7 @@ export default function ListUserAddress() {
   const navigate = useNavigate()
 
   const isAllowedCreateUserAddress = usePermission({
-    key: "address-permissions",
+    key: PermissionKey.UserAddress,
     actions: "create",
     queryFn: getUserAddressPermissionsFn
   })

@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
@@ -18,7 +19,7 @@ const appName = getConfig("appName")
 
 function UpdateTownshipWrapper() {
   const isAllowedUpdateTownship = usePermission({
-    key: "township-permissions",
+    key: PermissionKey.Township,
     actions: "update",
     queryFn: getTownshipPermissionsFn
   })

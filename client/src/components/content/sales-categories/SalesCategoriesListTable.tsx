@@ -1,5 +1,7 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { RenderCountLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
+import { PermissionKey } from "@/context/cacheKey";
 import { FormModal } from "@/components/forms";
 import { MuiButton } from "@/components/ui";
 import { CreateSalesCategoryInput } from "./forms";
@@ -13,7 +15,6 @@ import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { RenderCountLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
 
 
 const columnData: TableColumnHeader<SalesCategory>[] = [
@@ -141,19 +142,19 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
   }
 
   const isAllowedDeleteSalesCategory = usePermission({
-    key: "sales-category-permissions",
+    key: PermissionKey.SalesCategory,
     actions: "delete",
     queryFn: getSalesCategoryPermissionsFn
   })
 
   const isAllowedUpdateSalesCategory = usePermission({
-    key: "sales-category-permissions",
+    key: PermissionKey.SalesCategory,
     actions: "update",
     queryFn: getSalesCategoryPermissionsFn
   })
 
   const isAllowedCreateSalesCategory = usePermission({
-    key: "sales-category-permissions",
+    key: PermissionKey.SalesCategory,
     actions: "create",
     queryFn: getSalesCategoryPermissionsFn
   })

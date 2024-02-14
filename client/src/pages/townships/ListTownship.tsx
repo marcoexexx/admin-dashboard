@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
@@ -19,7 +20,7 @@ const appName = getConfig("appName")
 
 function ListTownshipWrapper() {
   const isAllowedReadTownship = usePermission({
-    key: "township-permissions",
+    key: PermissionKey.Township,
     actions: "read",
     queryFn: getTownshipPermissionsFn
   })
@@ -35,7 +36,7 @@ export default function ListTownship() {
 
 
   const isAllowedCreateTownship = usePermission({
-    key: "township-permissions",
+    key: PermissionKey.Township,
     actions: "create",
     queryFn: getTownshipPermissionsFn
   })

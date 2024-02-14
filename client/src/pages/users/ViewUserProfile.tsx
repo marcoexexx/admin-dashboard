@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
@@ -17,7 +18,7 @@ const appName = getConfig("appName")
 
 function ViewUserWrapper({ username }: { username: string | undefined }) {
   const isAllowedReadProduct = usePermission({
-    key: "user-permissions",
+    key: PermissionKey.User,
     actions: "read",
     queryFn: getUserPermissionsFn
   })
@@ -34,7 +35,7 @@ export default function ViewUser() {
   const navigate = useNavigate()
 
   const isAllowedUpdateUser = usePermission({
-    key: "user-permissions",
+    key: PermissionKey.User,
     actions: "update",
     queryFn: getUserPermissionsFn
   })

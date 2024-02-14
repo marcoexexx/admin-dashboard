@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
@@ -17,7 +18,7 @@ const appName = getConfig("appName")
 
 function UpdateUserAddressWrapper() {
   const isAllowedUpdateUserAddress = usePermission({
-    key: "address-permissions",
+    key: PermissionKey.UserAddress,
     actions: "update",
     queryFn: getUserAddressPermissionsFn
   })

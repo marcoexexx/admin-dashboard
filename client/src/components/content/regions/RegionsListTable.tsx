@@ -1,20 +1,20 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { useState } from "react"
-import { BulkActions, LoadingTablePlaceholder } from "@/components";
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-
-import { FormModal } from "@/components/forms";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
-import { MuiButton } from "@/components/ui";
-
-import { useNavigate } from "react-router-dom";
-import { Region } from "@/services/types";
-import { getRegionPermissionsFn } from "@/services/permissionsApi";
 import { RegionsActions } from ".";
+import { FormModal } from "@/components/forms";
 import { CreateRegionInput } from "./forms/CreateRegionForm";
 import { RenderTownshipName } from "@/components/table-labels";
+import { BulkActions, LoadingTablePlaceholder } from "@/components";
+import { MuiButton } from "@/components/ui";
+import { Region } from "@/services/types";
+import { useState } from "react"
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
+import { usePermission, useStore } from "@/hooks";
+import { useNavigate } from "react-router-dom";
+import { getRegionPermissionsFn } from "@/services/permissionsApi";
+
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import { PermissionKey } from "@/context/cacheKey";
 
 
 const columnData: TableColumnHeader<Region>[] = [
@@ -122,19 +122,19 @@ export function RegionsListTable(props: RegionsListTableProps) {
   }
 
   const isAllowedDeleteRegion = usePermission({
-    key: "region-permissions",
+    key: PermissionKey.Region,
     actions: "delete",
     queryFn: getRegionPermissionsFn
   })
 
   const isAllowedUpdateRegion = usePermission({
-    key: "region-permissions",
+    key: PermissionKey.Region,
     actions: "update",
     queryFn: getRegionPermissionsFn
   })
 
   const isAllowedCreateBrand = usePermission({
-    key: "region-permissions",
+    key: PermissionKey.Region,
     actions: "create",
     queryFn: getRegionPermissionsFn
   })

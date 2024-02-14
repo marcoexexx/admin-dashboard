@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
@@ -19,7 +20,7 @@ const appName = getConfig("appName")
 
 function ListCategoryWrapper() {
   const isAllowedReadCategory = usePermission({
-    key: "category-permissions",
+    key: PermissionKey.Category,
     actions: "read",
     queryFn: getCategoryPermissionsFn
   })
@@ -35,7 +36,7 @@ export default function ListCategory() {
   const navigate = useNavigate()
 
   const isAllowedCreateCategory = usePermission({
-    key: "category-permissions",
+    key: PermissionKey.Category,
     actions: "create",
     queryFn: getCategoryPermissionsFn
   })
