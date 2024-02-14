@@ -36,7 +36,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
       // Handle AppError
       if (this.state.error instanceof AppError) {
         switch (this.state.error.kind) {
-          case AppErrorKind.NetworkError: return <ErrorPage error={this.state.error} />
+          case AppErrorKind.NetworkError: return <h1>NetworkError: Please check your internet connection</h1>
           case AppErrorKind.ApiError: return <ErrorPage error={this.state.error} />
           case AppErrorKind.InvalidInputError: return <ErrorPage error={this.state.error} />
           case AppErrorKind.PermissionError: return <Unauthorized />

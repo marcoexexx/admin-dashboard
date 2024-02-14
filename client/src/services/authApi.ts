@@ -27,7 +27,7 @@ authApi.interceptors.response.use(
     const res = err.response;
     const orgReq = err.config;
 
-    if (!res) return Promise.reject(new Error(err.message))
+    if (!res) return Promise.reject(AppError.new(AppErrorKind.NetworkError))
 
     const msg = res.data.message as string;
 
