@@ -18,7 +18,7 @@ import { playSoundEffect } from "@/libs/playSound";
 
 const createPickupAddressSchema = object({
   username: string({ required_error: "" }).min(3).max(1024),
-  phone: string(),  // TODO:  phone regex
+  phone: string().regex(/^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/),
   email: string().email(),
   date: z.any(),
 })

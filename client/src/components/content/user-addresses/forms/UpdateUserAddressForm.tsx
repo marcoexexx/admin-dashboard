@@ -12,7 +12,7 @@ import { useGetUserAddress, useUpdateUserAddress } from "@/hooks/userAddress";
 const updateUserAddressSchema = object({
   isDefault: boolean().default(false),
   username: string({ required_error: "Name (username) is required" }),
-  phone: string({ required_error: "phone is required" }).min(9).max(12),
+  phone: string({ required_error: "phone is required" }).regex(/^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/),
   email: string().email().optional(),
   regionId: string({ required_error: "region is required" }),
   townshipFeesId: string({ required_error: "township is required" }),
