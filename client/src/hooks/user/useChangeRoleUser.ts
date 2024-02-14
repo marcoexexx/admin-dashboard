@@ -5,6 +5,7 @@ import { queryClient } from "@/components";
 
 import Result, { Err, Ok } from "@/libs/result";
 import AppError, { AppErrorKind } from "@/libs/exceptions";
+import { Resource } from "@/context/cacheKey";
 
 
 export function useChangeRoleUser() {
@@ -14,7 +15,7 @@ export function useChangeRoleUser() {
     mutationFn: changeRoleUserFn,
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: ["users"]
+        queryKey: [Resource.User]
       })
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success blocked.",

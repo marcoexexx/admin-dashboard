@@ -2,6 +2,7 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 import { ProductFilter } from "@/context/product";
 
+import { CacheKey, Resource } from "@/context/cacheKey";
 import { getProductFn } from "@/services/productsApi";
 import { useQuery } from "@tanstack/react-query";
 
@@ -15,7 +16,7 @@ export function useGetProduct({
   }) {
   const query = useQuery({
     enabled: !!id ,
-    queryKey: ["products", { id, include }],
+    queryKey: [Resource.Product, { id, include }] as CacheKey<"products">["detail"],
     queryFn: args => getProductFn(args, { productId: id, include }),
     select: data => data?.product
   })

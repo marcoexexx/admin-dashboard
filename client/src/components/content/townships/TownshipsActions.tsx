@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { queryClient } from "@/components";
 import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Tooltip, Typography, styled } from "@mui/material";
 import { CreateTownshipInput } from "./forms";
+import { Resource } from "@/context/cacheKey";
 import { TownshipsFilterForm } from ".";
 
 import ExportIcon from '@mui/icons-material/Upgrade';
@@ -70,7 +71,7 @@ export function TownshipsActions(props: TownshipsActionsProps) {
 
   const handleRefreshList = () => {
     queryClient.invalidateQueries({
-      queryKey: ["townships"]
+      queryKey: [Resource.Township]
     })
   }
 

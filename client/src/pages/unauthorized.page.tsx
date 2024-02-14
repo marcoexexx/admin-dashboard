@@ -1,5 +1,6 @@
 import { Box, Container, Typography, styled } from "@mui/material"
 import { MuiButton } from "@/components/ui"
+import { Resource } from "@/context/cacheKey"
 import { queryClient } from "@/components"
 import { useStore } from "@/hooks"
 import { logoutUserFn } from "@/services/authApi"
@@ -22,7 +23,7 @@ export default function Unauthorized() {
     mutationFn: logoutUserFn,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["authUser"]
+        queryKey: [Resource.AuthUser]
       })
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success logout.",

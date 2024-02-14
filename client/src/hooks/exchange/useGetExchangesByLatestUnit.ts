@@ -2,13 +2,14 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { PriceUnit } from "@/components/content/products/forms";
+import { Resource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getExchangesFn } from "@/services/exchangesApi";
 
 
 export function useGetExchangeByLatestUnit(unit: PriceUnit) {
   const query = useQuery({
-    queryKey: ["exchanges", "latest", unit],
+    queryKey: [Resource.Exchange, "latest", unit],
     queryFn: args => getExchangesFn(args, {
       filter: {
         to: "MMK",

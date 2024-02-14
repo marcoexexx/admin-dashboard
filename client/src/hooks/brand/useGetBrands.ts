@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getBrandsFn } from "@/services/brandsApi";
 import { Pagination } from "@/services/types";
 import { BrandFilter } from "@/context/brand";
+import { CacheKey, Resource } from "@/context/cacheKey";
 
 
 export function useGetBrands({
@@ -17,7 +18,7 @@ export function useGetBrands({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["brands", { filter, pagination, include } ],
+    queryKey: [Resource.Brand, { filter, pagination, include } ] as CacheKey<"brands">["list"],
     queryFn: args => getBrandsFn(args, { 
       filter,
       pagination,

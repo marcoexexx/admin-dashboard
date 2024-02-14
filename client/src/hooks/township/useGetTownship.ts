@@ -2,6 +2,7 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { TownshipFilter } from "@/context/township";
+import { CacheKey, Resource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getTownshipFn } from "@/services/townshipsApi";
 
@@ -15,7 +16,7 @@ export function useGetTownship({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["townships", { id, include }],
+    queryKey: [Resource.Township, { id, include }] as CacheKey<"townships">["detail"],
     queryFn: args => getTownshipFn(args, { townshipId: id, include }),
     select: data => data?.township
   })

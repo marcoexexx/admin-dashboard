@@ -1,8 +1,9 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { useQuery } from "@tanstack/react-query";
 import { UserFilter } from "@/context/user";
+import { CacheKey, Resource } from "@/context/cacheKey";
+import { useQuery } from "@tanstack/react-query";
 import { getUserFn, getUserProfileFn } from "@/services/usersApi";
 
 
@@ -15,7 +16,7 @@ export function useGetUser({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["users", { id, include }],
+    queryKey: [Resource.User, { id, include }] as CacheKey<"users">["detail"],
     queryFn: args => getUserFn(args, { userId: id, include }),
     select: data => data?.user
   })
@@ -42,7 +43,7 @@ export function useGetUserByUsername({
   }) {
   const query = useQuery({
     enabled: !!username,
-    queryKey: ["users", { username, include }],
+    queryKey: [Resource.User, { username, include }],
     queryFn: args => getUserProfileFn(args, { username }),
     select: data => data?.user
   })

@@ -3,4 +3,6 @@ export type AuditLogFilter = {
   page?: number,
   limit?: number,
   mode?: "insensitive" | "default",
+  include?: {
+  }
 }

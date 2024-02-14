@@ -1,9 +1,11 @@
+import { Button, styled } from "@mui/material"
+import { Resource } from "@/context/cacheKey"
 import { useStore } from "@/hooks"
 import { object, z } from "zod"
 import { uploadCoverPhotoFn } from "@/services/usersApi"
-import { Button, styled } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { queryClient } from ".."
+
 import UploadTwoToneIcon from '@mui/icons-material/UploadTwoTone'
 
 
@@ -30,7 +32,7 @@ export function UploadCoverPhoto() {
         severity: "success"
       } })
       queryClient.invalidateQueries({
-        queryKey: ["authUser", "authUserProfile"]
+        queryKey: [Resource.AuthUser, "profile"]
       })
     },
     onError() {

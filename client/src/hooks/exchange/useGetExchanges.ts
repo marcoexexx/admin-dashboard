@@ -3,6 +3,7 @@ import Result, { Err, Ok } from "@/libs/result";
 
 import { Pagination } from "@/services/types";
 import { ExchangeFilter } from "@/context/exchange";
+import { CacheKey, Resource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getExchangesFn } from "@/services/exchangesApi";
 
@@ -17,7 +18,7 @@ export function useGetExchanges({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["exchanges", { filter, pagination, include } ],
+    queryKey: [Resource.Exchange, { filter, pagination, include } ] as CacheKey<"exchanges">["list"],
     queryFn: args => getExchangesFn(args, { 
       filter,
       pagination,

@@ -2,6 +2,7 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { RegionFilter } from "@/context/region";
+import { CacheKey, Resource } from "@/context/cacheKey";
 import { getRegionFn } from "@/services/regionsApi";
 import { useQuery } from "@tanstack/react-query";
 
@@ -15,7 +16,7 @@ export function useGetRegion({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["regions", { id, include }],
+    queryKey: [Resource.Region, { id, include }] as CacheKey<"regions">["detail"],
     queryFn: args => getRegionFn(args, { regionId: id, include }),
     select: data => data?.region
   })

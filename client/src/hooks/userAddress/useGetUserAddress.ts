@@ -2,6 +2,7 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 import { UserAddressFilter } from "@/context/userAddress";
 
+import { CacheKey, Resource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getUserAddressFn } from "@/services/userAddressApi";
 
@@ -15,7 +16,7 @@ export function useGetUserAddress({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["user-addresses", { id, include }],
+    queryKey: [Resource.UserAddress, { id, include }] as CacheKey<"user-addresses">["detail"],
     queryFn: args => getUserAddressFn(args, { userAddressId: id, include }),
     // queryFn: () => Promise.reject(AppError.new(AppErrorKind.PermissionError))
   })

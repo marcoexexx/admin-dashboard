@@ -4,6 +4,7 @@ import isBetween from "dayjs/plugin/isBetween"
 import { Box, Card, CardActions, CardMedia, Divider, IconButton, Tooltip, Typography, styled } from "@mui/material"
 import { MuiButton, Text } from '@/components/ui'
 import { OrderItem, Product } from "@/services/types";
+import { Resource } from "@/context/cacheKey";
 import { memoize } from "lodash";
 import { useMutation } from "@tanstack/react-query";
 import { useLocalStorage, useStore } from "@/hooks";
@@ -64,7 +65,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         }
       })
       queryClient.invalidateQueries({
-        queryKey: ["products"]
+        queryKey: [Resource.Product]
       })
       playSoundEffect("success")
     },
@@ -91,7 +92,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         }
       })
       queryClient.invalidateQueries({
-        queryKey: ["products"]
+        queryKey: [Resource.Product]
       })
       playSoundEffect("success")
     },
@@ -155,7 +156,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
 
   const handleRefreshList = () => {
     queryClient.invalidateQueries({
-      queryKey: ["products", { id: product.id }]
+      queryKey: [Resource.Product, { id: product.id }]
     })
   }
 

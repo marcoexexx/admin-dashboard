@@ -5,6 +5,7 @@ import { DatePickerField, RegionInputField, TownshipByRegionInputField } from "@
 import { FormModal } from "@/components/forms";
 import { CreateRegionForm } from "../../regions/forms";
 import { CreateTownshipForm } from "../../townships/forms";
+import { Resource } from "@/context/cacheKey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
 import { useMutation } from "@tanstack/react-query";
@@ -43,7 +44,7 @@ export function CreatePickupAddressForm() {
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["user-addresses"]
+        queryKey: [Resource.UserAddress]
       })
       playSoundEffect("success")
     },

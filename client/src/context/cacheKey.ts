@@ -11,6 +11,7 @@ export const Resource = {
   PickupAddress: "pickup-addresses",
   PotentialOrder: "potential-orders",
   Product: "products",
+  ProductSalesCategory: "product-sales-categories",
   Region: "regions",
   SalesCategory: "sales-categories",
   Township: "townships",
@@ -50,7 +51,8 @@ export const PermissionKey: ResourcePermissionMap = {
   UserAddress: ["user-addresses-permission"],
   User: ["users-permission"],
   AuthUser: ["authUser-permission"],
-  Dashboard: ["dashboard-permission"]
+  Dashboard: ["dashboard-permission"],
+  ProductSalesCategory: ["product-sales-categories-permission"]
 }
 export type PermissionKey = typeof PermissionKey[keyof typeof PermissionKey]
 // export type ExcludeResource<T extends PermissionKey> = T extends Array<`${infer U}-permission`> ? U : T

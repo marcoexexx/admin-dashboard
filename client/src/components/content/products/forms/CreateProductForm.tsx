@@ -5,6 +5,7 @@ import { FormModal } from "@/components/forms";
 import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
 import { BrandInputField, CatgoryMultiInputField, EditorInputField, SpecificationInputField } from "@/components/input-fields";
+import { Resource } from "@/context/cacheKey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
 import { useStore } from "@/hooks";
@@ -75,7 +76,7 @@ export function CreateProductForm() {
 
   useEffect(() => {
     queryClient.invalidateQueries({
-      queryKey: ["exchanges", "latest", methods.getValues("priceUnit")],
+      queryKey: [Resource.Exchange, "latest", methods.getValues("priceUnit")],
     })
   }, [methods.watch("priceUnit")])
 

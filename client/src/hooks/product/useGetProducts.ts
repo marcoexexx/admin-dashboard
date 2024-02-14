@@ -3,6 +3,7 @@ import Result, { Err, Ok } from "@/libs/result";
 
 import { ProductFilter } from "@/context/product";
 import { Pagination } from "@/services/types";
+import { CacheKey, Resource } from "@/context/cacheKey";
 import { getProductsFn } from "@/services/productsApi";
 import { useQuery } from "@tanstack/react-query";
 
@@ -17,7 +18,7 @@ export function useGetProducts({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["products", { filter, pagination, include } ],
+    queryKey: [Resource.Product, { filter, pagination, include } ] as CacheKey<"products">["list"],
     queryFn: args => getProductsFn(args, { 
       filter,
       pagination,

@@ -3,6 +3,7 @@ import { queryClient } from "@/components";
 import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Tooltip, Typography, styled } from "@mui/material";
 import { CreateProductInput } from "./forms";
 import { ProductdsFilterForm } from ".";
+import { Resource } from "@/context/cacheKey";
 
 import ExportIcon from '@mui/icons-material/Upgrade';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -70,7 +71,7 @@ export function ProductsActions(props: ProductsActionsProps) {
 
   const handleRefreshList = () => {
     queryClient.invalidateQueries({
-      queryKey: ["products"]
+      queryKey: [Resource.Product]
     })
   }
 

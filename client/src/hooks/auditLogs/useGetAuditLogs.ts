@@ -5,6 +5,7 @@ import { Pagination } from "@/services/types";
 import { AuditLogFilter } from "@/context/auditLogs";
 import { useQuery } from "@tanstack/react-query";
 import { getAuditLogsFn } from "@/services/auditLogsApi";
+import { CacheKey, Resource } from "@/context/cacheKey";
 
 
 export function useGetAuditLogs({
@@ -13,11 +14,11 @@ export function useGetAuditLogs({
   include,
 }: {
   filter?: AuditLogFilter["fields"],
-  include?: any,  // TODO: type fix
+  include?: AuditLogFilter["include"],
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["audit-logs", { filter, pagination, include }],
+    queryKey: [Resource.AuditLog, { filter, pagination, include }] as CacheKey<"audit-logs">["list"],
     queryFn: args => getAuditLogsFn(args, { 
       filter,
       pagination,

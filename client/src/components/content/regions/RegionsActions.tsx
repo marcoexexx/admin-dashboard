@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Tooltip, Typography, styled } from "@mui/material";
 import { RegionsFilterForm } from ".";
 import { CreateRegionInput } from "./forms";
+import { Resource } from "@/context/cacheKey";
 
 import ExportIcon from '@mui/icons-material/Upgrade';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -70,7 +71,7 @@ export function RegionsActions(props: RegionsActionsProps) {
 
   const handleRefreshList = () => {
     queryClient.invalidateQueries({
-      queryKey: ["regions"]
+      queryKey: [Resource.Region]
     })
   }
 

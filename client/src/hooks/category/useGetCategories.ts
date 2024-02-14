@@ -3,6 +3,7 @@ import Result, { Err, Ok } from "@/libs/result";
 
 import { CategoryFilter } from "@/context/category";
 import { Pagination } from "@/services/types";
+import { CacheKey, Resource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getCategoriesFn } from "@/services/categoryApi";
 
@@ -17,7 +18,7 @@ export function useGetCategories({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: ["categories", { filter, pagination, include } ],
+    queryKey: [Resource.Category, { filter, pagination, include } ] as CacheKey<"categories">["list"],
     queryFn: args => getCategoriesFn(args, { 
       filter,
       pagination,

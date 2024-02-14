@@ -2,6 +2,7 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { CouponFilter } from "@/context/coupon";
+import { CacheKey, Resource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getCouponFn } from "@/services/couponsApi";
 
@@ -15,7 +16,7 @@ export function useGetCoupon({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["coupons", { id, include }],
+    queryKey: [Resource.Coupon, { id, include }] as CacheKey<'coupons'>["detail"],
     queryFn: args => getCouponFn(args, { couponId: id, include }),
     select: data => data?.coupon
   })

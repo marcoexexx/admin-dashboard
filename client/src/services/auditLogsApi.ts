@@ -3,7 +3,7 @@ import { authApi } from "./authApi";
 import { AuditLog, HttpListResponse, Pagination, QueryOptionArgs } from "./types";
 
 
-export async function getAuditLogsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: AuditLogFilter["fields"], pagination: Pagination, include?: any }) {
+export async function getAuditLogsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: AuditLogFilter["fields"], pagination: Pagination, include?: AuditLogFilter["include"] }) {
   const { data } = await authApi.get<HttpListResponse<AuditLog>>("/audit-logs", {
     ...opt,
     params: {
