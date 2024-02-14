@@ -1,20 +1,19 @@
+import { PermissionKey } from "@/context/cacheKey";
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { useState } from "react"
-import { BulkActions, LoadingTablePlaceholder } from "@/components";
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-
 import { FormModal } from "@/components/forms";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
+import { Brand } from "@/services/types";
+import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { MuiButton } from "@/components/ui";
-
 import { CreateBrandInput } from "./forms";
 import { BrandsActions } from ".";
+import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
+import { usePermission, useStore } from "@/hooks";
+import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { getBrandPermissionsFn } from "@/services/permissionsApi";
 
-import { Brand } from "@/services/types";
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 
 const columnData: TableColumnHeader<Brand>[] = [
@@ -122,19 +121,19 @@ export function BrandsListTable(props: BrandsListTableProps) {
   }
 
   const isAllowedDeleteBrand = usePermission({
-    key: "brand-permissions",
+    key: PermissionKey.Brand,
     actions: "delete",
     queryFn: getBrandPermissionsFn
   })
 
   const isAllowedUpdateBrand = usePermission({
-    key: "brand-permissions",
+    key: PermissionKey.Brand,
     actions: "update",
     queryFn: getBrandPermissionsFn
   })
 
   const isAllowedCreateBrand = usePermission({
-    key: "brand-permissions",
+    key: PermissionKey.Brand,
     actions: "create",
     queryFn: getBrandPermissionsFn
   })

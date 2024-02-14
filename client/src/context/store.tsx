@@ -12,10 +12,11 @@ import { CategoryFilter } from "./category"
 import { UserAddressFilter } from "./userAddress"
 import { CouponFilter } from "./coupon"
 import { UserFilter } from "./user"
-import { OrderFilter } from "./order"
-
-
-// TODO: setFilter, setPagination, setInclude
+import { OrderFilter, PotentialOrderFilter } from "./order"
+import { SalesCategoryFilter } from "./salesCategory"
+import { TownshipFilter } from "./township"
+import { RegionFilter } from "./region"
+import { PickupAddressFilter } from "./pickupAddress"
 
 
 export type Store = {
@@ -44,6 +45,7 @@ export type Store = {
       | "region"
       | "townships"
       | "addresses"
+      | "pickup-addresses"
 
       | "update-product"  // Only for on publish product
       | "delete-product"
@@ -88,44 +90,16 @@ export type Store = {
   accessLogFilter?: AccessLogFilter,
   auditLogFilter?: AuditLogFilter,
   orderFilter?: OrderFilter,
-  potentialOrderFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-  },
+  potentialOrderFilter?: PotentialOrderFilter,
   userFilter?: UserFilter,
   userAddressFilter?: UserAddressFilter,
+  pickupAddressFilter?: PickupAddressFilter,
   productFilter?: ProductFilter,
-  salesCategoryFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default",
-    include?: {
-      _count?: boolean
-    }
-  },
+  salesCategoryFilter?: SalesCategoryFilter,
   categoryFilter?: CategoryFilter,
   brandFilter?: BrandFilter,
-  townshipFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  },
-  regionFilter?: {
-    fields?: any,
-    page?: number,
-    limit?: number,
-    mode?: "insensitive" | "default"
-    include?: {
-      _count?: boolean
-    }
-  },
+  townshipFilter?: TownshipFilter,
+  regionFilter?: RegionFilter,
   exchangeFilter?: ExchangeFilter,
   couponFilter?: CouponFilter,
   disableCheckOut: boolean
@@ -151,6 +125,11 @@ interface PotentialOrderFilterActions {
 interface UserAddressFilterActions {
   type: "SET_USER_ADDRESS_FILTER",
   payload: Store["userAddressFilter"]
+}
+
+interface PickupAddressFilterActions {
+  type: "SET_PICKUP_ADDRESS_FILTER",
+  payload: Store["pickupAddressFilter"]
 }
 
 interface AuditLogFilterActions {
@@ -199,8 +178,8 @@ interface ExchangeFilterActions {
 }
 
 interface SalesCategoryFilterActions {
-  type: "SET_SALES_CATEGORY_FILTER",
   payload: Store["salesCategoryFilter"]
+  type: "SET_SALES_CATEGORY_FILTER",
 }
 
 interface CategoryFilterActions {
@@ -269,6 +248,7 @@ type Action =
   | SlidebarCloseActions
 
   | OrderFilterActions
+  | PickupAddressFilterActions
   | PotentialOrderFilterActions
   | UserAddressFilterActions
   | TownshipFilterActions
@@ -339,6 +319,11 @@ const initialState: Store = {
     limit: 10,
     mode: "default",
   },
+  pickupAddressFilter: {
+    page: 1,
+    limit: 10,
+    mode: "default",
+  },
   productFilter: {
     page: 1,
     limit: 10,
@@ -364,7 +349,6 @@ const initialState: Store = {
     limit: 10,
     mode: "default",
     include: {
-      _count: false,
     },
   },
   regionFilter: {
@@ -372,7 +356,6 @@ const initialState: Store = {
     limit: 10,
     mode: "default",
     include: {
-      _count: false,
     },
   },
   brandFilter: {
@@ -485,6 +468,13 @@ const stateReducer = (state: Store, action: Action): Store => {
     case "SET_POTENTIAL_ORDER_FILTER": {
       return { ...state, potentialOrderFilter: {
         ...state.potentialOrderFilter,
+        ...action.payload
+      } }
+    }
+
+    case "SET_PICKUP_ADDRESS_FILTER": {
+      return { ...state, pickupAddressFilter: {
+        ...state.pickupAddressFilter,
         ...action.payload
       } }
     }

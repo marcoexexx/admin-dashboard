@@ -44,6 +44,7 @@ export default class AppError extends Error implements ToString {
 
   constructor(public status: StatusCode, message: string) {
     super(message)
+    this.name = "AppError"
     this.isOperational = true
 
     Error.captureStackTrace(this, this.constructor)

@@ -1,9 +1,3 @@
-import { useState } from "react"
-import { numberFormat } from "@/libs/numberFormat";
-import { exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { getPotentialOrderPermissionsFn } from "@/services/permissionsApi";
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
@@ -11,6 +5,13 @@ import { FormModal } from "@/components/forms";
 import { PotentialOrder } from "@/services/types";
 import { PotentialOrdersActions } from ".";
 import { RenderOrderItemLabel, RenderUsernameLabel } from "@/components/table-labels";
+import { PermissionKey } from "@/context/cacheKey";
+import { useState } from "react"
+import { numberFormat } from "@/libs/numberFormat";
+import { exportToExcel } from "@/libs/exportToExcel";
+import { usePermission, useStore } from "@/hooks";
+import { useNavigate } from "react-router-dom";
+import { getPotentialOrderPermissionsFn } from "@/services/permissionsApi";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
@@ -138,13 +139,13 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
   }
 
   const isAllowedDeletePotentialOrder = usePermission({
-    key: "potential-order-permissions",
+    key: PermissionKey.PotentialOrder,
     actions: "delete",
     queryFn: getPotentialOrderPermissionsFn
   })
 
   const isAllowedUpdatePotentialOrder = usePermission({
-    key: "potential-order-permissions",
+    key: PermissionKey.PotentialOrder,
     actions: "update",
     queryFn: getPotentialOrderPermissionsFn
   })

@@ -13,7 +13,9 @@ const HomePage = Loader(lazy(() => import("@/pages/home")))
 
 const CheckoutPage = Loader(lazy(() => import("@/pages/checkout")))
 
-const PickupAddressHistoryPage = Loader(lazy(() => import("@/pages/pickupHistory/ListPickupHistory")))
+// Pickup address
+const ListPickupAddressHistoryPage = Loader(lazy(() => import("@/pages/pickupHistory/ListPickupHistory")))
+const CreatePickupAddressHistoryPage = Loader(lazy(() => import("@/pages/pickupHistory/CreatePickupAddress")))
 
 // Status
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))
@@ -128,11 +130,34 @@ const routes = createBrowserRouter([
             Component: ManagementUserProfilePage
           },
 
-          /// ACCESS LOGS
+          /// PICKUP ADDRESS
           {
             path: "pickup-address-history",
             loader: pickupAddressPermissionsLoader,
-            Component: PickupAddressHistoryPage
+            children: [
+              {
+                path: "",
+                Component: ListPickupAddressHistoryPage
+              },
+              {
+                path: "list",
+                element: <Navigate to="/pickup-address-history" />
+              },
+              {
+                path: "",
+                element: <PagePermission allowedRoles={["Admin", "Shopowner", "User"]} />,
+                children: [
+                  {
+                    path: "create",
+                    Component: CreatePickupAddressHistoryPage
+                  },
+                  // {
+                  //   path: "update/:pickupAddressId",
+                  //   Component: UpdatePotentialOrderPage
+                  // }
+                ]
+              },
+            ]
           },
 
           /// ACCESS LOGS

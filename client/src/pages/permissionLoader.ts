@@ -1,9 +1,11 @@
+import { PermissionKey } from "@/context/cacheKey";
 import { queryClient } from "@/components";
 import { getAccessLogsPermissionsFn, getAuditLogsPermissionsFn, getBrandPermissionsFn, getCategoryPermissionsFn, getCouponsPermissionsFn, getDashboardPermissionsFn, getExchangePermissionsFn, getOrderPermissionsFn, getPickupAddressPermissionsFn, getPotentialOrderPermissionsFn, getProductPermissionsFn, getRegionPermissionsFn, getSalesCategoryPermissionsFn, getTownshipPermissionsFn, getUserAddressPermissionsFn, getUserPermissionsFn } from "@/services/permissionsApi";
 
+
 export async function dashboardPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["dashboard-permissions"],
+    queryKey: PermissionKey.Dashboard,
     queryFn: getDashboardPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -12,7 +14,7 @@ export async function dashboardPermissionsLoader() {
 
 export async function userPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["user-permissions"],
+    queryKey: PermissionKey.User,
     queryFn: getUserPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -21,7 +23,7 @@ export async function userPermissionsLoader() {
 
 export async function exchangePermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["exchange-permissions"],
+    queryKey: PermissionKey.Exchange,
     queryFn: getExchangePermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -30,7 +32,7 @@ export async function exchangePermissionsLoader() {
 
 export async function categoryPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["category-permissions"],
+    queryKey: PermissionKey.Category,
     queryFn: getCategoryPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -39,7 +41,7 @@ export async function categoryPermissionsLoader() {
 
 export async function salesCategoryPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["sales-category-permissions"],
+    queryKey: PermissionKey.SalesCategory,
     queryFn: getSalesCategoryPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -48,7 +50,7 @@ export async function salesCategoryPermissionsLoader() {
 
 export async function brandPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["brand-permissions"],
+    queryKey: PermissionKey.Brand,
     queryFn: getBrandPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -57,7 +59,7 @@ export async function brandPermissionsLoader() {
 
 export async function productPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["product-permissions"],
+    queryKey: PermissionKey.Product,
     queryFn: getProductPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -66,7 +68,7 @@ export async function productPermissionsLoader() {
 
 export async function potentialOrderPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["potential-order-permissions"],
+    queryKey: PermissionKey.PotentialOrder,
     queryFn: getPotentialOrderPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -75,7 +77,7 @@ export async function potentialOrderPermissionsLoader() {
 
 export async function userAddressPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["address-permissions"],
+    queryKey: PermissionKey.UserAddress,
     queryFn: getUserAddressPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -84,7 +86,7 @@ export async function userAddressPermissionsLoader() {
 
 export async function townshipPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["township-permissions"],
+    queryKey: PermissionKey.Township,
     queryFn: getTownshipPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -93,7 +95,7 @@ export async function townshipPermissionsLoader() {
 
 export async function regionPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["region-permissions"],
+    queryKey: PermissionKey.Region,
     queryFn: getRegionPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -102,7 +104,7 @@ export async function regionPermissionsLoader() {
 
 export async function orderPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["order-permissions"],
+    queryKey: PermissionKey.Order,
     queryFn: getOrderPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -111,7 +113,7 @@ export async function orderPermissionsLoader() {
 
 export async function auditLogsPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["audit-logs-permissions"],
+    queryKey: PermissionKey.AuditLog,
     queryFn: getAuditLogsPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -120,7 +122,7 @@ export async function auditLogsPermissionsLoader() {
 
 export async function pickupAddressPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["pickup-address-permissions"],
+    queryKey: PermissionKey.PickupAddress,
     queryFn: getPickupAddressPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -129,7 +131,7 @@ export async function pickupAddressPermissionsLoader() {
 
 export async function accessLogsPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["access-logs-permissions"],
+    queryKey: PermissionKey.AccessLog,
     queryFn: getAccessLogsPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24
@@ -138,7 +140,7 @@ export async function accessLogsPermissionsLoader() {
 
 export async function  couponPermissionsLoader() {
   return queryClient.fetchQuery({
-    queryKey: ["coupon-permissions"],
+    queryKey: PermissionKey.Coupon,
     queryFn: getCouponsPermissionsFn,
 
     staleTime: 1000 * 60 * 60 * 60 * 24

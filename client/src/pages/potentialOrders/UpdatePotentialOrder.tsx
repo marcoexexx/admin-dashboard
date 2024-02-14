@@ -1,25 +1,41 @@
+import { PermissionKey } from '@/context/cacheKey';
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components";
+import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { UpdatePotentialOrderForm } from '@/components/content/potential-orders/forms';
 import { usePermission } from "@/hooks";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { useNavigate } from 'react-router-dom';
 import { getOrderPermissionsFn } from '@/services/permissionsApi';
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+
 import getConfig from "@/libs/getConfig";
-import { UpdatePotentialOrderForm } from '@/components/content/potential-orders/forms';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
 
-export default function UpdatePotentialOrder() {
-  const navigate = useNavigate()
-
+function UpdatePotentialOrderWrapper() {
   const isAllowedUpdateOrder = usePermission({
-    key: "order-permissions",
+    key: PermissionKey.PotentialOrder,
     actions: "update",
     queryFn: getOrderPermissionsFn
   })
+
+  if (!isAllowedUpdateOrder) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <Card>
+    <CardContent>
+      <UpdatePotentialOrderForm />
+    </CardContent>
+  </Card>
+}
+
+
+export default function UpdatePotentialOrder() {
+  const navigate = useNavigate()
+
   
   const handleBack = () => {
     navigate(-1)
@@ -53,20 +69,19 @@ export default function UpdatePotentialOrder() {
         </Grid>
       </PageTitle>
 
-      {isAllowedUpdateOrder
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12} md={8}>
-              <Card>
-                <CardContent>
-                  <UpdatePotentialOrderForm />
-                </CardContent>
-              </Card>
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12} md={8}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <UpdatePotentialOrderWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }

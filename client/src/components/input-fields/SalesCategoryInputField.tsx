@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useStore } from '@/hooks';
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiButton } from '@/components/ui';
+import { SalesCategory } from '@/services/types';
+import { useGetSalesCategories } from '@/hooks/salsCategory';
+import { useEffect, useState } from 'react';
+import { useStore } from '@/hooks';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { SalesCategory } from '@/services/types';
-import { getSalesCategoriesFn } from '@/services/salesCategoryApi';
 
 
 const InnerPaper = styled(Paper)(() => ({
@@ -28,21 +27,18 @@ export function SalesCategoriesInputField({updateField = false}: SalesCategories
   const { dispatch } = useStore()
 
   const {
-    data: sales,
+    try_data,
     isLoading,
     isError,
     error
-  } = useQuery({
-    queryKey: ["sales-categories"],
-    queryFn: args => getSalesCategoriesFn(args, {
-      filter: {},
-      pagination: {
-        page: 1,
-        pageSize: 100 * 1000
-      }
-    }),
-    select: data => data.results
+  } = useGetSalesCategories({
+    filter: {},
+    pagination: {
+      page: 1,
+      pageSize: 100 * 100
+    }
   })
+  const sales = try_data.ok()?.results
 
   const defaultSalesCategoryId = getValues("salesCategoryId")
   const defaultSalesCategory = defaultSalesCategoryId

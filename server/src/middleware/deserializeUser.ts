@@ -32,7 +32,11 @@ export async function deserializeUser(
 
     if (!session) return next(AppError.new(StatusCode.Unauthorized, `Invalid token or session has expired`))
 
-    const user = (await service.findUnique(tryJSONParse(session).expect(`Failed json parse for session id`).id)).ok_or_throw()
+    const user = (await service.tryFindUnique({
+      where: {
+        id: tryJSONParse(session).expect(`Failed json parse for session id`).id
+      }
+    })).ok_or_throw()
 
     // @ts-ignore  for mocha testing
     req.user = user

@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
@@ -18,7 +19,7 @@ const appName = getConfig("appName")
 
 function UpdateBrandWrapper() {
   const isAllowedUpdateBrand = usePermission({
-    key: "brand-permissions",
+    key: PermissionKey.Brand,
     actions: "update",
     queryFn: getBrandPermissionsFn
   })

@@ -2,6 +2,7 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 import { ExchangeFilter } from "@/context/exchange";
 
+import { CacheKey, Resource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getExchangeFn } from "@/services/exchangesApi";
 
@@ -15,7 +16,7 @@ export function useGetExchange({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["exchanges", { id, include }],
+    queryKey: [Resource.Exchange, { id, include }] as CacheKey<"exchanges">["detail"],
     queryFn: args => getExchangeFn(args, { exchangeId: id, include }),
     select: data => data?.exchange
   })

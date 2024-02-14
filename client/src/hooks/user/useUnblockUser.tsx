@@ -1,6 +1,7 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 import Result, { Err, Ok } from "@/libs/result"
 
+import { Resource } from "@/context/cacheKey"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { queryClient } from "@/components"
@@ -14,7 +15,7 @@ export function useUnblockUser() {
     mutationFn: unBlockUserFn,
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: ["users"]
+        queryKey: [Resource.User]
       })
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success unblocked.",

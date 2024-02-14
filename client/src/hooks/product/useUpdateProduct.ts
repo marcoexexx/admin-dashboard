@@ -1,6 +1,7 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 import Result, { Err, Ok } from "@/libs/result"
 
+import { Resource } from "@/context/cacheKey"
 import { updateProductFn } from "@/services/productsApi"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
@@ -32,7 +33,7 @@ export function useUpdateProduct() {
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: ["products"]
+        queryKey: [Resource.Product]
       })
       playSoundEffect("success")
     }

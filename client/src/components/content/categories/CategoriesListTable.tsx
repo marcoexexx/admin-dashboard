@@ -1,4 +1,6 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
+import { PermissionKey } from "@/context/cacheKey";
+import { Category } from "@/services/types";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
@@ -12,8 +14,6 @@ import { getCategoryPermissionsFn } from "@/services/permissionsApi";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-
-import { Category } from "@/services/types";
 
 
 const columnData: TableColumnHeader<Category>[] = [
@@ -121,19 +121,19 @@ export function CategoriesListTable(props: CategoriesListTableProps) {
   }
 
   const isAllowedDeleteCategory = usePermission({
-    key: "category-permissions",
+    key: PermissionKey.Category,
     actions: "delete",
     queryFn: getCategoryPermissionsFn
   })
 
   const isAllowedUpdateCategory = usePermission({
-    key: "category-permissions",
+    key: PermissionKey.Category,
     actions: "update",
     queryFn: getCategoryPermissionsFn
   })
 
   const isAllowedCreateCategory = usePermission({
-    key: "category-permissions",
+    key: PermissionKey.Category,
     actions: "create",
     queryFn: getCategoryPermissionsFn
   })

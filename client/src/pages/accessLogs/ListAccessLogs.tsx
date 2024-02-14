@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { PermissionKey } from '@/context/cacheKey';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
@@ -16,7 +17,7 @@ const appName = getConfig("appName")
 
 function ListAccessLogsWrapper() {
   const isAllowedReadAccessLog = usePermission({
-    key: "access-log-permissions",
+    key: PermissionKey.AccessLog,
     actions: "read",
     queryFn: getAccessLogsPermissionsFn
     // queryFn: () => Promise.reject(new Error("FF"))

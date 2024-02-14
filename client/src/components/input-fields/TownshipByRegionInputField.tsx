@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useStore } from '@/hooks';
+import { useGetTownships } from '@/hooks/township';
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiButton } from '@/components/ui';
@@ -8,7 +8,6 @@ import { TownshipFees } from '@/services/types';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { getTownshipsFn } from '@/services/TownshipsApi';
 
 
 const InnerPaper = styled(Paper)(() => ({
@@ -30,28 +29,24 @@ export function TownshipByRegionInputField({updateField = false}: TownshipByRegi
   const { dispatch } = useStore()
 
   const {
-    data: townships,
+    try_data,
     isLoading,
     isError,
     error
-  } = useQuery({
-    enabled: !!regionId,
-    queryKey: ["townships", { regionId }],
-    queryFn: args => getTownshipsFn(args, {
-      pagination: {
-        page: 1,
-        pageSize: 100 * 1000
-      },
-      filter: {
-        region: {
-          id: {
-            equals: regionId
-          }
+  } = useGetTownships({
+    filter: {
+      region: {
+        id: {
+          equals: regionId
         }
       }
-    }),
-    select: data => data.results
+    },
+    pagination: {
+      page: 1,
+      pageSize: 100 * 100
+    }
   })
+  const townships = try_data.ok()?.results
 
   const defaultTownshipId = getValues("townshipFeesId")
   const defaultTownship = defaultTownshipId

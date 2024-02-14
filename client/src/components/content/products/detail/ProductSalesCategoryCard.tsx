@@ -2,6 +2,7 @@ import { Box, Card, CardContent, Grid, Typography, useTheme } from "@mui/materia
 import { MuiButton } from "@/components/ui";
 import { DashboardCard } from "@/components";
 import { ProductSalesCategoriesResponse } from "@/services/types";
+import { PermissionKey } from "@/context/cacheKey";
 import { usePermission } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
@@ -23,7 +24,7 @@ export function ProductSalesCategoryCard(props: ProductSalesCategoryCardProps) {
   const navigate = useNavigate()
 
   const isAllowedCreateSalesCategory = usePermission({
-    key: "sales-category-permissions",
+    key: PermissionKey.SalesCategory,
     actions: "create",
     queryFn: getSalesCategoryPermissionsFn
   })

@@ -1,3 +1,5 @@
+import { PermissionKey } from '@/context/cacheKey';
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
@@ -7,11 +9,10 @@ import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks"
 import { getOrderPermissionsFn } from '@/services/permissionsApi';
 
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { Suspense } from 'react';
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
 
 const appName = getConfig("appName")
@@ -19,7 +20,7 @@ const appName = getConfig("appName")
 
 function ListOrderWrapper() {
   const isAllowedReadOrder = usePermission({
-    key: "order-permissions",
+    key: PermissionKey.Order,
     actions: "read",
     queryFn: getOrderPermissionsFn
   })
@@ -34,7 +35,7 @@ export default function ListOrder() {
   const navigate = useNavigate()
 
   const isAllowedCreatOrder = usePermission({
-    key: "order-permissions",
+    key: PermissionKey.Order,
     actions: "create",
     queryFn: getOrderPermissionsFn
   })

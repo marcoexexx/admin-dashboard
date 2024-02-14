@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
@@ -8,9 +9,9 @@ import { useNavigate } from 'react-router-dom';
 import { getOrderPermissionsFn } from '@/services/permissionsApi';
 
 import getConfig from "@/libs/getConfig";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 
 const appName = getConfig("appName")
@@ -18,7 +19,7 @@ const appName = getConfig("appName")
 
 function UpdateOrderWrapper() {
   const isAllowedUpdateOrder = usePermission({
-    key: "order-permissions",
+    key: PermissionKey.Order,
     actions: "update",
     queryFn: getOrderPermissionsFn
   })

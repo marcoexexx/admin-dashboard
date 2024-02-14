@@ -1,9 +1,8 @@
-import { verifyEmailFn } from "@/services/authApi"
 import { Box, Container, Typography, styled } from "@mui/material"
-import { useQuery } from "@tanstack/react-query"
-import { useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom"
 import { LoadingButton } from "@mui/lab"
+import { useEffect } from "react"
+import { useVerifyEmail } from "@/hooks"
+import { useNavigate, useParams } from "react-router-dom"
 
 import WarningIcon from '@mui/icons-material/Warning';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
@@ -23,11 +22,7 @@ export default function VerifyEmail() {
 
   const navigate = useNavigate()
 
-  const { isError, refetch, error, isLoading, isSuccess } = useQuery({
-    enabled: !!verifyEmailCode,
-    queryKey: ["verify-email-code"],
-    queryFn: args => verifyEmailFn(args, verifyEmailCode)
-  })
+  const { isError, refetch, error, isLoading, isSuccess } = useVerifyEmail({ verifyEmailCode })
 
   useEffect(() => {
     if (isSuccess) navigate("/")

@@ -1,22 +1,18 @@
 import { Box, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
+import { MuiButton } from "@/components/ui";
+import { EditorInputField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, object, string, z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate, useParams } from "react-router-dom";
-import { queryClient } from "@/components";
-import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
-import { getUserAddressFn, updateUserAddressFn } from "@/services/userAddressApi";
-import { EditorInputField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
-import { playSoundEffect } from "@/libs/playSound";
+import { useGetUserAddress, useUpdateUserAddress } from "@/hooks/userAddress";
 
 
 const updateUserAddressSchema = object({
   isDefault: boolean().default(false),
   username: string({ required_error: "Name (username) is required" }),
-  phone: string({ required_error: "phone is required" }).min(9).max(12),
+  phone: string({ required_error: "phone is required" }).regex(/^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/),
   email: string().email().optional(),
   regionId: string({ required_error: "region is required" }),
   townshipFeesId: string({ required_error: "township is required" }),
@@ -27,54 +23,20 @@ const updateUserAddressSchema = object({
 export type UpdateUserAddressInput = z.infer<typeof updateUserAddressSchema>
 
 export function UpdateUserAddressForm() {
-  const { state: {modalForm}, dispatch } = useStore()
-
-  const navigate = useNavigate()
   const { userAddressId } = useParams()
-  const from = "/addresses"
 
-  const { 
-    data: userAddress,
-    isSuccess: isSuccessFetchUserAddress,
-    fetchStatus: fetchStatusUserAddress
-  } = useQuery({
-    enabled: !!userAddressId,
-    queryKey: ["user-addresses", { id: userAddressId }],
-    queryFn: args => getUserAddressFn(args, { userAddressId }),
-    select: data => data?.userAddress
-  })
+  const { try_data, isSuccess, fetchStatus } = useGetUserAddress({ id: userAddressId })
+  const { mutate: updateUserAddress } = useUpdateUserAddress()
 
-  const {
-    mutate: updateUserAddress,
-  } = useMutation({
-    mutationFn: updateUserAddressFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success updated a user address.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["user-addresses"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  const userAddress = try_data.ok_or_throw()?.userAddress
+
 
   const methods = useForm<UpdateUserAddressInput>({
     resolver: zodResolver(updateUserAddressSchema),
   })
 
   useEffect(() => {
-    if (isSuccessFetchUserAddress && userAddress && fetchStatusUserAddress === "idle") {
+    if (isSuccess && userAddress && fetchStatus === "idle") {
       methods.setValue("username", userAddress.username)
       methods.setValue("phone", userAddress.phone)
       methods.setValue("email", userAddress.email)
@@ -85,7 +47,7 @@ export function UpdateUserAddressForm() {
       if (userAddress.regionId) methods.setValue("regionId", userAddress.regionId)
       if (userAddress.townshipFeesId) methods.setValue("townshipFeesId", userAddress.townshipFeesId)
     }
-  }, [isSuccessFetchUserAddress, fetchStatusUserAddress])
+  }, [isSuccess, fetchStatus])
 
 
   const { handleSubmit, register, formState: { errors } } = methods

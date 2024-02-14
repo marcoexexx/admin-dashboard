@@ -1,30 +1,42 @@
+import { PermissionKey } from '@/context/cacheKey';
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { MuiButton } from "@/components/ui";
+import { TownshipsList } from '@/components/content/townships';
 import { getTownshipPermissionsFn } from '@/services/permissionsApi';
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
-import getConfig from "@/libs/getConfig";
 
+import getConfig from "@/libs/getConfig";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { TownshipsList } from '@/components/content/townships';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
 
-export default function ListTownship() {
-  const navigate = useNavigate()
 
+function ListTownshipWrapper() {
   const isAllowedReadTownship = usePermission({
-    key: "township-permissions",
+    key: PermissionKey.Township,
     actions: "read",
     queryFn: getTownshipPermissionsFn
   })
 
+  if (!isAllowedReadTownship) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <TownshipsList />
+}
+
+
+export default function ListTownship() {
+  const navigate = useNavigate()
+
+
   const isAllowedCreateTownship = usePermission({
-    key: "township-permissions",
+    key: PermissionKey.Township,
     actions: "create",
     queryFn: getTownshipPermissionsFn
   })
@@ -64,15 +76,19 @@ export default function ListTownship() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadTownship
-      ?  <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <TownshipsList />
-            </Grid>
+       <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListTownshipWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
     </>
   )
 }

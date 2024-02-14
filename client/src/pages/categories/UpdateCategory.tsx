@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
@@ -18,7 +19,7 @@ const appName = getConfig("appName")
 
 function UpdateCategoryWrapper() {
   const isAllowedUpdateCategory = usePermission({
-    key: "category-permissions",
+    key: PermissionKey.Category,
     actions: "update",
     queryFn: getCategoryPermissionsFn
   })

@@ -1,23 +1,39 @@
+import { PermissionKey } from '@/context/cacheKey';
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components";
+import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { CreateRegionForm } from '@/components/content/regions/forms/CreateRegionForm';
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 import { getRegionPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+
 import getConfig from "@/libs/getConfig";
-import { CreateRegionForm } from '@/components/content/regions/forms/CreateRegionForm';
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 
 const appName = getConfig("appName")
 
-export default function CreateRegion() {
+function CreateRegionWrapper() {
   const isAllowedCreateRegion = usePermission({
-    key: "region-permissions",
+    key: PermissionKey.Region,
     actions: "create",
     queryFn: getRegionPermissionsFn
   })
+
+  if (!isAllowedCreateRegion) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <Card>
+    <CardContent>
+      <CreateRegionForm />
+    </CardContent>
+  </Card>
+}
+
+
+export default function CreateRegion() {
   
   const navigate = useNavigate()
 
@@ -52,20 +68,19 @@ export default function CreateRegion() {
         </Grid>
       </PageTitle>
 
-      {isAllowedCreateRegion
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12} md={8}>
-              <Card>
-                <CardContent>
-                  <CreateRegionForm />
-                </CardContent>
-              </Card>
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12} md={8}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <CreateRegionWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }

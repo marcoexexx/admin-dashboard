@@ -1,15 +1,10 @@
 import { Box, Grid, TextField } from "@mui/material";
+import { MuiButton } from "@/components/ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, string, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { queryClient } from "@/components";
-import { MuiButton } from "@/components/ui";
 import { useEffect } from "react";
-import { createTownshipFn } from "@/services/TownshipsApi";
-import { playSoundEffect } from "@/libs/playSound";
+import { useCreateTownship } from "@/hooks/township";
 
 
 const createTownshipSchema = object({
@@ -21,35 +16,7 @@ const createTownshipSchema = object({
 export type CreateTownshipInput = z.infer<typeof createTownshipSchema>
 
 export function CreateTownshipForm() {
-  const { state: {modalForm}, dispatch } = useStore()
-
-  const navigate = useNavigate()
-  const from = "/townships"
-
-  const {
-    mutate: createTownship,
-  } = useMutation({
-    mutationFn: createTownshipFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new township.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["townships"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  const { mutate: createTownship } = useCreateTownship()
 
   const methods = useForm<CreateTownshipInput>({
     resolver: zodResolver(createTownshipSchema)

@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
@@ -19,7 +20,7 @@ const appName = getConfig("appName")
 
 function ListCouponWrapper() {
   const isAllowedReadCoupons = usePermission({
-    key: "coupon-permissions",
+    key: PermissionKey.Coupon,
     actions: "read",
     queryFn: getCouponsPermissionsFn
   })
@@ -34,7 +35,7 @@ export default function ListCoupon() {
   const navigate = useNavigate()
 
   const isAllowedCreateCoupons = usePermission({
-    key: "coupon-permissions",
+    key: PermissionKey.Coupon,
     actions: "create",
     queryFn: getCouponsPermissionsFn
   })

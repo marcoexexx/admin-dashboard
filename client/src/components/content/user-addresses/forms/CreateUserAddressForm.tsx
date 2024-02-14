@@ -7,19 +7,15 @@ import { CreateRegionForm } from "../../regions/forms";
 import { CreateTownshipForm } from "../../townships/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, object, string, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { queryClient } from "@/components";
-import { createUserAddressFn } from "@/services/userAddressApi";
 import { useEffect } from "react";
-import { playSoundEffect } from "@/libs/playSound";
+import { useCreateUserAddress } from "@/hooks/userAddress";
 
 
 const createUserAddressSchema = object({
   isDefault: boolean().default(false),
   username: string({ required_error: "Name (username) is required" }),
-  phone: string({ required_error: "phone is required" }).min(9).max(12),
+  phone: string({ required_error: "phone is required" }).regex(/^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/),
   email: string({ required_error: "email is required" }).email(),
   regionId: string({ required_error: "region is required" }),
   townshipFeesId: string({ required_error: "township is required" }),
@@ -32,33 +28,7 @@ export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>
 export function CreateUserAddressForm() {
   const { state: {modalForm, user}, dispatch } = useStore()
 
-  const navigate = useNavigate()
-  const from = "/addresses"
-
-  const {
-    mutate: createUserAddress,
-  } = useMutation({
-    mutationFn: createUserAddressFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new brand.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["user-addresses"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  const { mutate: createUserAddress } = useCreateUserAddress()
 
   const methods = useForm<CreateUserAddressInput>({
     resolver: zodResolver(createUserAddressSchema)

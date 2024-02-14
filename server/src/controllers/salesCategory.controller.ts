@@ -1,17 +1,16 @@
-import { db } from "../utils/db";
-import { parseExcel } from "../utils/parseExcel";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
+import { checkUser } from "../services/checkUser";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CreateMultiSalesCategoriesInput, CreateProductSalesCategoryInput, CreateSalesCategoryInput, DeleteMultiSalesCategoriesInput, GetSalesCategoryInput, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { CreateProductSalesCategoryInput, CreateSalesCategoryInput, DeleteMultiSalesCategoriesInput, GetSalesCategoryInput, UpdateSalesCategoryInput } from "../schemas/salesCategory.schema";
+import { SalesCategoryService } from "../services/saleCategory";
+import { ProductSalesCategoryService } from "../services/productSalesCategory";
+import { StatusCode } from "../utils/appError";
 
-import AppError from "../utils/appError";
-import fs from 'fs'
-import logging from "../middleware/logging/logging";
-import { createEventAction } from "../utils/auditLog";
-import { EventActionType, Resource } from "@prisma/client";
+
+const service = SalesCategoryService.new()
+const _salesService = ProductSalesCategoryService.new()
 
 
 // TODO: sales-categories filter
@@ -28,31 +27,20 @@ export async function getSalesCategoriesHandler(
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    // TODO: fix
-    const offset = ((page||1) - 1) * (pageSize||10)
+    const [count, categories] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
+      },
+      {
+        where: { id, name },
+        include: { _count, products },
+        orderBy
+      }
+    )).ok_or_throw()
 
-    const [count, categories] = await db.$transaction([
-      db.salesCategory.count(),
-      db.salesCategory.findMany({
-        where: {
-          id,
-          name
-        },
-        orderBy,
-        skip: offset,
-        take: pageSize,
-        include: {
-          _count,
-          products
-        }
-      })
-    ])
-
-    res.status(200).json(HttpListResponse(categories, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(categories, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -65,20 +53,19 @@ export async function getSalesCategoriesInProductHandler(
   try {
     const { productId } = req.params
 
-    const categories = await db.productSalesCategory.findMany({
-      where: {
-        productId
-      },
-      include: {
-        salesCategory: true,
+    const [count, salesCategories] = (await _salesService.tryFindManyWithCount(
+      {
+        pagination: { page: 1, pageSize: 10 }
+      }, 
+      {
+        where: { productId },
+        include: { salesCategory: true },
       }
-    })
+    )).ok_or_throw()
 
-    res.status(200).json(HttpListResponse(categories))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(salesCategories, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -94,21 +81,11 @@ export async function getSalesCategoryHandler(
     const { salesCategoryId } = req.params
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
 
-    const salesCategory = await db.salesCategory.findUnique({
-      where: {
-        id: salesCategoryId
-      },
-      include: {
-        _count,
-        products
-      }
-    })
+    const salesCategory = (await service.tryFindUnique({ where: {id: salesCategoryId}, include: { _count, products } })).ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ salesCategory }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ salesCategory }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -120,31 +97,24 @@ export async function createSalesCategoryHandler(
 ) {
   try {
     const { name, startDate, endDate, description } = req.body
-    const category = await db.salesCategory.create({
-      data: { 
+
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const category = (await service.tryCreate({
+      data: {
         name,
         startDate,
         endDate,
         description
-      },
-    })
+      }
+    })).ok_or_throw()
 
-    // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.SalesCategory,
-      resourceIds: [category.id],
-      action: EventActionType.Create
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(201).json(HttpDataResponse({ category }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Sales category already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpDataResponse({ category }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -158,22 +128,17 @@ export async function createSaleCategoryForProductHandler(
     const { productId } = req.params
     const { discount, salesCategoryId } = req.body
 
-    const category = await db.productSalesCategory.create({
-      data: { 
+    const category = (await _salesService.tryCreate({
+      data: {
         salesCategoryId,
         productId,
         discount
-      },
-    })
+      }
+    })).ok_or_throw()
 
-    res.status(201).json(HttpDataResponse({ category }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Sales category already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpDataResponse({ category }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -186,41 +151,18 @@ export async function createMultiSalesCategoriesHandler(
   try {
     const excelFile = req.file
 
-    if (!excelFile) return res.status(204)
+    if (!excelFile) return res.status(StatusCode.NoContent)
 
-    const buf = fs.readFileSync(excelFile.path)
-    const data = parseExcel(buf) as CreateMultiSalesCategoriesInput
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const categories = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
-    // Update not affected
-    const categories = await Promise.all(data.map(({name, startDate, endDate, description}) => db.salesCategory.upsert({
-      where: {
-        name
-      },
-      create: {
-        name,
-        startDate,
-        endDate,
-        description
-      },
-      update: {}
-    })))
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.SalesCategory,
-      resourceIds: categories.map(category => category.id),
-      action: EventActionType.Create
-    })
-
-    res.status(201).json(HttpResponse(201, "Success"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Sales Category already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpListResponse(categories))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -233,25 +175,16 @@ export async function deleteSalesCategoryHandler(
   try {
     const { salesCategoryId } = req.params
 
-    const salesCategory = await db.salesCategory.delete({
-      where: {
-        id: salesCategoryId
-      }
-    })
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const category = (await service.tryDelete({ where: {id: salesCategoryId} })).ok_or_throw()
 
-    // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.SalesCategory,
-      resourceIds: [salesCategory.id],
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ category }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -264,27 +197,23 @@ export async function deleteMultiSalesCategoriesHandler(
   try {
     const { salesCategoryIds } = req.body
 
-    await db.salesCategory.deleteMany({
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _deleteSalesCategories = await service.tryDeleteMany({
       where: {
         id: {
           in: salesCategoryIds
         }
       }
     })
+    _deleteSalesCategories.ok_or_throw()
 
-    // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.SalesCategory,
-      resourceIds: salesCategoryIds,
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -297,27 +226,26 @@ export async function updateSalesCategoryHandler(
 ) {
   try {
     const { salesCategoryId } = req.params
-    const data = req.body
+    const { name, startDate, endDate, isActive, description } = req.body
 
-    const category = await db.salesCategory.update({
-      where: {
-        id: salesCategoryId,
-      },
-      data
-    })
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const category = (await service.tryUpdate({
+      where: { id: salesCategoryId },
+      data: {
+        name,
+        startDate,
+        endDate,
+        isActive,
+        description
+      }
+    })).ok_or_throw()
 
-    // Update event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.SalesCategory,
-      resourceIds: [category.id],
-      action: EventActionType.Update
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ category }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ category }))
+  } catch (err) {
+    next(err)
   }
 }

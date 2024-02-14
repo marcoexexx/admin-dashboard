@@ -1,29 +1,41 @@
+import { PermissionKey } from '@/context/cacheKey';
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { useNavigate } from 'react-router-dom'
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
-import { usePermission } from "@/hooks";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { MuiButton } from "@/components/ui";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import getConfig from "@/libs/getConfig";
-import { getPotentialOrderPermissionsFn } from '@/services/permissionsApi';
 import { PotentialOrdersList } from '@/components/content/potential-orders';
+import { useNavigate } from 'react-router-dom'
+import { usePermission } from "@/hooks";
+import { getPotentialOrderPermissionsFn } from '@/services/permissionsApi';
+
+import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
 
 const appName = getConfig("appName")
 
-export default function ListPotentialOrder() {
-  const navigate = useNavigate()
-
+function ListPotentialOrderWrapper() {
   const isAllowedReadPotentialOrder = usePermission({
-    key: "potential-order-permissions",
+    key: PermissionKey.PotentialOrder,
     actions: "read",
     queryFn: getPotentialOrderPermissionsFn
   })
 
+  if (!isAllowedReadPotentialOrder) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <PotentialOrdersList />
+}
+
+
+export default function ListPotentialOrder() {
+  const navigate = useNavigate()
+
+
   const isAllowedCreatPotentialOrder = usePermission({
-    key: "potential-order-permissions",
+    key: PermissionKey.PotentialOrder,
     actions: "create",
     queryFn: getPotentialOrderPermissionsFn
   })
@@ -64,16 +76,19 @@ export default function ListPotentialOrder() {
         </Grid>
       </PageTitle>
 
-      {isAllowedReadPotentialOrder
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <PotentialOrdersList />
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ListPotentialOrderWrapper />
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
-      
+        </Grid>
+      </Container>
     </>
   )
 }

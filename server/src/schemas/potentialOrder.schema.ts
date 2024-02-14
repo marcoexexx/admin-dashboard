@@ -26,12 +26,7 @@ export const createPotentialOrderSchema = object({
     deliveryAddressId: string().optional(),
     totalPrice: number().min(0),
     addressType: z.enum(potentialOrderAddressType),
-    pickupAddress: object({
-      username: string({ required_error: "username is required" }),
-      phone: string({ required_error: "phone number is required" }),
-      email: string().optional(),
-      date: string({ required_error: "date is required" }).default((new Date()).toISOString())
-    }).optional(),
+    pickupAddressId: string().optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
     paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
     remark: string().optional()
@@ -48,23 +43,18 @@ export const updatePotentialOrderSchema = object({
   ...params,
   body: object({
     id: string().optional(),
-    orderItems: object({
-      price: number(),
-      quantity: number(),
-      productId: string(),
-      totalPrice: number().min(0),
-      saving: number()
-    }).array().min(0),
+    // orderItems: object({
+    //   price: number(),
+    //   quantity: number(),
+    //   productId: string(),
+    //   totalPrice: number().min(0),
+    //   saving: number()
+    // }).array().min(0),
     status: z.enum(potentialOrderStatus).default("Processing"),
     addressType: z.enum(potentialOrderAddressType),
     deliveryAddressId: string().optional(),
     totalPrice: number().min(0),
-    pickupAddress: object({
-      username: string({ required_error: "username is required" }),
-      phone: string({ required_error: "phone number is required" }),
-      email: string().optional(),
-      date: string({ required_error: "date is required" }).default((new Date()).toISOString())
-    }).optional(),
+    pickupAddressId: string().optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
     paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
     remark: string().optional()

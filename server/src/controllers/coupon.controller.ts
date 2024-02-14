@@ -1,13 +1,10 @@
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { db } from "../utils/db";
 import { generateCouponLabel } from "../utils/generateCouponLabel";
-import { createEventAction } from "../utils/auditLog";
 import { checkUser } from "../services/checkUser";
 import { NextFunction, Request, Response } from "express";
 import { CreateCouponInput, DeleteMultiCouponsInput, GetCouponInput, UpdateCouponInput } from "../schemas/coupon.schema";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { EventActionType, Resource } from "@prisma/client";
 import { CouponService } from "../services/coupon";
 import { StatusCode } from "../utils/appError";
 
@@ -28,25 +25,23 @@ export async function getCouponsHandler(
     const { reward, product } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    const [count, coupons] = (await service.find({
-      filter: {
-        id,
-        points,
-        dolla,
-        productId,
-        isUsed: isUsed === "true" ? true : false,
-        expiredDate
+    const [count, coupons] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
       },
-      pagination: {
-        page,
-        pageSize
-      },
-      include: {
-        reward,
-        product
-      },
-      orderBy
-    })).ok_or_throw()
+      {
+        where: {
+          id,
+          points,
+          dolla,
+          productId,
+          isUsed: isUsed === "true" ? true : false,
+          expiredDate
+        },
+        include: {reward, product},
+        orderBy
+      }
+    )).ok_or_throw()
 
     return res.status(StatusCode.OK).json(HttpListResponse(coupons, count))
   } catch (err) {
@@ -67,17 +62,10 @@ export async function getCouponHandler(
     const { reward, product } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
-    const coupon = (await service.findUnique(couponId, { reward, product })).ok_or_throw()
+    const coupon = (await service.tryFindUnique({ where: {id: couponId}, include: {reward, product} })).ok_or_throw()
 
-    // Read event action audit log
-    if (coupon) {
-      if (sessionUser?.id) createEventAction(db, {
-        userId: sessionUser.id,
-        resource: Resource.Coupon,
-        resourceIds: [coupon.id],
-        action: EventActionType.Read
-      })
-    }
+    // Create audit log
+    if (coupon && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ coupon }))
   } catch (err) {
@@ -95,22 +83,20 @@ export async function createCouponHandler(
     const { points, dolla, productId, isUsed, expiredDate } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const coupon = (await service.create({
-      points,
-      dolla,
-      productId,
-      label: generateCouponLabel(),
-      isUsed,
-      expiredDate
+    const coupon = (await service.tryCreate({
+      data: {
+        points,
+        dolla,
+        productId,
+        label: generateCouponLabel(),
+        isUsed,
+        expiredDate
+      }
     })).ok_or_throw()
 
-    // Create event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Coupon,
-      resourceIds: [coupon.id],
-      action: EventActionType.Create
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.Created).json(HttpDataResponse({ coupon }))
   } catch (err) {
@@ -130,15 +116,11 @@ export async function createMultiCouponsHandler(
     if (!excelFile) return res.status(StatusCode.NoContent)
     
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const coupons = (await service.excelUpload(excelFile)).ok_or_throw()
+    const coupons = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
-    // Create event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Coupon,
-      resourceIds: coupons.map(coupon => coupon.id),
-      action: EventActionType.Create
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.Created).json(HttpListResponse(coupons))
   } catch (err) {
@@ -156,15 +138,11 @@ export async function deleteCouponHandler(
     const { couponId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const coupon = (await service.delete(couponId)).ok_or_throw()
+    const coupon = (await service.tryDelete({ where: {id: couponId} })).ok_or_throw()
 
-    // Delete event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Coupon,
-      resourceIds: [coupon.id],
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ coupon }))
   } catch (err) {
@@ -182,8 +160,8 @@ export async function deleteMultiCouponsHandler(
     const { couponIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _tryDeleteCoupons = await service.deleteMany({
-      filter: {
+    const _tryDeleteCoupons = await service.tryDeleteMany({
+      where: {
         id: {
           in: couponIds
         }
@@ -191,13 +169,9 @@ export async function deleteMultiCouponsHandler(
     })
     _tryDeleteCoupons.ok_or_throw()
 
-    // Delete event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Coupon,
-      resourceIds: couponIds,
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
   } catch (err) {
@@ -216,11 +190,11 @@ export async function updateCouponHandler(
     const { points, dolla, isUsed, rewardId, productId, expiredDate } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const coupon = (await service.update({
-      filter: {
+    const coupon = (await service.tryUpdate({
+      where: {
         id: couponId
       },
-      payload: {
+      data: {
         points,
         dolla,
         isUsed,
@@ -230,13 +204,9 @@ export async function updateCouponHandler(
       }
     })).ok_or_throw()
 
-    // Update event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Coupon,
-      resourceIds: [coupon.id],
-      action: EventActionType.Update
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ coupon }))
   } catch (err) {

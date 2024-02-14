@@ -2,14 +2,13 @@ import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { MuiButton } from '@/components/ui';
 import { Controller, useFormContext } from 'react-hook-form';
 import { TownshipFees } from '@/services/types';
-import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
+import { useGetTownships } from '@/hooks/township';
 import { useStore } from '@/hooks';
-import filter from 'lodash/filter';
 
+import filter from 'lodash/filter';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { getTownshipsFn } from '@/services/TownshipsApi';
 
 
 const InnerPaper = styled(Paper)(() => ({
@@ -29,21 +28,18 @@ export function TownshipMultiInputField({updateField = false}: TownshipMultiInpu
   const { dispatch } = useStore()
 
   const {
-    data: townships,
+    try_data,
     isLoading,
     isError,
     error
-  } = useQuery({
-    queryKey: ["townships"],
-    queryFn: args => getTownshipsFn(args, { 
-      filter: {},
-      pagination: {
-        page: 1,
-        pageSize: 100 * 1000
-      }
-    }),
-    select: data => data.results
+  } = useGetTownships({
+    filter: {},
+    pagination: {
+      page: 1,
+      pageSize: 100 * 1000
+    }
   })
+  const townships = try_data.ok()?.results
 
   const defaultTownshipIds = getValues("townships")
   const defaultTownships = defaultTownshipIds

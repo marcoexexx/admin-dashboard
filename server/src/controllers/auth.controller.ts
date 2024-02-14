@@ -9,6 +9,7 @@ import { CookieOptions, NextFunction, Request, Response } from "express";
 import { CreateUserInput, LoginUserInput, Role, VerificationEmailInput } from "../schemas/user.schema";
 import { HttpDataResponse, HttpResponse } from "../utils/helper";
 import { UserService } from '../services/user';
+import { AccessLogService } from '../services/accessLog';
 import { signToken, verifyJwt } from "../utils/auth/jwt";
 import { generateRandomUsername } from "../utils/generateRandomUsername";
 import { db } from "../utils/db";
@@ -16,6 +17,7 @@ import { getGoogleAuthToken, getGoogleUser } from '../services/OAuth';
 
 
 const service = UserService.new()
+const accessLogService = AccessLogService.new()
 
 
 const cookieOptions: CookieOptions = {
@@ -49,7 +51,7 @@ export async function registerUserHandler(
     const user = (await service.register({ name, email, password })).ok_or_throw()
 
     res.status(StatusCode.Created).json(HttpDataResponse({ user }))
-  } catch (err: any) {
+  } catch (err) {
     next(err)
   }
 }
@@ -66,21 +68,19 @@ export async function verificationEmailHandler(
       .update(req.params.verificationCode)
       .digest("hex")
 
-    const user = (await service.findFirst({ verificationCode })).ok_or_throw()
+    const user = (await service.tryFindFirst({ where: { verificationCode } })).ok_or_throw()
 
     if (!user) return next(AppError.new(StatusCode.Unauthorized, `Could not verify email`))
 
-    const _updatedUser = await service.update({
-      filter: { id: user.id },
-      payload: { verified: true, verificationCode: null }
+    const _updatedUser = await service.tryUpdate({
+      where: { id: user.id },
+      data: { verified: true, verificationCode: null }
     })
     _updatedUser.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, `Email verified successfully`))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -99,13 +99,13 @@ export async function googleOAuthHandler(
 
     let role: Role = "User"
 
-    if (!code) return next(new AppError(401, "Authorization code not provided!"))
+    if (!code) return next(AppError.new(StatusCode.Unauthorized, "Authorization code not provided!"))
 
     const { id_token, access_token } = (await getGoogleAuthToken(code)).ok_or_throw()
 
     const { name, verified_email, email, picture } = (await getGoogleUser({ id_token, access_token })).ok_or_throw()
 
-    if (!verified_email) return next(new AppError(403, "Google account not verified"))
+    if (!verified_email) return next(AppError.new(StatusCode.Forbidden, "Google account not verified"))
 
     // set Admin if first time create user,
     const usersExist = await db.user.count();
@@ -113,7 +113,6 @@ export async function googleOAuthHandler(
     if (usersExist === 0) {
       role = "Admin"
     }
-
 
     const user = await db.user.upsert({
       where: { email },
@@ -153,9 +152,8 @@ export async function googleOAuthHandler(
 
     res.redirect(`${getConfig("origin")}${pathUrl}`)
   } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    const msg = err?.message
+    next(AppError.new(err.status || StatusCode.InternalServerError, msg))
   }
 }
 
@@ -174,15 +172,15 @@ export async function loginUserHandler(
       }
     })
 
-    if (!user) return next(new AppError(400, "invalid email or password"))
+    if (!user) return next(AppError.new(StatusCode.BadRequest, "invalid email or password"))
 
     // Check verified
-    if (!user.verified) return next(new AppError(400, 'You are not verified'))
+    if (!user.verified) return next(AppError.new(StatusCode.BadRequest, 'You are not verified'))
 
     // Check password
     const validPassword = await bcrypt.compare(password, user.password);
 
-    if (!validPassword) return next(new AppError(400, "invalid email or password"))
+    if (!validPassword) return next(AppError.new(StatusCode.BadRequest, "invalid email or password"))
 
     const { accessToken, refreshToken } = await signToken(user)
     res.cookie("access_token", accessToken, accessTokenCookieOptions)
@@ -196,7 +194,7 @@ export async function loginUserHandler(
     const browser = `${req.useragent.browser}/${req.useragent.version}`
 
     // create access log
-    await db.accessLog.create({
+    const _accessLog = await accessLogService.tryCreate({
       data: {
         userId: user.id,
         ip: req.ip || "unknown ip",
@@ -204,12 +202,12 @@ export async function loginUserHandler(
         platform,
       }
     })
+    _accessLog.ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ accessToken }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ accessToken }))
   } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    const msg = err?.message
+    next(AppError.new(err.status || StatusCode.InternalServerError, msg))
   }
 }
 
@@ -226,19 +224,19 @@ export async function refreshTokenHandler(
     if (!refreshToken) {
       logging.error("Failed refresh:", message, refreshToken)
       res.cookie("logged_in", "", { maxAge: 1 })
-      return next(new AppError(403, message))
+      return next(AppError.new(StatusCode.Forbidden, message))
     }
 
     const decoded = verifyJwt(refreshToken, "refreshTokenPublicKey")  //  decoded.sub == user.id
     if (!decoded) {
       res.cookie("logged_in", "", { maxAge: 1 })
-      return next(new AppError(403, message))
+      return next(AppError.new(StatusCode.Forbidden, message))
     }
 
     const session = await redisClient.get(decoded.sub)
     if (!session) {
       res.cookie("logged_in", "", { maxAge: 1 })
-      return next(new AppError(403, message))
+      return next(AppError.new(StatusCode.Forbidden, message))
     }
 
     const user = await db.user.findUnique({
@@ -246,7 +244,7 @@ export async function refreshTokenHandler(
         id: JSON.parse(session).id
       }
     })
-    if (!user) return next(new AppError(403, message))
+    if (!user) return next(AppError.new(StatusCode.Forbidden, message))
 
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await signToken(user)
     res.cookie("access_token", newAccessToken, accessTokenCookieOptions)
@@ -256,11 +254,10 @@ export async function refreshTokenHandler(
       httpOnly: false
     })
 
-    res.status(200).json(HttpDataResponse({ accessToken: newAccessToken }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ accessToken: newAccessToken }))
   } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    const msg = err.message
+    next(AppError.new(err.status || StatusCode.InternalServerError, msg))
   }
 }
 
@@ -274,7 +271,7 @@ export async function logoutHandler(
     // @ts-ignore  for mocha testing
     const user = req.user
 
-    if (!user) return next(new AppError(400, "Session has expired or user doesn't exist"))
+    if (!user) return next(AppError.new(StatusCode.Forbidden, "Session has expired or user doesn't exist"))
 
     await redisClient.del(user.id)
 
@@ -282,10 +279,9 @@ export async function logoutHandler(
     res.cookie("refresh_token", "", { maxAge: 1 })
     res.cookie("logged_in", "", { maxAge: 1 })
 
-    res.status(200).json(HttpResponse(200, "Success loggout"))
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success loggout"))
   } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    const msg = err.message
+    next(AppError.new(err.status || StatusCode.InternalServerError, msg))
   }
 }

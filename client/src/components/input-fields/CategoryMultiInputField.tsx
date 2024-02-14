@@ -2,12 +2,11 @@ import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { MuiButton } from '@/components/ui';
 import { Controller, useFormContext } from 'react-hook-form';
 import { Category } from '@/services/types';
-import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { getCategoriesFn } from '@/services/categoryApi';
 import { useStore } from '@/hooks';
-import filter from 'lodash/filter';
+import { useGetCategories } from '@/hooks/category';
 
+import filter from 'lodash/filter';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
@@ -29,21 +28,18 @@ export function CatgoryMultiInputField({updateField = false}: CatgoryMultiInputF
   const { dispatch } = useStore()
 
   const {
-    data: categories,
+    try_data,
     isLoading,
     isError,
     error
-  } = useQuery({
-    queryKey: ["categories"],
-    queryFn: args => getCategoriesFn(args, { 
-      filter: {},
-      pagination: {
-        page: 1,
-        pageSize: 100 * 1000
-      }
-    }),
-    select: data => data.results
+  } = useGetCategories({
+    filter: {},
+    pagination: {
+      page: 1,
+      pageSize: 100 * 100
+    }
   })
+  const categories = try_data.ok()?.results
 
   const defaultCategoryIds = getValues("categories")
   const defaultCategories = defaultCategoryIds

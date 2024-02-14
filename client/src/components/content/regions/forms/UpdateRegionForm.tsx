@@ -1,18 +1,15 @@
 import { Box, Grid, TextField } from "@mui/material";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { object, string, z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate, useParams } from "react-router-dom";
-import { queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
-import { useEffect } from "react";
-import { getRegionFn, updateRegionFn } from "@/services/regionsApi";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { FormModal } from "@/components/forms";
 import { TownshipMultiInputField } from "@/components/input-fields";
 import { CreateTownshipForm } from "../../townships/forms";
-import { playSoundEffect } from "@/libs/playSound";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { object, string, z } from "zod";
+import { useStore } from "@/hooks";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useGetRegion, useUpdateRegion } from "@/hooks/region";
 
 
 const updateRegionSchema = object({
@@ -26,56 +23,24 @@ export type UpdateRegionInput = z.infer<typeof updateRegionSchema>
 export function UpdateRegionForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
-  const navigate = useNavigate()
   const { regionId } = useParams()
-  const from = "/regions"
 
-  const { 
-    data: region,
-    isSuccess: isSuccessFetchRegion,
-    fetchStatus: fetchStatusRegion
-  } = useQuery({
-    enabled: !!regionId,
-    queryKey: ["region", { id: regionId }],
-    queryFn: args => getRegionFn(args, { regionId }),
-    select: data => data?.region
-  })
+  const { try_data, isSuccess, fetchStatus } = useGetRegion({ id: regionId })
+  const { mutate: updateRegion } = useUpdateRegion()
 
-  const {
-    mutate: updateRegion,
-  } = useMutation({
-    mutationFn: updateRegionFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success updated a region.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["regions"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  const region = try_data.ok_or_throw()
+
 
   const methods = useForm<UpdateRegionInput>({
     resolver: zodResolver(updateRegionSchema),
   })
 
   useEffect(() => {
-    if (isSuccessFetchRegion && region && fetchStatusRegion === "idle") {
+    if (isSuccess && region && fetchStatus === "idle") {
       methods.setValue("name", region.name)
       if (region.townships) methods.setValue("townships", region.townships.map(township => township.id))
     }
-  }, [isSuccessFetchRegion, fetchStatusRegion])
+  }, [isSuccess, fetchStatus])
 
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods

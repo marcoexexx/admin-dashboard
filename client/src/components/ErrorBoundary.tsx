@@ -45,6 +45,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
           case AppErrorKind.UnderTheMaintenance: return <UnderTheMaintenance message={this.state.error.message} />
           case AppErrorKind.InvalidAuthSession: return <InvalidAuthSessionPage />
           case AppErrorKind.BlockedUserError: return <BlockedUserErrorPage />
+          case AppErrorKind.ServiceUnavailable: return <h1>Service not available right now</h1>
 
           default: {
             const _unreachable: never = this.state.error.kind

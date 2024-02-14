@@ -1,5 +1,5 @@
-import getConfig from "@/libs/getConfig";
 import { Helmet } from 'react-helmet-async'
+import { PermissionKey } from "@/context/cacheKey";
 import { PageTitle } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { AuditLogsList } from "@/components/content/auditLogs";
@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { usePermission } from "@/hooks";
 import { getAuditLogsPermissionsFn } from "@/services/permissionsApi";
 
+import getConfig from "@/libs/getConfig";
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
@@ -16,7 +17,7 @@ const appName = getConfig("appName")
 
 function ListAuditLogsWrapper() {
   const isAllowedReadAuditLog = usePermission({
-    key: "audit-logs-permissions",
+    key: PermissionKey.AuditLog,
     actions: "read",
     queryFn: getAuditLogsPermissionsFn
   })

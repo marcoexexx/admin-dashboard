@@ -1,15 +1,16 @@
-import { createEventAction } from "../utils/auditLog";
 import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
+import { checkUser } from "../services/checkUser";
+
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreatePotentialOrderInput, DeleteMultiPotentialOrdersInput, GetPotentialOrderInput, UpdatePotentialOrderInput } from "../schemas/potentialOrder.schema";
-import { EventActionType, Resource } from "@prisma/client";
+import { PotentialOrderService } from "../services/potentialOrder";
+import { StatusCode } from "../utils/appError";
 
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
+
+const service = PotentialOrderService.new()
 
 
 export async function getPotentialOrdersHandler(
@@ -25,12 +26,11 @@ export async function getPotentialOrdersHandler(
     const { _count, user, deliveryAddress, billingAddress, pickupAddress, orderItems } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    // TODO: fix
-    const offset = ((page||1) - 1) * (pageSize||10)
-
-    const [count, potentialOrders] = await db.$transaction([
-      db.potentialOrder.count(),
-      db.potentialOrder.findMany({
+    const [count, potentialOrders] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
+      },
+      {
         where: {
           id,
           updatedAt: {
@@ -41,9 +41,6 @@ export async function getPotentialOrdersHandler(
           totalPrice,
           remark,
         },
-        orderBy,
-        skip: offset,
-        take: pageSize,
         include: {
           _count,
           user,
@@ -51,15 +48,14 @@ export async function getPotentialOrdersHandler(
           billingAddress,
           pickupAddress,
           orderItems,
-        }
-      })
-    ])
+        },
+        orderBy
+      }
+    )).ok_or_throw()
 
-    res.status(200).json(HttpListResponse(potentialOrders, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(potentialOrders, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -75,7 +71,8 @@ export async function getPotentialOrderHandler(
     const { potentialOrderId } = req.params
     const { _count, user, deliveryAddress, billingAddress, pickupAddress, orderItems } = convertStringToBoolean(query.include) ?? {}
 
-    const potentialOrder = await db.potentialOrder.findUnique({
+    const sessionUser = checkUser(req?.user).ok()
+    const potentialOrder = (await service.tryFindUnique({
       where: {
         id: potentialOrderId
       },
@@ -87,23 +84,14 @@ export async function getPotentialOrderHandler(
         pickupAddress,
         orderItems,
       }
-    })
+    })).ok_or_throw()
 
-    // Read event action audit log
-    if (potentialOrder) {
-      if (req?.user?.id) createEventAction(db, {
-        userId: req.user.id,
-        resource: Resource.PotentialOrder,
-        resourceIds: [potentialOrder.id],
-        action: EventActionType.Read
-      })
-    }
+    // Create audit log
+    if (potentialOrder && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ potentialOrder }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -114,27 +102,9 @@ export async function createPotentialOrderHandler(
   next: NextFunction
 ) {
   try {
-    const { id, orderItems, totalPrice, addressType, deliveryAddressId, billingAddressId, pickupAddress, status, paymentMethodProvider, remark } = req.body
+    const { id,orderItems, totalPrice, addressType, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
 
-    // @ts-ignore  for mocha testing
-    const userId: string | undefined = req.user?.id || undefined
-
-    // // TODO: Check product still exist
-    // const getProductId = async (id: string) => {
-    //   const product = await db.product.findUnique({
-    //     where: { id }
-    //   })
-    //   if (!product) throw new AppError(404, "Product not found")
-    //   return product.id
-    // }
-
-    const newPickupAddress = pickupAddress ? await db.pickupAddress.create({
-      data: {
-        ...pickupAddress,
-        userId
-      },
-    }) : undefined
-
+    const sessionUser = checkUser(req?.user).ok()
     const potentialOrder = await db.potentialOrder.upsert({
       where: {
         id
@@ -143,7 +113,6 @@ export async function createPotentialOrderHandler(
         addressType,
         orderItems: {
           create: await Promise.all(orderItems.map(async item => ({
-            // productId: await getProductId(item.productId),
             productId: item.productId,
             price: item.price,
             quantity: item.quantity,
@@ -152,44 +121,33 @@ export async function createPotentialOrderHandler(
             originalTotalPrice: item.price * item.quantity,
           })))
         },
-        userId,
+        userId: sessionUser?.id,
         status,
         totalPrice,
         deliveryAddressId,
         billingAddressId,
-        pickupAddressId: newPickupAddress?.id,
+        pickupAddressId,
         paymentMethodProvider,
       },
       update: {
         addressType,
         // WARN: order items not affected
-        userId,
         status,
         totalPrice,
         deliveryAddressId,
         billingAddressId,
-        pickupAddressId: newPickupAddress?.id,
+        pickupAddressId,
         paymentMethodProvider,
         remark
       }
     })
 
-    // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.PotentialOrder,
-      resourceIds: [potentialOrder.id],
-      action: EventActionType.Create
-    })
+    // Create audit log
+    if (sessionUser) (await service.audit(sessionUser)).ok_or_throw()
 
-    res.status(201).json(HttpDataResponse({ potentialOrder }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "potentialOrder already exists"))
-
-    next(new AppError(err.status || 500, msg))
+    res.status(StatusCode.Created).json(HttpDataResponse({ potentialOrder }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -202,34 +160,20 @@ export async function deletePotentialOrderHandler(
   try {
     const { potentialOrderId } = req.params
     
-    const [_deletedOrderItems, potentialOrder] = await db.$transaction([
-      db.orderItem.deleteMany({
-        where: {
-          orderId: undefined,
-          potentialOrderId,
-        }
-      }),
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const potentialOrder = (await service.tryDelete({
+      where: {
+        id: potentialOrderId
+      }
+    })).ok_or_throw()
 
-      db.potentialOrder.delete({
-        where: {
-          id: potentialOrderId
-        }
-      })
-    ])
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.PotentialOrder,
-      resourceIds: [potentialOrder.id],
-      action: EventActionType.Delete
-    })
-
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -242,38 +186,23 @@ export async function deleteMultiPotentialOrdersHandler(
   try {
     const { potentialOrderIds } = req.body
 
-    await db.$transaction([
-      db.orderItem.deleteMany({
-        where: {
-          orderId: undefined,
-          potentialOrderId: {
-            in: potentialOrderIds
-          }
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _deleteOrders = await service.tryDeleteMany({
+      where: {
+        id: {
+          in: potentialOrderIds
         }
-      }),
-
-      db.potentialOrder.deleteMany({
-        where: {
-          id: {
-            in: potentialOrderIds
-          }
-        }
-      })
-    ])
-
-    // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.PotentialOrder,
-      resourceIds: potentialOrderIds,
-      action: EventActionType.Delete
+      }
     })
+    _deleteOrders.ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
+
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -291,47 +220,31 @@ export async function updatePotentialOrderHandler(
     // @ts-ignore  for mocha testing
     const userId: string | undefined = req.user?.id || undefined
 
-    const [_, potentialOrder] = await db.$transaction([
-      db.orderItem.deleteMany({
-        where: {
-          potentialOrderId
-        }
-      }),
-      db.potentialOrder.update({
-        where: {
-          id: potentialOrderId,
-        },
-        data: {
-          orderItems: {
-            create: data.orderItems.map(item => ({
-              ...item,
-              originalTotalPrice: item.price * item.quantity
-            }))
-          },
-          totalPrice: data.totalPrice,
-          userId,
-          addressType: data.addressType,
-          status: data.status,
-          deliveryAddressId: data.deliveryAddressId,
-          billingAddressId: data.billingAddressId,
-          paymentMethodProvider: data.paymentMethodProvider,
-          remark: data.remark
-        }
-      })
-    ])
+    const sessionUser = checkUser(req?.user).ok()
+    const potentialOrder = (await service.tryUpdate({
+      where: {
+        id: potentialOrderId,
+      },
+      data: {
+        totalPrice: data.totalPrice,
+        userId,
+        addressType: data.addressType,
+        status: data.status,
+        deliveryAddressId: data.deliveryAddressId,
+        billingAddressId: data.billingAddressId,
+        paymentMethodProvider: data.paymentMethodProvider,
+        remark: data.remark
+      }
+    }))
 
-    // Update event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.PotentialOrder,
-      resourceIds: [potentialOrder.id],
-      action: EventActionType.Update
-    })
+    // Create audit log
+    if (sessionUser) {
+      const _auditLog = await service.audit(sessionUser)
+      _auditLog.ok_or_throw()
+    }
 
-    res.status(200).json(HttpDataResponse({ potentialOrder }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }))
+  } catch (err) {
+    next(err)
   }
 }

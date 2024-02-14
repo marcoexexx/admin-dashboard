@@ -1,10 +1,12 @@
+import { IconButton, styled } from "@mui/material"
+import { Resource } from "@/context/cacheKey"
 import { useStore } from "@/hooks"
 import { object, z } from "zod"
 import { uploadProfilePictureFn } from "@/services/usersApi"
-import { IconButton, styled } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
-import UploadTwoToneIcon from '@mui/icons-material/UploadTwoTone'
 import { queryClient } from ".."
+
+import UploadTwoToneIcon from '@mui/icons-material/UploadTwoTone'
 
 
 const Input = styled("input")({
@@ -30,7 +32,7 @@ export function UploadProfilePicture() {
         severity: "success"
       } })
       queryClient.invalidateQueries({
-        queryKey: ["authUser", "authUserProfile"]
+        queryKey: [Resource.AuthUser, "proile"]
       })
     },
     onError() {

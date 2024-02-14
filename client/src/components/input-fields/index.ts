@@ -10,6 +10,7 @@ export * from './TownshipMultiInputField'
 export * from './TownshipByRegionInputField'
 export * from './RegionInputField'
 export * from './AddressInputField'
+export * from './PickupAddressInputField'
 
 // TODO: Necessary Components
 export * from './_ColorsInputField'

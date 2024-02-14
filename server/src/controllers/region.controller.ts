@@ -1,17 +1,14 @@
-import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { parseExcel } from "../utils/parseExcel";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { createEventAction } from "../utils/auditLog";
-import { CreateMultiRegionsInput, CreateRegionInput, DeleteMultiRegionsInput, GetRegionInput, UpdateRegionInput } from "../schemas/region.schema";
-import { EventActionType, Resource } from "@prisma/client";
+import { checkUser } from "../services/checkUser";
+import { CreateRegionInput, DeleteMultiRegionsInput, GetRegionInput, UpdateRegionInput } from "../schemas/region.schema";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { RegionService } from "../services/region";
+import { StatusCode } from "../utils/appError";
 
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
-import fs from "fs"
+
+const service = RegionService.new()
 
 
 export async function getRegionsHandler(
@@ -27,32 +24,20 @@ export async function getRegionsHandler(
     const { _count, townships, userAddresses } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    // TODO: fix
-    const offset = ((page||1) - 1) * (pageSize||10)
+    const [count, regions] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
+      },
+      {
+        where: { id, name },
+        include: { _count, townships, userAddresses },
+        orderBy
+      }
+    )).ok_or_throw()
 
-    const [count, regions] = await db.$transaction([
-      db.region.count(),
-      db.region.findMany({
-        where: {
-          id,
-          name
-        },
-        include: {
-          _count,
-          townships,
-          userAddresses
-        },
-        orderBy,
-        skip: offset,
-        take: pageSize,
-      })
-    ])
-
-    res.status(200).json(HttpListResponse(regions, count))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpListResponse(regions, count))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -68,32 +53,17 @@ export async function getRegionHandler(
     const { regionId } = req.params
     const { _count, townships, userAddresses } = convertStringToBoolean(query.include) ?? {}
 
-    const region = await db.region.findUnique({
-      where: {
-        id: regionId
-      },
-      include: {
-        _count,
-        townships,
-        userAddresses
-      }
-    })
+    const sessionUser = checkUser(req?.user).ok()
+    const region = (await service.tryFindUnique({ where: {id: regionId}, include: { _count, townships, userAddresses } })).ok_or_throw()
 
-    if (region) {
-      // Read event action audit log
-      if (req?.user?.id) createEventAction(db, {
-        userId: req.user.id,
-        resource: Resource.Region,
-        resourceIds: [region.id],
-        action: EventActionType.Read
-      })
+    if (region && sessionUser) {
+      const _auditLog = await service.audit(sessionUser)
+      _auditLog.ok_or_throw()
     }
 
-    res.status(200).json(HttpDataResponse({ region }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ region }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -106,38 +76,18 @@ export async function createMultiRegionsHandler(
   try {
     const excelFile = req.file
 
-    if (!excelFile) return res.status(204)
+    if (!excelFile) return res.status(StatusCode.NoContent)
 
-    const buf = fs.readFileSync(excelFile.path)
-    const data = parseExcel(buf) as CreateMultiRegionsInput
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const regions = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
-    // Update not affected
-    const regions = await Promise.all(data.map(region => db.region.upsert({
-      where: {
-        name: region.name
-      },
-      create: {
-        name: region.name,
-      },
-      update: {}
-    })))
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.Region,
-      resourceIds: regions.map(region => region.id),
-      action: EventActionType.Create
-    })
-
-    res.status(201).json(HttpResponse(201, "Success"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Region already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpListResponse(regions))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -150,31 +100,23 @@ export async function createRegionHandler(
   try {
     const { name, townships } = req.body
 
-    const region = await db.region.create({
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const region = (await service.tryCreate({
       data: {
         name,
         townships: {
           connect: townships.map(townshipId => ({ id: townshipId }))
         }
-      },
-    })
+      }
+    })).ok_or_throw()
 
-    // Create event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.Region,
-      resourceIds: [region.id],
-      action: EventActionType.Create
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(201).json(HttpDataResponse({ region }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-
-    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") return next(new AppError(409, "Region already exists"))
-
-    next(new AppError(500, msg))
+    res.status(StatusCode.Created).json(HttpDataResponse({ region }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -187,25 +129,16 @@ export async function deleteRegionHandler(
   try {
     const { regionId } = req.params
 
-    const region = await db.region.delete({
-      where: {
-        id: regionId
-      }
-    })
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const region = (await service.tryDelete({ where: {id: regionId} })).ok_or_throw()
 
-    // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.Region,
-      resourceIds: [region.id],
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ region }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -218,27 +151,23 @@ export async function deleteMultilRegionsHandler(
   try {
     const { regionIds } = req.body
 
-    await db.region.deleteMany({
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _deletedRegions = await service.tryDeleteMany({
       where: {
         id: {
           in: regionIds
         }
       }
     })
+    _deletedRegions.ok_or_throw()
 
-    // Delete event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.Region,
-      resourceIds: regionIds,
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpResponse(200, "Success deleted"))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -252,30 +181,22 @@ export async function updateRegionHandler(
     const { regionId } = req.params
     const data = req.body
 
-    const [region] = await db.$transaction([
-      db.region.update({
-        where: { id: regionId },
-        data: {
-          townships: {
-            set: data.townships.map(townshipId => ({ id: townshipId }))
-          }
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const region = (await service.tryUpdate({
+      where: { id: regionId },
+      data: {
+        townships: {
+          set: data.townships.map(townshipId => ({ id: townshipId }))
         }
-      }),
-    ])
+      }
+    })).ok_or_throw()
 
-    // Update event action audit log
-    if (req?.user?.id) createEventAction(db, {
-      userId: req.user.id,
-      resource: Resource.Region,
-      resourceIds: [region.id],
-      action: EventActionType.Update
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
-    res.status(200).json(HttpDataResponse({ region }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+    res.status(StatusCode.OK).json(HttpDataResponse({ region }))
+  } catch (err) {
+    next(err)
   }
 }
-

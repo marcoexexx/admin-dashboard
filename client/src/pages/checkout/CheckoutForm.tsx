@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import cryptoRandomString from 'crypto-random-string';
 
 import { useEffect, useMemo, useState } from "react";
@@ -23,6 +22,8 @@ import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
+import { CreateTownshipForm } from '@/components/content/townships/forms';
+import { CreateRegionForm } from '@/components/content/regions/forms';
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -178,7 +179,7 @@ export function CheckoutForm() {
 
     if (Array.isArray(cartItems) && cartItems.length) setValue("orderItems", cartItems.filter((cart) => !!cart.productId))
     if (values) {
-      if (values.pickupAddress) setValue("pickupAddress", { ...values.pickupAddress, date: dayjs(values.pickupAddress.date) })
+      if (values.pickupAddressId) setValue("pickupAddressId", values.pickupAddressId)
       if (values.deliveryAddressId) setValue("deliveryAddressId", values.deliveryAddressId)
       if (values.billingAddressId) setValue("billingAddressId", values.billingAddressId)
       if (values.paymentMethodProvider) setValue("paymentMethodProvider", values.paymentMethodProvider)
@@ -218,11 +219,11 @@ export function CheckoutForm() {
   }
 
   const checkValidCurrentStepForm = (idx: number) => {
-    const { addressType, deliveryAddressId, pickupAddress, billingAddressId, paymentMethodProvider } = getValues()
+    const { addressType, deliveryAddressId, pickupAddressId, billingAddressId, paymentMethodProvider } = getValues()
 
     if (idx === 0) {
       if (addressType === "Delivery" && !errors.deliveryAddressId && deliveryAddressId) return true
-      if (addressType === "Pickup" && pickupAddress && !errors.pickupAddress && pickupAddress.username && pickupAddress.phone && pickupAddress.date) return true
+      if (addressType === "Pickup" && pickupAddressId && !errors.pickupAddressId) return true
     }
 
     if (idx === 1) {
@@ -256,7 +257,7 @@ export function CheckoutForm() {
 
       // check address type and add their address data
       if (value.addressType === "Delivery") payload.deliveryAddressId = value.deliveryAddressId
-      else if (value.addressType === "Pickup") payload.pickupAddress = value.pickupAddress
+      else if (value.addressType === "Pickup") payload.pickupAddressId = value.pickupAddressId
 
       createPotentialOrderMutation.mutate(payload)
     }
@@ -362,6 +363,18 @@ export function CheckoutForm() {
       {modalForm.field === "addresses"
       ? <FormModal field='addresses' title='Create new address' onClose={handleOnCloseModalForm}>
         <CreateUserAddressForm />
+      </FormModal>
+      : null}
+
+      {modalForm.field === "region"
+      ? <FormModal field='region' title='Create new region' onClose={handleOnCloseModalForm}>
+        <CreateRegionForm />
+      </FormModal>
+      : null}
+
+      {modalForm.field === "townships"
+      ? <FormModal field='townships' title='Create new township' onClose={handleOnCloseModalForm}>
+        <CreateTownshipForm />
       </FormModal>
       : null}
     </Grid>

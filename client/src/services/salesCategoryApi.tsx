@@ -1,9 +1,10 @@
 import { authApi } from "./authApi";
-import { CreateSalesCategoryInput, DeleteSalesCategoryInput, UpdateSalesCategoryInput } from "@/components/content/sales-categories/forms";
+import { CreateSalesCategoryInput, UpdateSalesCategoryInput } from "@/components/content/sales-categories/forms";
 import { HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, SalesCategory, SalesCategoryResponse } from "./types";
+import { SalesCategoryFilter } from "@/context/salesCategory";
 
 
-export async function getSalesCategoriesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
+export async function getSalesCategoriesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: SalesCategoryFilter["fields"], pagination: Pagination, include?: SalesCategoryFilter["include"] }) {
   const { data } = await authApi.get<HttpListResponse<SalesCategory>>("/sales-categories", {
     ...opt,
     params: {
@@ -19,10 +20,13 @@ export async function getSalesCategoriesFn(opt: QueryOptionArgs, { filter, pagin
 }
 
 
-export async function getSalesCategoryFn(opt: QueryOptionArgs, { salesCategoryId }: { salesCategoryId: string | undefined }) {
+export async function getSalesCategoryFn(opt: QueryOptionArgs, { salesCategoryId, include }: { salesCategoryId: string | undefined, include?: SalesCategoryFilter["include"] }) {
   if (!salesCategoryId) return
   const { data } = await authApi.get<SalesCategoryResponse>(`/sales-categories/detail/${salesCategoryId}`, {
     ...opt,
+    params: {
+      include
+    }
   })
   return data
 }
@@ -57,13 +61,13 @@ export async function updateSalesCategoryFn({salesCategoryId, salesCategory}: {s
 }
 
 
-export async function deleteMultiSalesCategoriesFn(categoryIds: DeleteSalesCategoryInput["salesCategoryId"][]) {
+export async function deleteMultiSalesCategoriesFn(categoryIds: string[]) {
   const { data } = await authApi.delete<HttpResponse>("/sales-categories/multi", { data: { salesCategoryIds: categoryIds } })
   return data
 }
 
 
-export async function deleteSalesCategoryFn(salesCategoryId: DeleteSalesCategoryInput["salesCategoryId"]) {
+export async function deleteSalesCategoryFn(salesCategoryId: string) {
   const { data } = await authApi.delete<HttpResponse>(`/sales-categories/detail/${salesCategoryId}`)
   return data
 }

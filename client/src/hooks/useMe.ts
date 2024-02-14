@@ -3,6 +3,7 @@ import Result, { Err, Ok } from "@/libs/result";
 
 import { UserResponse } from "@/services/types";
 import { UserFilter } from "@/context/user";
+import { Resource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getMeFn } from "@/services/authApi";
 
@@ -10,7 +11,7 @@ import { getMeFn } from "@/services/authApi";
 export function useMe({enabled = true, include}: {enabled?: boolean, include?: UserFilter["include"]}) {
   const query = useQuery({
     enabled,
-    queryKey: ["authUser", { include }],
+    queryKey: [Resource.AuthUser, { include }],
     queryFn: args => getMeFn(args, {
       include
     }),

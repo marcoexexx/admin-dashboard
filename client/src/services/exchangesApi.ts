@@ -1,7 +1,7 @@
-import { CreateExchangeInput, DeleteExchangeInput, UpdateExchangeInput } from "@/components/content/exchanges/forms";
+import { CreateExchangeInput, UpdateExchangeInput } from "@/components/content/exchanges/forms";
 import { Exchange, ExchangeResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
-import { authApi } from "./authApi";
 import { ExchangeFilter } from "@/context/exchange";
+import { authApi } from "./authApi";
 
 
 export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: ExchangeFilter["fields"], pagination: Pagination, include?: ExchangeFilter["include"] }) {
@@ -61,13 +61,13 @@ export async function createMultiExchangesFn(buf: ArrayBuffer) {
 }
 
 
-export async function deleteMultiExchangesFn(exchangeIds: DeleteExchangeInput["exchangeId"][]) {
+export async function deleteMultiExchangesFn(exchangeIds: string[]) {
   const { data } = await authApi.delete<HttpResponse>("/exchanges/multi", { data: { exchangeIds } })
   return data
 }
 
 
-export async function deleteExchangeFn(exchangeId: DeleteExchangeInput["exchangeId"]) {
+export async function deleteExchangeFn(exchangeId: string) {
   const { data } = await authApi.delete<HttpResponse>(`/exchanges/detail/${exchangeId}`)
   return data
 }

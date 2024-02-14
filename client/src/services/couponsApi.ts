@@ -1,7 +1,7 @@
-import { CreateCouponInput, DeleteCouponInput, UpdateCouponInput } from "@/components/content/coupons/forms";
+import { CreateCouponInput, UpdateCouponInput } from "@/components/content/coupons/forms";
 import { Coupon, CouponResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
-import { authApi } from "./authApi";
 import { CouponFilter } from "@/context/coupon";
+import { authApi } from "./authApi";
 
 
 export async function getCouponsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: CouponFilter["fields"], pagination: Pagination, include?: CouponFilter["include"] }) {
@@ -60,13 +60,13 @@ export async function updateCouponFn({couponId, coupon}: {couponId: string, coup
 }
 
 
-export async function deleteMultiCouponsFn(couponIds: DeleteCouponInput["couponId"][]) {
+export async function deleteMultiCouponsFn(couponIds: string[]) {
   const { data } = await authApi.delete<HttpResponse>("/coupons/multi", { data: { couponIds } })
   return data
 }
 
 
-export async function deleteCouponFn(couponId: DeleteCouponInput["couponId"]) {
+export async function deleteCouponFn(couponId: string) {
   const { data } = await authApi.delete<HttpResponse>(`/coupons/detail/${couponId}`)
   return data
 }

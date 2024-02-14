@@ -65,13 +65,13 @@ export const getOrderSchema = object({
 export const updateOrderSchema = object({
   ...params,
   body: object({
-    orderItems: object({
-      price: number(),
-      quantity: number(),
-      productId: string(),
-      totalPrice: number().min(0),
-      saving: number()
-    }).array().min(0),
+    // orderItems: object({
+    //   price: number(),
+    //   quantity: number(),
+    //   productId: string(),
+    //   totalPrice: number().min(0),
+    //   saving: number()
+    // }).array().min(0),
     status: z.enum(orderStatus).default("Pending"),
     deliveryAddressId: string().optional(),
     totalPrice: number().min(0),

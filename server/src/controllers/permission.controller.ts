@@ -1,17 +1,37 @@
+import { StatusCode } from "../utils/appError";
 import { NextFunction, Request, Response } from "express";
-import { potentialOrderPermission, orderPermission, productPermission, regionPermission, townshipPermission, userAddressPermission, userPermission, pickupAddressPermission, dashboardPermission } from "../utils/auth/permissions";
 import { HttpDataResponse } from "../utils/helper";
+import { potentialOrderPermission, orderPermission, productPermission, regionPermission, townshipPermission, userAddressPermission, userPermission, pickupAddressPermission, dashboardPermission } from "../utils/auth/permissions";
 import { brandPermission } from "../utils/auth/permissions/brand.permission";
 import { categoryPermission } from "../utils/auth/permissions/category.permission";
 import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory.permission";
 import { exchangePermission } from "../utils/auth/permissions/exchange.permission";
 import { accessLogPermission } from "../utils/auth/permissions/accessLog.permission";
 import { couponPermission } from "../utils/auth/permissions/coupon.permisson";
-
-import AppError from "../utils/appError";
-import logging from "../middleware/logging/logging";
-import mapValues from "lodash/mapValues";
 import { auditLogPermission } from "../utils/auth/permissions/auditLog.permission";
+
+import mapValues from "lodash/mapValues";
+
+
+const PermissionResource = {
+  AccessLog: "access-logs",
+  AuditLog: "audit-logs",
+  Brand: "brands",
+  Category: "categories",
+  Coupon: "coupons",
+  Exchange: "exchanges",
+  Order: "orders",
+  PickupAddress: "pickup-addresses",
+  PotentialOrder: "potential-orders",
+  Product: "products",
+  Region: "regions",
+  SalesCategory: "sales-categories",
+  Township: "townships",
+  UserAddress: "user-addresses",
+  User: "users",
+  AuthUser: "authUser",
+  Dashboard: "dashboard"
+} as const
 
 
 export async function permissionsDashboardHandler(
@@ -23,12 +43,10 @@ export async function permissionsDashboardHandler(
     const permissions = mapValues(dashboardPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "dashboard" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Dashboard }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -42,12 +60,10 @@ export async function permissionsUserHandler(
     const permissions = mapValues(userPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "user" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.User }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -61,12 +77,10 @@ export async function permissionsExchangeHandler(
     const permissions = mapValues(exchangePermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "user" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Exchange }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -80,12 +94,10 @@ export async function permissionsProductsHandler(
     const permissions = mapValues(productPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "product" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Product }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -99,12 +111,10 @@ export async function permissionsBrandsHandler(
     const permissions = mapValues(brandPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "brand" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Brand }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -118,12 +128,10 @@ export async function permissionsCategoriesHandler(
     const permissions = mapValues(categoryPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "category" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Category }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -137,12 +145,10 @@ export async function permissionsSalesCategoriesHandler(
     const permissions = mapValues(salesCategoryPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "sales-category" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.SalesCategory }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -156,12 +162,10 @@ export async function permissionsAccessLogsHandler(
     const permissions = mapValues(accessLogPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "access-logs" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.AccessLog }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -175,12 +179,10 @@ export async function permissionsAuditLogsHandler(
     const permissions = mapValues(auditLogPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "audit-logs" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.AuditLog }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -194,12 +196,10 @@ export async function permissionsPotetialOrdersHandler(
     const permissions = mapValues(potentialOrderPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "potential-orders" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.PotentialOrder }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -213,12 +213,10 @@ export async function permissionsOrdersHandler(
     const permissions = mapValues(orderPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "orders" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Order }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -232,12 +230,10 @@ export async function permissionsPickupAddressHandler(
     const permissions = mapValues(pickupAddressPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "pickup-address" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.PickupAddress }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -251,12 +247,10 @@ export async function permissionsUserAddressHandler(
     const permissions = mapValues(userAddressPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "user-address" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.UserAddress }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -270,12 +264,10 @@ export async function permissionsTownshipsHandler(
     const permissions = mapValues(townshipPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "townships" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Township }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -289,12 +281,10 @@ export async function permissionsRegionsHandler(
     const permissions = mapValues(regionPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "regions" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Region }))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -308,11 +298,9 @@ export async function permissionsCouponsHandler(
     const permissions = mapValues(couponPermission, value => value())
 
     res
-      .status(200)
-      .json(HttpDataResponse({ permissions, label: "coupons" }))
-  } catch (err: any) {
-    const msg = err?.message || "internal server error"
-    logging.error(msg)
-    next(new AppError(500, msg))
+      .status(StatusCode.OK)
+      .json(HttpDataResponse({ permissions, label: PermissionResource.Coupon }))
+  } catch (err) {
+    next(err)
   }
 }

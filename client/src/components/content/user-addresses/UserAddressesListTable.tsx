@@ -2,6 +2,7 @@ import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
 import { MuiButton } from "@/components/ui";
+import { PermissionKey } from "@/context/cacheKey";
 import { Address } from "@/services/types";
 import { UserAddressActions } from ".";
 import { useState } from "react"
@@ -12,7 +13,6 @@ import { getUserAddressPermissionsFn } from "@/services/permissionsApi";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-
 
 
 const columnData: TableColumnHeader<Address>[] = [
@@ -127,13 +127,13 @@ export function UserAddressesListTable(props: UserAddressesListTableProps) {
   }
 
   const isAllowedDeleteUserAddress = usePermission({
-    key: "address-permissions",
+    key: PermissionKey.UserAddress,
     actions: "delete",
     queryFn: getUserAddressPermissionsFn
   })
 
   const isAllowedUpdateUserAddress = usePermission({
-    key: "address-permissions",
+    key: PermissionKey.UserAddress,
     actions: "update",
     queryFn: getUserAddressPermissionsFn
   })

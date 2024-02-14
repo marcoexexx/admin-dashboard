@@ -1,107 +1,32 @@
 import { Card } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { SuspenseLoader, queryClient } from "@/components";
-import { createMultiRegionsFn, deleteMultiRegionsFn, deleteRegionFn, getRegionsFn } from "@/services/regionsApi";
+import { SuspenseLoader } from "@/components";
 import { RegionsListTable } from ".";
-import { playSoundEffect } from "@/libs/playSound";
+import { useStore } from "@/hooks";
+import { useCreateMultiRegions, useDeleteMultiRegions, useDeleteRegion, useGetRegions } from "@/hooks/region";
 
 
 export function RegionsList() {
-  const { state: {regionFilter}, dispatch } = useStore()
+  const { state: {regionFilter} } = useStore()
 
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["regions", { filter: regionFilter } ],
-    queryFn: args => getRegionsFn(args, { 
-      filter: regionFilter?.fields,
-      pagination: {
-        page: regionFilter?.page || 1,
-        pageSize: regionFilter?.limit || 10
-      },
-      include: {
-        townships: true
-      }
-    }),
-    select: data => data
-  })
-
-  const {
-    mutate: createRegions,
-    isPending
-  } = useMutation({
-    mutationFn: createMultiRegionsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
+  // Queries
+  const { try_data, isLoading } = useGetRegions({
+    filter: regionFilter?.fields,
+    pagination: {
+      page: regionFilter?.page || 1,
+      pageSize: regionFilter?.limit || 10
     },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created new brands.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["regions"]
-      })
-      playSoundEffect("success")
+    include: {
+      townships: true
     }
   })
 
-  const {
-    mutate: deleteRegion
-  } = useMutation({
-    mutationFn: deleteRegionFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a brand.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["regions"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Mutations
+  const { mutate: createRegions } = useCreateMultiRegions()
+  const { mutate: deleteRegion } = useDeleteRegion()
+  const { mutate: deleteRegions } = useDeleteMultiRegions()
 
-  const {
-    mutate: deleteRegions
-  } = useMutation({
-    mutationFn: deleteMultiRegionsFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete multi brands.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["regions"]
-      })
-      playSoundEffect("success")
-    }
-  })
-
-
-  if (isError && error) return <h1>ERROR: {error.message}</h1>
-
-  if (!data || isLoading) return <SuspenseLoader />
+  // Extraction
+  const regions = try_data.ok_or_throw()
 
   function handleCreateManyRegions(buf: ArrayBuffer) {
     createRegions(buf)
@@ -115,11 +40,14 @@ export function RegionsList() {
     deleteRegions(ids)
   }
 
+
+  if (!regions || isLoading) return <SuspenseLoader />
+
   return <Card>
     <RegionsListTable
-      isLoading={isPending}
-      regions={data.results} 
-      count={data.count} 
+      isLoading={isLoading}
+      regions={regions.results} 
+      count={regions.count} 
       onCreateManyRegions={handleCreateManyRegions} 
       onDelete={handleDeleteRegion}
       onMultiDelete={handleDeleteMultiRegions}

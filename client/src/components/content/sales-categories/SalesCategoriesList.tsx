@@ -1,107 +1,36 @@
-import { Card } from "@mui/material";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { SuspenseLoader, queryClient } from "@/components";
-import { createMultiSalesCategorisFn, deleteMultiSalesCategoriesFn, deleteSalesCategoryFn, getSalesCategoriesFn } from "@/services/salesCategoryApi";
+import { SuspenseLoader } from "@/components";
 import { SalesCategoriesListTable } from "./SalesCategoriesListTable";
-import { playSoundEffect } from "@/libs/playSound";
+import { Card } from "@mui/material";
+import { useStore } from "@/hooks";
+import { useCreateMultiSalesCategories, useDeleteMultiSalesCategories, useGetSalesCategories } from "@/hooks/salsCategory";
+import { useDeleteCategory } from "@/hooks/category";
 
 
 export function SalesCategoriesList() {
-  const { state: {salesCategoryFilter}, dispatch } = useStore()
+  const { state: {salesCategoryFilter} } = useStore()
 
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["sales-categories", { filter: salesCategoryFilter } ],
-    queryFn: args => getSalesCategoriesFn(args, { 
-      filter: salesCategoryFilter?.fields,
-      pagination: {
-        page: salesCategoryFilter?.page || 1,
-        pageSize: salesCategoryFilter?.limit || 10
-      },
-      include: {
-        _count: true
-      }
-    }),
-    select: data => data
-  })
-
-  const {
-    mutate: createSalesCategories,
-    isPending
-  } = useMutation({
-    mutationFn: createMultiSalesCategorisFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
+  // Queries
+  const { try_data, isLoading } = useGetSalesCategories({
+    filter: salesCategoryFilter?.fields,
+    pagination: {
+      page: salesCategoryFilter?.page || 1,
+      pageSize: salesCategoryFilter?.limit || 10,
     },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created new sales category.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["sales-categories"]
-      })
-      playSoundEffect("success")
+    include: {
+      _count: true
     }
   })
 
-  const {
-    mutate: deleteSalesCategory
-  } = useMutation({
-    mutationFn: deleteSalesCategoryFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete a sales category.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["sales-categories"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Mutations
+  const  { mutate: createSalesCategories } = useCreateMultiSalesCategories()
+  const  { mutate: deleteSalesCategory } = useDeleteCategory()
+  const  { mutate: deleteSalesCategories } = useDeleteMultiSalesCategories()
 
-  const {
-    mutate: deleteSalesCategories
-  } = useMutation({
-    mutationFn: deleteMultiSalesCategoriesFn,
-    onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-    onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success delete multi brands.",
-        severity: "success"
-      } })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["sales-categories"]
-      })
-      playSoundEffect("success")
-    }
-  })
+  // Extraction
+  const sales = try_data.ok_or_throw()
 
 
-  if (isError && error) return <h1>ERROR: {JSON.stringify(error)}</h1>
-
-  if (!data || isLoading) return <SuspenseLoader />
+  if (!sales || isLoading) return <SuspenseLoader />
 
   function handleCreateManySalesCategories(buf: ArrayBuffer) {
     createSalesCategories(buf)
@@ -117,9 +46,9 @@ export function SalesCategoriesList() {
 
   return <Card>
     <SalesCategoriesListTable
-      salesCategoiries={data.results} 
-      count={data.count} 
-      isLoading={isPending}
+      salesCategoiries={sales.results} 
+      count={sales.count} 
+      isLoading={isLoading}
       onCreateManySalesCategories={handleCreateManySalesCategories} 
       onDelete={handleDeleteBrand}
       onMultiDelete={handleDeleteMultiSalesCategories}

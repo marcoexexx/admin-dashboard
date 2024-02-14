@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useGetRegions } from '@/hooks/region';
 import { useStore } from '@/hooks';
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -8,7 +8,6 @@ import { Region } from '@/services/types';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { getRegionsFn } from '@/services/regionsApi';
 
 
 const InnerPaper = styled(Paper)(() => ({
@@ -28,21 +27,18 @@ export function RegionInputField({updateField = false}: RegionInputFieldProps) {
   const { dispatch } = useStore()
 
   const {
-    data: regions,
+    try_data,
     isLoading,
     isError,
     error
-  } = useQuery({
-    queryKey: ["regions"],
-    queryFn: args => getRegionsFn(args, {
-      filter: {},
-      pagination: {
-        page: 1,
-        pageSize: 100 * 1000
-      }
-    }),
-    select: data => data.results
+  } = useGetRegions({
+    filter: {},
+    pagination: {
+      page: 1,
+      pageSize: 100 * 100
+    }
   })
+  const regions = try_data.ok()?.results
 
   const defaultRegionId = getValues("regionId")
   const defaultRegion = defaultRegionId

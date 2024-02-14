@@ -2,9 +2,10 @@ import { CreateRegionInput } from "@/components/content/regions/forms/CreateRegi
 import { authApi } from "./authApi";
 import { HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, Region, RegionResponse } from "./types";
 import { UpdateRegionInput } from "@/components/content/regions/forms/UpdateRegionForm";
+import { RegionFilter } from "@/context/region";
 
 
-export async function getRegionsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
+export async function getRegionsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: RegionFilter["fields"], pagination: Pagination, include?: RegionFilter["include"] }) {
   const { data } = await authApi.get<HttpListResponse<Region>>("/regions", {
     ...opt,
     params: {
@@ -20,10 +21,13 @@ export async function getRegionsFn(opt: QueryOptionArgs, { filter, pagination, i
 }
 
 
-export async function getRegionFn(opt: QueryOptionArgs, { regionId }: { regionId: string | undefined }) {
+export async function getRegionFn(opt: QueryOptionArgs, { regionId, include }: { regionId: string | undefined, include?: RegionFilter["include"] }) {
   if (!regionId) return
-  const { data } = await authApi.get<RegionResponse>(`/regions/detail/${regionId}?include[townships]=true`, {
+  const { data } = await authApi.get<RegionResponse>(`/regions/detail/${regionId}`, {
     ...opt,
+    params: {
+      include
+    }
   })
   return data
 }

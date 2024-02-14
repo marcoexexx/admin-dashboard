@@ -1,6 +1,7 @@
+import { PermissionKey } from '@/context/cacheKey';
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
+import { PageTitle, SuspenseLoader } from "@/components";
 import { CreateProductForm } from "@/components/content/products/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { usePermission } from "@/hooks";
@@ -8,18 +9,31 @@ import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { useNavigate } from 'react-router-dom'
 
 import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 
 const appName = getConfig("appName")
 
-export default function CreateProduct() {
+function CreateProductWrapper() {
   const isAllowedCreateProduct = usePermission({
-    key: "product-permissions",
+    key: PermissionKey.Product,
     actions: "create",
     queryFn: getProductPermissionsFn
   })
+
+  if (!isAllowedCreateProduct) throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <Card>
+    <CardContent>
+      <CreateProductForm />
+    </CardContent>
+  </Card>
+}
+
+
+export default function CreateProduct() {
   
   const navigate = useNavigate()
 
@@ -54,18 +68,13 @@ export default function CreateProduct() {
         </Grid>
       </PageTitle>
 
-      {isAllowedCreateProduct
-      ? <Container maxWidth="lg">
-          <Card>
-            <CardContent>
-              <ErrorBoundary>
-                <CreateProductForm />
-              </ErrorBoundary>
-            </CardContent>
-          </Card>
-        </Container>
-      : <MiniAccessDenied />}
-      
+      <Container maxWidth="lg">
+        <ErrorBoundary>
+          <Suspense fallback={<SuspenseLoader />}>
+            <CreateProductWrapper />
+          </Suspense>
+        </ErrorBoundary>
+      </Container>
     </>
   )
 }

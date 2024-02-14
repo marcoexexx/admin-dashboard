@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useGetUserAddresses } from '@/hooks/userAddress';
 import { useStore } from '@/hooks';
-import { getUserAddressesFn } from '@/services/userAddressApi';
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiButton } from '@/components/ui';
@@ -30,22 +29,14 @@ export function AddressInputField({updateField = false, fieldName}: AddressInput
 
   const { dispatch } = useStore()
 
-  const {
-    data: addresses,
-    isLoading,
-    isError,
-    error
-  } = useQuery({
-    queryKey: ["user-addresses"],
-    queryFn: args => getUserAddressesFn(args, {
-      filter: {},
-      pagination: {
-        page: 1,
-        pageSize: 100 * 1000
-      }
-    }),
-    select: data => data.results
+  const { data, isLoading, isError, error } = useGetUserAddresses({
+    filter: {},
+    pagination: {
+      page: 1,
+      pageSize: 100 * 100
+    }
   })
+  const addresses = data?.results
 
   useEffect(() => {
     const prevsDeliveryId = getValues("deliveryAddressId")

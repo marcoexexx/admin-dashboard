@@ -1,17 +1,14 @@
 import dayjs from "dayjs";
+
 import { Box, Grid, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { MuiButton } from "@/components/ui";
 import { DatePickerField, EditorInputField } from "@/components/input-fields";
+import { useParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, object, string, z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate, useParams } from "react-router-dom";
-import { queryClient } from "@/components";
 import { useEffect } from "react";
-import { getSalesCategoryFn, updateSalesCategoryFn } from "@/services/salesCategoryApi";
-import { playSoundEffect } from "@/libs/playSound";
+import { useGetSalesCategory, useUpdateSalesCategory } from "@/hooks/salsCategory";
 
 
 const updateSalesCategorySchema = object({
@@ -33,60 +30,27 @@ const toUpdateFields: (keyof UpdateSalesCategoryInput)[] = [
 
 
 export function UpdateSalesCategoryForm() {
-  const { state: {modalForm}, dispatch } = useStore()
-
-  const navigate = useNavigate()
   const { salesCategoryId } = useParams()
-  const from = "/sales-categories"
 
-  const { 
-    data: salesCategory,
-    isSuccess: isSuccessFetchSalesCategory,
-    fetchStatus: fetchStatusSalesCategory
-  } = useQuery({
-    enabled: !!salesCategoryId,
-    queryKey: ["sales-categories", { id: salesCategoryId }],
-    queryFn: args => getSalesCategoryFn(args, { salesCategoryId }),
-    select: data => data?.salesCategory
-  })
+  const { try_data, isSuccess, fetchStatus } = useGetSalesCategory({ id: salesCategoryId })
+  const { mutate: updateSalesCategory } = useUpdateSalesCategory()
 
-  const {
-    mutate: updateSalesCategory,
-  } = useMutation({
-    mutationFn: updateSalesCategoryFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success updated a sales catgory.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["sales-categories"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error" } })
-      playSoundEffect("error")
-    },
-  })
+  const salesCategory = try_data.ok_or_throw()
+
 
   const methods = useForm<UpdateSalesCategoryInput>({
     resolver: zodResolver(updateSalesCategorySchema),
   })
 
   useEffect(() => {
-    if (isSuccessFetchSalesCategory && salesCategory && fetchStatusSalesCategory === "idle") {
+    if (isSuccess && salesCategory && fetchStatus === "idle") {
       for (const field of toUpdateFields) {
         if (field === "startDate" || field === "endDate") methods.setValue(field, dayjs(salesCategory[field]))
         else if (field === "description" && !salesCategory.description) methods.setValue("description", undefined)
         else methods.setValue(field, salesCategory[field])
       }
     }
-  }, [isSuccessFetchSalesCategory, fetchStatusSalesCategory])
+  }, [isSuccess, fetchStatus])
 
 
   const { handleSubmit, register, formState: { errors } } = methods

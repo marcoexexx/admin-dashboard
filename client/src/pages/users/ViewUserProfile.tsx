@@ -1,32 +1,43 @@
+import { PermissionKey } from '@/context/cacheKey';
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { useNavigate, useParams } from 'react-router-dom'
+import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material"
-import { usePermission } from "@/hooks";
-import { getProductPermissionsFn } from "@/services/permissionsApi";
-import { MiniAccessDenied } from "@/components/MiniAccessDenied";
 import { UserProfile } from "@/components/content/users";
-import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
+import { useNavigate, useParams } from 'react-router-dom'
+import { usePermission } from "@/hooks";
+import { getUserPermissionsFn } from '@/services/permissionsApi';
+
 import getConfig from "@/libs/getConfig";
+import AppError, { AppErrorKind } from '@/libs/exceptions';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
 
 const appName = getConfig("appName")
+
+function ViewUserWrapper({ username }: { username: string | undefined }) {
+  const isAllowedReadProduct = usePermission({
+    key: PermissionKey.User,
+    actions: "read",
+    queryFn: getUserPermissionsFn
+  })
+
+  if (!isAllowedReadProduct)  throw AppError.new(AppErrorKind.AccessDeniedError)
+
+  return <UserProfile username={username} />
+}
+
 
 export default function ViewUser() {
   const { username } = useParams()
 
   const navigate = useNavigate()
 
-  const isAllowedReadProduct = usePermission({
-    key: "product-permissions",
-    actions: "read",
-    queryFn: getProductPermissionsFn
-  })
-
-  const isAllowedUpdateProduct = usePermission({
-    key: "product-permissions",
+  const isAllowedUpdateUser = usePermission({
+    key: PermissionKey.User,
     actions: "update",
-    queryFn: getProductPermissionsFn
+    queryFn: getUserPermissionsFn
   })
 
   const handleBack= (_: React.MouseEvent<HTMLButtonElement>) => {
@@ -59,22 +70,26 @@ export default function ViewUser() {
             </Typography>
           </Grid>
 
-          {isAllowedUpdateProduct
+          {isAllowedUpdateUser
           ? <p>change role...</p>
           : null}
 
         </Grid>
       </PageTitle>
 
-      {isAllowedReadProduct
-      ? <Container maxWidth="lg">
-          <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-            <Grid item xs={12}>
-              <UserProfile username={username} />
-            </Grid>
+      <Container maxWidth="lg">
+        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+          <Grid item xs={12}>
+
+            <ErrorBoundary>
+              <Suspense fallback={<SuspenseLoader />}>
+                <ViewUserWrapper username={username }/>
+              </Suspense>
+            </ErrorBoundary>
+
           </Grid>
-        </Container>
-      : <MiniAccessDenied />}
+        </Grid>
+      </Container>
     </>
   )
 }

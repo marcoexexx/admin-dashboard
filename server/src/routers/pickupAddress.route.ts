@@ -4,8 +4,8 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { permissionUser } from "../middleware/permissionUser";
 import { pickupAddressPermission } from "../utils/auth/permissions";
-import { deleteMultiPickupAddressesSchema, getPickupAddressSchema } from "../schemas/pickupAddress.schema";
-import { deleteMultiPickupAddressesHandler, deletePickupAddressHandler, getPickupAddressHandler, getPickupAddressesHandler } from "../controllers/pickupAddress.controller";
+import { createPickupAddressSchema, deleteMultiPickupAddressesSchema, getPickupAddressSchema } from "../schemas/pickupAddress.schema";
+import { createPickupAddressHandler, deleteMultiPickupAddressesHandler, deletePickupAddressHandler, getPickupAddressHandler, getPickupAddressesHandler } from "../controllers/pickupAddress.controller";
 
 
 const router = Router()
@@ -17,6 +17,11 @@ router.route("")
   .get(
     permissionUser("read", pickupAddressPermission),
     getPickupAddressesHandler
+  )
+  .post(
+    permissionUser("create", pickupAddressPermission),
+    validate(createPickupAddressSchema),
+    createPickupAddressHandler
   )
 
 

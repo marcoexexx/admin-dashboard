@@ -1,3 +1,4 @@
+import { PermissionKey } from '@/context/cacheKey';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
@@ -19,7 +20,7 @@ const appName = getConfig("appName")
 
 function ListBrandWrapper() {
   const isAllowedReadBrand = usePermission({
-    key: "brand-permissions",
+    key: PermissionKey.Brand,
     actions: "read",
     queryFn: getBrandPermissionsFn
   })
@@ -27,7 +28,6 @@ function ListBrandWrapper() {
   if (!isAllowedReadBrand) throw AppError.new(AppErrorKind.AccessDeniedError)
 
   return <BrandsList />
-
 }
 
 
@@ -35,7 +35,7 @@ export default function ListBrand() {
   const navigate = useNavigate()
 
   const isAllowedCreateBrand = usePermission({
-    key: "brand-permissions",
+    key: PermissionKey.Brand,
     actions: "create",
     queryFn: getBrandPermissionsFn
   })

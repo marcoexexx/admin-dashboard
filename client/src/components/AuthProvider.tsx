@@ -1,4 +1,5 @@
 import { SuspenseLoader } from '.';
+import { PermissionKey } from '@/context/cacheKey';
 import { useCookies } from 'react-cookie'
 import { useMe, usePermission, useStore } from "@/hooks";
 import { useEffect } from "react";
@@ -31,7 +32,7 @@ export function AuthProvider(props: AuthProviderProps) {
 
   const isAllowedReactDashboard = usePermission({
     fetchUser: !!cookies.logged_in,
-    key: "dashboard-permissions",
+    key: PermissionKey.Dashboard,
     queryFn: getDashboardPermissionsFn,
     actions: "read",
   })

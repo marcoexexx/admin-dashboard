@@ -1,15 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CreateBrandInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
-import { EventActionType, Resource } from "@prisma/client";
 import { BrandService } from "../services/brand";
 import { StatusCode } from "../utils/appError";
-import { db } from "../utils/db";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { createEventAction } from "../utils/auditLog";
 import { checkUser } from "../services/checkUser";
-
 
 
 const service = BrandService.new()
@@ -28,21 +24,22 @@ export async function getBrandsHandler(
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    const [count, brands] = (await service.find({
-      filter: {
-        id,
-        name
+    const [count, brands] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
       },
-      pagination: {
-        page,
-        pageSize,
-      },
-      include: {
+      {
+        where: {
+          id,
+          name
+        },
+        include: {
         _count,
         products
-      },
-      orderBy
-    })).ok_or_throw()
+        },
+        orderBy
+      }
+    )).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpListResponse(brands, count))
   } catch (err) {
@@ -63,17 +60,13 @@ export async function getBrandHandler(
     const { brandId } = req.params
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
 
-    const brand = (await service.findUnique(brandId, { _count, products })).ok_or_throw()
+    const brand = (await service.tryFindUnique({
+      where: { id: brandId },
+      include: { _count, products }
+    })).ok_or_throw()
 
-    // Read event action audit log
-    if (brand) {
-      if (sessionUser?.id) createEventAction(db, {
-        userId: sessionUser.id,
-        resource: Resource.Brand,
-        resourceIds: [brand.id],
-        action: EventActionType.Read
-      })
-    }
+    // Create audit log
+    if (brand && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ brand }))
   } catch (err) {
@@ -93,15 +86,11 @@ export async function createMultiBrandsHandler(
     if (!excelFile) return res.status(StatusCode.NoContent)
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const brands = (await service.excelUpload(excelFile)).ok_or_throw()
+    const brands = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
-    // Create event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      resource: Resource.Brand,
-      userId: sessionUser.id,
-      action: EventActionType.Create,
-      resourceIds: brands.map(brand => brand.id),
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.Created).json(HttpListResponse(brands))
   } catch (err) {
@@ -119,15 +108,11 @@ export async function createBrandHandler(
     const { name } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const brand = (await service.create({ name })).ok_or_throw()
+    const brand = (await service.tryCreate({ data: {name} })).ok_or_throw()
 
-    // Create event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Brand,
-      resourceIds: [brand.id],
-      action: EventActionType.Create
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.Created).json(HttpDataResponse({ brand }))
   } catch (err) {
@@ -145,15 +130,11 @@ export async function deleteBrandHandler(
     const { brandId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const brand = (await service.delete(brandId)).ok_or_throw()
+    const brand = (await service.tryDelete({ where: {id: brandId} })).ok_or_throw()
 
-    // Delete event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Brand,
-      resourceIds: [brand.id],
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ brand }))
   } catch (err) {
@@ -171,8 +152,8 @@ export async function deleteMultiBrandsHandler(
     const { brandIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const tryDeleteMany = await service.deleteMany({
-      filter: {
+    const tryDeleteMany = await service.tryDeleteMany({
+      where: {
         id: {
           in: brandIds
         }
@@ -180,13 +161,9 @@ export async function deleteMultiBrandsHandler(
     })
     tryDeleteMany.ok_or_throw()
 
-    // Delete event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Brand,
-      resourceIds: brandIds,
-      action: EventActionType.Delete
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
   } catch (err) {
@@ -205,15 +182,11 @@ export async function updateBrandHandler(
     const { name } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const brand = (await service.update({ filter: {id: brandId}, payload: { name } })).ok_or_throw()
+    const brand = (await service.tryUpdate({ where: {id: brandId}, data: { name } })).ok_or_throw()
 
-    // Update event action audit log
-    if (sessionUser?.id) createEventAction(db, {
-      userId: sessionUser.id,
-      resource: Resource.Brand,
-      resourceIds: [brand.id],
-      action: EventActionType.Update
-    })
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ brand }))
   } catch (err) {

@@ -11,7 +11,8 @@
 
 # TODO
  - ## IMPORTANT
- - [ ] table cell
+ - [ ] product all publish by superadmin only
+ - [ ] product all remove sale and add sale by excel or table action button
 
  - [ ] orderBy
  - [ ] pickup address :: read(all, detail), delete(all, detail) :: client UI

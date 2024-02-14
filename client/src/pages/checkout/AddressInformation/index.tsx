@@ -1,7 +1,6 @@
 import { Box, Card, CardContent, Container, Radio, Typography, styled } from "@mui/material";
-import { AddressInputField } from "@/components/input-fields";
+import { AddressInputField, PickupAddressInputField } from "@/components/input-fields";
 import { CreateOrderInput, OrderAddressType } from "@/components/content/orders/forms";
-import { PickupAddressForm } from "./PickupAddressForm";
 import { useFormContext } from "react-hook-form";
 import { useEffect } from "react";
 
@@ -32,7 +31,7 @@ export default function AddressInformationStep() {
 
 
   const handleChangeAddressType = (addressType: OrderAddressType) => (_: React.MouseEvent<HTMLDivElement>) => {
-    if (addressType === "Delivery") setValue("pickupAddress", undefined)
+    if (addressType === "Delivery") setValue("pickupAddressId", undefined)
     if (addressType === "Pickup") setValue("deliveryAddressId", undefined)
     setValue("addressType", addressType)
   }
@@ -93,7 +92,7 @@ export default function AddressInformationStep() {
         <Card>
           <CardContent>
             {addressType === "Delivery" ? <AddressInputField updateField fieldName="deliveryAddressId" /> : null}
-            {addressType === "Pickup" ? <PickupAddressForm /> : null}
+            {addressType === "Pickup" ? <PickupAddressInputField /> : null}
           </CardContent>
         </Card>
       </Box>

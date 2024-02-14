@@ -1,18 +1,14 @@
 import { Box, Grid, TextField } from "@mui/material";
 import { MuiButton } from "@/components/ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { object, string, z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { queryClient } from "@/components";
-import { useEffect } from "react";
-import { createRegionFn } from "@/services/regionsApi";
 import { FormModal } from "@/components/forms";
 import { TownshipMultiInputField } from "@/components/input-fields";
 import { CreateTownshipForm } from "../../townships/forms";
-import { playSoundEffect } from "@/libs/playSound";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { object, string, z } from "zod";
+import { useStore } from "@/hooks";
+import { useEffect } from "react";
+import { useCreateRegion } from "@/hooks/region";
 
 
 const createRegionSchema = object({
@@ -26,33 +22,7 @@ export type CreateRegionInput = z.infer<typeof createRegionSchema>
 export function CreateRegionForm() {
   const { state: {modalForm}, dispatch } = useStore()
 
-  const navigate = useNavigate()
-  const from = "/regions"
-
-  const {
-    mutate: createRegion,
-  } = useMutation({
-    mutationFn: createRegionFn,
-    onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created a new brand.",
-        severity: "success"
-      } })
-      if (modalForm.field === "*") navigate(from)
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-      queryClient.invalidateQueries({
-        queryKey: ["regions"]
-      })
-      playSoundEffect("success")
-    },
-    onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
-      playSoundEffect("error")
-    },
-  })
+  const { mutate: createRegion } = useCreateRegion()
 
   const methods = useForm<CreateRegionInput>({
     resolver: zodResolver(createRegionSchema)
