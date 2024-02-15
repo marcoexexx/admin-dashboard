@@ -1,9 +1,8 @@
 import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
-import { AppService, Auditable, Pagination } from "../type";
-import { AuditLog, AuditLogAction, User } from "@prisma/client";
-import { PartialShallow } from "lodash";
+import { AppService, MetaAppService, Pagination } from "../type";
+import { OperationAction, Resource } from "@prisma/client";
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
 
@@ -14,9 +13,12 @@ import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAp
  * @remarks
  * This class implements the AppService interface and is designed to handle operations related to potentialOrder.
  */
-export class PotentialOrderService implements AppService, Auditable {
+export class PotentialOrderService extends MetaAppService implements AppService {
   private repository = db.potentialOrder
-  public log?: { action: AuditLogAction; resourceIds: string[] }
+
+  constructor() {
+    super(Resource.PotentialOrder, { action: OperationAction.Read, resourceIds: [] })
+  }
 
   /**
    * Creates a new instance of PotentialOrderService.
@@ -31,7 +33,7 @@ export class PotentialOrderService implements AppService, Auditable {
     const result = (await opt()).map_err(convertPrismaErrorToAppError)
 
     this.log = {
-      action: AuditLogAction.Read,
+      action: OperationAction.Read,
       resourceIds: []
     }
     return result
@@ -54,7 +56,7 @@ export class PotentialOrderService implements AppService, Auditable {
     if (result.is_err()) return Err(result.unwrap_err())
 
     this.log = {
-      action: AuditLogAction.Read,
+      action: OperationAction.Read,
       resourceIds: result.ok_or_throw().map(x => x.id)
     }
     return Ok([count.ok_or_throw(), result.ok_or_throw()])
@@ -71,8 +73,10 @@ export class PotentialOrderService implements AppService, Auditable {
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     const _res = result.ok()
+    if (!_res) return Err(AppError.new(StatusCode.NotFound, `${this.resource} not found.`))
+
     if (_res) this.log = {
-      action: AuditLogAction.Read,
+      action: OperationAction.Read,
       resourceIds: [_res.id]
     }
     return result
@@ -89,8 +93,10 @@ export class PotentialOrderService implements AppService, Auditable {
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     const _res = result.ok()
+    if (!_res) return Err(AppError.new(StatusCode.NotFound, `${this.resource} not found.`))
+
     if (_res) this.log = {
-      action: AuditLogAction.Read,
+      action: OperationAction.Read,
       resourceIds: [_res.id]
     }
     return result
@@ -107,7 +113,7 @@ export class PotentialOrderService implements AppService, Auditable {
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     this.log = {
-      action: AuditLogAction.Create,
+      action: OperationAction.Create,
       resourceIds: [result.ok_or_throw().id]
     }
     return result
@@ -124,7 +130,7 @@ export class PotentialOrderService implements AppService, Auditable {
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     this.log = {
-      action: AuditLogAction.Update,
+      action: OperationAction.Update,
       resourceIds: [result.ok_or_throw().id]
     }
     return result
@@ -141,7 +147,7 @@ export class PotentialOrderService implements AppService, Auditable {
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     this.log = {
-      action: AuditLogAction.Delete,
+      action: OperationAction.Delete,
       resourceIds: [result.ok_or_throw().id]
     }
     return result
@@ -159,7 +165,7 @@ export class PotentialOrderService implements AppService, Auditable {
 
     const _res = (arg?.where?.id as any)?.in
     if (Array.isArray(_res) && _res.length) this.log = {
-      action: AuditLogAction.Delete,
+      action: OperationAction.Delete,
       resourceIds: _res
     }
     return result
@@ -172,14 +178,6 @@ export class PotentialOrderService implements AppService, Auditable {
     Result<Awaited<ReturnType<typeof this.repository.upsert>>[], AppError>
   > {
     return Err(AppError.new(StatusCode.ServiceUnavailable, `This feature is not implemented yet.`))
-  }
-
-
-  /**
-    * Auditlog not create on pickup address service
-    */
-  async audit(_user: User, _log: PartialShallow<Auditable["log"]> = this.log): Promise<Result<AuditLog | undefined, AppError>> {
-    return Ok(undefined)
   }
 }
 

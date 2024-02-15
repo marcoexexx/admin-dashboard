@@ -3,9 +3,7 @@ import { deleteAuditLogsHandler, getAuditLogsHandler } from "../controllers/audi
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { permissionUser } from "../middleware/permissionUser";
 import { deleteAuditLogSchema } from "../schemas/auditLog.schema";
-import { auditLogPermission } from "../utils/auth/permissions/auditLog.permission";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
 
@@ -22,7 +20,6 @@ router.route("")
 router.route("/detail/:auditLogId")
   .delete(
     validate(deleteAuditLogSchema),
-    permissionUser("delete", auditLogPermission),
     deleteAuditLogsHandler,
   )
 

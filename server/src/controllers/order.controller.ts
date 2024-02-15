@@ -4,12 +4,12 @@ import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { checkUser } from "../services/checkUser";
-import { Role } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, UpdateOrderInput } from "../schemas/order.schema";
 import { LifeCycleOrderConcrate, LifeCycleState } from "../utils/auth/life-cycle-state";
 import { OrderService } from "../services/order";
+import { OperationAction, Resource } from "@prisma/client";
 
 
 const service = OrderService.new()
@@ -27,6 +27,10 @@ export async function getOrdersHandler(
     const { page, pageSize } = query.pagination ?? {}
     const { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, orders] = (await service.tryFindManyWithCount(
       {
@@ -74,6 +78,9 @@ export async function getOrderHandler(
     const { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const order = (await service.tryFindUnique({ where: {id: orderId}, include: { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } }, )).ok_or_throw()
 
     // Create audit log
@@ -96,6 +103,9 @@ export async function createOrderHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const userId = sessionUser?.id
 
     const order = (await service.tryCreate({
@@ -154,11 +164,30 @@ export async function deleteOrderHandler(
   try {
     const { orderId } = req.params
 
-    const sessionUser = checkUser(req.user).ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const order = (await service.tryDelete({ 
       where: {
         id: orderId,
-        userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
+        user: {
+          OR: [
+            {
+              isSuperuser: true,
+            },
+            {
+              role: {
+                permissions: {
+                  some: {
+                    action: OperationAction.Delete,
+                    resource: Resource.Order
+                  }
+                }
+              }
+            }
+          ]
+        }
       } 
     })).ok_or_throw()
     
@@ -182,13 +211,32 @@ export async function deleteMultiOrdersHandler(
     const { orderIds } = req.body
 
     // @ts-ignore  for mocha testing
-    const sessionUser = checkUser(req.user).ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _deletedOrders = await service.tryDeleteMany({
       where: {
         id: {
           in: orderIds,
         },
-        userId: sessionUser.role === Role.Admin ? undefined : sessionUser.id
+        user: {
+          OR: [
+            {
+              isSuperuser: true,
+            },
+            {
+              role: {
+                permissions: {
+                  some: {
+                    action: OperationAction.Delete,
+                    resource: Resource.Order
+                  }
+                }
+              }
+            }
+          ]
+        },
       }
     })
     _deletedOrders.ok_or_throw()
@@ -225,7 +273,10 @@ export async function updateOrderHandler(
     const orderState = orderLifeCycleState.changeState(data.status)
 
     // @ts-ignore  for mocha testing
-    const sessionUser = checkUser(req.user).ok()
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const order = (await service.tryUpdate({
       where: {
         id: orderId

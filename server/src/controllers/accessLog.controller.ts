@@ -3,11 +3,13 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { DeleteAccessLogSchema } from "../schemas/accessLog.schema";
 import { AccessLogService } from "../services/accessLog";
+import { OperationAction, Resource } from "@prisma/client";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { checkUser } from "../services/checkUser";
 
 
+const resource = Resource.AccessLog
 const service = AccessLogService.new()
 
 
@@ -28,10 +30,26 @@ export async function getAccessLogsHandler(
 
     const [count, logs] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: {
+          user: {
+            OR: [
+              { isSuperuser: true },
+              {
+                role: {
+                  permissions: {
+                    some: {
+                      action: OperationAction.Read,
+                      resource
+                    }
+                  }
+                }
+              }
+            ]
+          },
+
           id,
           browser,
           ip,
@@ -58,7 +76,26 @@ export async function deleteAccessLogsHandler(
   try {
     const { accessLogId } = req.params
 
-    const accessLog = (await service.tryDelete({ where: { id: accessLogId } })).ok_or_throw()
+    const accessLog = (await service.tryDelete({
+      where: {
+        user: {
+          OR: [
+            { isSuperuser: true },
+            {
+              role: {
+                permissions: {
+                  some: {
+                    action: OperationAction.Delete,
+                    resource
+                  }
+                }
+              }
+            }
+          ]
+        },
+        id: accessLogId
+      }
+    })).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ accessLog }))
   } catch (err) {

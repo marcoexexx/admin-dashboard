@@ -3,6 +3,7 @@ import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helpe
 import { CreateBrandInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
 import { BrandService } from "../services/brand";
 import { StatusCode } from "../utils/appError";
+import { OperationAction } from "@prisma/client";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { checkUser } from "../services/checkUser";
@@ -23,6 +24,10 @@ export async function getBrandsHandler(
     const { page, pageSize } = query.pagination ?? {}
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, brands] = (await service.tryFindManyWithCount(
       {
@@ -54,11 +59,14 @@ export async function getBrandHandler(
   next: NextFunction
 ) {
   try {
-    const sessionUser = checkUser(req?.user).ok()
     const query = convertNumericStrings(req.query)
 
     const { brandId } = req.params
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const brand = (await service.tryFindUnique({
       where: { id: brandId },
@@ -86,6 +94,9 @@ export async function createMultiBrandsHandler(
     if (!excelFile) return res.status(StatusCode.NoContent)
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const brands = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
     // Create audit log
@@ -108,6 +119,9 @@ export async function createBrandHandler(
     const { name } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const brand = (await service.tryCreate({ data: {name} })).ok_or_throw()
 
     // Create audit log
@@ -130,6 +144,9 @@ export async function deleteBrandHandler(
     const { brandId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const brand = (await service.tryDelete({ where: {id: brandId} })).ok_or_throw()
 
     // Create audit log
@@ -152,6 +169,9 @@ export async function deleteMultiBrandsHandler(
     const { brandIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const tryDeleteMany = await service.tryDeleteMany({
       where: {
         id: {
@@ -182,6 +202,9 @@ export async function updateBrandHandler(
     const { name } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const brand = (await service.tryUpdate({ where: {id: brandId}, data: { name } })).ok_or_throw()
 
     // Create audit log

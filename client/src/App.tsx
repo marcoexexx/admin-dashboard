@@ -1,5 +1,5 @@
 import { RouterProvider } from 'react-router-dom'
-import { Providers, ToastProvider } from "./components"
+import { BackdropProvider, Providers, ToastProvider } from "./components"
 import routes from './pages/router'
 
 
@@ -8,6 +8,7 @@ function App() {
     <Providers>
       <RouterProvider router={routes} />
       <ToastProvider />
+      <BackdropProvider />
     </Providers>
   )
 }

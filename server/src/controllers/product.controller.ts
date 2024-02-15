@@ -7,7 +7,7 @@ import { Request, Response, NextFunction } from 'express'
 import { CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { LifeCycleProductConcrate, LifeCycleState } from '../utils/auth/life-cycle-state';
-import { AuditLogAction, ProductStatus } from '@prisma/client';
+import { OperationAction, ProductStatus } from '@prisma/client';
 import { ProductService } from '../services/productService';
 import { ProductSalesCategoryService } from '../services/productSalesCategory';
 import { UpdateProductSaleCategoryInput } from '../schemas/salesCategory.schema';
@@ -55,6 +55,10 @@ export async function getProductsHandler(
       specification,
     } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, products] = (await service.tryFindManyWithCount(
       {
@@ -122,6 +126,9 @@ export async function getProductHandler(
     } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const product = (await service.tryFindUnique({
       where: {
         id: productId
@@ -180,6 +187,8 @@ export async function createProductHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
 
     const product = (await service.tryCreate({
       data: {
@@ -235,6 +244,9 @@ export async function createMultiProductsHandler(
   try {
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
 
     const excelFile = req.file
 
@@ -261,6 +273,9 @@ export async function deleteProductSaleCategoryHandler(
     const { productId, productSaleCategoryId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _deleteProductSalesCategory = await _saleService.tryDelete({
       where: {
         id: productSaleCategoryId,
@@ -272,7 +287,7 @@ export async function deleteProductSaleCategoryHandler(
     // It remove sale form product, it is update product
     // Create audit log
     const _auditLog = await service.audit(sessionUser, {
-      action: AuditLogAction.Update,
+      action: OperationAction.Update,
       resourceIds: [productId]
     })
     _auditLog.ok_or_throw()
@@ -294,6 +309,9 @@ export async function updateProductSalesCategoryHandler(
     const { discount } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const productSalesCategory = (await _saleService.tryUpdate({
       where: {
         id: productSaleCategoryId
@@ -309,7 +327,7 @@ export async function updateProductSalesCategoryHandler(
     // It update sale form product, it is update product
     // Update event action audit log
     const _auditLog = await service.audit(sessionUser, {
-      action: AuditLogAction.Update,
+      action: OperationAction.Update,
       resourceIds: [productSalesCategory.productId]
     })
     _auditLog.ok_or_throw()
@@ -341,6 +359,9 @@ export async function deleteProductHandler(
     if (!_product) return next(AppError.new(StatusCode.Forbidden,  `Deletion is restricted for product in non-drift states.`))
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const product = (await service.tryDelete({
       where: {
         id: productId,
@@ -368,6 +389,9 @@ export async function deleteMultiProductHandler(
     const { productIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _deleteProducts = await service.tryDeleteMany({
       where: {
         id: {
@@ -427,6 +451,9 @@ export async function updateProductHandler(
     const productState = productLifeCycleState.changeState(status)
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const product = (await service.tryUpdate({
       where: { id: productId },
       data: {
@@ -498,6 +525,9 @@ export async function uploadImagesProductHandler(
     const { images } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const product = (await service.tryUpdate({
       where: {
         id: productId

@@ -4,7 +4,7 @@ import { checkUser } from "../services/checkUser";
 import AppError, { StatusCode } from "../utils/appError";
 
 
-export function onlyAdminUser(
+export function sudo(
   req: Request,
   _: Response,
   next: NextFunction
@@ -13,7 +13,7 @@ export function onlyAdminUser(
     // @ts-ignore  for mocha testing
     const user = checkUser(req.user).ok_or_throw()
 
-    if (user.role !== "Admin") return next(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))
+    if (user.isSuperuser) return next(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))
 
     next()
   } catch (err) {

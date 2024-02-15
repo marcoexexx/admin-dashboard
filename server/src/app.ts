@@ -23,7 +23,6 @@ import redisClient from './utils/connectRedis'
 
 import authRouter from './routers/auth.route'
 import meRouter from './routers/me.route'
-import permissionRouter from './routers/permission.route'
 import exchangeRouter from './routers/exchange.route'
 import couponRouter from './routers/coupon.route'
 import userRouter from './routers/user.route'
@@ -51,6 +50,7 @@ import AppError, { StatusCode } from './utils/appError';
 import logging, { loggingMiddleware } from './middleware/logging/logging'
 import { rateLimitMiddleware } from './middleware/rateLimit';
 import { isMaintenance } from './middleware/isMaintenance';
+import { safeDeserializeUser } from './middleware/deserializeUser';
 
 
 validateEnv()
@@ -98,6 +98,9 @@ app.use(cookieParser())
 app.use(useragent.express())
 
 // Is under the maintenance
+app.use(safeDeserializeUser)
+
+// Is under the maintenance
 app.use(isMaintenance)
 
 
@@ -120,7 +123,6 @@ app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/orders", orderRouter)
 app.use("/api/v1/potential-orders", potentialOrderRouter)
 app.use("/api/v1/me", meRouter)
-app.use("/api/v1/permissions", permissionRouter)
 app.use("/api/v1/exchanges", exchangeRouter)
 app.use("/api/v1/coupons", couponRouter)
 app.use("/api/v1/users", userRouter)

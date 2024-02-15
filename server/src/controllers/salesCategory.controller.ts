@@ -7,6 +7,7 @@ import { CreateProductSalesCategoryInput, CreateSalesCategoryInput, DeleteMultiS
 import { SalesCategoryService } from "../services/saleCategory";
 import { ProductSalesCategoryService } from "../services/productSalesCategory";
 import { StatusCode } from "../utils/appError";
+import { OperationAction } from "@prisma/client";
 
 
 const service = SalesCategoryService.new()
@@ -26,6 +27,10 @@ export async function getSalesCategoriesHandler(
     const { page, pageSize } = query.pagination ?? {}
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, categories] = (await service.tryFindManyWithCount(
       {
@@ -52,6 +57,10 @@ export async function getSalesCategoriesInProductHandler(
 ) {
   try {
     const { productId } = req.params
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, salesCategories] = (await _salesService.tryFindManyWithCount(
       {
@@ -81,6 +90,10 @@ export async function getSalesCategoryHandler(
     const { salesCategoryId } = req.params
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
 
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const salesCategory = (await service.tryFindUnique({ where: {id: salesCategoryId}, include: { _count, products } })).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ salesCategory }))
@@ -99,6 +112,9 @@ export async function createSalesCategoryHandler(
     const { name, startDate, endDate, description } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const category = (await service.tryCreate({
       data: {
         name,
@@ -128,6 +144,10 @@ export async function createSaleCategoryForProductHandler(
     const { productId } = req.params
     const { discount, salesCategoryId } = req.body
 
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const category = (await _salesService.tryCreate({
       data: {
         salesCategoryId,
@@ -154,6 +174,9 @@ export async function createMultiSalesCategoriesHandler(
     if (!excelFile) return res.status(StatusCode.NoContent)
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const categories = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
     // Create audit log
@@ -176,6 +199,9 @@ export async function deleteSalesCategoryHandler(
     const { salesCategoryId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const category = (await service.tryDelete({ where: {id: salesCategoryId} })).ok_or_throw()
 
     // Create audit log
@@ -198,6 +224,9 @@ export async function deleteMultiSalesCategoriesHandler(
     const { salesCategoryIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _deleteSalesCategories = await service.tryDeleteMany({
       where: {
         id: {
@@ -229,6 +258,9 @@ export async function updateSalesCategoryHandler(
     const { name, startDate, endDate, isActive, description } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const category = (await service.tryUpdate({
       where: { id: salesCategoryId },
       data: {

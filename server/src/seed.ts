@@ -21,58 +21,83 @@ async function rolesSeed() {
       permissions: {
         createMany: {
           data: [
+            // Products
             {
-              action: OperationAction.Read,
-              resource: Resource.Product
+              resource: Resource.Product,
+              action: OperationAction.Read
             },
+
+            // AccessLog
+
+            // AuditLog
+
+            // User
+
+            // Brand
             {
-              action: OperationAction.Read,
-              resource: Resource.PotentialOrder,
-            },
-            {
-              action: OperationAction.Create,
-              resource: Resource.PotentialOrder,
-            },
-            {
-              action: OperationAction.Read,
-              resource: Resource.Order,
-            },
-            {
-              action: OperationAction.Create,
-              resource: Resource.Order,
-            },
-            {
-              action: OperationAction.Read,
               resource: Resource.Brand,
+              action: OperationAction.Read
             },
+
+            // Category
             {
-              action: OperationAction.Read,
-              resource: Resource.Coupon,
-            },
-            {
-              action: OperationAction.Read,
-              resource: Resource.Region,
-            },
-            {
-              action: OperationAction.Read,
               resource: Resource.Category,
+              action: OperationAction.Read
+            },
+
+            // Coupon
+
+            // Exchange
+
+            // Order
+            {
+              resource: Resource.Order,
+              action: OperationAction.Read
             },
             {
-              action: OperationAction.Read,
-              resource: Resource.Township,
+              resource: Resource.Order,
+              action: OperationAction.Create
+            },
+
+            // PickupAddress
+            {
+              resource: Resource.Order,
+              action: OperationAction.Read
             },
             {
-              action: OperationAction.Read,
-              resource: Resource.UserAddress,
+              resource: Resource.Order,
+              action: OperationAction.Create
+            },
+
+            // PotentialOrder
+            {
+              resource: Resource.PotentialOrder,
+              action: OperationAction.Read
             },
             {
-              action: OperationAction.Read,
-              resource: Resource.PickupAddress,
+              resource: Resource.PotentialOrder,
+              action: OperationAction.Create
             },
+
+            // Region
             {
-              action: OperationAction.Read,
+              resource: Resource.Region,
+              action: OperationAction.Read
+            },
+
+            // SalesCategory
+            {
               resource: Resource.SalesCategory,
+              action: OperationAction.Read
             },
+
+            // Township
+            {
+              resource: Resource.Township,
+              action: OperationAction.Read
+            },
+
+            // UserAddress
           ]
         }
       }
@@ -83,6 +108,20 @@ async function rolesSeed() {
   console.log(`Created: ${customerRole.name}`)
 }
 
+
+async function brandsSeed() {
+  const samsung = await prisma.brand.upsert({
+    where: {
+      name: "Samsung",
+    },
+    create: {
+      name: "Samsung",
+    },
+    update: {}
+  })
+
+  console.log(`Created: ${samsung.name}`)
+}
 
 async function shopownersSeed() {
   const rangoonDiscountShopowner = await prisma.shopownerProvider.upsert({
@@ -118,11 +157,6 @@ async function usersSeed() {
       },
       image: "https://avatars.githubusercontent.com/u/103842280?s=400&u=9fe6bb21b1133980e96384942c66aca35bc9e06d&v=4",
       isSuperuser: true,
-      role: {
-        connect: {
-          name: "Customer"
-        }
-      }
     },
     update: {}
   })
@@ -189,9 +223,11 @@ async function usersSeed() {
 
 
 async function main() {
-  await rolesSeed()
-  await shopownersSeed()
-  await usersSeed()
+  // await rolesSeed()
+  // await shopownersSeed()
+  // await usersSeed()
+
+  await brandsSeed()
 }
 
 

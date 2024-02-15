@@ -4,10 +4,12 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { DeleteAuditLogSchema } from "../schemas/auditLog.schema";
 import { AuditLogService } from "../services/auditLog";
+import { OperationAction, Resource } from "@prisma/client";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 
 
+const resource = Resource.AuditLog
 const service = AuditLogService.new()
 
 
@@ -29,7 +31,26 @@ export async function getAuditLogsHandler(
         pagination: {page, pageSize},
       },
       {
-        where: { id, resource, action },
+        where: { 
+          user: {
+            OR: [
+              { isSuperuser: true },
+              {
+                role: {
+                  permissions: {
+                    some: {
+                      action: OperationAction.Read,
+                      resource
+                    }
+                  }
+                }
+              }
+            ]
+          },
+
+          id, resource, 
+          action 
+        },
         include: { user },
         orderBy
       }
@@ -49,7 +70,27 @@ export async function deleteAuditLogsHandler(
   try {
     const { auditLogId } = req.params
 
-    const auditLog = (await service.tryDelete({ where: {id: auditLogId} })).ok_or_throw()
+    const auditLog = (await service.tryDelete({ 
+      where: {
+        user: {
+          OR: [
+            { isSuperuser: true },
+            {
+              role: {
+                permissions: {
+                  some: {
+                    action: OperationAction.Delete,
+                    resource
+                  }
+                }
+              }
+            }
+          ]
+        },
+
+        id: auditLogId
+      } 
+    })).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ auditLog }))
   } catch (err) {

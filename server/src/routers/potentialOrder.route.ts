@@ -1,9 +1,7 @@
 import { Router } from "express";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { permissionUser } from "../middleware/permissionUser";
 import { validate } from "../middleware/validate";
-import { potentialOrderPermission } from "../utils/auth/permissions";
 import { createPotentialOrderSchema, deleteMultiPotentialOrdersSchema, getPotentialOrderSchema, updatePotentialOrderSchema } from "../schemas/potentialOrder.schema";
 import { createPotentialOrderHandler, deleteMultiPotentialOrdersHandler, deletePotentialOrderHandler, getPotentialOrderHandler, getPotentialOrdersHandler, updatePotentialOrderHandler } from "../controllers/potentialOrder.controller";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
@@ -16,11 +14,9 @@ router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 router.route("/")
   .get(
-    permissionUser("read", potentialOrderPermission),
     getPotentialOrdersHandler
   )
   .post(
-    permissionUser("create", potentialOrderPermission),
     validate(createPotentialOrderSchema),
     createPotentialOrderHandler
   )
@@ -28,7 +24,6 @@ router.route("/")
 
 router.route("/multi")
   .delete(
-    permissionUser("delete", potentialOrderPermission),
     validate(deleteMultiPotentialOrdersSchema),
     deleteMultiPotentialOrdersHandler
   )
@@ -44,17 +39,14 @@ router.route("/multi")
 
 router.route("/detail/:potentialOrderId")
   .get(
-    permissionUser("read", potentialOrderPermission),
     validate(getPotentialOrderSchema),
     getPotentialOrderHandler
   )
   .patch(
-    permissionUser("update", potentialOrderPermission),
     validate(updatePotentialOrderSchema), 
     updatePotentialOrderHandler
   )
   .delete(
-    permissionUser("delete", potentialOrderPermission),
     validate(getPotentialOrderSchema),
     deletePotentialOrderHandler
   )

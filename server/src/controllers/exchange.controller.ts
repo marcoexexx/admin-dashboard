@@ -5,6 +5,7 @@ import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helpe
 import { CreateExchangeInput, DeleteMultiExchangesInput, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
 import { ExchangeService } from "../services/exchange";
 import { StatusCode } from "../utils/appError";
+import { OperationAction } from "@prisma/client";
 
 
 const service = ExchangeService.new()
@@ -21,6 +22,10 @@ export async function getExchangesHandler(
     const { id, from, to, startDate, endDate, rate } = query.filter ?? {}
     const { page, pageSize } = query.pagination ?? {}
     const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, exchanges] = (await service.tryFindManyWithCount(
       {
@@ -57,6 +62,9 @@ export async function getExchangeHandler(
     const { exchangeId } = req.params
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const exchange = (await service.tryFindUnique({ where: {id: exchangeId} })).ok_or_throw()
 
     // Create event action audit log
@@ -79,6 +87,9 @@ export async function updateExchangeHandler(
     const { to, from, rate, date } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const exchange = (await service.tryUpdate({
       where: {
         id: exchangeId
@@ -111,6 +122,9 @@ export async function createExchangeHandler(
     const { from, to, rate, date } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const exchange = (await service.tryCreate({
       data: {
         from,
@@ -142,6 +156,9 @@ export async function createMultiExchangesHandler(
     if (!excelFile) return res.status(StatusCode.NoContent)
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const exchanges = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
     // Create audit log
@@ -164,6 +181,8 @@ export async function deleteExchangeHandler(
     const { exchangeId } = req.params
     
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
 
     const exchange = (await service.tryDelete({
       where: {
@@ -191,6 +210,9 @@ export async function deleteMultiExchangesHandler(
     const { exchangeIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _tryDeleteExchanges = await service.tryDeleteMany({
       where: {
         id: {

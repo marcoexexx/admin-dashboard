@@ -23,6 +23,8 @@ enum AuthProvider {
 }
 
 enum Resource {
+  AccessLog
+  AuditLog
   User
   Brand
   Category
@@ -166,8 +168,8 @@ model User {
   id                  String             @id @default(auto()) @map("_id") @db.ObjectId
   name                String
   email               String
-  role                Role               @relation(fields: [roleId], references: [id])
-  roleId              String             @db.ObjectId
+  role                Role?              @relation(fields: [roleId], references: [id])
+  roleId              String?            @db.ObjectId
   isSuperuser         Boolean            @default(false)
   shopownerProvider   ShopownerProvider? @relation(fields: [shopownerProviderId], references: [id])
   shopownerProviderId String?            @db.ObjectId

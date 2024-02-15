@@ -86,6 +86,7 @@ export type Store = {
   },
   user?: User
   slidebar: boolean
+  backdrop: boolean
   local: Local
   accessLogFilter?: AccessLogFilter,
   auditLogFilter?: AuditLogFilter,
@@ -105,9 +106,22 @@ export type Store = {
   disableCheckOut: boolean
 }
 
+interface ToggleBackdropActions {
+  type: "TOGGLE_BACKDROP",
+}
+
+interface OpenBackdropActions {
+  type: "OPEN_BACKDROP",
+}
+
+interface CloseBackdropActions {
+  type: "CLOSE_BACKDROP",
+}
+
 interface EnableCheckOutActions {
   type: "DISABLE_CHECKOUT",
 }
+
 interface DisableCheckOutActions {
   type: "ENABLE_CHECKOUT",
 }
@@ -246,6 +260,9 @@ type Action =
   | SlidebarOpenActions
   | SlidebarToggleActions
   | SlidebarCloseActions
+  | OpenBackdropActions
+  | CloseBackdropActions
+  | ToggleBackdropActions
 
   | OrderFilterActions
   | PickupAddressFilterActions
@@ -285,6 +302,7 @@ const initialState: Store = {
   },
   local: i18n.local,
   slidebar: false,
+  backdrop: false,
   modalForm: {
     field: "*",
     state: false
@@ -416,6 +434,18 @@ const stateReducer = (state: Store, action: Action): Store => {
 
     case "CLOSE_TOAST": {
       return { ...state, toast: { ...state.toast, status: false } }
+    }
+
+    case "OPEN_BACKDROP": {
+      return { ...state, backdrop: true }
+    }
+
+    case "CLOSE_BACKDROP": {
+      return { ...state, backdrop: false }
+    }
+
+    case "TOGGLE_BACKDROP": {
+      return { ...state, backdrop: !state.backdrop }
     }
 
     case "SET_USER": {

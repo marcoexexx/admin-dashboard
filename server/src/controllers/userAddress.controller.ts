@@ -6,6 +6,7 @@ import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helpe
 import { CreateUserAddressInput, DeleteMultiUserAddressesInput, GetUserAddressInput, UpdateUserAddressInput } from "../schemas/userAddress.schema";
 import { StatusCode } from "../utils/appError";
 import { UserAddressService } from "../services/userAddresses";
+import { OperationAction } from "@prisma/client";
 
 
 const service = UserAddressService.new()
@@ -44,6 +45,9 @@ export async function getUserAddressesHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const [count, userAddresses] = (await service.tryFindManyWithCount(
       {
         pagination: {page, pageSize}
@@ -102,6 +106,9 @@ export async function getUserAddressHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const userAddress = (await service.tryFindUnique({
       where: {
         id: userAddressId
@@ -140,6 +147,9 @@ export async function createUserAddressHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const userAddress = (await service.tryCreate({
       data: { 
         isDefault,
@@ -175,6 +185,9 @@ export async function deleteUserAddressHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const userAddress = (await service.tryDelete({
       where: {
         id: userAddressId
@@ -202,6 +215,9 @@ export async function deleteMultiUserAddressesHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _deleteUserAddresses = await service.tryDeleteMany({
       where: {
         id: {
@@ -233,6 +249,9 @@ export async function updateUserAddressHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const userAddress = (await service.tryUpdate({
       where: {
         id: userAddressId,

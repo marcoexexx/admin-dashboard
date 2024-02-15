@@ -7,6 +7,7 @@ import { CreateCouponInput, DeleteMultiCouponsInput, GetCouponInput, UpdateCoupo
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CouponService } from "../services/coupon";
 import { StatusCode } from "../utils/appError";
+import { OperationAction } from "@prisma/client";
 
 
 const service = CouponService.new()
@@ -24,6 +25,10 @@ export async function getCouponsHandler(
     const { page, pageSize } = query.pagination ?? {}
     const { reward, product } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, coupons] = (await service.tryFindManyWithCount(
       {
@@ -62,6 +67,9 @@ export async function getCouponHandler(
     const { reward, product } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const coupon = (await service.tryFindUnique({ where: {id: couponId}, include: {reward, product} })).ok_or_throw()
 
     // Create audit log
@@ -83,6 +91,9 @@ export async function createCouponHandler(
     const { points, dolla, productId, isUsed, expiredDate } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const coupon = (await service.tryCreate({
       data: {
         points,
@@ -116,6 +127,9 @@ export async function createMultiCouponsHandler(
     if (!excelFile) return res.status(StatusCode.NoContent)
     
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const coupons = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
     // Create audit log
@@ -138,6 +152,9 @@ export async function deleteCouponHandler(
     const { couponId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const coupon = (await service.tryDelete({ where: {id: couponId} })).ok_or_throw()
 
     // Create audit log
@@ -160,6 +177,9 @@ export async function deleteMultiCouponsHandler(
     const { couponIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _tryDeleteCoupons = await service.tryDeleteMany({
       where: {
         id: {
@@ -190,6 +210,9 @@ export async function updateCouponHandler(
     const { points, dolla, isUsed, rewardId, productId, expiredDate } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const coupon = (await service.tryUpdate({
       where: {
         id: couponId

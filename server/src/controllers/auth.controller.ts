@@ -6,7 +6,7 @@ import logging from "../middleware/logging/logging";
 import AppError, { StatusCode } from "../utils/appError";
 
 import { CookieOptions, NextFunction, Request, Response } from "express";
-import { CreateUserInput, LoginUserInput, Role, VerificationEmailInput } from "../schemas/user.schema";
+import { CreateUserInput, LoginUserInput, VerificationEmailInput } from "../schemas/user.schema";
 import { HttpDataResponse, HttpResponse } from "../utils/helper";
 import { UserService } from '../services/user';
 import { AccessLogService } from '../services/accessLog';
@@ -97,8 +97,6 @@ export async function googleOAuthHandler(
     const code = req.query.code
     const pathUrl = req.query.state || "/"
 
-    let role: Role = "User"
-
     if (!code) return next(AppError.new(StatusCode.Unauthorized, "Authorization code not provided!"))
 
     const { id_token, access_token } = (await getGoogleAuthToken(code)).ok_or_throw()
@@ -107,12 +105,8 @@ export async function googleOAuthHandler(
 
     if (!verified_email) return next(AppError.new(StatusCode.Forbidden, "Google account not verified"))
 
-    // set Admin if first time create user,
-    const usersExist = await db.user.count();
-
-    if (usersExist === 0) {
-      role = "Admin"
-    }
+    // set Superuser if first time create user,
+    const isSuperuser = (await service.tryCount()).ok_or_throw() === 0 ? true : false
 
     const user = await db.user.upsert({
       where: { email },
@@ -129,8 +123,8 @@ export async function googleOAuthHandler(
         image: picture,
         password: "",
         verified: true,
-        role,
-        provider: "Google"
+        isSuperuser,
+        provider: "Google",
       },
       update: {
         name,

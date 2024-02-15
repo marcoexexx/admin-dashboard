@@ -6,6 +6,7 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper"; 
 import { TownshipService } from "../services/township";
 import { StatusCode } from "../utils/appError";
+import { OperationAction } from "@prisma/client";
 
 
 const service = TownshipService.new()
@@ -23,6 +24,10 @@ export async function getTownshipsHandler(
     const { page, pageSize } = query.pagination ?? {}
     const { _count, userAddresses, region } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, townships] = (await service.tryFindManyWithCount(
       {
@@ -54,6 +59,9 @@ export async function getTownshipHandler(
     const { _count, userAddresses, region } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const township = (await service.tryFindUnique({
       where: {
         id: townshipId
@@ -88,6 +96,9 @@ export async function createMultiTownshipsHandler(
     if (!excelFile) return res.status(StatusCode.NoContent)
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const townships = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
     // Create audit log
@@ -110,6 +121,9 @@ export async function createTownshipHandler(
     const { name, fees } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const township = (await service.tryCreate({
       data: { name, fees },
     })).ok_or_throw()
@@ -134,6 +148,9 @@ export async function deleteTownshipHandler(
     const { townshipId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const township = (await service.tryDelete({
       where: {
         id: townshipId
@@ -160,6 +177,9 @@ export async function deleteMultilTownshipsHandler(
     const { townshipIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _deleteTownshipFees = await service.tryDeleteMany({
       where: {
         id: {
@@ -190,6 +210,9 @@ export async function updateTownshipHandler(
     const { name, fees } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const township = (await service.tryUpdate({
       where: { id: townshipId },
       data: { name, fees }

@@ -4,9 +4,8 @@ import Email from '../../utils/email';
 import Result, { Err, Ok, as_result_async } from "../../utils/result";
 import AppError, { StatusCode } from "../../utils/appError";
 
-import { AppService, Auditable, Pagination } from "../type";
-import { AuditLog, AuditLogAction, Prisma, Resource, Role, User } from '@prisma/client';
-import { PartialShallow } from 'lodash';
+import { AppService, MetaAppService, Pagination } from "../type";
+import { OperationAction, Resource } from '@prisma/client';
 import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
 import { generateRandomUsername } from '../../utils/generateRandomUsername';
@@ -19,9 +18,12 @@ import { createVerificationCode } from '../../utils/createVeriicationCode';
  * @remarks
  * This class implements the AppService interface and is designed to handle operations related to user.
  */
-export class UserService implements AppService, Auditable {
+export class UserService extends MetaAppService implements AppService {
   private repository = db.user
-  public log?: { action: AuditLogAction; resourceIds: string[] }
+
+  constructor() {
+    super(Resource.User, { action: OperationAction.Read, resourceIds: [] })
+  }
 
   /**
    * Creates a new instance of UserService.
@@ -35,25 +37,22 @@ export class UserService implements AppService, Auditable {
 
     const hashedPassword = await bcrypt.hash(password, 12)
 
+    // set Superuser if first time create user,
+    const isSuperuser = (await this.tryCount()).ok_or_throw() === 0 ? true : false;
+
     let data = {
       name,
       email,
       username: generateRandomUsername(12),
       password: hashedPassword,
-      role: Role.User as Role,
       verified: false,
+      isSuperuser,
       reward: {
         create: {
           points: 0,
         }
       },
       verificationCode: undefined as undefined | string
-    }
-
-    // set Admin if first time create user,
-    const usersExistCount = await this.repository.count();
-    if (usersExistCount === 0) {
-      data.role = Role.Admin
     }
 
     // Email verification
@@ -82,7 +81,7 @@ export class UserService implements AppService, Auditable {
     const result = (await opt()).map_err(convertPrismaErrorToAppError)
 
     this.log = {
-      action: AuditLogAction.Read,
+      action: OperationAction.Read,
       resourceIds: []
     }
     return result
@@ -105,7 +104,7 @@ export class UserService implements AppService, Auditable {
     if (result.is_err()) return Err(result.unwrap_err())
 
     this.log = {
-      action: AuditLogAction.Read,
+      action: OperationAction.Read,
       resourceIds: result.ok_or_throw().map(x => x.id)
     }
     return Ok([count.ok_or_throw(), result.ok_or_throw()])
@@ -122,8 +121,10 @@ export class UserService implements AppService, Auditable {
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     const _res = result.ok()
+    if (!_res) return Err(AppError.new(StatusCode.NotFound, `${this.resource} not found.`))
+
     if (_res) this.log = {
-      action: AuditLogAction.Read,
+      action: OperationAction.Read,
       resourceIds: [_res.id]
     }
     return result
@@ -140,8 +141,10 @@ export class UserService implements AppService, Auditable {
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     const _res = result.ok()
+    if (!_res) return Err(AppError.new(StatusCode.NotFound, `${this.resource} not found.`))
+
     if (_res) this.log = {
-      action: AuditLogAction.Read,
+      action: OperationAction.Read,
       resourceIds: [_res.id]
     }
     return result
@@ -158,7 +161,7 @@ export class UserService implements AppService, Auditable {
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     this.log = {
-      action: AuditLogAction.Create,
+      action: OperationAction.Create,
       resourceIds: [result.ok_or_throw().id]
     }
     return result
@@ -175,7 +178,7 @@ export class UserService implements AppService, Auditable {
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     this.log = {
-      action: AuditLogAction.Update,
+      action: OperationAction.Update,
       resourceIds: [result.ok_or_throw().id]
     }
     return result
@@ -192,7 +195,7 @@ export class UserService implements AppService, Auditable {
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     this.log = {
-      action: AuditLogAction.Delete,
+      action: OperationAction.Delete,
       resourceIds: [result.ok_or_throw().id]
     }
     return result
@@ -210,7 +213,7 @@ export class UserService implements AppService, Auditable {
 
     const _res = (arg?.where?.id as any)?.in
     if (Array.isArray(_res) && _res.length) this.log = {
-      action: AuditLogAction.Delete,
+      action: OperationAction.Delete,
       resourceIds: _res
     }
     return result
@@ -223,26 +226,5 @@ export class UserService implements AppService, Auditable {
     Result<Awaited<ReturnType<typeof this.repository.upsert>>[], AppError>
   > {
     return Err(AppError.new(StatusCode.ServiceUnavailable, `This feature is not implemented yet.`))
-  }
-
-
-  async audit(user: User, log: PartialShallow<Auditable["log"]> = this.log): Promise<Result<AuditLog | undefined, AppError>> {
-    if (!log) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit log for this resource: log is undefined`))
-    if (!log.action) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit for this resource: action is undefined`)) 
-    if (!Array.isArray(log.resourceIds) || !log.resourceIds.length) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit for this resource: action is undefined`)) 
-
-    const payload: Prisma.AuditLogUncheckedCreateInput = {
-      userId: user.id,
-      resource: Resource.Product,
-      action: log.action,
-      resourceIds: log.resourceIds
-    }
-
-    // const auditlog = (await createAuditLog(payload))
-    //   .or_else(err => err.status === StatusCode.NotModified ? Ok(undefined) : Err(err))
-    const auditlog = Ok(undefined)
-    console.log({ payload })
-
-    return Ok(auditlog.ok_or_throw())
   }
 }

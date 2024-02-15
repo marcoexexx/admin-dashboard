@@ -2,12 +2,12 @@ import AppError, { StatusCode } from "../utils/appError";
 
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
-import { ChangeUserRoleInput, CreateBlockUserInput, GetUserByUsernameInput, GetUserInput, RemoveBlockedUserInput, UploadImageUserInput } from "../schemas/user.schema";
-import { Role } from "@prisma/client";
+import { CreateBlockUserInput, GetUserByUsernameInput, GetUserInput, RemoveBlockedUserInput, UploadImageUserInput } from "../schemas/user.schema";
 import { UserService } from "../services/user";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { checkUser } from "../services/checkUser";
+import { OperationAction } from "@prisma/client";
 
 
 const service = UserService.new()
@@ -72,6 +72,10 @@ export async function getUserHandler(
   try {
     const { userId } = req.params
 
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const user = (await service.tryFindUnique({
       where: {
         id: userId
@@ -92,6 +96,10 @@ export async function getUserByUsernameHandler(
 ) {
   try {
     const { username } = req.params
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const user = (await service.tryFindUnique({
       where: {
@@ -133,6 +141,10 @@ export async function getUsersHandler(
     } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const [count, users] = (await service.tryFindManyWithCount(
       {
         pagination: {page, pageSize}
@@ -165,34 +177,6 @@ export async function getUsersHandler(
 }
 
 
-export async function changeUserRoleHandler(
-  req: Request<ChangeUserRoleInput["params"], {}, ChangeUserRoleInput["body"]>,
-  res: Response,
-  next: NextFunction
-) {
-  const { userId } = req.params
-  const { role } = req.body
-
-  try {
-    const sessionUser = checkUser(req?.user).ok_or_throw()
-    if (sessionUser.role !== Role.Admin) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
-
-    const user = (await service.tryUpdate({ 
-      where: {
-        id: userId
-      },
-      data: {
-        role
-      }
-    })).ok_or_throw()
-
-    res.status(StatusCode.OK).json(HttpDataResponse({ user }))
-  } catch (err) {
-    next(err)
-  }
-}
-
-
 export async function createBlockUserHandler(
   req: Request<{}, {}, CreateBlockUserInput["body"]>,
   res: Response,
@@ -202,7 +186,10 @@ export async function createBlockUserHandler(
 
   try {
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    if (sessionUser.role !== Role.Admin) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
+    if (!sessionUser.isSuperuser) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
 
     const user = (await service.tryUpdate({
       where: { id: sessionUser.id },
@@ -232,7 +219,10 @@ export async function removeBlockedUserHandler(
 
   try {
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    if (sessionUser.role !== Role.Admin) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
+    if (!sessionUser.isSuperuser) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`))
 
     const user = (await service.tryUpdate({
       where: { id: sessionUser.id },
