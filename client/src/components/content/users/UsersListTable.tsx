@@ -1,12 +1,10 @@
 import { Box, Card, CardContent, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { PermissionKey } from "@/context/cacheKey";
 import { RenderProileAvatar, RenderToggleBlockUserButton, RenderUsernameLabel } from "@/components/table-labels";
-import { User } from "@/services/types";
+import { OperationAction, Resource, User } from "@/services/types";
 import { UsersActions } from ".";
 import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
-import { getUserPermissionsFn } from "@/services/permissionsApi";
 
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
@@ -83,9 +81,8 @@ export function UsersListTable(props: UsersListTableProps) {
   }
 
   const isAllowedUpdateUser = usePermission({
-    key: PermissionKey.User,
-    actions: "update",
-    queryFn: getUserPermissionsFn
+    action: OperationAction.Update,
+    resource: Resource.User
   })
 
 
@@ -138,7 +135,7 @@ export function UsersListTable(props: UsersListTableProps) {
                       >
                         {key === "name" ? <RenderUsernameLabel user={row} me={me} /> : null}
                         {key === "email" ? row.email : null}
-                        {key === "role" ? row.role : null}
+                        {key === "role" ? row.role?.name : null}
                         {key === "blockedUsers" ? <RenderToggleBlockUserButton user={row} me={me} /> : null}
                       </Typography>
                     </TableCell>

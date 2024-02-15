@@ -2,7 +2,7 @@ import { useStore } from "@/hooks";
 import { Box, Card, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow,Typography } from "@mui/material"
 import { LoadingTablePlaceholder } from "@/components";
 import { AuditLog, Role } from "@/services/types";
-import { RenderResourceItemLabel, RenderUsernameLabel } from "@/components/table-labels";
+import { RenderResourceItemLabel, RenderRoleLabel, RenderUsernameLabel } from "@/components/table-labels";
 
 
 const columnData: TableColumnHeader<AuditLog & { role: Role }>[] = [
@@ -97,7 +97,7 @@ export function AuditLogsListTable(props: AuditLogsListTableProps) {
                     noWrap
                   >
                     {(col.id === "user" && row.user && me) && <RenderUsernameLabel user={row.user} me={me} />}
-                    {(col.id === "role" && row.user && me) && row.user.role}
+                    {(col.id === "role" && row.user?.role && me) && <RenderRoleLabel role={row.user.role} />}
                     {col.id === "resource" && row.resource}
                     {col.id === "resourceIds" && row.resourceIds.map(id => <RenderResourceItemLabel key={id} id={id} resource={row.resource} />)}
                     {col.id === "action" && row.action}

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useLocalStorage, useMe, useStore } from "@/hooks"
+import { useUserLogout } from "@/hooks/user"
 
 import { Avatar, Badge, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
 import { MuiButton } from "@/components/ui"
@@ -16,7 +17,6 @@ import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import HistoryIcon from '@mui/icons-material/History';
 import MapIcon from '@mui/icons-material/Map';
-import { useUserLogout } from "@/hooks/user"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 
@@ -111,7 +111,7 @@ export default function HeaderUserBox() {
             <UserBoxText>
               <UserBoxLabel>{try_user.value.name}</UserBoxLabel>
               <UserBoxDescription variant="body2">
-                {try_user.value.role}
+                {try_user.value.role?.name}
               </UserBoxDescription>
             </UserBoxText>
           </Hidden>
@@ -139,7 +139,7 @@ export default function HeaderUserBox() {
           <Avatar variant="rounded" alt={try_user.value.name} src={try_user.value.image} />
           <UserBoxText>
             <UserBoxLabel variant="body1">{try_user.value.name}</UserBoxLabel>
-            <UserBoxDescription variant="body2">{try_user.value.role}</UserBoxDescription>
+            <UserBoxDescription variant="body2">{try_user.value.role?.name}</UserBoxDescription>
           </UserBoxText>
         </MenuUserBox>
 

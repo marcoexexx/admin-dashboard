@@ -3,7 +3,7 @@ import { queryClient } from "@/components";
 import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Tooltip, Typography, styled } from "@mui/material";
 import { CategoriesFilterForm } from ".";
 import { CreateCategoryInput } from "./forms";
-import { Resource } from "@/context/cacheKey";
+import { CacheResource } from "@/context/cacheKey";
 
 import ExportIcon from '@mui/icons-material/Upgrade';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -71,7 +71,7 @@ export function CategoriesActions(props: CategoriesActionsProps) {
 
   const handleRefreshList = () => {
     queryClient.invalidateQueries({
-      queryKey: [Resource.Category]
+      queryKey: [CacheResource.Category]
     })
   }
 

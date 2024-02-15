@@ -1,6 +1,5 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { PermissionKey } from "@/context/cacheKey";
-import { Category } from "@/services/types";
+import { Category, OperationAction, Resource } from "@/services/types";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
@@ -10,7 +9,6 @@ import { useState } from "react"
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
-import { getCategoryPermissionsFn } from "@/services/permissionsApi";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
@@ -121,22 +119,19 @@ export function CategoriesListTable(props: CategoriesListTableProps) {
   }
 
   const isAllowedDeleteCategory = usePermission({
-    key: PermissionKey.Category,
-    actions: "delete",
-    queryFn: getCategoryPermissionsFn
-  })
+    action: OperationAction.Delete,
+    resource: Resource.Category
+  }).is_ok()
 
   const isAllowedUpdateCategory = usePermission({
-    key: PermissionKey.Category,
-    actions: "update",
-    queryFn: getCategoryPermissionsFn
-  })
+    action: OperationAction.Update,
+    resource: Resource.Category
+  }).is_ok()
 
   const isAllowedCreateCategory = usePermission({
-    key: PermissionKey.Category,
-    actions: "create",
-    queryFn: getCategoryPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.Category
+  }).is_ok()
 
   const selectedAllRows = selectedRows.length === categories.length
   const selectedSomeRows = selectedRows.length > 0 && 

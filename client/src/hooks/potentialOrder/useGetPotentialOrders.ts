@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPotentialOrdersFn } from "@/services/potentialOrdersApi";
 import { Pagination } from "@/services/types";
 import { PotentialOrderFilter } from "@/context/order";
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 
 
 export function useGetPotentialOrders({
@@ -18,7 +18,7 @@ export function useGetPotentialOrders({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: [Resource.PotentialOrder, { filter, pagination, include } ] as CacheKey<"potential-orders">["list"],
+    queryKey: [CacheResource.PotentialOrder, { filter, pagination, include } ] as CacheKey<"potential-orders">["list"],
     queryFn: args => getPotentialOrdersFn(args, { 
       filter,
       pagination,

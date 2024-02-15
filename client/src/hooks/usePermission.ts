@@ -1,50 +1,26 @@
+import { useStore } from "."
+
+import Result, { Err, Ok } from "@/libs/result"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
-
-import { QueryFunction, useSuspenseQuery } from "@tanstack/react-query"
-import { PermissionsResponse } from "@/services/types"
-import { PermissionKey, Resource } from "@/context/cacheKey"
-import { useMe } from "."
+import { OperationAction, Resource } from "@/services/types"
 
 
-interface Args {
-  key: PermissionKey,
-  fetchUser?: boolean,
-  actions: "create" | "read" | "update" | "delete"
-  queryFn?: QueryFunction<PermissionsResponse> | undefined
-}
+/**
+ * usePermission(...) -> Result<(), AppError>
+ */
+export function usePermission({
+  action,
+  resource
+}: {
+  action: OperationAction,
+  resource: Resource
+}): Result<boolean, AppError> {
+  const { state: { user } } = useStore()
 
-export function usePermission({key, actions, fetchUser, queryFn}: Args) {
-  const userQuery = useMe({ enabled: fetchUser })
-  const permissionsQuery = useSuspenseQuery({
-    queryKey: key,
-    queryFn,
-    select: (data: PermissionsResponse) => data
-  })
+  if (user?.isSuperuser) return Ok(true)
 
-  // Extraction
-  const user = userQuery.try_data.ok_or_throw()
-  const permissions = permissionsQuery.data
+  const isAllowed = user?.role?.permissions?.some(perm => perm.action === action && perm.resource === resource)
+  if (isAllowed) return Ok(true)
 
-  if (permissionsQuery.isError && permissionsQuery.error) throw AppError.new(AppErrorKind.ApiError, permissionsQuery.error.message)
-
-  const role = user?.role || "*"
-  const resource = key[0].split("-")[0] as Resource
-
-
-  if (permissions?.label !== resource && !userQuery.isSuccess) return false
-
-  if (actions === "create" 
-    && (permissions?.permissions?.createAllowedRoles?.includes(role) || permissions?.permissions?.createAllowedRoles?.includes("*"))
-  ) return true
-  if (actions === "read" 
-    && (permissions?.permissions?.readAllowedRoles?.includes(role) || permissions?.permissions?.readAllowedRoles?.includes("*"))
-  ) return true
-  if (actions === "update" 
-    && (permissions?.permissions?.updateAllowedRoles?.includes(role) || permissions?.permissions?.updateAllowedRoles?.includes("*"))
-  ) return true
-  if (actions === "delete" 
-    && (permissions?.permissions?.deleteAllowedRoles?.includes(role) || permissions?.permissions?.deleteAllowedRoles?.includes("*"))
-  ) return true
-
-  return false
+  return Err(AppError.new(AppErrorKind.AccessDeniedError, `Could not access this recouse`))
 }

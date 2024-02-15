@@ -1,17 +1,15 @@
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { RenderCountLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
-import { PermissionKey } from "@/context/cacheKey";
 import { FormModal } from "@/components/forms";
 import { MuiButton } from "@/components/ui";
 import { CreateSalesCategoryInput } from "./forms";
 import { SalesCategoriesActions } from "./SalesCategoriesActions";
-import { SalesCategory } from "@/services/types";
+import { OperationAction, Resource, SalesCategory } from "@/services/types";
 import { useState } from "react"
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
-import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
@@ -142,22 +140,19 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
   }
 
   const isAllowedDeleteSalesCategory = usePermission({
-    key: PermissionKey.SalesCategory,
-    actions: "delete",
-    queryFn: getSalesCategoryPermissionsFn
-  })
+    action: OperationAction.Delete,
+    resource: Resource.SalesCategory
+  }).is_ok()
 
   const isAllowedUpdateSalesCategory = usePermission({
-    key: PermissionKey.SalesCategory,
-    actions: "update",
-    queryFn: getSalesCategoryPermissionsFn
-  })
+    action: OperationAction.Update,
+    resource: Resource.SalesCategory
+  }).is_ok()
 
   const isAllowedCreateSalesCategory = usePermission({
-    key: PermissionKey.SalesCategory,
-    actions: "create",
-    queryFn: getSalesCategoryPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.SalesCategory
+  }).is_ok()
 
   const selectedAllRows = selectedRows.length === salesCategoiries.length
   const selectedSomeRows = selectedRows.length > 0 && 

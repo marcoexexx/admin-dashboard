@@ -1,16 +1,14 @@
-import { PermissionKey } from "@/context/cacheKey";
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { FormModal } from "@/components/forms";
-import { Brand } from "@/services/types";
+import { Brand, OperationAction, Resource } from "@/services/types";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { CreateBrandInput } from "./forms";
 import { BrandsActions } from ".";
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
-import { getBrandPermissionsFn } from "@/services/permissionsApi";
+import { usePermission, useStore } from "@/hooks";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
@@ -121,22 +119,19 @@ export function BrandsListTable(props: BrandsListTableProps) {
   }
 
   const isAllowedDeleteBrand = usePermission({
-    key: PermissionKey.Brand,
-    actions: "delete",
-    queryFn: getBrandPermissionsFn
-  })
+    action: OperationAction.Delete,
+    resource: Resource.Brand
+  }).is_ok()
 
   const isAllowedUpdateBrand = usePermission({
-    key: PermissionKey.Brand,
-    actions: "update",
-    queryFn: getBrandPermissionsFn
-  })
+    action: OperationAction.Update,
+    resource: Resource.Brand
+  }).is_ok()
 
   const isAllowedCreateBrand = usePermission({
-    key: PermissionKey.Brand,
-    actions: "create",
-    queryFn: getBrandPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.Brand
+  }).is_ok()
 
   const selectedAllRows = selectedRows.length === brands.length
   const selectedSomeRows = selectedRows.length > 0 && 

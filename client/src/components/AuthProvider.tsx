@@ -1,9 +1,7 @@
 import { SuspenseLoader } from '.';
-import { PermissionKey } from '@/context/cacheKey';
 import { useCookies } from 'react-cookie'
-import { useMe, usePermission, useStore } from "@/hooks";
+import { useMe, useStore } from "@/hooks";
 import { useEffect } from "react";
-import { getDashboardPermissionsFn } from '@/services/permissionsApi';
 
 import AppError, { AppErrorKind } from '@/libs/exceptions';
 
@@ -30,12 +28,7 @@ export function AuthProvider(props: AuthProviderProps) {
   }, [isSuccess])
 
 
-  const isAllowedReactDashboard = usePermission({
-    fetchUser: !!cookies.logged_in,
-    key: PermissionKey.Dashboard,
-    queryFn: getDashboardPermissionsFn,
-    actions: "read",
-  })
+  const isAllowedReactDashboard = Boolean(me?.isSuperuser || me?.shopownerProviderId !== undefined)
 
 
   if (isLoading) return <SuspenseLoader />

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getSalesCategoriesFn } from "@/services/salesCategoryApi";
 import { Pagination } from "@/services/types";
 import { SalesCategoryFilter } from "@/context/salesCategory";
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 
 
 export function useGetSalesCategories({
@@ -18,7 +18,7 @@ export function useGetSalesCategories({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: [Resource.SalesCategory, { filter, pagination, include } ] as CacheKey<"sales-categories">["list"],
+    queryKey: [CacheResource.SalesCategory, { filter, pagination, include } ] as CacheKey<"sales-categories">["list"],
     queryFn: args => getSalesCategoriesFn(args, { 
       filter,
       pagination,

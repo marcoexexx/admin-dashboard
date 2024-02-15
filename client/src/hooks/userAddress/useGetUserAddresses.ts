@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserAddressesFn } from "@/services/userAddressApi";
 import { Pagination } from "@/services/types";
 import { UserAddressFilter } from "@/context/userAddress";
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 
 
 export function useGetUserAddresses({
@@ -18,7 +18,7 @@ export function useGetUserAddresses({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: [Resource.UserAddress, { filter, pagination, include } ] as CacheKey<"user-addresses">["list"],
+    queryKey: [CacheResource.UserAddress, { filter, pagination, include } ] as CacheKey<"user-addresses">["list"],
     queryFn: args => getUserAddressesFn(args, { 
       filter,
       pagination,

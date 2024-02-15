@@ -2,16 +2,14 @@ import { Box, Card, CardContent, Checkbox, Divider, IconButton, MenuItem, Select
 import { MuiButton } from "@/components/ui";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
-import { Order, PotentialOrder } from "@/services/types";
+import { OperationAction, Order, PotentialOrder, Resource } from "@/services/types";
 import { PotentialOrdersActions } from ".";
 import { RenderOrderItemLabel, RenderUsernameLabel } from "@/components/table-labels";
 import { OrderStatus } from "./forms";
-import { PermissionKey } from "@/context/cacheKey";
 import { useState } from "react"
 import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
-import { getOrderPermissionsFn } from "@/services/permissionsApi";
 import { numberFormat } from "@/libs/numberFormat";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
@@ -172,16 +170,14 @@ export function OrdersListTable(props: OrdersListTableProps) {
   }
 
   const isAllowedDeleteOrder = usePermission({
-    key: PermissionKey.Order,
-    actions: "delete",
-    queryFn: getOrderPermissionsFn
-  })
+    action: OperationAction.Delete,
+    resource: Resource.Order
+  }).is_ok()
 
   const isAllowedUpdateOrder = usePermission({
-    key: PermissionKey.Order,
-    actions: "update",
-    queryFn: getOrderPermissionsFn
-  })
+    action: OperationAction.Update,
+    resource: Resource.Order
+  }).is_ok()
 
   const selectedAllRows = selectedRows.length === orders.length
   const selectedSomeRows = selectedRows.length > 0 && 

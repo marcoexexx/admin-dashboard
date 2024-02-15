@@ -1,7 +1,7 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 import Result, { Err, Ok } from "@/libs/result"
 
-import { Resource } from "@/context/cacheKey"
+import { CacheResource } from "@/context/cacheKey"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
@@ -28,7 +28,7 @@ export function useDeleteRegion() {
       } })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: [Resource.Region]
+        queryKey: [CacheResource.Region]
       })
       playSoundEffect("success")
     }

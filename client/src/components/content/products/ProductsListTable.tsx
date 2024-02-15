@@ -5,12 +5,10 @@ import { ProductsActions } from ".";
 import { FormModal } from "@/components/forms";
 import { RenderBrandLabel, RenderCategoryLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
 import { ProductStatus } from "./forms";
-import { Product, User } from "@/services/types";
-import { PermissionKey } from "@/context/cacheKey";
+import { OperationAction, Product, Resource, User } from "@/services/types";
 import { useState } from "react"
-import { useStore, usePermission, useOnlyAdmin } from "@/hooks";
+import { useStore, usePermission } from "@/hooks";
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { useNavigate } from "react-router-dom";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
@@ -227,25 +225,22 @@ export function ProductsListTable(props: ProductsListTableProps) {
     selectedRows.length < products.length
 
 
-  const onlyAdminAccess = useOnlyAdmin()
+  const onlyAdminAccess = me.isSuperuser
 
   const isAllowedUpdateProduct = usePermission({
-    key: PermissionKey.Product,
-    actions: "update",
-    queryFn: getProductPermissionsFn,
-  })
+    action: OperationAction.Update,
+    resource: Resource.Product
+  }).is_ok()
 
   const isAllowedDeleteProduct = usePermission({
-    key: PermissionKey.Product,
-    actions: "update",
-    queryFn: getProductPermissionsFn,
-  })
+    action: OperationAction.Delete,
+    resource: Resource.Product
+  }).is_ok()
 
   const isAllowedCreateProduct = usePermission({
-    key: PermissionKey.Product,
-    actions: "create",
-    queryFn: getProductPermissionsFn,
-  })
+    action: OperationAction.Create,
+    resource: Resource.Product
+  }).is_ok()
 
 
   return (

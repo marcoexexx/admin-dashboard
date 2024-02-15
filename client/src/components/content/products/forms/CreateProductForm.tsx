@@ -17,9 +17,9 @@ import { tryParseInt } from "@/libs/result/std";
 
 
 // TODO: Type enum
-export const productStockStatus = ["Available", "OutOfStock", "AskForStock", "Discontinued"] as const
-export const productStatus = ["Draft", "Pending", "Published"] as const
-export const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"] as const
+// export const productStockStatus = ["Available", "OutOfStock", "AskForStock", "Discontinued"] as const
+// export const productStatus = ["Draft", "Pending", "Published"] as const
+// export const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"] as const
 
 export type ProductStockStatus = typeof productStockStatus[number]
 export type ProductStatus = typeof productStatus[number]

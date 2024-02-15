@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getRegionsFn } from "@/services/regionsApi";
 import { Pagination } from "@/services/types";
 import { RegionFilter } from "@/context/region";
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 
 
 export function useGetRegions({
@@ -18,7 +18,7 @@ export function useGetRegions({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: [Resource.Region, { filter, pagination, include } ] as CacheKey<"regions">["list"],
+    queryKey: [CacheResource.Region, { filter, pagination, include } ] as CacheKey<"regions">["list"],
     queryFn: args => getRegionsFn(args, { 
       filter,
       pagination,

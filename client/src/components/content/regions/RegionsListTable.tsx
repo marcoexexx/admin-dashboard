@@ -5,16 +5,14 @@ import { CreateRegionInput } from "./forms/CreateRegionForm";
 import { RenderTownshipName } from "@/components/table-labels";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { MuiButton } from "@/components/ui";
-import { Region } from "@/services/types";
+import { OperationAction, Region, Resource } from "@/services/types";
 import { useState } from "react"
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
-import { getRegionPermissionsFn } from "@/services/permissionsApi";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { PermissionKey } from "@/context/cacheKey";
 
 
 const columnData: TableColumnHeader<Region>[] = [
@@ -122,22 +120,19 @@ export function RegionsListTable(props: RegionsListTableProps) {
   }
 
   const isAllowedDeleteRegion = usePermission({
-    key: PermissionKey.Region,
-    actions: "delete",
-    queryFn: getRegionPermissionsFn
-  })
+    action: OperationAction.Delete,
+    resource: Resource.Region
+  }).is_ok()
 
   const isAllowedUpdateRegion = usePermission({
-    key: PermissionKey.Region,
-    actions: "update",
-    queryFn: getRegionPermissionsFn
-  })
+    action: OperationAction.Update,
+    resource: Resource.Region
+  }).is_ok()
 
   const isAllowedCreateBrand = usePermission({
-    key: PermissionKey.Region,
-    actions: "create",
-    queryFn: getRegionPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.Region
+  }).is_ok()
 
   const selectedAllRows = selectedRows.length === regions.length
   const selectedSomeRows = selectedRows.length > 0 && 

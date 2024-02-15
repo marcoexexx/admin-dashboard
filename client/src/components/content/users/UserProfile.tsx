@@ -20,7 +20,7 @@ export function UserProfile(props: UserProfileProps) {
   return (
     <Card>
       <h1>Name: {user.name}</h1>
-      <h3>Role: {user.role}</h3>
+      <h3>Role: {user.role?.name}</h3>
       <h3>username: {user.username}</h3>
     </Card>
   )

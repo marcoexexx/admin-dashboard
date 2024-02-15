@@ -1,4 +1,3 @@
-import { PermissionKey } from "@/context/cacheKey";
 import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
@@ -6,11 +5,10 @@ import { MuiButton } from "@/components/ui";
 import { CouponsActions } from ".";
 import { RenderImageLabel, RenderProductLabel } from "@/components/table-labels";
 import { CreateCouponInput } from "./forms";
-import { Coupon, Product } from "@/services/types";
+import { Coupon, OperationAction, Product, Resource } from "@/services/types";
 import { useState } from "react"
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
-import { getCouponsPermissionsFn } from "@/services/permissionsApi";
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
@@ -142,22 +140,19 @@ export function CouponsListTable(props: CouponsListTableProps) {
   }
 
   const isAllowedUpdateCoupon = usePermission({
-    key: PermissionKey.Coupon,
-    actions: "update",
-    queryFn: getCouponsPermissionsFn
-  })
+    action: OperationAction.Update,
+    resource: Resource.Coupon,
+  }).is_ok()
 
   const isAllowedDeleteCoupon = usePermission({
-    key: PermissionKey.Coupon,
-    actions: "delete",
-    queryFn: getCouponsPermissionsFn
-  })
+    action: OperationAction.Delete,
+    resource: Resource.Coupon,
+  }).is_ok()
 
   const isAllowedCreateCoupon = usePermission({
-    key: PermissionKey.Coupon,
-    actions: "create",
-    queryFn: getCouponsPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.Coupon,
+  }).is_ok()
 
   const selectedAllRows = selectedRows.length === coupons.length
   const selectedSomeRows = selectedRows.length > 0 && 

@@ -3,7 +3,7 @@ import Result, { Err, Ok } from "@/libs/result";
 
 import { useQuery } from "@tanstack/react-query";
 import { Pagination } from "@/services/types";
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 import { PickupAddressFilter } from "@/context/pickupAddress";
 import { getPickupAddressesFn } from "@/services/pickupAddressApi";
 
@@ -18,7 +18,7 @@ export function useGetPickupAddresses({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: [Resource.PickupAddress, { filter, pagination, include } ] as CacheKey<"pickup-addresses">["list"],
+    queryKey: [CacheResource.PickupAddress, { filter, pagination, include } ] as CacheKey<"pickup-addresses">["list"],
     queryFn: args => getPickupAddressesFn(args, { 
       filter,
       pagination,

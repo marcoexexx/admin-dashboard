@@ -2,14 +2,12 @@ import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
 import { MuiButton } from "@/components/ui";
-import { PermissionKey } from "@/context/cacheKey";
-import { Address } from "@/services/types";
+import { Address, OperationAction, Resource } from "@/services/types";
 import { UserAddressActions } from ".";
 import { useState } from "react"
 import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";
 import { useNavigate } from "react-router-dom";
-import { getUserAddressPermissionsFn } from "@/services/permissionsApi";
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
@@ -127,16 +125,14 @@ export function UserAddressesListTable(props: UserAddressesListTableProps) {
   }
 
   const isAllowedDeleteUserAddress = usePermission({
-    key: PermissionKey.UserAddress,
-    actions: "delete",
-    queryFn: getUserAddressPermissionsFn
-  })
+    action: OperationAction.Delete,
+    resource: Resource.UserAddress
+  }).is_ok()
 
   const isAllowedUpdateUserAddress = usePermission({
-    key: PermissionKey.UserAddress,
-    actions: "update",
-    queryFn: getUserAddressPermissionsFn
-  })
+    action: OperationAction.Update,
+    resource: Resource.UserAddress
+  }).is_ok()
 
   const selectedAllRows = selectedRows.length === userAddresses.length
   const selectedSomeRows = selectedRows.length > 0 && 
