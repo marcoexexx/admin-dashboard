@@ -28,7 +28,7 @@ export function AuthProvider(props: AuthProviderProps) {
   }, [isSuccess])
 
 
-  const isAllowedReactDashboard = Boolean(me?.isSuperuser || me?.shopownerProviderId !== undefined)
+  const isAllowedReactDashboard = Boolean(me?.isSuperuser || me?.shopownerProviderId)
 
   if (isLoading) return <SuspenseLoader />
 
