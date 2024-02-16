@@ -26,6 +26,11 @@ const columnData: TableColumnHeader<User>[] = [
     name: "Role"
   },
   {
+    id: "shopownerProvider",
+    align: "right",
+    name: "Shopowner"
+  },
+  {
     id: "blockedUsers",
     align: "right",
     name: "Blocked"
@@ -136,6 +141,7 @@ export function UsersListTable(props: UsersListTableProps) {
                         {key === "name" ? <RenderUsernameLabel user={row} me={me} /> : null}
                         {key === "email" ? row.email : null}
                         {key === "role" && row.role ? <RenderRoleLabel role={row.role} /> : null}
+                        {key === "shopownerProvider" ? row.shopownerProvider?.name : null}
                         {key === "blockedUsers" ? <RenderToggleBlockUserButton user={row} me={me} /> : null}
                       </Typography>
                     </TableCell>

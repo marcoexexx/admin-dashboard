@@ -350,13 +350,12 @@ export async function deleteProductHandler(
     const _product = (await service.tryFindUnique({
       where: {
         id: productId,
-        status: ProductStatus.Draft
       },
       select: {
         status: true
       }
     })).ok_or_throw()
-    if (!_product) return next(AppError.new(StatusCode.Forbidden,  `Deletion is restricted for product in non-drift states.`))
+    if (_product?.status !== ProductStatus.Draft) return next(AppError.new(StatusCode.BadRequest,  `Deletion is restricted for product in non-drift states.`))
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)

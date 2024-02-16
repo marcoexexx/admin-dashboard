@@ -21,9 +21,9 @@ export function useUpdateProduct() {
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
-        severity: err.response.data.status === 403 ? "warning" : "error"
+        severity: err.response.data.status === 400 ? "warning" : "error"
       } })
-      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
+      playSoundEffect(err.response.data.status === 400 ? "denied" : "error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {

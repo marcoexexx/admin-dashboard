@@ -179,6 +179,8 @@ export function ProductsListTable(props: ProductsListTableProps) {
   }
 
   const handleOnImport = (data: any[]) => {
+    dispatch({ type: "OPEN_BACKDROP" })
+
     convertToExcel(data, "Products")
       .then(excelBuffer => onCreateManyProducts(excelBuffer))
       .catch(err => dispatch({
@@ -188,6 +190,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
           severity: "error"
         }
       }))
+      .finally(() => {
+        dispatch({ type: "CLOSE_BACKDROP" })
+      })
   }
 
   const handleChangePagination = (_: any, page: number) => {
