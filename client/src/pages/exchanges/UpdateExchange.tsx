@@ -1,16 +1,14 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
 import { UpdateExchangeForm } from "@/components/content/exchanges/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
-import { getExchangePermissionsFn } from "@/services/permissionsApi";
 import { useNavigate } from 'react-router-dom'
 
 import getConfig from "@/libs/getConfig";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 
@@ -18,13 +16,7 @@ const appName = getConfig("appName")
 
 
 function UpdateExchangeWrapper() {
-  const isAllowedUpdateExchange = usePermission({
-    key: PermissionKey.Exchange,
-    actions: "update",
-    queryFn: getExchangePermissionsFn
-  })
-
-  if (!isAllowedUpdateExchange) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Update, resource: Resource.Exchange }).ok_or_throw()
   
   return <Card>
     <CardContent>

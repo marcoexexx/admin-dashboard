@@ -1,8 +1,8 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { PriceUnit } from "@/components/content/products/forms";
 import { CacheResource } from "@/context/cacheKey";
+import { PriceUnit } from "@/services/types";
 import { useQuery } from "@tanstack/react-query";
 import { getExchangesFn } from "@/services/exchangesApi";
 

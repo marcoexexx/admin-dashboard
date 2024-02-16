@@ -22,7 +22,7 @@ const SelectionCardWrapper = styled(Box)<{ active: "true" | "false" }>(({ theme,
 export default function AddressInformationStep() {
   const { getValues, setValue } = useFormContext<CreateOrderInput>()
 
-  const addressType: CreateOrderInput["addressType"] = getValues("addressType") || "Delivery"
+  const addressType: CreateOrderInput["addressType"] = getValues("addressType") || OrderAddressType.Delivery
 
 
   useEffect(() => {
@@ -31,8 +31,8 @@ export default function AddressInformationStep() {
 
 
   const handleChangeAddressType = (addressType: OrderAddressType) => (_: React.MouseEvent<HTMLDivElement>) => {
-    if (addressType === "Delivery") setValue("pickupAddressId", undefined)
-    if (addressType === "Pickup") setValue("deliveryAddressId", undefined)
+    if (addressType === OrderAddressType.Delivery) setValue("pickupAddressId", undefined)
+    if (addressType === OrderAddressType.Pickup) setValue("deliveryAddressId", undefined)
     setValue("addressType", addressType)
   }
 
@@ -45,7 +45,7 @@ export default function AddressInformationStep() {
         <Box display="flex" flexDirection="column" gap={1}>
           <Typography>Choose the option</Typography>
           <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={1}>
-            <SelectionCardWrapper active={addressType === "Delivery" ? "true" : "false"} onClick={handleChangeAddressType("Delivery")}>
+            <SelectionCardWrapper active={addressType === "Delivery" ? "true" : "false"} onClick={handleChangeAddressType(OrderAddressType.Delivery)}>
               <Box 
                 ml={2}
                 component="img"
@@ -66,7 +66,7 @@ export default function AddressInformationStep() {
               />
             </SelectionCardWrapper>
 
-            <SelectionCardWrapper active={addressType === "Pickup" ? "true" : "false"} onClick={handleChangeAddressType("Pickup")}>
+            <SelectionCardWrapper active={addressType === "Pickup" ? "true" : "false"} onClick={handleChangeAddressType(OrderAddressType.Pickup)}>
               <Box 
                 ml={2}
                 component="img"

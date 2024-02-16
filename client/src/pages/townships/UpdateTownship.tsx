@@ -1,16 +1,14 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { UpdateTownshipForm } from '@/components/content/townships/forms';
+import { OperationAction, Resource } from '@/services/types';
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
-import { getTownshipPermissionsFn } from '@/services/permissionsApi';
 
 import getConfig from "@/libs/getConfig";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 
@@ -18,13 +16,7 @@ const appName = getConfig("appName")
 
 
 function UpdateTownshipWrapper() {
-  const isAllowedUpdateTownship = usePermission({
-    key: PermissionKey.Township,
-    actions: "update",
-    queryFn: getTownshipPermissionsFn
-  })
-
-  if (!isAllowedUpdateTownship) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Update, resource: Resource.Township }).ok_or_throw()
 
   return <Card>
     <CardContent>

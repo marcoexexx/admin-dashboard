@@ -1,8 +1,7 @@
 import { Card } from "@mui/material";
 import { SuspenseLoader } from "@/components";
 import { OrdersListTable } from ".";
-import { Order } from "@/services/types";
-import { OrderStatus } from "./forms";
+import { Order, OrderStatus } from "@/services/types";
 import { useStore } from "@/hooks";
 import { useDeleteMultiOrders, useDeleteOrder, useGetOrders, useUpdateOrder } from "@/hooks/order";
 

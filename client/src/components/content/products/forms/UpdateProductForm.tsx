@@ -6,12 +6,12 @@ import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
 import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
-import { Resource } from "@/context/cacheKey";
+import { PriceUnit, ProductStatus, ProductStockStatus } from "@/services/types";
+import { CacheResource } from "@/context/cacheKey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
 import { useStore } from "@/hooks";
 import { useEffect } from "react";
-import { priceUnit, productStatus, productStockStatus } from ".";
 import { useGetProduct, useUpdateProduct } from "@/hooks/product";
 import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
 import { useParams } from "react-router-dom";
@@ -32,13 +32,13 @@ const updateProductSchema = object({
   categories: string().array().default([]),
   discount: number().max(100).default(0),
   isDiscountItem: boolean().default(false),
-  instockStatus: z.enum(productStockStatus).default("AskForStock"),
+  instockStatus: z.nativeEnum(ProductStockStatus).default(ProductStockStatus.AskForStock),
   dealerPrice: number().min(0).optional(),
   marketPrice: number().min(0).optional(),
-  priceUnit: z.enum(priceUnit).default("MMK"),
+  priceUnit: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
   quantity: number().min(0),
   isPending: boolean().default(false),
-  status: z.enum(productStatus).default("Draft"),
+  status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
   itemCode: string().nullable().optional(),
 })
@@ -98,7 +98,7 @@ export function UpdateProductForm() {
 
   useEffect(() => {
     queryClient.invalidateQueries({
-      queryKey: [Resource.Exchange, "latest", methods.getValues("priceUnit")],
+      queryKey: [CacheResource.Exchange, "latest", methods.getValues("priceUnit")],
     })
   }, [methods.watch("priceUnit")])
 
@@ -184,7 +184,7 @@ export function UpdateProductForm() {
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField 
                 {...register("priceUnit")} 
-                defaultValue={priceUnit[0]}
+                defaultValue={PriceUnit.MMK}
                 name="priceUnit"
                 label="Price unit" 
                 select
@@ -192,7 +192,7 @@ export function UpdateProductForm() {
                 helperText={!!errors.priceUnit ? errors.priceUnit.message : ""} 
                 fullWidth
               >
-                {priceUnit.map(t => (
+                {(Object.keys(PriceUnit) as PriceUnit[]).map(t => (
                   <MenuItem key={t} value={t}>
                     {t}
                   </MenuItem>
@@ -231,13 +231,13 @@ export function UpdateProductForm() {
               <TextField 
                 fullWidth 
                 {...register("instockStatus")} 
-                defaultValue={productStockStatus[2]}
+                defaultValue={ProductStockStatus.AskForStock}
                 select
                 label="Instock Status" 
                 error={!!errors.instockStatus} 
                 helperText={!!errors.instockStatus ? errors.instockStatus.message : ""} 
               >
-                {productStockStatus.map(status => (
+                {(Object.keys(ProductStockStatus) as ProductStockStatus[]).map(status => (
                   <MenuItem key={status} value={status}>
                     {status}
                   </MenuItem>

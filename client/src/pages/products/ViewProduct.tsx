@@ -1,27 +1,19 @@
-import { PermissionKey } from "@/context/cacheKey";
 import { Suspense } from "react";
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material"
 import { ProductDetail } from "@/components/content/products/detail";
 import { MuiButton } from "@/components/ui";
+import { OperationAction, Resource } from "@/services/types";
 import { useNavigate, useParams } from 'react-router-dom'
 import { usePermission } from "@/hooks";
-import { getProductPermissionsFn } from "@/services/permissionsApi";
 
-import AppError, { AppErrorKind } from "@/libs/exceptions";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
 
 function ViewProductReadWrapper({productId}: {productId: string | undefined}) {
-  const isAllowedReadProduct = usePermission({
-    key: PermissionKey.Product,
-    actions: "read",
-    queryFn: getProductPermissionsFn
-  })
-
-  if (!isAllowedReadProduct) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.Product }).ok_or_throw()
 
   return <ProductDetail productId={productId} />
 }
@@ -31,12 +23,10 @@ export default function ViewProduct() {
 
   const navigate = useNavigate()
 
-
   const isAllowedUpdateProduct = usePermission({
-    key: PermissionKey.Product,
-    actions: "update",
-    queryFn: getProductPermissionsFn
-  })
+    action: OperationAction.Update,
+    resource: Resource.Product
+  }).is_ok()
 
   const handleBack = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate(-1)

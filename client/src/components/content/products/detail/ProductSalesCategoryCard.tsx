@@ -1,11 +1,9 @@
 import { Box, Card, CardContent, Grid, Typography, useTheme } from "@mui/material";
 import { MuiButton } from "@/components/ui";
 import { DashboardCard } from "@/components";
-import { ProductSalesCategoriesResponse } from "@/services/types";
-import { PermissionKey } from "@/context/cacheKey";
+import { OperationAction, ProductSalesCategoriesResponse, Resource } from "@/services/types";
 import { usePermission } from "@/hooks";
 import { useNavigate } from "react-router-dom";
-import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone'
 
@@ -24,10 +22,9 @@ export function ProductSalesCategoryCard(props: ProductSalesCategoryCardProps) {
   const navigate = useNavigate()
 
   const isAllowedCreateSalesCategory = usePermission({
-    key: PermissionKey.SalesCategory,
-    actions: "create",
-    queryFn: getSalesCategoryPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.SalesCategory
+  }).is_ok()
 
   const handleCreateNewSalesCategory = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate("/sales-categories/create")

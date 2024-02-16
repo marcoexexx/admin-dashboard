@@ -4,8 +4,7 @@ import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { ProductsActions } from ".";
 import { FormModal } from "@/components/forms";
 import { RenderBrandLabel, RenderCategoryLabel, RenderImageLabel, RenderProductLabel, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
-import { ProductStatus } from "./forms";
-import { OperationAction, Product, Resource, User } from "@/services/types";
+import { OperationAction, Product, ProductStatus, Resource, User } from "@/services/types";
 import { useState } from "react"
 import { useStore, usePermission } from "@/hooks";
 import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";

@@ -15,6 +15,9 @@ export const createExchangeSchema = object({
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" })
+  }).refine(data => data.from !== data.to, {
+    path: ["to"],
+    message: "to and from must different"
   })
 })
 
@@ -26,6 +29,9 @@ export const updateExchangeSchema = object({
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" })
+  }).refine(data => data.from !== data.to, {
+    path: ["to"],
+    message: "to and from must different"
   })
 })
 
@@ -37,6 +43,9 @@ export const createMultiExchangesSchema = object({
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" })
+  }).refine(data => data.from !== data.to, {
+    path: ["to"],
+    message: "to and from must different"
   }).array()
 })
 

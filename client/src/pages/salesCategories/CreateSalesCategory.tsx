@@ -1,29 +1,21 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
 import { CreateSalesCategoryForm } from "@/components/content/sales-categories/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
-import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 import { useNavigate } from 'react-router-dom'
 
 import getConfig from "@/libs/getConfig";
 import ErrorBoundary from '@/components/ErrorBoundary';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 
 const appName = getConfig("appName")
 
 function CreateProductWrapper() {
-  const isAllowedCreateSalesCategory = usePermission({
-    key: PermissionKey.SalesCategory,
-    actions: "create",
-    queryFn: getSalesCategoryPermissionsFn
-  })
-  
-  if (!isAllowedCreateSalesCategory) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Create, resource: Resource.SalesCategory }).ok_or_throw()
 
   return  <Card>
     <CardContent>

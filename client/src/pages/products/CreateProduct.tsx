@@ -1,15 +1,13 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
 import { CreateProductForm } from "@/components/content/products/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
-import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { useNavigate } from 'react-router-dom'
 
 import getConfig from "@/libs/getConfig";
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
@@ -17,13 +15,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 function CreateProductWrapper() {
-  const isAllowedCreateProduct = usePermission({
-    key: PermissionKey.Product,
-    actions: "create",
-    queryFn: getProductPermissionsFn
-  })
-
-  if (!isAllowedCreateProduct) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Create, resource: Resource.Product }).ok_or_throw()
 
   return <Card>
     <CardContent>

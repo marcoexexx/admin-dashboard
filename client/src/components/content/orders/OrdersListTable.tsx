@@ -2,10 +2,9 @@ import { Box, Card, CardContent, Checkbox, Divider, IconButton, MenuItem, Select
 import { MuiButton } from "@/components/ui";
 import { BulkActions, LoadingTablePlaceholder } from "@/components";
 import { FormModal } from "@/components/forms";
-import { OperationAction, Order, PotentialOrder, Resource } from "@/services/types";
+import { OperationAction, Order, OrderStatus, PotentialOrder, Resource } from "@/services/types";
 import { PotentialOrdersActions } from ".";
 import { RenderOrderItemLabel, RenderUsernameLabel } from "@/components/table-labels";
-import { OrderStatus } from "./forms";
 import { useState } from "react"
 import { exportToExcel } from "@/libs/exportToExcel";
 import { usePermission, useStore } from "@/hooks";

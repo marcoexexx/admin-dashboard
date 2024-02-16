@@ -1,5 +1,5 @@
 import { Button, styled } from "@mui/material"
-import { Resource } from "@/context/cacheKey"
+import { CacheResource } from "@/context/cacheKey"
 import { useStore } from "@/hooks"
 import { object, z } from "zod"
 import { uploadCoverPhotoFn } from "@/services/usersApi"
@@ -32,7 +32,7 @@ export function UploadCoverPhoto() {
         severity: "success"
       } })
       queryClient.invalidateQueries({
-        queryKey: [Resource.AuthUser, "profile"]
+        queryKey: [CacheResource.AuthUser, "profile"]
       })
     },
     onError() {

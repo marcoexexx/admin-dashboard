@@ -1,17 +1,15 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { TownshipsList } from '@/components/content/townships';
-import { getTownshipPermissionsFn } from '@/services/permissionsApi';
+import { OperationAction, Resource } from '@/services/types';
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 
 import getConfig from "@/libs/getConfig";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 
@@ -19,13 +17,7 @@ const appName = getConfig("appName")
 
 
 function ListTownshipWrapper() {
-  const isAllowedReadTownship = usePermission({
-    key: PermissionKey.Township,
-    actions: "read",
-    queryFn: getTownshipPermissionsFn
-  })
-
-  if (!isAllowedReadTownship) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.Township }).ok_or_throw()
 
   return <TownshipsList />
 }
@@ -36,10 +28,9 @@ export default function ListTownship() {
 
 
   const isAllowedCreateTownship = usePermission({
-    key: PermissionKey.Township,
-    actions: "create",
-    queryFn: getTownshipPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.Township
+  }).is_ok()
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate("/townships/create")

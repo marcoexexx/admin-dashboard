@@ -7,6 +7,7 @@ import { OperationAction, Resource } from "@/services/types"
 
 /**
  * usePermission(...) -> Result<(), AppError>
+ * @returns undefined
  */
 export function usePermission({
   action,
@@ -14,13 +15,13 @@ export function usePermission({
 }: {
   action: OperationAction,
   resource: Resource
-}): Result<boolean, AppError> {
+}): Result<undefined, AppError> {
   const { state: { user } } = useStore()
 
-  if (user?.isSuperuser) return Ok(true)
+  if (user?.isSuperuser) return Ok(undefined)
 
   const isAllowed = user?.role?.permissions?.some(perm => perm.action === action && perm.resource === resource)
-  if (isAllowed) return Ok(true)
+  if (isAllowed) return Ok(undefined)
 
   return Err(AppError.new(AppErrorKind.AccessDeniedError, `Could not access this recouse`))
 }

@@ -1,14 +1,14 @@
 import { PlaceholderManagementUserProfile, queryClient } from "@/components"
 import { ProfileCover, RecentActivity } from "@/components/content/me"
 import { Container, Grid } from "@mui/material"
-import { Resource } from "@/context/cacheKey"
+import { CacheResource } from "@/context/cacheKey"
 import { useMe } from "@/hooks"
 import { getMeFn } from "@/services/authApi"
 
 
 export async function meProfileLoader() {
   return await queryClient.fetchQuery({
-    queryKey: [Resource.AuthUser, "profile"],
+    queryKey: [CacheResource.AuthUser, "profile"],
     queryFn: (args) => getMeFn(args, {
       include: {
         _count: true,

@@ -1,16 +1,14 @@
-import { PermissionKey } from '@/context/cacheKey';
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { BrandsList } from "@/components/content/brands";
 import { MuiButton } from "@/components/ui";
-import { Suspense } from 'react';
+import { OperationAction, Resource } from '@/services/types';
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
-import { getBrandPermissionsFn } from "@/services/permissionsApi";
 
 import getConfig from "@/libs/getConfig";
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
@@ -19,13 +17,7 @@ const appName = getConfig("appName")
 
 
 function ListBrandWrapper() {
-  const isAllowedReadBrand = usePermission({
-    key: PermissionKey.Brand,
-    actions: "read",
-    queryFn: getBrandPermissionsFn
-  })
-
-  if (!isAllowedReadBrand) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.Brand }).ok_or_throw()
 
   return <BrandsList />
 }
@@ -35,10 +27,9 @@ export default function ListBrand() {
   const navigate = useNavigate()
 
   const isAllowedCreateBrand = usePermission({
-    key: PermissionKey.Brand,
-    actions: "create",
-    queryFn: getBrandPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.Brand
+  }).is_ok()
 
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {

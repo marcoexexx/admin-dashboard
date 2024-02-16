@@ -1,31 +1,23 @@
-import { PermissionKey } from '@/context/cacheKey';
+import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { ExchangesList } from "@/components/content/exchanges";
 import { MuiButton } from "@/components/ui";
+import { OperationAction, Resource } from '@/services/types';
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
-import { getExchangePermissionsFn } from "@/services/permissionsApi";
 
 import getConfig from "@/libs/getConfig";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { Suspense } from 'react';
 
 
 const appName = getConfig("appName")
 
 
 function ListExchangeWrapper() {
-  const isAllowedReadExchange = usePermission({
-    key: PermissionKey.Exchange,
-    actions: "read",
-    queryFn: getExchangePermissionsFn
-  })
-  
-  if (!isAllowedReadExchange) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.Exchange }).ok_or_throw()
 
   return <ExchangesList />
 }
@@ -35,10 +27,9 @@ export default function ListExchange() {
   const navigate = useNavigate()
 
   const isAllowedCreateExchange = usePermission({
-    key: PermissionKey.Exchange,
-    actions: "create",
-    queryFn: getExchangePermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.Exchange
+  }).is_ok()
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate("/exchanges/create")

@@ -1,16 +1,14 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { ProductsList } from "@/components/content/products";
 import { MuiButton } from "@/components/ui";
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
-import { getProductPermissionsFn } from "@/services/permissionsApi";
 import { useNavigate } from "react-router-dom";
 
 import getConfig from "@/libs/getConfig";
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
@@ -18,13 +16,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 function ListProductWrapper() {
-  const isAllowedReadProduct = usePermission({
-    key: PermissionKey.Product,
-    actions: "read",
-    queryFn: getProductPermissionsFn
-  })
-
-  if (!isAllowedReadProduct) throw AppError.new(AppErrorKind.AccessDeniedError) 
+  usePermission({ action: OperationAction.Read, resource: Resource.Product }).ok_or_throw()
 
   return <ProductsList />
 }
@@ -34,10 +26,9 @@ export default function ListProduct() {
   const navigate = useNavigate()
 
   const isAllowedCreateProduct = usePermission({
-    key: PermissionKey.Product,
-    actions: "create",
-    queryFn: getProductPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.Product
+  }).is_ok()
 
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {

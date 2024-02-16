@@ -70,7 +70,7 @@ export const OrderStatus = {
   Pending: "Pending",
   Processing: "Processing",
   Shipped: "Shipped",
-  Delivered: "Delivery",
+  Delivered: "Delivered",
   Cancelled: "Cancelled"
 } as const
 export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus]

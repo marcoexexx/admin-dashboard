@@ -1,15 +1,12 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
-import { ChangeRoleUserForm } from "@/components/content/users/forms";
-import { getUserPermissionsFn } from '@/services/permissionsApi';
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from '@/hooks';
 
 import getConfig from "@/libs/getConfig";
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
@@ -17,17 +14,11 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 function UpdateUserWrapper() {
-  const isAllowedUpdateUser = usePermission({
-    key: PermissionKey.User,
-    actions: "update",
-    queryFn: getUserPermissionsFn
-  })
-
-  if (!isAllowedUpdateUser) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Update, resource: Resource.User }).ok_or_throw()
 
   return  <Card>
     <CardContent>
-      <ChangeRoleUserForm />
+      Not supported yet!
     </CardContent>
   </Card>
 }

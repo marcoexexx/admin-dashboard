@@ -3,8 +3,7 @@ import { useCreateMultiProducts, useDeleteMultiProducts, useDeleteProduct, useGe
 
 import { Card } from "@mui/material";
 import { ProductsListTable } from ".";
-import { ProductStatus } from "./forms";
-import { Product } from "@/services/types";
+import { Product, ProductStatus } from "@/services/types";
 import { SuspenseLoader } from "@/components";
 
 

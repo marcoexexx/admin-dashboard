@@ -13,7 +13,9 @@ export class MetaAppService {
   ) {}
 
 
-  async audit(user: User | undefined, log?: PartialShallow<typeof this.log>): Promise<Result<AuditLog | undefined, AppError>> {
+  async audit(user: User | undefined, _log?: PartialShallow<typeof this.log>): Promise<Result<AuditLog | undefined, AppError>> {
+    const log = { ...this.log, ..._log }
+
     // if not user, not create auditlog
     if (!user) return Ok(undefined)
 

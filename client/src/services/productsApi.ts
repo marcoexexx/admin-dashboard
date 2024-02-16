@@ -1,6 +1,6 @@
 import { authApi } from "./authApi";
-import { CreateProductInput, ProductStatus, UpdateProductInput } from "@/components/content/products/forms";
-import { HttpListResponse, HttpResponse, Pagination, Product, ProductResponse, ProductSalesCategoriesResponse, QueryOptionArgs } from "./types";
+import { CreateProductInput, UpdateProductInput } from "@/components/content/products/forms";
+import { HttpListResponse, HttpResponse, Pagination, Product, ProductResponse, ProductSalesCategoriesResponse, ProductStatus, QueryOptionArgs } from "./types";
 import { ProductFilter } from "@/context/product";
 
 

@@ -3,21 +3,24 @@ import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { MuiButton } from "@/components/ui";
 import { DatePickerField } from "@/components/input-fields";
+import { PriceUnit } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { number, object, z } from "zod";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { priceUnit } from "../../products/forms";
 import { useGetExchange, useUpdateExchange } from "@/hooks/exchange";
 
 
 const updateExchangeSchema = object({
-  from: z.enum(priceUnit),
-  to: z.enum(priceUnit),
+  from: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
+  to: z.nativeEnum(PriceUnit).default(PriceUnit.USD),
   rate: number({ required_error: "rate is required" })
     .min(0),
   date: z.any()
-}) 
+}).refine(data => data.from !== data.to, {
+  path: ["to"],
+  message: "to and from must different"
+})
 
 export type UpdateExchangeInput = z.infer<typeof updateExchangeSchema>
 
@@ -63,13 +66,13 @@ export function UpdateExchangeForm() {
             <TextField 
               {...register("from")} 
               label="Price unit from" 
-              defaultValue={priceUnit[0]}
+              defaultValue={PriceUnit.MMK}
               error={!!errors.from} 
               helperText={!!errors.from ? errors.from.message : ""} 
               select
               fullWidth
             >
-              {priceUnit.map(t => (
+              {(Object.keys(PriceUnit) as PriceUnit[]).map(t => (
                 <MenuItem key={t} value={t}>
                   {t}
                 </MenuItem>
@@ -96,14 +99,14 @@ export function UpdateExchangeForm() {
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
             <TextField 
               {...register("to")} 
-              defaultValue={priceUnit[1]}
+              defaultValue={PriceUnit.MMK}
               label="Price unit to" 
               error={!!errors.to} 
               helperText={!!errors.to ? errors.to.message : ""} 
               select
               fullWidth
             >
-              {priceUnit.map(t => (
+              {(Object.keys(PriceUnit) as PriceUnit[]).map(t => (
                 <MenuItem key={t} value={t}>
                   {t}
                 </MenuItem>
