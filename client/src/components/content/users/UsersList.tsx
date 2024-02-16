@@ -28,7 +28,6 @@ export function UsersList() {
     usersQuery
   )
 
-
   if ((!users || !me) || isLoading) return <SuspenseLoader />
 
   return <Card>

@@ -30,7 +30,6 @@ export function AuthProvider(props: AuthProviderProps) {
 
   const isAllowedReactDashboard = Boolean(me?.isSuperuser || me?.shopownerProviderId !== undefined)
 
-
   if (isLoading) return <SuspenseLoader />
 
   if (cookies.logged_in && !isAllowedReactDashboard) throw AppError.new(AppErrorKind.PermissionError)

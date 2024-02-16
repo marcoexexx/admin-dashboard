@@ -40,6 +40,7 @@ export async function safeDeserializeUser(
         id: tryJSONParse(session).expect(`Failed json parse for session id`).id
       },
       include: {
+        shopownerProvider: true,
         role: {
           include: {
             permissions: true

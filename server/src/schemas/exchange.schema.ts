@@ -42,7 +42,9 @@ export const createMultiExchangesSchema = object({
     to: z.enum(priceUnit).default("USD"),
     rate: number({ required_error: "rate is required" })
       .min(0),
-    date: string({ required_error: "Date field is required" })
+    date: string({ required_error: "Date field is required" }),
+
+    "shopownerProvider.name": string({ required_error: "shopownerProvider is required" })
   }).refine(data => data.from !== data.to, {
     path: ["to"],
     message: "to and from must different"

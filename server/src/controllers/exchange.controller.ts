@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CreateExchangeInput, DeleteMultiExchangesInput, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
 import { ExchangeService } from "../services/exchange";
-import { StatusCode } from "../utils/appError";
+import AppError, { StatusCode } from "../utils/appError";
 import { OperationAction } from "@prisma/client";
 
 
@@ -125,12 +125,20 @@ export async function createExchangeHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
+    if (!sessionUser.shopownerProvider) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
+
     const exchange = (await service.tryCreate({
       data: {
         from,
         date,
         to,
-        rate
+        rate,
+        shopowner: {
+          create: {
+            name: sessionUser.shopownerProvider.name,
+            id: sessionUser.shopownerProvider.id
+          }
+        }
       }
     })).ok_or_throw()
 
@@ -184,9 +192,12 @@ export async function deleteExchangeHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
+    if (!sessionUser.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
+
     const exchange = (await service.tryDelete({
       where: {
-        id: exchangeId
+        id: exchangeId,
+        shopownerProviderId: sessionUser.shopownerProviderId
       }
     })).ok_or_throw()
 
@@ -213,11 +224,14 @@ export async function deleteMultiExchangesHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
+    if (!sessionUser.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
+
     const _tryDeleteExchanges = await service.tryDeleteMany({
       where: {
         id: {
           in: exchangeIds
-        }
+        },
+        shopownerProviderId: sessionUser.shopownerProviderId
       }
     })
     _tryDeleteExchanges.ok_or_throw()

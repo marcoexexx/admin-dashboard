@@ -18,12 +18,13 @@ import { OrderItem } from "@/services/types";
 import { PaymentMethodStep } from "./PaymentMethod";
 import { CreatePotentialOrderInput } from "@/components/content/potential-orders/forms";
 import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
+import { CreateTownshipForm } from '@/components/content/townships/forms';
+import { CreateRegionForm } from '@/components/content/regions/forms';
+import { CreatePickupAddressForm } from '@/components/content/pickupAddressHistory/forms';
 
 import ErrorBoundary from "@/components/ErrorBoundary";
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
-import { CreateTownshipForm } from '@/components/content/townships/forms';
-import { CreateRegionForm } from '@/components/content/regions/forms';
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -363,6 +364,12 @@ export function CheckoutForm() {
       {modalForm.field === "addresses"
       ? <FormModal field='addresses' title='Create new address' onClose={handleOnCloseModalForm}>
         <CreateUserAddressForm />
+      </FormModal>
+      : null}
+
+      {modalForm.field === "pickup-addresses"
+      ? <FormModal field='pickup-addresses' title='Create new address' onClose={handleOnCloseModalForm}>
+        <CreatePickupAddressForm />
       </FormModal>
       : null}
 

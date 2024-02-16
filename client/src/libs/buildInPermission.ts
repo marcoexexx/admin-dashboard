@@ -1,15 +1,4 @@
-import { OperationAction, Permission, Prisma, Resource } from "@prisma/client"
-
-export type UserWithRole = Prisma.UserGetPayload<{
-  include: {
-    shopownerProvider: true,
-    role: { 
-      include: { 
-        permissions: true 
-      } 
-    }
-  }
-}>
+import { OperationAction, Permission, Resource } from "@/services/types"
 
 // There are access allowed, even does not have role permission
 export const guestUserAccessResources: Pick<Permission, "action" | "resource">[] = [

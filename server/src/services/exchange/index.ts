@@ -195,7 +195,8 @@ export class ExchangeService extends MetaAppService implements AppService {
         to: exchange.to,
         from: exchange.from,
         rate: exchange.rate,
-        date: exchange.date
+        date: exchange.date,
+        shopownerProviderId: exchange["shopownerProvider.name"]
       },
       update: { 
         to: exchange.to,

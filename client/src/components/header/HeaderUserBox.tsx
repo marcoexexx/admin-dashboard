@@ -20,28 +20,28 @@ import MapIcon from '@mui/icons-material/Map';
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 
-const UserBoxButton = styled(Button)(({theme}) => ({
+const UserBoxButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(1),
   paddingRight: theme.spacing(1)
 }))
 
-const MenuUserBox = styled(Box)(({theme}) => ({
+const MenuUserBox = styled(Box)(({ theme }) => ({
   background: theme.colors.alpha.black[5],
   padding: theme.spacing(2)
 }))
 
-const UserBoxText = styled(Box)(({theme}) => ({
+const UserBoxText = styled(Box)(({ theme }) => ({
   textAlign: "left",
   paddingLeft: theme.spacing(1)
 }))
 
-const UserBoxLabel = styled(Typography)(({theme}) => ({
+const UserBoxLabel = styled(Typography)(({ theme }) => ({
   fontWeight: theme.typography.fontWeightBold,
   color: theme.palette.secondary.main,
   display: "block"
 }))
 
-const UserBoxDescription = styled(Typography)(({theme}) => ({
+const UserBoxDescription = styled(Typography)(({ theme }) => ({
   color: lighten(theme.palette.secondary.main, 0.5)
 }))
 
@@ -85,6 +85,15 @@ export default function HeaderUserBox() {
     })
   }
 
+  const shopOwner = try_user.ok()?.shopownerProvider
+  const roleDisplay = shopOwner
+    ? shopOwner.name
+    : try_user.ok()?.role
+      ? try_user.ok()?.role?.name
+      : try_user.ok()?.isSuperuser
+        ? "Superuser"
+        : undefined
+
 
   if (try_user.is_err()) return <>
     <UserBoxButton color="error">
@@ -111,7 +120,7 @@ export default function HeaderUserBox() {
             <UserBoxText>
               <UserBoxLabel>{try_user.value.name}</UserBoxLabel>
               <UserBoxDescription variant="body2">
-                {try_user.value.role?.name}
+                {roleDisplay}
               </UserBoxDescription>
             </UserBoxText>
           </Hidden>
@@ -139,7 +148,7 @@ export default function HeaderUserBox() {
           <Avatar variant="rounded" alt={try_user.value.name} src={try_user.value.image} />
           <UserBoxText>
             <UserBoxLabel variant="body1">{try_user.value.name}</UserBoxLabel>
-            <UserBoxDescription variant="body2">{try_user.value.role?.name}</UserBoxDescription>
+            <UserBoxDescription variant="body2">{roleDisplay}</UserBoxDescription>
           </UserBoxText>
         </MenuUserBox>
 

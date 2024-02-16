@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { OperationAction, PrismaClient, Resource } from "@prisma/client"
+import { guestUserAccessResources } from '../@types/type';
 
 const prisma = new PrismaClient()
 
@@ -20,85 +21,7 @@ async function rolesSeed() {
       remark: "Build-in role",
       permissions: {
         createMany: {
-          data: [
-            // Products
-            {
-              resource: Resource.Product,
-              action: OperationAction.Read
-            },
-
-            // AccessLog
-
-            // AuditLog
-
-            // User
-
-            // Brand
-            {
-              resource: Resource.Brand,
-              action: OperationAction.Read
-            },
-
-            // Category
-            {
-              resource: Resource.Category,
-              action: OperationAction.Read
-            },
-
-            // Coupon
-
-            // Exchange
-
-            // Order
-            {
-              resource: Resource.Order,
-              action: OperationAction.Read
-            },
-            {
-              resource: Resource.Order,
-              action: OperationAction.Create
-            },
-
-            // PickupAddress
-            {
-              resource: Resource.Order,
-              action: OperationAction.Read
-            },
-            {
-              resource: Resource.Order,
-              action: OperationAction.Create
-            },
-
-            // PotentialOrder
-            {
-              resource: Resource.PotentialOrder,
-              action: OperationAction.Read
-            },
-            {
-              resource: Resource.PotentialOrder,
-              action: OperationAction.Create
-            },
-
-            // Region
-            {
-              resource: Resource.Region,
-              action: OperationAction.Read
-            },
-
-            // SalesCategory
-            {
-              resource: Resource.SalesCategory,
-              action: OperationAction.Read
-            },
-
-            // Township
-            {
-              resource: Resource.Township,
-              action: OperationAction.Read
-            },
-
-            // UserAddress
-          ]
+          data: [...guestUserAccessResources]
         }
       }
     },
@@ -223,9 +146,9 @@ async function usersSeed() {
 
 
 async function main() {
-  // await rolesSeed()
-  // await shopownersSeed()
-  // await usersSeed()
+  await rolesSeed()
+  await shopownersSeed()
+  await usersSeed()
 
   await brandsSeed()
 }

@@ -123,6 +123,9 @@ model Exchange {
   rate Float
   date DateTime
 
+  shopowner           ShopownerProvider @relation(fields: [shopownerProviderId], references: [id])
+  shopownerProviderId String            @db.ObjectId
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -155,10 +158,11 @@ model Reward {
 }
 
 model ShopownerProvider {
-  id     String  @id @default(auto()) @map("_id") @db.ObjectId
-  name   String  @unique
-  remark String?
-  users  User[]
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  name      String     @unique
+  remark    String?
+  users     User[]
+  exchanges Exchange[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -3,13 +3,12 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { DeleteAccessLogSchema } from "../schemas/accessLog.schema";
 import { AccessLogService } from "../services/accessLog";
-import { OperationAction, Resource } from "@prisma/client";
+import { OperationAction } from "@prisma/client";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { checkUser } from "../services/checkUser";
 
 
-const resource = Resource.AccessLog
 const service = AccessLogService.new()
 
 
@@ -28,28 +27,17 @@ export async function getAccessLogsHandler(
     const { page, pageSize } = query.pagination ?? {}
     const { user } = convertStringToBoolean(query.include) ?? {}
 
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const [count, logs] = (await service.tryFindManyWithCount(
       {
         pagination: { page, pageSize }
       },
       {
         where: {
-          user: {
-            OR: [
-              { isSuperuser: true },
-              {
-                role: {
-                  permissions: {
-                    some: {
-                      action: OperationAction.Read,
-                      resource
-                    }
-                  }
-                }
-              }
-            ]
-          },
-
+          userId: sessionUser.isSuperuser ? undefined : sessionUser.id,
           id,
           browser,
           ip,
@@ -76,23 +64,13 @@ export async function deleteAccessLogsHandler(
   try {
     const { accessLogId } = req.params
 
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const accessLog = (await service.tryDelete({
       where: {
-        user: {
-          OR: [
-            { isSuperuser: true },
-            {
-              role: {
-                permissions: {
-                  some: {
-                    action: OperationAction.Delete,
-                    resource
-                  }
-                }
-              }
-            }
-          ]
-        },
+        userId: sessionUser.isSuperuser ? undefined : sessionUser.id,
         id: accessLogId
       }
     })).ok_or_throw()

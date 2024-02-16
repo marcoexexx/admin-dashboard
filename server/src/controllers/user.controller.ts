@@ -53,7 +53,13 @@ export async function getMeHandler(
         accessLogs,
         auditLogs,
         createdProducts,
-        pickupAddresses
+        pickupAddresses,
+        role: {
+          include: {
+            permissions: true
+          }
+        },
+        shopownerProvider: true
       }
     })).ok_or_throw()
 
@@ -80,6 +86,14 @@ export async function getUserHandler(
       where: {
         id: userId
       },
+      include: {
+        role: {
+          include: {
+            permissions: true
+          }
+        },
+        shopownerProvider: true
+      }
     })).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ user }))
@@ -104,6 +118,14 @@ export async function getUserByUsernameHandler(
     const user = (await service.tryFindUnique({
       where: {
         username
+      },
+      include: {
+        role: {
+          include: {
+            permissions: true
+          }
+        },
+        shopownerProvider: true
       }
     })).ok_or_throw()
 
@@ -164,7 +186,13 @@ export async function getUsersHandler(
           createdProducts,
           pickupAddresses,
           blockedUsers,
-          blockedByUsers
+          blockedByUsers,
+          role: {
+            include: {
+              permissions: true
+            }
+          },
+          shopownerProvider: true
         },
         orderBy
       }

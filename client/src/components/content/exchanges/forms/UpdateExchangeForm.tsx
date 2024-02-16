@@ -21,8 +21,8 @@ const updateExchangeSchema = object({
   path: ["to"],
   message: "to and from must different"
 })
-
 export type UpdateExchangeInput = z.infer<typeof updateExchangeSchema>
+
 
 export function UpdateExchangeForm() {
   const { exchangeId } = useParams()
@@ -64,7 +64,7 @@ export function UpdateExchangeForm() {
         <Grid item xs={12} md={6}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
             <TextField 
-              {...register("from")} 
+              {...register("from")}
               label="Price unit from" 
               defaultValue={PriceUnit.MMK}
               error={!!errors.from} 
@@ -78,31 +78,32 @@ export function UpdateExchangeForm() {
                 </MenuItem>
               ))}
             </TextField>
-            <TextField 
+            {/* <SelectInputField fieldName="from" options={(Object.keys(PriceUnit) as PriceUnit[])} /> */}
+            <TextField
               focused
-              fullWidth 
+              fullWidth
               {...register("rate", {
                 valueAsNumber: true
-              })} 
+              })}
               type="number"
               inputProps={{
                 step: "0.01"
               }}
-              label="Rate" 
-              error={!!errors.rate} 
-              helperText={!!errors.rate ? errors.rate.message : ""} 
+              label="Rate"
+              error={!!errors.rate}
+              helperText={!!errors.rate ? errors.rate.message : ""}
             />
           </Box>
         </Grid>
 
         <Grid item xs={12} md={6}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <TextField 
-              {...register("to")} 
+            <TextField
+              {...register("to")}
               defaultValue={PriceUnit.MMK}
-              label="Price unit to" 
-              error={!!errors.to} 
-              helperText={!!errors.to ? errors.to.message : ""} 
+              label="Price unit to"
+              error={!!errors.to}
+              helperText={!!errors.to ? errors.to.message : ""}
               select
               fullWidth
             >

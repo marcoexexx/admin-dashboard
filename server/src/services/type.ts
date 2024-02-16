@@ -1,6 +1,6 @@
 import { AuditLog, OperationAction, Prisma, Resource, User } from "@prisma/client"
 import { PartialShallow } from "lodash"
-import { UserWithRole, guestUserAccessResources } from "../../@types/type";
+import { UserWithRole, guestUserAccessResources, shopownerAccessResources } from "../../@types/type";
 
 import AppError, { StatusCode } from "../utils/appError"
 import Result, { Err, Ok } from "../utils/result"
@@ -51,6 +51,11 @@ export class MetaAppService {
     }
 
     if (user.isSuperuser) return Ok(true)
+
+    if (user.shopownerProviderId !== null) {
+      const isAccess = [...guestUserAccessResources, ...shopownerAccessResources]?.some(perm => perm.resource === this.resource && perm.action === action)
+      if (isAccess) return Ok(true)
+    }
 
     const isAccess = user.role?.permissions.some(perm => perm.resource === this.resource && perm.action === action)
     if (!isAccess) return Err(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))

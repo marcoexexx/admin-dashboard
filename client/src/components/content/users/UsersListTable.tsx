@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { RenderProileAvatar, RenderToggleBlockUserButton, RenderUsernameLabel } from "@/components/table-labels";
+import { RenderProileAvatar, RenderRoleLabel, RenderToggleBlockUserButton, RenderUsernameLabel } from "@/components/table-labels";
 import { OperationAction, Resource, User } from "@/services/types";
 import { UsersActions } from ".";
 import { exportToExcel } from "@/libs/exportToExcel";
@@ -135,7 +135,7 @@ export function UsersListTable(props: UsersListTableProps) {
                       >
                         {key === "name" ? <RenderUsernameLabel user={row} me={me} /> : null}
                         {key === "email" ? row.email : null}
-                        {key === "role" ? row.role?.name : null}
+                        {key === "role" && row.role ? <RenderRoleLabel role={row.role} /> : null}
                         {key === "blockedUsers" ? <RenderToggleBlockUserButton user={row} me={me} /> : null}
                       </Typography>
                     </TableCell>
