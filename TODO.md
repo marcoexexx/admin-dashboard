@@ -4,6 +4,9 @@
 # TODO
 ## Error handling
 - [ ] Get: NotFound handle :: server handler
+- [ ] excel export wirh selector
+- [ ] root modal forms provider
+- [ ] sale products Excel connect/disconnect
 
 ## Region & Township
 - [ ] excel create many townships
