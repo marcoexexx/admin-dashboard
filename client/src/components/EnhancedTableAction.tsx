@@ -22,7 +22,7 @@ const MenuActionBox = styled(Box)(({theme}) => ({
 interface EnhancedTableActionsProps {
   onExport: () => void
   onImport: (data: any) => void
-  renderFilterForm: React.ReactElement | null
+  renderFilterForm?: React.ReactElement
   resource: Resource
   refreshKey: any
 }

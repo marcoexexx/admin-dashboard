@@ -21,7 +21,7 @@ export class MetaAppService {
 
     if (!log) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit log for this resource: log is undefined`))
     if (!log.action) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit for this resource: action is undefined`)) 
-    if (!Array.isArray(log.resourceIds) || !log.resourceIds.length) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit for this resource: action is undefined`)) 
+    if (!Array.isArray(log.resourceIds) || !log.resourceIds.length) return Ok(undefined)
 
     const payload: Prisma.AuditLogUncheckedCreateInput = {
       userId: user.id,

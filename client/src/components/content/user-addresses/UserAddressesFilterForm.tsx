@@ -7,30 +7,30 @@ import { useSearchParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
 
 
-const filterBrandsSchema = object({
+const filterUserAddressesSchema = object({
   name: string().min(0).max(128).optional(),
   insensitive: boolean().optional().default(false),
 })
 
-export type FilterBrandsInput = z.infer<typeof filterBrandsSchema>
+export type FilterUserAddressesInput = z.infer<typeof filterUserAddressesSchema>
 
-export function BrandsFilterForm() {
+export function UserAddressesFilterForm() {
   const { dispatch } = useStore()
 
   const [filterQuery, setFilterQuery] = useSearchParams()
 
-  const methods = useForm<FilterBrandsInput>({
-    resolver: zodResolver(filterBrandsSchema)
+  const methods = useForm<FilterUserAddressesInput>({
+    resolver: zodResolver(filterUserAddressesSchema)
   })
 
   const { handleSubmit, register, formState: { errors }, setValue } = methods
 
-  const onSubmit: SubmitHandler<FilterBrandsInput> = (value) => {
+  const onSubmit: SubmitHandler<FilterUserAddressesInput> = (value) => {
     const { name, insensitive } = value
 
     setFilterQuery(prev => ({ ...prev, ...value }))
 
-    dispatch({ type: "SET_BRAND_FILTER", payload: {
+    dispatch({ type: "SET_USER_ADDRESS_FILTER", payload: {
       fields: {
         name: {
           contains: name || undefined,
@@ -44,7 +44,7 @@ export function BrandsFilterForm() {
     setFilterQuery({})
     setValue("name", undefined)
     setValue("insensitive", false)
-    dispatch({ type: "SET_BRAND_FILTER", payload: {
+    dispatch({ type: "SET_USER_ADDRESS_FILTER", payload: {
       fields: undefined
     } })
   }

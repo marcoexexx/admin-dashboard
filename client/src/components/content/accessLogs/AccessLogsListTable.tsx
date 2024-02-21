@@ -1,30 +1,30 @@
-import { Box, Card, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow,Typography } from "@mui/material"
-import { LoadingTablePlaceholder } from "@/components";
-
-import { AccessLog } from "@/services/types";
+import { Box, Card, TablePagination, Typography } from "@mui/material"
+import { EnhancedTable, TypedColumn } from "@/components";
+import { AccessLog, Resource } from "@/services/types";
+import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
 
 
-const columnData: TableColumnHeader<AccessLog>[] = [
+const columns: TypedColumn<AccessLog>[] = [
   {
     id: "browser",
     align: "left",
-    name: "Browser"
+    name: "Browser",
+    render: ({value}) => <Typography>{value.browser}</Typography>
   },
   {
     id: "platform",
     align: "left",
-    name: "Platform"
+    name: "Platform",
+    render: ({value}) => <Typography>{value.platform}</Typography>
   },
   {
     id: "date",
     align: "left",
-    name: "Date"
+    name: "Date",
+    render: ({value}) => <Typography>{new Date(value.date).toUTCString()}</Typography>
   },
 ]
-
-const columnHeader = columnData.concat([
-])
 
 interface AccessLogsListTableProps {
   accessLogs: AccessLog[]
@@ -34,7 +34,6 @@ interface AccessLogsListTableProps {
 
 export function AccessLogsListTable(props: AccessLogsListTableProps) {
   const { accessLogs, count, isLoading } = props
-
   const { state: {accessLogFilter}, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -58,45 +57,15 @@ export function AccessLogsListTable(props: AccessLogsListTableProps) {
 
   return (
     <Card>
-      <TableContainer>
-        {isLoading
-        ? <LoadingTablePlaceholder />
-        : <Table>
-          <TableHead>
-            <TableRow>
-              {columnHeader.map(header => {
-                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-                return header.id !== "actions"
-                  ? render
-                  : null
-              })}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {accessLogs.map(row => {
-              return <TableRow
-                hover
-                key={row.id}
-              >
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {col.id === "browser" && row.browser}
-                    {col.id === "platform" && row.platform}
-                    {col.id === "date" && (new Date(row.date)).toString()}
-                  </Typography>
-                </TableCell>)}
-              </TableRow>
-            })}
-          </TableBody>
-        </Table>}
-      </TableContainer>
+      <EnhancedTable
+        hideCheckbox
+        hideTopActions
+        refreshKey={[CacheResource.AccessLog]}
+        rows={accessLogs}
+        resource={Resource.AccessLog}
+        isLoading={isLoading}
+        columns={columns}
+      />
 
       <Box p={2}>
         <TablePagination

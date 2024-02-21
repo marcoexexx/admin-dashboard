@@ -112,7 +112,7 @@ interface EnhancedTableProps<Row extends object> {
   columns: DynamicColumn<Row>[]
   refreshKey: any
   rows: Row[]
-  renderFilterForm: React.ReactElement | null
+  renderFilterForm?: React.ReactElement
   hideCheckbox?: boolean
   hideTopActions?: boolean
   onSingleDelete?: (id: string) => void
@@ -139,6 +139,11 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
     align: "right",
     render: () => null
   }), [])
+
+  const unimplementedFeature = () => dispatch({ type: "OPEN_TOAST", payload: {
+    message: `Unimplemented feature: ${resource}`,
+    severity: "warning"
+  } })
 
   const isAllowedUpdate = usePermission({
     action: OperationAction.Update,
@@ -170,12 +175,12 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
   }
 
   const handleMultiDelete = (ids: string[]) => () => {
-    if (!onMultiDelete) return console.warn(`Unimplemented multi delete feature: ${resource}`)
+    if (!onMultiDelete) return unimplementedFeature()
     onMultiDelete(ids)
   }
 
   const handleSingleDelete = (id: string) => () => {
-    if (!onSingleDelete) return console.warn(`Unimplemented single delete feature: ${resource}`)
+    if (!onSingleDelete) return unimplementedFeature()
     onSingleDelete(id)
   }
 
@@ -188,7 +193,7 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
   }
 
   const handleOnImport = (data: Row[]) => {
-    if (!onMultiCreate) return console.warn(`Unimplemented excel import feature: ${resource}`)
+    if (!onMultiCreate) return unimplementedFeature()
 
     convertToExcel(data, "Brands")
       .then(excelBuffer => onMultiCreate(excelBuffer))

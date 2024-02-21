@@ -19,6 +19,55 @@ import { RegionFilter } from "./region"
 import { PickupAddressFilter } from "./pickupAddress"
 
 
+export type ModalFormField = 
+  | "*"
+  | "cart"
+
+  | "brands"
+  | "products"
+  | "categories"
+  | "sales-categories"
+  | "region"
+  | "townships"
+  | "addresses"
+  | "pickup-addresses"
+
+  | "update-product"  // Only for on publish product
+  | "delete-product"
+  | "delete-product-multi"
+
+  | "delete-category"
+  | "delete-category-multi"
+
+  | "delete-sales-category"
+  | "delete-sales-category-multi"
+
+  | "delete-brand"
+  | "delete-brand-multi"
+
+  | "delete-exchange"
+  | "delete-exchange-multi"
+
+  | "delete-coupon"
+  | "delete-coupon-multi"
+
+  | "delete-township"
+  | "delete-township-multi"
+
+  | "delete-user-address"
+  | "delete-user-address-multi"
+
+  | "delete-order"
+  | "delete-order-multi"
+
+  | "delete-potential-order"
+  | "delete-potential-order-multi"
+
+  | "delete-region"
+  | "delete-region-multi"
+
+  | "delete-product-sale"
+
 export type Store = {
   theme:
     | "light"
@@ -34,54 +83,7 @@ export type Store = {
   },
   modalForm: {
     // TODO: multi create exel modal
-    field:
-      | "*"
-      | "cart"
-
-      | "brands"
-      | "products"
-      | "categories"
-      | "sales-categories"
-      | "region"
-      | "townships"
-      | "addresses"
-      | "pickup-addresses"
-
-      | "update-product"  // Only for on publish product
-      | "delete-product"
-      | "delete-product-multi"
-
-      | "delete-category"
-      | "delete-category-multi"
-
-      | "delete-sales-category"
-      | "delete-sales-category-multi"
-
-      | "delete-brand"
-      | "delete-brand-multi"
-
-      | "delete-exchange"
-      | "delete-exchange-multi"
-
-      | "delete-coupon"
-      | "delete-coupon-multi"
-
-      | "delete-township"
-      | "delete-township-multi"
-
-      | "delete-user-address"
-      | "delete-user-address-multi"
-
-      | "delete-order"
-      | "delete-order-multi"
-
-      | "delete-potential-order"
-      | "delete-potential-order-multi"
-
-      | "delete-region"
-      | "delete-region-multi"
-
-      | "delete-product-sale"
+    field: ModalFormField
     state: boolean
   },
   user?: User

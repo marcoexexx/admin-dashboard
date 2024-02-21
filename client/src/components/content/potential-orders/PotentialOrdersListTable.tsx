@@ -1,65 +1,71 @@
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { MuiButton } from "@/components/ui";
-import { BulkActions, LoadingTablePlaceholder } from "@/components";
-import { FormModal } from "@/components/forms";
-import { OperationAction, PotentialOrder, Resource } from "@/services/types";
-import { PotentialOrdersActions } from ".";
+import { Box, Card, Divider, MenuItem, Select, SelectChangeEvent, TablePagination, Typography, useTheme, Theme } from "@mui/material"
+import { EnhancedTable, TypedColumn } from "@/components";
+import { PotentialOrder, PotentialOrderStatus, Resource } from "@/services/types";
+import { PotentialOrdersFilterForm } from ".";
 import { RenderOrderItemLabel, RenderUsernameLabel } from "@/components/table-labels";
-import { useState } from "react"
+import { CacheResource } from "@/context/cacheKey";
 import { numberFormat } from "@/libs/numberFormat";
-import { exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import { useStore } from "@/hooks";
+import { useMemo } from "react";
 
 
-const columnData: TableColumnHeader<PotentialOrder & { amount: number }>[] = [
+const potentialOrderStatus: {
+  label: PotentialOrderStatus,
+  color: (theme: Theme) => string,
+}[] = [
+    {
+      label: PotentialOrderStatus.Processing,
+      color: (theme) => theme.colors.warning.main,
+    },
+    {
+      label: PotentialOrderStatus.Confimed,
+      color: (theme) => theme.colors.success.main,
+    },
+    {
+      label: PotentialOrderStatus.Cancelled,
+      color: (theme) => theme.colors.error.main,
+    },
+  ]
+
+const columns: TypedColumn<PotentialOrder>[] = [
   {
     id: "user",
     align: "left",
-    name: "Username"
+    name: "Username",
+    render: ({ value, me }) => value.user && me ? <RenderUsernameLabel user={value.user} me={me} /> : null
   },
   {
-    id: "amount",
+    id: "totalPrice",
     align: "left",
-    name: "Amount"
+    name: "Amount",
+    render: ({ value }) => <Typography>{numberFormat(value.totalPrice)}</Typography>
   },
   {
     id: "orderItems",
     align: "left",
-    name: "Order No"
-  },
-  {
-    id: "status",
-    align: "left",
-    name: "Order status"
+    name: "Order No",
+    render: ({ value }) => <>{value.orderItems?.map(item => <RenderOrderItemLabel key={item.id} orderItem={item} />)}</>
   },
   {
     id: "createdAt",
     align: "left",
-    name: "Created"
+    name: "Created",
+    render: ({ value }) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
   },
   {
     id: "updatedAt",
     align: "left",
-    name: "Updated"
+    name: "Updated",
+    render: ({ value }) => <Typography>{new Date(value.updatedAt).toUTCString()}</Typography>
   },
   {
     id: "remark",
     align: "left",
-    name: "Remark"
+    name: "Remark",
+    render: ({ value }) => <Typography>{value.remark}</Typography>
   },
 ]
 
-const columnHeader = columnData.concat([
-  {
-    id: "actions",
-    align: "right",
-    name: "Actions"
-  },
-])
 
 interface PotentialOrdersListTableProps {
   potentialOrders: PotentialOrder[]
@@ -71,46 +77,37 @@ interface PotentialOrdersListTableProps {
 
 export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
   const { potentialOrders, count, isLoading, onDelete, onMultiDelete } = props
-
-  const [deleteId, setDeleteId] = useState("")
-
-  const navigate = useNavigate()
+  const { state: { potentialOrderFilter }, dispatch } = useStore()
 
   const theme = useTheme()
-  const { state: {potentialOrderFilter, modalForm, user: me}, dispatch } = useStore()
 
-  const [selectedRows, setSellectedRows] = useState<string[]>([])
-
-  const selectedBulkActions = selectedRows.length > 0
-
-  const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked } = evt.target
-    setSellectedRows(checked
-      ? potentialOrders.map(e => e.id)
-      : []
-    )
+  const handleChangeOrderStatus = (order: PotentialOrder) => (evt: SelectChangeEvent) => {
+    const { value } = evt.target
+    if (value) console.warn("Not supported yet!", order)
   }
 
-  const handleSelectOne = (id: string) => (_: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedRows.includes(id)) setSellectedRows(prev => ([ ...prev, id ]))
-    else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
-  }
-
-  const handleClickDeleteAction = (potentialOrderId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteId(potentialOrderId)
-    dispatch({
-      type: "OPEN_MODAL_FORM",
-      payload: "delete-potential-order"
-    })
-  }
-
-  const handleClickUpdateAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/potential-orders/update/${brandId}`)
-  }
-
-  const handleOnExport = () => {
-    exportToExcel(potentialOrders, "Potential orders")
-  }
+  const columnsWithEditableStatus = useMemo(() => columns.concat([
+    {
+      id: "status",
+      align: "left",
+      name: "Order status",
+      render: ({ value }) => <Select
+        labelId="order-status"
+        value={value.status}
+        onChange={handleChangeOrderStatus(value)}
+        size="small"
+      >
+        {potentialOrderStatus.map(status => {
+          return <MenuItem
+            key={status.label}
+            value={status.label}
+          >
+            <Typography color={status.color(theme)}>{status.label}</Typography>
+          </MenuItem>
+        })}
+      </Select>
+    },
+  ]), [])
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
@@ -130,150 +127,21 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
     })
   }
 
-  const handleCloseDeleteModal = () => {
-    dispatch({
-      type: "CLOSE_ALL_MODAL_FORM"
-    })
-  }
-
-  const isAllowedDeletePotentialOrder = usePermission({
-    action: OperationAction.Delete,
-    resource: Resource.PotentialOrder
-  }).is_ok()
-
-  const isAllowedUpdatePotentialOrder = usePermission({
-    action: OperationAction.Update,
-    resource: Resource.PotentialOrder
-  }).is_ok()
-
-  const selectedAllRows = selectedRows.length === potentialOrders.length
-  const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < potentialOrders.length
-
 
   return (
     <Card>
-      {selectedBulkActions && <Box flex={1} p={2}>
-        <BulkActions
-          field="delete-potential-order-multi"
-          isAllowedDelete={isAllowedDeletePotentialOrder}
-          onDelete={() => onMultiDelete(selectedRows)}
-        />
-      </Box>}
+      <EnhancedTable<PotentialOrder>
+        refreshKey={[CacheResource.PotentialOrder]}
+        renderFilterForm={<PotentialOrdersFilterForm />}
+        rows={potentialOrders}
+        resource={Resource.PotentialOrder}
+        isLoading={isLoading}
+        columns={columnsWithEditableStatus}
+        onSingleDelete={onDelete}
+        onMultiDelete={onMultiDelete}
+      />
 
       <Divider />
-
-      <CardContent>
-        <PotentialOrdersActions 
-          onExport={handleOnExport} 
-        />
-      </CardContent>
-
-      <TableContainer>
-        {isLoading
-        ? <LoadingTablePlaceholder />
-        : <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  color="primary"
-                  checked={selectedAllRows}
-                  indeterminate={selectedSomeRows}
-                  onChange={handleSelectAll}
-                />
-              </TableCell>
-
-              {columnHeader.map(header => {
-                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-                return header.id !== "actions"
-                  ? render
-                  : isAllowedUpdatePotentialOrder && isAllowedDeletePotentialOrder
-                  ? render
-                  : null
-              })}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {potentialOrders.map(row => {
-              const isSelected = selectedRows.includes(row.id)
-              return <TableRow
-                hover
-                key={row.id}
-                selected={isSelected}
-              >
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    color="primary"
-                    checked={isSelected}
-                    onChange={handleSelectOne(row.id)}
-                    value={isSelected}
-                  />
-                </TableCell>
-
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {col.id === "user" && row.user && me && <RenderUsernameLabel user={row.user} me={me} />}
-                    {col.id === "amount" && numberFormat(row.totalPrice)}
-                    {col.id === "orderItems" && row.orderItems?.map(item => <RenderOrderItemLabel key={item.id} orderItem={item} />)}
-                    {col.id === "status" && row.status}
-                    {col.id === "updatedAt" && (new Date(row.updatedAt).toLocaleString())}
-                    {col.id === "createdAt" && (new Date(row.createdAt).toLocaleString())}
-                    {col.id === "remark" && row.remark}
-                  </Typography>
-                </TableCell>)}
-
-                {isAllowedUpdatePotentialOrder && isAllowedDeletePotentialOrder
-                ? <TableCell align="right">
-                    {isAllowedUpdatePotentialOrder
-                    ? <Tooltip title="Edit potential order" arrow>
-                        <IconButton
-                          sx={{
-                            '&:hover': {
-                              background: theme.colors.primary.lighter
-                            },
-                            color: theme.palette.primary.main
-                          }}
-                          color="inherit"
-                          size="small"
-                          onClick={handleClickUpdateAction(row.id)}
-                        >
-                          <EditTwoToneIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    : null}
-
-                    {isAllowedDeletePotentialOrder
-                    ? <Tooltip title="Delete potential order" arrow>
-                        <IconButton
-                          sx={{
-                            '&:hover': {
-                              background: theme.colors.error.lighter
-                            },
-                            color: theme.palette.error.main
-                          }}
-                          onClick={handleClickDeleteAction(row.id)}
-                          color="inherit"
-                          size="small"
-                        >
-                          <DeleteTwoToneIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    : null}
-                  </TableCell>
-                : null}
-              </TableRow>
-            })}
-          </TableBody>
-        </Table>}
-      </TableContainer>
 
       <Box p={2}>
         <TablePagination
@@ -288,24 +156,6 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>
-
-      {modalForm.field === "delete-potential-order"
-      ? <FormModal
-        field="delete-potential-order"
-        title="Delete potential order"
-        onClose={handleCloseDeleteModal}
-      >
-        <Box display="flex" flexDirection="column" gap={1}>
-          <Box>
-            <Typography>Are you sure want to delete</Typography>
-          </Box>
-          <Box display="flex" flexDirection="row" gap={1}>
-            <MuiButton variant="contained" color="error" onClick={() => onDelete(deleteId)}>Delete</MuiButton>
-            <MuiButton variant="outlined" onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}>Cancel</MuiButton>
-          </Box>
-        </Box>
-      </FormModal>
-      : null}
     </Card>
   )
 }

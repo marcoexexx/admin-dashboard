@@ -4,7 +4,7 @@ import { Category } from "@/services/types";
 
 export function RenderCategoryLabel({category}: {category: Category}) {
   const navigate = useNavigate()
-  const to = "/category/detail/" + category.id
+  const to = "/categories/detail/" + category.id
 
   const handleNavigate = () => {
     navigate(to)

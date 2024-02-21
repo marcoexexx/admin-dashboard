@@ -11,3 +11,6 @@ export * from './AddDashboardCard'
 export * from './BulkActions'
 export * from './PlaceholderManagementUserProfile'
 export * from './BackdropProvider'
+
+export * from './EnhancedTable'
+export * from './EnhancedTableAction'
