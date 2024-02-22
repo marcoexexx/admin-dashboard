@@ -18,7 +18,7 @@ import { useParams } from "react-router-dom";
 
 
 const updateProductSchema = object({
-  price: number({ required_error: "Price is required "}),
+  price: number({ required_error: "Price is required " }),
   brandId: string({ required_error: "Brand is required" })
     .min(2).max(128),
   title: string({ required_error: "Brand is required" })
@@ -46,11 +46,11 @@ const updateProductSchema = object({
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
 
 const toUpdateFields: (keyof UpdateProductInput)[] = [
-  "title", "priceUnit", 
+  "title", "priceUnit",
   "price", "discount",
-  "specification", "overview", 
-  "categories", "marketPrice", 
-  "instockStatus", 
+  "specification", "overview",
+  "categories", "marketPrice",
+  "instockStatus",
   "description",
   "quantity",
   "dealerPrice",
@@ -59,7 +59,7 @@ const toUpdateFields: (keyof UpdateProductInput)[] = [
 
 
 export function UpdateProductForm() {
-  const { state: {modalForm}, dispatch } = useStore()
+  const { state: { modalForm } } = useStore()
 
   const { productId } = useParams()
 
@@ -68,23 +68,25 @@ export function UpdateProductForm() {
   })
 
   // Quries
-  const productQuery = useGetProduct({ id: productId, include: {
-    specification: true,
-    likedUsers: true,
-    brand: true,
-    categories: {
-      include: {
-        category: true
-      }
-    },
-    salesCategory: {
-      include: {
-        salesCategory: true
-      }
-    },
+  const productQuery = useGetProduct({
+    id: productId, include: {
+      specification: true,
+      likedUsers: true,
+      brand: true,
+      categories: {
+        include: {
+          category: true
+        }
+      },
+      salesCategory: {
+        include: {
+          salesCategory: true
+        }
+      },
 
-    _count: true
-  }})
+      _count: true
+    }
+  })
   const exchangesQuery = useGetExchangeByLatestUnit(methods.getValues("priceUnit"))
 
   // Mutations
@@ -105,11 +107,11 @@ export function UpdateProductForm() {
   useEffect(() => {
     if (productQuery.isSuccess && product && productFetchStatus === "idle") {
       toUpdateFields.forEach(key => {
-        const value = key === "isPending" 
+        const value = key === "isPending"
           ? product.status === "Pending"
-          : key ==="categories"
-          ? product[key]?.map(({category: {id}}) => id)
-          : product[key]
+          : key === "categories"
+            ? product[key]?.map(({ category: { id } }) => id)
+            : product[key]
 
         methods.setValue(key, value ? value : undefined)
       })
@@ -118,10 +120,6 @@ export function UpdateProductForm() {
   }, [productQuery.isSuccess, productFetchStatus])
 
 
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
-  }
-
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<UpdateProductInput> = (value) => {
@@ -129,10 +127,12 @@ export function UpdateProductForm() {
 
     if (product?.status !== "Draft") return
 
-    updateProductMutation.mutate({id: productId, product: {
-      ...value,
-      status: value.isPending ? "Pending" : value.status
-    }})
+    updateProductMutation.mutate({
+      id: productId, product: {
+        ...value,
+        status: value.isPending ? "Pending" : value.status
+      }
+    })
   }
 
   const handleOnCalculate = (_: React.MouseEvent<HTMLButtonElement>) => {
@@ -153,12 +153,12 @@ export function UpdateProductForm() {
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField fullWidth {...register("title")} label="Title" error={!!errors.title} helperText={!!errors.title ? errors.title.message : ""} />
-              <OutlinedInput 
-                fullWidth 
-                {...register("price", { valueAsNumber: true })} 
-                type="number" 
-                placeholder="Price" 
-                error={!!errors.price} 
+              <OutlinedInput
+                fullWidth
+                {...register("price", { valueAsNumber: true })}
+                type="number"
+                placeholder="Price"
+                error={!!errors.price}
                 inputProps={{
                   step: "0.01"
                 }}
@@ -182,14 +182,14 @@ export function UpdateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                {...register("priceUnit")} 
+              <TextField
+                {...register("priceUnit")}
                 defaultValue={PriceUnit.MMK}
                 name="priceUnit"
-                label="Price unit" 
+                label="Price unit"
                 select
-                error={!!errors.priceUnit} 
-                helperText={!!errors.priceUnit ? errors.priceUnit.message : ""} 
+                error={!!errors.priceUnit}
+                helperText={!!errors.priceUnit ? errors.priceUnit.message : ""}
                 fullWidth
               >
                 {(Object.keys(PriceUnit) as PriceUnit[]).map(t => (
@@ -228,14 +228,14 @@ export function UpdateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("instockStatus")} 
+              <TextField
+                fullWidth
+                {...register("instockStatus")}
                 defaultValue={ProductStockStatus.AskForStock}
                 select
-                label="Instock Status" 
-                error={!!errors.instockStatus} 
-                helperText={!!errors.instockStatus ? errors.instockStatus.message : ""} 
+                label="Instock Status"
+                error={!!errors.instockStatus}
+                helperText={!!errors.instockStatus ? errors.instockStatus.message : ""}
               >
                 {(Object.keys(ProductStockStatus) as ProductStockStatus[]).map(status => (
                   <MenuItem key={status} value={status}>
@@ -245,10 +245,10 @@ export function UpdateProductForm() {
               </TextField>
               <BrandInputField updateField />
               <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
-              <TextField 
-                fullWidth 
-                type="number" 
-                {...register("discount", { valueAsNumber: true })} 
+              <TextField
+                fullWidth
+                type="number"
+                {...register("discount", { valueAsNumber: true })}
                 inputProps={{
                   step: "0.01"
                 }}
@@ -271,22 +271,22 @@ export function UpdateProductForm() {
           <Grid item xs={12}>
             <FormControlLabel
               label="Discounted item"
-              control={<Switch 
+              control={<Switch
                 {...register("isDiscountItem")}
               />}
             />
             <FormControlLabel
               label="Request review"
-              control={<Switch 
+              control={<Switch
                 {...register("isPending")}
               />}
             />
           </Grid>
 
-          {product.status !== "Draft" 
+          {product.status !== "Draft"
             ? <Grid item xs={12}>
               <Alert severity="warning">Update not permitted during the {product.status} process.</Alert>
-              </Grid>
+            </Grid>
             : null}
 
           <Grid item xs={12}>
@@ -295,18 +295,18 @@ export function UpdateProductForm() {
         </Grid>
       </FormProvider>
 
-      
+
       {modalForm.field === "brands"
-      ? <FormModal field='brands' title='Create new brand' onClose={handleOnCloseModalForm}>
-        <CreateBrandForm />
-      </FormModal>
-      : null}
+        ? <FormModal field='brands' title='Create new brand'>
+          <CreateBrandForm />
+        </FormModal>
+        : null}
 
       {modalForm.field === "categories"
-      ? <FormModal field='categories' title='Create new category' onClose={handleOnCloseModalForm}>
-        <CreateCategoryForm />
-      </FormModal>
-      : null}
+        ? <FormModal field='categories' title='Create new category'>
+          <CreateCategoryForm />
+        </FormModal>
+        : null}
     </>
   )
 }

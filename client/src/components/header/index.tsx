@@ -12,7 +12,7 @@ import HeaderButtons from "./HeaderButtons";
 import ErrorBoundary from "../ErrorBoundary";
 
 
-const MainContent = styled(Box)(({theme}) => ({
+const MainContent = styled(Box)(({ theme }) => ({
   height: theme.colors.layout.header.height,
   color: theme.colors.layout.header.textColor,
   padding: theme.spacing(0, 2),
@@ -24,21 +24,21 @@ const MainContent = styled(Box)(({theme}) => ({
   justifyContent: "space-between",
   width: "100%",
   [`@media (min-width: ${theme.breakpoints.values.lg}px)`]: {
-      left: theme.colors.layout.sidebar.width,
-      width: "auto"
-    },
+    left: theme.colors.layout.sidebar.width,
+    width: "auto"
+  },
   boxShadow: theme.palette.mode === "dark"
     ? `0 1px 0 ${alpha(
-        lighten(theme.colors.primary.main, 0.7),
-        0.15
-      )}, 0px 2px 8px -3px rgba(0, 0, 0, 0.2), 0px 5px 22px -4px rgba(0, 0, 0, .1)`
+      lighten(theme.colors.primary.main, 0.7),
+      0.15
+    )}, 0px 2px 8px -3px rgba(0, 0, 0, 0.2), 0px 5px 22px -4px rgba(0, 0, 0, .1)`
     : `0px 2px 8px -3px ${alpha(
-        theme.colors.alpha.black[100],
-        0.2
-      )}, 0px 5px 22px -4px ${alpha(
-        theme.colors.alpha.black[100],
-        0.1
-      )}`
+      theme.colors.alpha.black[100],
+      0.2
+    )}, 0px 5px 22px -4px ${alpha(
+      theme.colors.alpha.black[100],
+      0.1
+    )}`
 }))
 
 export default function Header() {
@@ -52,10 +52,6 @@ export default function Header() {
 
   const onClickToggleSlidebarHandler = (_: React.MouseEvent<HTMLButtonElement>) => {
     dispatch({ type: "TOGGLE_SLIDEBAR" })
-  }
-
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
   }
 
 
@@ -83,10 +79,10 @@ export default function Header() {
       </Box>
 
       {modalForm.field === "cart"
-      ? <FormModal maxWidth="lg" field='cart' title='Carts' onClose={handleOnCloseModalForm}>
+        ? <FormModal maxWidth="lg" field='cart' title='Carts'>
           <Carts orderItems={carts} />
-      </FormModal>
-      : null}
+        </FormModal>
+        : null}
     </MainContent>
   )
 }

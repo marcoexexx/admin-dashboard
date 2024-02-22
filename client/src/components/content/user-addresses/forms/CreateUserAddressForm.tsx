@@ -26,7 +26,7 @@ const createUserAddressSchema = object({
 export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>
 
 export function CreateUserAddressForm() {
-  const { state: {modalForm, user}, dispatch } = useStore()
+  const { state: { modalForm, user } } = useStore()
 
   const { mutate: createUserAddress } = useCreateUserAddress()
 
@@ -41,9 +41,6 @@ export function CreateUserAddressForm() {
     }
   }, [user])
 
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
-  }
 
   const { handleSubmit, register, formState: { errors } } = methods
 
@@ -57,12 +54,12 @@ export function CreateUserAddressForm() {
         <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("username")} 
-                label="Name" 
-                error={!!errors.username} 
-                helperText={!!errors.username ? errors.username.message : ""} 
+              <TextField
+                fullWidth
+                {...register("username")}
+                label="Name"
+                error={!!errors.username}
+                helperText={!!errors.username ? errors.username.message : ""}
               />
               <RegionInputField />
             </Box>
@@ -70,12 +67,12 @@ export function CreateUserAddressForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("phone")} 
-                label="Phone" 
-                error={!!errors.phone} 
-                helperText={!!errors.phone ? errors.phone.message : ""} 
+              <TextField
+                fullWidth
+                {...register("phone")}
+                label="Phone"
+                error={!!errors.phone}
+                helperText={!!errors.phone ? errors.phone.message : ""}
               />
               <TownshipByRegionInputField />
             </Box>
@@ -83,24 +80,24 @@ export function CreateUserAddressForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("email")} 
-                label="Email" 
-                error={!!errors.email} 
-                helperText={!!errors.email ? errors.email.message : ""} 
+              <TextField
+                fullWidth
+                {...register("email")}
+                label="Email"
+                error={!!errors.email}
+                helperText={!!errors.email ? errors.email.message : ""}
               />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("fullAddress")} 
-                label="Full address" 
-                error={!!errors.fullAddress} 
-                helperText={!!errors.fullAddress ? errors.fullAddress.message : ""} 
+              <TextField
+                fullWidth
+                {...register("fullAddress")}
+                label="Full address"
+                error={!!errors.fullAddress}
+                helperText={!!errors.fullAddress ? errors.fullAddress.message : ""}
               />
             </Box>
           </Grid>
@@ -123,16 +120,16 @@ export function CreateUserAddressForm() {
 
 
       {modalForm.field === "region"
-      ? <FormModal field='region' title='Create new region' onClose={handleOnCloseModalForm}>
-        <CreateRegionForm />
-      </FormModal>
-      : null}
+        ? <FormModal field='region' title='Create new region'>
+          <CreateRegionForm />
+        </FormModal>
+        : null}
 
       {modalForm.field === "townships"
-      ? <FormModal field='townships' title='Create new township' onClose={handleOnCloseModalForm}>
-        <CreateTownshipForm />
-      </FormModal>
-      : null}
+        ? <FormModal field='townships' title='Create new township'>
+          <CreateTownshipForm />
+        </FormModal>
+        : null}
     </>
   )
 }

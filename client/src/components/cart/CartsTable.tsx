@@ -2,54 +2,52 @@ import { OrderItem } from "@/services/types"
 import { Alert, Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { RenderImageLabel, RenderProductLabelFetch, RenderQuantityButtons } from "../table-labels"
 import { CreateOrderInput } from "../content/orders/forms"
+import { TypedColumn } from ".."
 import { useLocalStorage, useStore } from "@/hooks"
 import { useState } from "react"
 import { numberFormat } from "@/libs/numberFormat"
 import { calculateProductDiscount } from "../content/products/detail/ProductDetailTab"
+
 import AppError from "@/libs/exceptions"
 
-
-const columnData: TableColumnHeader<OrderItem & { discount: number, image: string }>[] = [
+const columns: TypedColumn<OrderItem & { discount: number, image: string }>[] = [
   {
     id: "image",
     align: "left",
-    name: "Image"
+    name: "Image",
+    render: () => null
   },
   {
     id: "product",
     align: "left",
-    name: "Product"
+    name: "Product",
+    render: () => null
   },
   {
     id: "quantity",
     align: "right",
-    name: "Quantity"
+    name: "Quantity",
+    render: () => null
   },
   {
     id: "discount",
     align: "right",
-    name: "Discount"
+    name: "Discount",
+    render: () => null
   },
   {
     id: "price",
     align: "right",
-    name: "Price"
+    name: "Price",
+    render: () => null
   },
   {
     id: "totalPrice",  // TODO: need manual
     align: "right",
-    name: "Total price"
+    name: "Total price",
+    render: () => null
   },
 ]
-
-const columnHeader = columnData.concat([
-  {
-    id: "actions",
-    align: "right",
-    name: "Actions"
-  }
-])
-
 
 interface CartsTableProps {
   carts: OrderItem[],
@@ -58,22 +56,20 @@ interface CartsTableProps {
 
 export function CartsTable(props: CartsTableProps) {
   const { carts } = props
+  const { dispatch } = useStore()
+  const { set, get } = useLocalStorage()
 
   const [orderCarts, setOrderCarts] = useState(carts)
-
-  const { dispatch } = useStore()
 
   // TODO: Memo
   const totalAmount = orderCarts.reduce((total, item) => total + item.totalPrice, 0)
   const totalSaving = orderCarts.reduce((total, item) => total + item.saving, 0)
   const originalTotalPrice = orderCarts.reduce((total, item) => total + item.originalTotalPrice, 0)
 
-  const { set, get } = useLocalStorage()
-
   const isCreatedPotentialOrder = !!get<CreateOrderInput>("PICKUP_FORM")?.createdPotentialOrderId
 
 
-  const handleOnIncrement= (item: OrderItem) => {
+  const handleOnIncrement = (item: OrderItem) => {
     if (item.product && item.quantity < item.product?.quantity) {
       const payload = orderCarts
         .map(cart => {
@@ -81,7 +77,7 @@ export function CartsTable(props: CartsTableProps) {
 
           const originalTotalPrice = (cart.quantity + 1) * cart.price
           const totalPrice = (cart.quantity + 1) * productDiscountAmount
-          
+
           if (cart.id === item.id) return {
             ...cart,
             quantity: cart.quantity + 1,
@@ -99,14 +95,14 @@ export function CartsTable(props: CartsTableProps) {
     }
   }
 
-  const handleOnDecrement= (item: OrderItem) => {
+  const handleOnDecrement = (item: OrderItem) => {
     const payload = orderCarts
       .map(cart => {
         const { productDiscountAmount } = calculateProductDiscount(cart.product)
 
         const originalTotalPrice = (cart.quantity - 1) * cart.price
         const totalPrice = (cart.quantity - 1) * productDiscountAmount
-        
+
         if (cart.id === item.id) return {
           ...cart,
           quantity: cart.quantity - 1,
@@ -136,11 +132,9 @@ export function CartsTable(props: CartsTableProps) {
         <Table>
           <TableHead>
             <TableRow>
-              {columnHeader.map(header => {
+              {columns.map(header => {
                 const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-                return header.id !== "actions"
-                  ? render
-                  : null
+                return render
               })}
             </TableRow>
           </TableHead>
@@ -151,7 +145,7 @@ export function CartsTable(props: CartsTableProps) {
                 hover
                 key={idx}
               >
-                {columnData.map(col => {
+                {columns.map(col => {
                   const { productDiscountPercent } = calculateProductDiscount(row.product)
 
                   return (
@@ -186,9 +180,9 @@ export function CartsTable(props: CartsTableProps) {
                 <Typography variant="h5" sx={{ textDecoration: "line-through" }}>{numberFormat(originalTotalPrice)} Ks</Typography>
                 <Box display="flex" alignItems="center" gap={1} justifyContent="end">
                   <Chip
-                    label="saving" 
+                    label="saving"
                     style={{ borderRadius: 5 }}
-                    color="primary" 
+                    color="primary"
                     size="small" />
                   <Typography variant="h5">{numberFormat(totalSaving)} Ks</Typography>
                 </Box>
@@ -199,8 +193,8 @@ export function CartsTable(props: CartsTableProps) {
       </TableContainer>
 
       {isCreatedPotentialOrder
-       ? <Alert severity="warning">Order items cannot be edited once potential order has been created.</Alert>
-       : null}
+        ? <Alert severity="warning">Order items cannot be edited once potential order has been created.</Alert>
+        : null}
     </Box>
   )
 }
