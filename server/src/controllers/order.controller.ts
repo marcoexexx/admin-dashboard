@@ -9,7 +9,7 @@ import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helpe
 import { CreateOrderInput, DeleteMultiOrdersInput, GetOrderInput, UpdateOrderInput } from "../schemas/order.schema";
 import { LifeCycleOrderConcrate, LifeCycleState } from "../utils/auth/life-cycle-state";
 import { OrderService } from "../services/order";
-import { OperationAction, Resource } from "@prisma/client";
+import { OperationAction } from "@prisma/client";
 
 
 const service = OrderService.new()
@@ -171,23 +171,6 @@ export async function deleteOrderHandler(
     const order = (await service.tryDelete({ 
       where: {
         id: orderId,
-        user: {
-          OR: [
-            {
-              isSuperuser: true,
-            },
-            {
-              role: {
-                permissions: {
-                  some: {
-                    action: OperationAction.Delete,
-                    resource: Resource.Order
-                  }
-                }
-              }
-            }
-          ]
-        }
       } 
     })).ok_or_throw()
     
@@ -219,23 +202,6 @@ export async function deleteMultiOrdersHandler(
       where: {
         id: {
           in: orderIds,
-        },
-        user: {
-          OR: [
-            {
-              isSuperuser: true,
-            },
-            {
-              role: {
-                permissions: {
-                  some: {
-                    action: OperationAction.Delete,
-                    resource: Resource.Order
-                  }
-                }
-              }
-            }
-          ]
         },
       }
     })

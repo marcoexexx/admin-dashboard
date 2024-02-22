@@ -466,7 +466,7 @@ model OrderItem {
   productId          String          @db.ObjectId
   order              Order?          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId            String?         @db.ObjectId
-  potentialOrder     PotentialOrder? @relation(fields: [potentialOrderId], references: [id])
+  potentialOrder     PotentialOrder? @relation(fields: [potentialOrderId], references: [id], onDelete: Cascade)
   potentialOrderId   String?         @db.ObjectId
 
   createdAt DateTime @default(now())
