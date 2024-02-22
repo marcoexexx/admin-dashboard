@@ -34,7 +34,7 @@ export async function getOrdersHandler(
 
     const [count, orders] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: {
@@ -81,7 +81,7 @@ export async function getOrderHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
     _isAccess.ok_or_throw()
 
-    const order = (await service.tryFindUnique({ where: {id: orderId}, include: { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } }, )).ok_or_throw()
+    const order = (await service.tryFindUnique({ where: { id: orderId }, include: { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } },)).ok_or_throw()
 
     // Create audit log
     if (order && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
@@ -112,27 +112,20 @@ export async function createOrderHandler(
       data: {
         addressType,
         orderItems: {
-          create: await Promise.all(orderItems.map(async item => {
-            // update product quantity
+          connect: await Promise.all(orderItems.map(async id => {
+            const _orderItem = await db.orderItem.findUnique({ where: { id }, include: { product: { select: { id: true, quantity: true } } } })
+            if (!_orderItem?.product) return Promise.reject(AppError.new(StatusCode.NotFound, `Error: Product not found in cart. This item may have been deleted or is no longer available.`))
+
             await db.product.update({
-              where: {
-                id: item.productId
-              },
+              where: { id: _orderItem.product.id },
               data: {
                 quantity: {
-                  decrement: item.quantity
+                  decrement: _orderItem.quantity
                 }
               }
             })
 
-            return {
-              productId: item.productId,
-              price: item.price,
-              quantity: item.quantity,
-              totalPrice: item.totalPrice,
-              saving: item.saving,
-              originalTotalPrice: item.price * item.quantity,
-            }
+            return { id }
           }))
         },
         userId,
@@ -168,12 +161,12 @@ export async function deleteOrderHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    const order = (await service.tryDelete({ 
+    const order = (await service.tryDelete({
       where: {
         id: orderId,
-      } 
+      }
     })).ok_or_throw()
-    
+
     // Create audit log
     const _auditLog = await service.audit(sessionUser)
     _auditLog.ok_or_throw()
@@ -228,7 +221,7 @@ export async function updateOrderHandler(
     const { orderId } = req.params
     const data = req.body
 
-    const originalOrderState = (await service.tryFindUnique({ 
+    const originalOrderState = (await service.tryFindUnique({
       where: { id: orderId },
       select: { status: true }
     })).ok_or_throw()

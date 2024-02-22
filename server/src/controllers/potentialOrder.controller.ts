@@ -33,7 +33,7 @@ export async function getPotentialOrdersHandler(
 
     const [count, potentialOrders] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: {
@@ -110,7 +110,7 @@ export async function createPotentialOrderHandler(
   next: NextFunction
 ) {
   try {
-    const { id,orderItems, totalPrice, addressType, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
+    const { id, orderItems, totalPrice, addressType, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
 
     const sessionUser = checkUser(req?.user).ok()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
@@ -123,14 +123,7 @@ export async function createPotentialOrderHandler(
       create: {
         addressType,
         orderItems: {
-          create: await Promise.all(orderItems.map(async item => ({
-            productId: item.productId,
-            price: item.price,
-            quantity: item.quantity,
-            totalPrice: item.totalPrice,
-            saving: item.saving,
-            originalTotalPrice: item.price * item.quantity,
-          })))
+          connect: orderItems.map(id => ({ id }))
         },
         userId: sessionUser?.id,
         status,
@@ -170,7 +163,7 @@ export async function deletePotentialOrderHandler(
 ) {
   try {
     const { potentialOrderId } = req.params
-    
+
     const sessionUser = checkUser(req?.user).ok()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()

@@ -35,6 +35,10 @@ import townshipRouter from './routers/township.route'
 import userAddressRouter from './routers/userAddress.route'
 import pickupAddressRouter from './routers/pickupAddress.route'
 
+import roleRouter from './routers/role.router'
+import permissionRouter from './routers/permission.route'
+import cartRouter from './routers/cart.route'
+
 import generatePkRouter from './routers/generatePk.route'
 
 import orderRouter from './routers/order.route'
@@ -136,6 +140,9 @@ app.use("/api/v1/regions", regionRouter)
 app.use("/api/v1/townships", townshipRouter)
 app.use("/api/v1/addresses", userAddressRouter)
 app.use("/api/v1/pickup-addresses", pickupAddressRouter)
+app.use("/api/v1/roles", roleRouter)
+app.use("/api/v1/permissions", permissionRouter)
+app.use("/api/v1/cart", cartRouter)
 
 
 // Unhandled Route

@@ -1,5 +1,5 @@
+import { PriceUnit } from "@prisma/client";
 import { number, object, string, z } from "zod";
-import { priceUnit } from "./product.schema";
 
 
 const params = {
@@ -10,8 +10,8 @@ const params = {
 
 export const createExchangeSchema = object({
   body: object({
-    from: z.enum(priceUnit).default("MMK"),
-    to: z.enum(priceUnit).default("USD"),
+    from: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
+    to: z.nativeEnum(PriceUnit).default(PriceUnit.USD),
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" })
@@ -24,8 +24,8 @@ export const createExchangeSchema = object({
 export const updateExchangeSchema = object({
   ...params,
   body: object({
-    from: z.enum(priceUnit).default("MMK"),
-    to: z.enum(priceUnit).default("USD"),
+    from: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
+    to: z.nativeEnum(PriceUnit).default(PriceUnit.USD),
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" })
@@ -38,8 +38,8 @@ export const updateExchangeSchema = object({
 export const createMultiExchangesSchema = object({
   body: object({
     id: string({ required_error: "Id is required" }),
-    from: z.enum(priceUnit).default("MMK"),
-    to: z.enum(priceUnit).default("USD"),
+    from: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
+    to: z.nativeEnum(PriceUnit).default(PriceUnit.USD),
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" }),

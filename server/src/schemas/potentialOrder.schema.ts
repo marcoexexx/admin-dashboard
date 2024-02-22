@@ -1,9 +1,5 @@
+import { AddressType, PaymentMethodProvider, PotentialOrderStatus } from "@prisma/client";
 import { number, object, string, z } from "zod";
-import { paymentMethodProvider } from "./order.schema";
-
-
-export const potentialOrderStatus = ["Processing", "Confimed", "Cancelled"] as const
-const potentialOrderAddressType = ["Delivery", "Pickup"] as const
 
 
 const params = {
@@ -15,20 +11,14 @@ const params = {
 export const createPotentialOrderSchema = object({
   body: object({
     id: string().optional(),
-    orderItems: object({
-      price: number().min(0),
-      quantity: number(),
-      productId: string(),
-      totalPrice: number().min(0),
-      saving: number()
-    }).array().min(0),
-    status: z.enum(potentialOrderStatus).default("Processing"),
+    orderItems: string().array().default([]),
+    status: z.nativeEnum(PotentialOrderStatus).default(PotentialOrderStatus.Processing),
     deliveryAddressId: string().optional(),
     totalPrice: number().min(0),
-    addressType: z.enum(potentialOrderAddressType),
+    addressType: z.nativeEnum(AddressType),
     pickupAddressId: string().optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
-    paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+    paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
     remark: string().optional()
   })
 })
@@ -39,24 +29,18 @@ export const getPotentialOrderSchema = object({
   ...params
 })
 
+// INFO: Could not update their order items, when created
 export const updatePotentialOrderSchema = object({
   ...params,
   body: object({
     id: string().optional(),
-    // orderItems: object({
-    //   price: number(),
-    //   quantity: number(),
-    //   productId: string(),
-    //   totalPrice: number().min(0),
-    //   saving: number()
-    // }).array().min(0),
-    status: z.enum(potentialOrderStatus).default("Processing"),
-    addressType: z.enum(potentialOrderAddressType),
+    status: z.nativeEnum(PotentialOrderStatus).default(PotentialOrderStatus.Processing),
+    addressType: z.nativeEnum(AddressType),
     deliveryAddressId: string().optional(),
     totalPrice: number().min(0),
     pickupAddressId: string().optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
-    paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+    paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
     remark: string().optional()
   })
 })

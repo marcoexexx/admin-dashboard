@@ -1,9 +1,5 @@
+import { PriceUnit, ProductStatus, ProductStockStatus } from "@prisma/client";
 import { boolean, number, object, string, z } from "zod";
-
-
-export const productStockStatus = ["Available", "OutOfStock", "AskForStock", "Discontinued"] as const
-export const productStatus = ["Draft", "Pending", "Published"] as const
-export const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"] as const
 
 
 const params = {
@@ -46,10 +42,10 @@ export const createProductSchema = object({
     overview: string().max(5000).optional(),
     description: string().max(5000).optional(),
     categories: string().array().default([]),
-    instockStatus: z.enum(productStockStatus).default("AskForStock"),
+    instockStatus: z.nativeEnum(ProductStockStatus).default(ProductStockStatus.AskForStock),
     dealerPrice: number().min(0).optional(),
     marketPrice: number().min(0).optional(),
-    priceUnit: z.enum(priceUnit),
+    priceUnit: z.nativeEnum(PriceUnit),
     discount: number().max(100).default(0),
     isDiscountItem: boolean().default(false),
     /** Example: How salesCategory work
@@ -61,7 +57,7 @@ export const createProductSchema = object({
       discount: number().max(100).default(0)
     }).array(),
     quantity: number().min(0),
-    status: z.enum(productStatus).default("Draft"),
+    status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
     itemCode: string().nullable().optional(),
   })
@@ -86,15 +82,15 @@ export const createMultiProductsSchema = object({
     overview: string().max(5000).optional(),
     description: string().max(5000).optional(),
     categories: string().optional(), // by splitting "\n"
-    instockStatus: z.enum(productStockStatus).default("AskForStock"),
+    instockStatus: z.nativeEnum(ProductStockStatus).default(ProductStockStatus.AskForStock),
     dealerPrice: number().min(0).optional(),
     marketPrice: number().min(0).optional(),
     images: string(),
-    priceUnit: z.enum(priceUnit).default("MMK"),
+    priceUnit: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
     discount: number().max(100).default(0),
     isDiscountItem: boolean().default(false),
     quantity: number().min(0),
-    status: z.enum(productStatus).default("Draft"),
+    status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
     "brand.name": string({ required_error: "Brand is required" })
       .min(1).max(128),
@@ -134,21 +130,17 @@ export const updateProductSchema = object({
     overview: string().min(0).max(5000).optional(),
     description: string().min(0).max(5000).optional(),
     categories: string().array().default([]),
-    instockStatus: z.enum(productStockStatus).default("AskForStock"),
+    instockStatus: z.nativeEnum(ProductStockStatus).default(ProductStockStatus.AskForStock),
     dealerPrice: number().min(0).optional(),
     isDiscountItem: boolean().default(false),
     marketPrice: number().min(0).optional(),
-    priceUnit: z.enum(priceUnit).default("MMK"),
-    status: z.enum(productStatus).default("Draft"),
+    priceUnit: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
+    status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
     itemCode: string().nullable().optional(),
   })
 })
 
-
-export type ProductStockStatus = typeof productStockStatus[number]
-export type ProductStatus = typeof productStatus[number]
-export type PriceUnit = typeof priceUnit[number]
 
 export type GetProductInput = z.infer<typeof getProductSchema>["params"]
 export type GetProductSaleCategoryInput = z.infer<typeof getProductSaleCategorySchema>
