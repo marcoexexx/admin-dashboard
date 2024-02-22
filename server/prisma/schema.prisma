@@ -10,6 +10,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Theme {
+  Light
+}
+
 enum ProductStatus {
   Draft
   Pending
@@ -38,6 +42,9 @@ enum Resource {
   SalesCategory
   Township
   UserAddress
+  Role
+  Permission
+  Cart
 }
 
 enum ProductStockStatus {
@@ -197,6 +204,7 @@ model User {
   orders              Order[]
   potentialOrders     PotentialOrder[]
   auditLogs           AuditLog[]
+  cart                Cart?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -455,6 +463,17 @@ model Order {
   updatedAt DateTime @updatedAt
 }
 
+model Cart {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  label      String      @unique
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String      @unique @db.ObjectId
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model OrderItem {
   id                 String          @id @default(auto()) @map("_id") @db.ObjectId
   price              Float
@@ -466,8 +485,10 @@ model OrderItem {
   productId          String          @db.ObjectId
   order              Order?          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId            String?         @db.ObjectId
-  potentialOrder     PotentialOrder? @relation(fields: [potentialOrderId], references: [id], onDelete: Cascade)
+  potentialOrder     PotentialOrder? @relation(fields: [potentialOrderId], references: [id])
   potentialOrderId   String?         @db.ObjectId
+  Cart               Cart?           @relation(fields: [cartId], references: [id])
+  cartId             String?         @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
