@@ -1,29 +1,20 @@
 import { Suspense } from 'react';
-import { PermissionKey } from '@/context/cacheKey';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { AccessLogsList } from '@/components/content/accessLogs';
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
-import { getAccessLogsPermissionsFn } from '@/services/permissionsApi';
 
 import getConfig from "@/libs/getConfig";
 import ErrorBoundary from '@/components/ErrorBoundary';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 
 
 const appName = getConfig("appName")
 
 
 function ListAccessLogsWrapper() {
-  const isAllowedReadAccessLog = usePermission({
-    key: PermissionKey.AccessLog,
-    actions: "read",
-    queryFn: getAccessLogsPermissionsFn
-    // queryFn: () => Promise.reject(new Error("FF"))
-  })
-
-  if (!isAllowedReadAccessLog) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.AccessLog }).ok_or_throw()
 
   return <AccessLogsList />
 }

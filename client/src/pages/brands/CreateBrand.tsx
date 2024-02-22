@@ -1,16 +1,14 @@
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
-import { PermissionKey } from '@/context/cacheKey';
 import { PageTitle, SuspenseLoader } from "@/components";
 import { CreateBrandForm } from "@/components/content/brands/forms";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { OperationAction, Resource } from '@/services/types';
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
-import { getBrandPermissionsFn } from "@/services/permissionsApi";
 
 import getConfig from "@/libs/getConfig";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 
@@ -18,13 +16,7 @@ const appName = getConfig("appName")
 
 
 function CreateBrandWrapper() {
-  const isAllowedCreateBrand = usePermission({
-    key: PermissionKey.Brand,
-    actions: "create",
-    queryFn: getBrandPermissionsFn
-  })
-
-  if (!isAllowedCreateBrand) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Create, resource: Resource.Brand }).ok_or_throw()
 
   return <Card>
     <CardContent>

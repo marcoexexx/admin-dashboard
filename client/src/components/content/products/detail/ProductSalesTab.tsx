@@ -18,20 +18,16 @@ interface ProductSalesTabProps {
 export default function ProductSalesTab(props: ProductSalesTabProps) {
   const { productId } = props
 
-  const { state: {modalForm}, dispatch } = useStore()
+  const { state: { modalForm }, dispatch } = useStore()
 
-  const [selectedProductSale, setSelectedProductSale] = useState<ProductSalesCategoriesResponse|undefined>(undefined)
-  const [toDeleteProductSale, setToDeleteProductSale] = useState<string|undefined>(undefined)
+  const [selectedProductSale, setSelectedProductSale] = useState<ProductSalesCategoriesResponse | undefined>(undefined)
+  const [toDeleteProductSale, setToDeleteProductSale] = useState<string | undefined>(undefined)
 
   const { try_data, isLoading } = useGetProductSalesCategories({ productId })
   const { mutate: deleteProductSale, isPending } = useDeleteProductSalesCategory()
 
   const sales = try_data.ok_or_throw()
 
-
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
-  }
 
   const handleOnSelect = (value: ProductSalesCategoriesResponse) => {
     setSelectedProductSale(value)
@@ -45,13 +41,7 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
     })
   }
 
-  const handleCloseModal = () => {
-    dispatch({
-      type: "CLOSE_ALL_MODAL_FORM"
-    })
-  }
-
-  const handleSetDefaultValues = (value: ProductSalesCategoriesResponse|undefined) => {
+  const handleSetDefaultValues = (value: ProductSalesCategoriesResponse | undefined) => {
     setSelectedProductSale(value)
   }
 
@@ -77,17 +67,16 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
       </Grid>
 
       {modalForm.field === "sales-categories"
-      ? <FormModal field='sales-categories' title='Create new sale' onClose={handleOnCloseModalForm}>
-        <CreateSalesCategoryForm />
-      </FormModal>
-      : null}
+        ? <FormModal field='sales-categories' title='Create new sale'>
+          <CreateSalesCategoryForm />
+        </FormModal>
+        : null}
 
 
       {modalForm.field === "delete-product-sale" && toDeleteProductSale
-      ? <FormModal
+        ? <FormModal
           field="delete-product-sale"
           title="Delete product sale"
-          onClose={handleCloseModal}
         >
           <Box display="flex" flexDirection="column" gap={1}>
             <Box>
@@ -105,7 +94,7 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
               >
                 Delete
               </MuiButton>
-              
+
               <MuiButton
                 variant="outlined"
                 onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}
@@ -115,7 +104,7 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
             </Box>
           </Box>
         </FormModal>
-      : null}
+        : null}
     </Container>
   )
 }

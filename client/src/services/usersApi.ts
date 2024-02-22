@@ -1,6 +1,6 @@
 import { authApi } from "./authApi";
 import { UploadProfilePictureInput } from "@/components/image-uploader";
-import { HttpListResponse, Pagination, QueryOptionArgs, Role, User, UserResponse } from "./types";
+import { HttpListResponse, Pagination, QueryOptionArgs, User, UserResponse } from "./types";
 import { UserFilter } from "@/context/user";
 
 
@@ -35,12 +35,6 @@ export async function getUserFn(opt: QueryOptionArgs, { userId, include }: { use
       include
     }
   })
-  return data
-}
-
-
-export async function changeRoleUserFn({ userId, role }: { userId: string, role: Omit<Role, "*"> }) {
-  const { data } = await authApi.patch<UserResponse>(`/users/change-role/${userId}`, { role })
   return data
 }
 

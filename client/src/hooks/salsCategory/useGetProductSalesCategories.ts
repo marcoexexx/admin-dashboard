@@ -1,7 +1,7 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { Resource } from "@/context/cacheKey";
+import { CacheResource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getProductSaleCategoriesFn } from "@/services/productsApi";
 
@@ -13,7 +13,7 @@ export function useGetProductSalesCategories({
   }) {
   const query = useQuery({
     enabled: !!productId,
-    queryKey: [Resource.ProductSalesCategory],
+    queryKey: [CacheResource.ProductSalesCategory],
     queryFn: args => getProductSaleCategoriesFn(args, { productId }),
     select: data => data?.results
   })

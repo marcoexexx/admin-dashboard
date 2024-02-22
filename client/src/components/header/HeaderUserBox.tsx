@@ -1,6 +1,7 @@
 import { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useLocalStorage, useMe, useStore } from "@/hooks"
+import { useUserLogout } from "@/hooks/user"
 
 import { Avatar, Badge, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
 import { MuiButton } from "@/components/ui"
@@ -16,32 +17,31 @@ import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import HistoryIcon from '@mui/icons-material/History';
 import MapIcon from '@mui/icons-material/Map';
-import { useUserLogout } from "@/hooks/user"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 
-const UserBoxButton = styled(Button)(({theme}) => ({
+const UserBoxButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(1),
   paddingRight: theme.spacing(1)
 }))
 
-const MenuUserBox = styled(Box)(({theme}) => ({
+const MenuUserBox = styled(Box)(({ theme }) => ({
   background: theme.colors.alpha.black[5],
   padding: theme.spacing(2)
 }))
 
-const UserBoxText = styled(Box)(({theme}) => ({
+const UserBoxText = styled(Box)(({ theme }) => ({
   textAlign: "left",
   paddingLeft: theme.spacing(1)
 }))
 
-const UserBoxLabel = styled(Typography)(({theme}) => ({
+const UserBoxLabel = styled(Typography)(({ theme }) => ({
   fontWeight: theme.typography.fontWeightBold,
   color: theme.palette.secondary.main,
   display: "block"
 }))
 
-const UserBoxDescription = styled(Typography)(({theme}) => ({
+const UserBoxDescription = styled(Typography)(({ theme }) => ({
   color: lighten(theme.palette.secondary.main, 0.5)
 }))
 
@@ -85,6 +85,15 @@ export default function HeaderUserBox() {
     })
   }
 
+  const shopOwner = try_user.ok()?.shopownerProvider
+  const roleDisplay = shopOwner
+    ? shopOwner.name
+    : try_user.ok()?.role
+      ? try_user.ok()?.role?.name
+      : try_user.ok()?.isSuperuser
+        ? "Superuser"
+        : undefined
+
 
   if (try_user.is_err()) return <>
     <UserBoxButton color="error">
@@ -111,7 +120,7 @@ export default function HeaderUserBox() {
             <UserBoxText>
               <UserBoxLabel>{try_user.value.name}</UserBoxLabel>
               <UserBoxDescription variant="body2">
-                {try_user.value.role}
+                {roleDisplay}
               </UserBoxDescription>
             </UserBoxText>
           </Hidden>
@@ -139,7 +148,7 @@ export default function HeaderUserBox() {
           <Avatar variant="rounded" alt={try_user.value.name} src={try_user.value.image} />
           <UserBoxText>
             <UserBoxLabel variant="body1">{try_user.value.name}</UserBoxLabel>
-            <UserBoxDescription variant="body2">{try_user.value.role}</UserBoxDescription>
+            <UserBoxDescription variant="body2">{roleDisplay}</UserBoxDescription>
           </UserBoxText>
         </MenuUserBox>
 

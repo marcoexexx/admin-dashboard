@@ -5,4 +5,3 @@ export * from './useGetUsers'
 
 export * from './useBlockUser'
 export * from './useUnblockUser'
-export * from "./useChangeRoleUser"

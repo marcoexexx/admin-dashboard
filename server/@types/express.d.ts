@@ -1,9 +1,9 @@
-import { User } from "@prisma/client"
+import { UserWithRole } from "./type"
 
 declare global {
   namespace Express {
     export interface Request {
-      user?: User,
+      user?: UserWithRole,
       files?: Express.Multer.File[],
       useragent: {
         platform: string,

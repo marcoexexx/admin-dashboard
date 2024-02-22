@@ -1,7 +1,7 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 import Result, { Err, Ok } from "@/libs/result"
 
-import { Resource } from "@/context/cacheKey"
+import { CacheResource } from "@/context/cacheKey"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { queryClient } from "@/components"
@@ -21,7 +21,7 @@ export function useDeletePotentialOrder() {
     },
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: [Resource.PotentialOrder]
+        queryKey: [CacheResource.PotentialOrder]
       })
     }
   })

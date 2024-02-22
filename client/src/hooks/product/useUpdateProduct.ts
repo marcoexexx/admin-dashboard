@@ -1,7 +1,7 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 import Result, { Err, Ok } from "@/libs/result"
 
-import { Resource } from "@/context/cacheKey"
+import { CacheResource } from "@/context/cacheKey"
 import { updateProductFn } from "@/services/productsApi"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
@@ -21,9 +21,9 @@ export function useUpdateProduct() {
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,
-        severity: err.response.data.status === 403 ? "warning" : "error"
+        severity: err.response.data.status === 400 ? "warning" : "error"
       } })
-      playSoundEffect(err.response.data.status === 403 ? "denied" : "error")
+      playSoundEffect(err.response.data.status === 400 ? "denied" : "error")
     },
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
@@ -33,7 +33,7 @@ export function useUpdateProduct() {
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: [Resource.Product]
+        queryKey: [CacheResource.Product]
       })
       playSoundEffect("success")
     }

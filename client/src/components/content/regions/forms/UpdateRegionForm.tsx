@@ -21,7 +21,7 @@ const updateRegionSchema = object({
 export type UpdateRegionInput = z.infer<typeof updateRegionSchema>
 
 export function UpdateRegionForm() {
-  const { state: {modalForm}, dispatch } = useStore()
+  const { state: { modalForm } } = useStore()
 
   const { regionId } = useParams()
 
@@ -53,10 +53,6 @@ export function UpdateRegionForm() {
     if (regionId) updateRegion({ regionId, region: value })
   }
 
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
-  }
-
 
   return (
     <>
@@ -64,13 +60,13 @@ export function UpdateRegionForm() {
         <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
           <Grid item xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("name")} 
+              <TextField
+                fullWidth
+                {...register("name")}
                 focused
-                label="Name" 
-                error={!!errors.name} 
-                helperText={!!errors.name ? errors.name.message : ""} 
+                label="Name"
+                error={!!errors.name}
+                helperText={!!errors.name ? errors.name.message : ""}
               />
               <TownshipMultiInputField updateField />
             </Box>
@@ -81,12 +77,12 @@ export function UpdateRegionForm() {
           </Grid>
         </Grid>
       </FormProvider>
-      
+
       {modalForm.field === "townships"
-      ? <FormModal field="townships" title='Create new city' onClose={handleOnCloseModalForm}>
-        <CreateTownshipForm />
-      </FormModal>
-      : null}
+        ? <FormModal field="townships" title='Create new city'>
+          <CreateTownshipForm />
+        </FormModal>
+        : null}
     </>
   )
 }

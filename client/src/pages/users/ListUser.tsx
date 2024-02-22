@@ -1,14 +1,12 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { UsersList } from "@/components/content/users";
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
-import { getUserPermissionsFn } from "@/services/permissionsApi";
 
 import ErrorBoundary from '@/components/ErrorBoundary';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import getConfig from "@/libs/getConfig";
 
 
@@ -16,13 +14,7 @@ const appName = getConfig("appName")
 
 
 function ListUserWrapper() {
-  const isAllowedReadUser = usePermission({
-    key: PermissionKey.User,
-    actions: "read",
-    queryFn: getUserPermissionsFn
-  })
-
-  if (!isAllowedReadUser) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.User }).ok_or_throw()
 
   return <UsersList />
 }

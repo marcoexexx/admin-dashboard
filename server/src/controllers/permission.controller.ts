@@ -1,306 +1,238 @@
-import { StatusCode } from "../utils/appError";
 import { NextFunction, Request, Response } from "express";
-import { HttpDataResponse } from "../utils/helper";
-import { potentialOrderPermission, orderPermission, productPermission, regionPermission, townshipPermission, userAddressPermission, userPermission, pickupAddressPermission, dashboardPermission } from "../utils/auth/permissions";
-import { brandPermission } from "../utils/auth/permissions/brand.permission";
-import { categoryPermission } from "../utils/auth/permissions/category.permission";
-import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory.permission";
-import { exchangePermission } from "../utils/auth/permissions/exchange.permission";
-import { accessLogPermission } from "../utils/auth/permissions/accessLog.permission";
-import { couponPermission } from "../utils/auth/permissions/coupon.permisson";
-import { auditLogPermission } from "../utils/auth/permissions/auditLog.permission";
-
-import mapValues from "lodash/mapValues";
+import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import { StatusCode } from "../utils/appError";
+import { OperationAction } from "@prisma/client";
+import { PermissionService } from "../services/permission";
+import { CreatePermissionInput, DeleteMultiPermissionsInput, GetPermissionInput, UpdatePermissionInput } from "../schemas/permission.schema";
+import { convertNumericStrings } from "../utils/convertNumber";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+import { checkUser } from "../services/checkUser";
 
 
-const PermissionResource = {
-  AccessLog: "access-logs",
-  AuditLog: "audit-logs",
-  Brand: "brands",
-  Category: "categories",
-  Coupon: "coupons",
-  Exchange: "exchanges",
-  Order: "orders",
-  PickupAddress: "pickup-addresses",
-  PotentialOrder: "potential-orders",
-  Product: "products",
-  Region: "regions",
-  SalesCategory: "sales-categories",
-  Township: "townships",
-  UserAddress: "user-addresses",
-  User: "users",
-  AuthUser: "authUser",
-  Dashboard: "dashboard"
-} as const
+const service = PermissionService.new()
 
 
-export async function permissionsDashboardHandler(
-  _req: Request,
+export async function getPermissionsHandler(
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const permissions = mapValues(dashboardPermission, value => value())
+    const query = convertNumericStrings(req.query)
 
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.Dashboard }))
+    const { id, action, resource } = query.filter ?? {}
+    const { page, pageSize } = query.pagination ?? {}
+    const { role } = convertStringToBoolean(query.include) ?? {}
+    const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
+    const [count, permissions] = (await service.tryFindManyWithCount(
+      {
+        pagination: {page, pageSize}
+      },
+      {
+        where: {
+          id,
+          action,
+          resource
+        },
+        include: {
+          role
+        },
+        orderBy
+      }
+    )).ok_or_throw()
+
+    res.status(StatusCode.OK).json(HttpListResponse(permissions, count))
   } catch (err) {
     next(err)
   }
 }
 
 
-export async function permissionsUserHandler(
-  _req: Request,
+export async function getPermissionHandler(
+  req: Request<GetPermissionInput["params"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const permissions = mapValues(userPermission, value => value())
+    const query = convertNumericStrings(req.query)
 
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.User }))
+    const { permissionId } = req.params
+    const { role } = convertStringToBoolean(query.include) ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
+    const permission = (await service.tryFindUnique({
+      where: { id: permissionId },
+      include: { role }
+    })).ok_or_throw()
+
+    // Create audit log
+    if (permission && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
+
+    res.status(StatusCode.OK).json(HttpDataResponse({ permission }))
   } catch (err) {
     next(err)
   }
 }
 
 
-export async function permissionsExchangeHandler(
-  _req: Request,
+export async function createMultiPermissionsHandler(
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const permissions = mapValues(exchangePermission, value => value())
+    const excelFile = req.file
 
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.Exchange }))
+    if (!excelFile) return res.status(StatusCode.NoContent)
+
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
+    const permissions = (await service.tryExcelUpload(excelFile)).ok_or_throw()
+
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
+
+    res.status(StatusCode.Created).json(HttpListResponse(permissions))
   } catch (err) {
     next(err)
   }
 }
 
 
-export async function permissionsProductsHandler(
-  _req: Request,
+export async function createPermissionHandler(
+  req: Request<{}, {}, CreatePermissionInput>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const permissions = mapValues(productPermission, value => value())
+    const { action, resource, roleId } = req.body
 
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.Product }))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
+    const permission = (await service.tryCreate({ 
+      data: {
+        action,
+        resource,
+        roleId
+      } 
+    })).ok_or_throw()
+
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
+
+    res.status(StatusCode.Created).json(HttpDataResponse({ permission }))
   } catch (err) {
     next(err)
   }
 }
 
 
-export async function permissionsBrandsHandler(
-  _req: Request,
+export async function deletePermissionHandler(
+  req: Request<GetPermissionInput["params"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const permissions = mapValues(brandPermission, value => value())
+    const { permissionId } = req.params
 
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.Brand }))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
+    const permission = (await service.tryDelete({ 
+      where: {
+        id: permissionId
+      }
+    })).ok_or_throw()
+
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
+
+    res.status(StatusCode.OK).json(HttpDataResponse({ permission }))
   } catch (err) {
     next(err)
   }
 }
 
 
-export async function permissionsCategoriesHandler(
-  _req: Request,
+export async function deleteMultiPermissionsHandler(
+  req: Request<{}, {}, DeleteMultiPermissionsInput>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const permissions = mapValues(categoryPermission, value => value())
+    const { permissionIds } = req.body
 
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.Category }))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
+    const tryDeleteMany = await service.tryDeleteMany({
+      where: {
+        id: {
+          in: permissionIds
+        }
+      }
+    })
+    tryDeleteMany.ok_or_throw()
+
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
+
+    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
   } catch (err) {
     next(err)
   }
 }
 
 
-export async function permissionsSalesCategoriesHandler(
-  _req: Request,
+export async function updatePermissionHandler(
+  req: Request<UpdatePermissionInput["params"], {}, UpdatePermissionInput["body"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const permissions = mapValues(salesCategoryPermission, value => value())
+    const { permissionId } = req.params
+    const { resource, action, roleId } = req.body
 
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.SalesCategory }))
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
+    const permission = (await service.tryUpdate({
+      where: {
+        id: permissionId,
+      },
+      data: {
+        action,
+        resource,
+        roleId
+      }
+    })).ok_or_throw()
+
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
+
+    res.status(StatusCode.OK).json(HttpDataResponse({ permission }))
   } catch (err) {
     next(err)
   }
 }
 
-
-export async function permissionsAccessLogsHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const permissions = mapValues(accessLogPermission, value => value())
-
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.AccessLog }))
-  } catch (err) {
-    next(err)
-  }
-}
-
-
-export async function permissionsAuditLogsHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const permissions = mapValues(auditLogPermission, value => value())
-
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.AuditLog }))
-  } catch (err) {
-    next(err)
-  }
-}
-
-
-export async function permissionsPotetialOrdersHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const permissions = mapValues(potentialOrderPermission, value => value())
-
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.PotentialOrder }))
-  } catch (err) {
-    next(err)
-  }
-}
-
-
-export async function permissionsOrdersHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const permissions = mapValues(orderPermission, value => value())
-
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.Order }))
-  } catch (err) {
-    next(err)
-  }
-}
-
-
-export async function permissionsPickupAddressHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const permissions = mapValues(pickupAddressPermission, value => value())
-
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.PickupAddress }))
-  } catch (err) {
-    next(err)
-  }
-}
-
-
-export async function permissionsUserAddressHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const permissions = mapValues(userAddressPermission, value => value())
-
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.UserAddress }))
-  } catch (err) {
-    next(err)
-  }
-}
-
-
-export async function permissionsTownshipsHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const permissions = mapValues(townshipPermission, value => value())
-
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.Township }))
-  } catch (err) {
-    next(err)
-  }
-}
-
-
-export async function permissionsRegionsHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const permissions = mapValues(regionPermission, value => value())
-
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.Region }))
-  } catch (err) {
-    next(err)
-  }
-}
-
-
-export async function permissionsCouponsHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const permissions = mapValues(couponPermission, value => value())
-
-    res
-      .status(StatusCode.OK)
-      .json(HttpDataResponse({ permissions, label: PermissionResource.Coupon }))
-  } catch (err) {
-    next(err)
-  }
-}

@@ -1,10 +1,10 @@
 import { Box, Typography, styled } from "@mui/material";
-
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import { useStore } from "@/hooks";
 import { FormModal } from "./forms";
 import { MuiButton } from "./ui";
-import { Store } from "@/context/store";
+import { ModalFormField } from "@/context/store";
+import { useStore } from "@/hooks";
+
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 
 const ButtonError = styled(MuiButton)(({theme}) => ({
@@ -18,9 +18,9 @@ const ButtonError = styled(MuiButton)(({theme}) => ({
 
 
 interface BulkActionsProps {
-  field: Store["modalForm"]["field"],
+  field: ModalFormField
   isAllowedDelete: boolean
-  onDelete: () => void
+  onDelete?: () => void
 }
 
 export function BulkActions(props: BulkActionsProps) {
@@ -29,13 +29,9 @@ export function BulkActions(props: BulkActionsProps) {
   const { dispatch } = useStore()
 
   const handleOnDelete = () => {
-    onDelete()
-  }
+    if (!onDelete) return
 
-  const handleCloseDeleteModal = () => {
-    dispatch({
-      type: "CLOSE_ALL_MODAL_FORM"
-    })
+    onDelete()
   }
 
   const handleClickDeleteAction = () => {
@@ -68,7 +64,6 @@ export function BulkActions(props: BulkActionsProps) {
       <FormModal
         field={field}
         title="Delete seleted"
-        onClose={handleCloseDeleteModal}
       >
         <Box display="flex" flexDirection="column" gap={1}>
           <Box>

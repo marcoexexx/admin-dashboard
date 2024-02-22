@@ -1,5 +1,5 @@
 import { BrandFilter } from "@/context/brand";
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
@@ -16,7 +16,7 @@ export function useGetBrand({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: [Resource.Brand, { id, include }] as CacheKey<"brands">["detail"],
+    queryKey: [CacheResource.Brand, { id, include }] as CacheKey<"brands">["detail"],
     queryFn: args => getBrandFn(args, { brandId: id, include }),
     select: data => data?.brand
   })

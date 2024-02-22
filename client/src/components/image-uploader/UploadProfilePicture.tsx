@@ -1,5 +1,5 @@
 import { IconButton, styled } from "@mui/material"
-import { Resource } from "@/context/cacheKey"
+import { CacheResource } from "@/context/cacheKey"
 import { useStore } from "@/hooks"
 import { object, z } from "zod"
 import { uploadProfilePictureFn } from "@/services/usersApi"
@@ -32,7 +32,7 @@ export function UploadProfilePicture() {
         severity: "success"
       } })
       queryClient.invalidateQueries({
-        queryKey: [Resource.AuthUser, "proile"]
+        queryKey: [CacheResource.AuthUser, "proile"]
       })
     },
     onError() {

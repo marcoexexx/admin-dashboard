@@ -2,7 +2,7 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { Pagination } from "@/services/types";
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 import { CouponFilter } from "@/context/coupon";
 import { useQuery } from "@tanstack/react-query";
 import { getCouponsFn } from "@/services/couponsApi";
@@ -18,7 +18,7 @@ export function useGetCoupons({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: [Resource.Coupon, { filter, pagination, include } ] as CacheKey<"coupons">["list"],
+    queryKey: [CacheResource.Coupon, { filter, pagination, include } ] as CacheKey<"coupons">["list"],
     queryFn: args => getCouponsFn(args, { 
       filter,
       pagination,

@@ -65,12 +65,12 @@ export const veriffyEmailSchema = object({
 
 // Update by `superuser`
 export const updateUserSchema = {
-  changeUserRole: object({
-    ...params,
-    body: object({
-      role: z.enum(userRole, { required_error: "User role is required." })
-    })
-  }),
+  // changeUserRole: object({
+  //   ...params,
+  //   body: object({
+  //     role: z.enum(userRole, { required_error: "User role is required." })
+  //   })
+  // }),
   createBlockUser: object({
     body: object({
       userId: string({ required_error: "User id is required." }),
@@ -121,7 +121,6 @@ export type GetUserByUsernameInput = z.infer<typeof getUserByUsernameSchema>["pa
 export type UploadImageUserInput = z.infer<typeof uploadImageProfileSchema>["body"]
 export type VerificationEmailInput = z.infer<typeof veriffyEmailSchema>["params"]
 
-export type ChangeUserRoleInput = z.infer<typeof updateUserSchema["changeUserRole"]>
 export type CreateBlockUserInput = z.infer<typeof updateUserSchema["createBlockUser"]>
 export type RemoveBlockedUserInput = z.infer<typeof updateUserSchema["removeBlockdUser"]>
 

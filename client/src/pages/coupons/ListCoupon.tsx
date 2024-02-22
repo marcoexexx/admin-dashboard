@@ -1,17 +1,15 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { CouponsList } from '@/components/content/coupons';
+import { OperationAction, Resource } from '@/services/types';
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
-import { getCouponsPermissionsFn } from "@/services/permissionsApi";
 
 import getConfig from "@/libs/getConfig";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 
@@ -19,13 +17,7 @@ const appName = getConfig("appName")
 
 
 function ListCouponWrapper() {
-  const isAllowedReadCoupons = usePermission({
-    key: PermissionKey.Coupon,
-    actions: "read",
-    queryFn: getCouponsPermissionsFn
-  })
-
-  if (!isAllowedReadCoupons) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.Coupon }).ok_or_throw()
 
   return <CouponsList />
 }
@@ -35,10 +27,9 @@ export default function ListCoupon() {
   const navigate = useNavigate()
 
   const isAllowedCreateCoupons = usePermission({
-    key: PermissionKey.Coupon,
-    actions: "create",
-    queryFn: getCouponsPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.Coupon
+  }).is_ok()
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate("/coupons/create")

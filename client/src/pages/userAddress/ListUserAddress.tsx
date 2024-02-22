@@ -1,16 +1,14 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { MuiButton } from "@/components/ui";
 import { UserAddressesList } from '@/components/content/user-addresses';
 import { Container, Grid, Typography } from "@mui/material"
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
 import { useNavigate } from 'react-router-dom'
-import { getUserAddressPermissionsFn } from "@/services/permissionsApi";
 
 import getConfig from "@/libs/getConfig";
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
@@ -18,13 +16,7 @@ import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 const appName = getConfig("appName")
 
 function ListUserAddressWrapper() {
-  const isAllowedReadUserAddress = usePermission({
-    key: PermissionKey.UserAddress,
-    actions: "read",
-    queryFn: getUserAddressPermissionsFn
-  })
-
-  if (!isAllowedReadUserAddress) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.UserAddress }).ok_or_throw()
 
   return <UserAddressesList />
 }
@@ -34,10 +26,9 @@ export default function ListUserAddress() {
   const navigate = useNavigate()
 
   const isAllowedCreateUserAddress = usePermission({
-    key: PermissionKey.UserAddress,
-    actions: "create",
-    queryFn: getUserAddressPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.UserAddress
+  }).is_ok()
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate("/addresses/create")

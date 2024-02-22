@@ -1,36 +1,36 @@
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { useStore } from "@/hooks";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
 
 
-const filterBrandsSchema = object({
+const filterOrderSchema = object({
   name: string().min(0).max(128).optional(),
   insensitive: boolean().optional().default(false),
 })
 
-export type FilterBrandsInput = z.infer<typeof filterBrandsSchema>
+export type FilterOrdersInput = z.infer<typeof filterOrderSchema>
 
-export function BrandsFilterForm() {
+export function OrdersFilterForm() {
   const { dispatch } = useStore()
 
   const [filterQuery, setFilterQuery] = useSearchParams()
 
-  const methods = useForm<FilterBrandsInput>({
-    resolver: zodResolver(filterBrandsSchema)
+  const methods = useForm<FilterOrdersInput>({
+    resolver: zodResolver(filterOrderSchema)
   })
 
   const { handleSubmit, register, formState: { errors }, setValue } = methods
 
-  const onSubmit: SubmitHandler<FilterBrandsInput> = (value) => {
+  const onSubmit: SubmitHandler<FilterOrdersInput> = (value) => {
     const { name, insensitive } = value
 
     setFilterQuery(prev => ({ ...prev, ...value }))
 
-    dispatch({ type: "SET_BRAND_FILTER", payload: {
+    dispatch({ type: "SET_ORDER_FILTER", payload: {
       fields: {
         name: {
           contains: name || undefined,
@@ -44,7 +44,7 @@ export function BrandsFilterForm() {
     setFilterQuery({})
     setValue("name", undefined)
     setValue("insensitive", false)
-    dispatch({ type: "SET_BRAND_FILTER", payload: {
+    dispatch({ type: "SET_ORDER_FILTER", payload: {
       fields: undefined
     } })
   }

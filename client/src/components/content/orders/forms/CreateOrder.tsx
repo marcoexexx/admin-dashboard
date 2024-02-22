@@ -1,23 +1,12 @@
+import { OrderStatus, PaymentMethodProvider } from "@/services/types";
 import { number, object, string, z } from "zod";
 
 
-export const orderAddressType = ["Delivery", "Pickup"] as const
-export type OrderAddressType = typeof orderAddressType[number]
-
-export const orderStatus = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"] as const
-export type OrderStatus = typeof orderStatus[number]
-
-export const paymentMethodProvider = [
-  "Cash",
-  "AYAPay",
-  "CBPay",
-  "KBZPay",
-  "OnePay",
-  "UABPay",
-  "WavePay",
-  "BankTransfer",
-] as const
-export type PaymentMethodProvider = typeof paymentMethodProvider[number]
+export const OrderAddressType = {
+  Delivery: "Delivery", 
+  Pickup: "Pickup"
+} as const
+export type OrderAddressType = typeof OrderAddressType[keyof typeof OrderAddressType]
 
 
 export const createOrderSchema = object({
@@ -28,16 +17,16 @@ export const createOrderSchema = object({
     totalPrice: number().min(0),
     saving: number()
   }).array(),
-  status: z.enum(orderStatus).default("Pending"),
+  status: z.nativeEnum(OrderStatus).default(OrderStatus.Pending),
   deliveryAddressId: string().optional(),
   totalPrice: number().min(0),
   pickupAddressId: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
-  paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+  paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
   remark: string().optional(),
 
   createdPotentialOrderId: string().optional(),
-  addressType: z.enum(orderAddressType, { required_error: "Order address type is required" })
+  addressType: z.nativeEnum(OrderAddressType, { required_error: "Order address type is required" })
 })
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>

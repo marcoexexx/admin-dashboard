@@ -8,6 +8,7 @@ import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helpe
 import { CreatePotentialOrderInput, DeleteMultiPotentialOrdersInput, GetPotentialOrderInput, UpdatePotentialOrderInput } from "../schemas/potentialOrder.schema";
 import { PotentialOrderService } from "../services/potentialOrder";
 import { StatusCode } from "../utils/appError";
+import { OperationAction } from "@prisma/client";
 
 
 const service = PotentialOrderService.new()
@@ -26,9 +27,13 @@ export async function getPotentialOrdersHandler(
     const { _count, user, deliveryAddress, billingAddress, pickupAddress, orderItems } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const [count, potentialOrders] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: {
@@ -72,6 +77,9 @@ export async function getPotentialOrderHandler(
     const { _count, user, deliveryAddress, billingAddress, pickupAddress, orderItems } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const potentialOrder = (await service.tryFindUnique({
       where: {
         id: potentialOrderId
@@ -102,9 +110,12 @@ export async function createPotentialOrderHandler(
   next: NextFunction
 ) {
   try {
-    const { id,orderItems, totalPrice, addressType, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
+    const { id, orderItems, totalPrice, addressType, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const potentialOrder = await db.potentialOrder.upsert({
       where: {
         id
@@ -112,14 +123,7 @@ export async function createPotentialOrderHandler(
       create: {
         addressType,
         orderItems: {
-          create: await Promise.all(orderItems.map(async item => ({
-            productId: item.productId,
-            price: item.price,
-            quantity: item.quantity,
-            totalPrice: item.totalPrice,
-            saving: item.saving,
-            originalTotalPrice: item.price * item.quantity,
-          })))
+          connect: orderItems.map(id => ({ id }))
         },
         userId: sessionUser?.id,
         status,
@@ -159,8 +163,11 @@ export async function deletePotentialOrderHandler(
 ) {
   try {
     const { potentialOrderId } = req.params
-    
-    const sessionUser = checkUser(req?.user).ok_or_throw()
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const potentialOrder = (await service.tryDelete({
       where: {
         id: potentialOrderId
@@ -186,7 +193,10 @@ export async function deleteMultiPotentialOrdersHandler(
   try {
     const { potentialOrderIds } = req.body
 
-    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _deleteOrders = await service.tryDeleteMany({
       where: {
         id: {
@@ -221,6 +231,9 @@ export async function updatePotentialOrderHandler(
     const userId: string | undefined = req.user?.id || undefined
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const potentialOrder = (await service.tryUpdate({
       where: {
         id: potentialOrderId,

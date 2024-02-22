@@ -1,31 +1,23 @@
-import { PermissionKey } from "@/context/cacheKey";
 import { Suspense } from "react";
+import { MuiButton } from "@/components/ui";
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { PickupAddressList } from "@/components/content/pickupAddressHistory";
+import { OperationAction, Resource } from "@/services/types";
 import { usePermission } from "@/hooks";
 import { useNavigate } from "react-router-dom";
-import { getPickupAddressPermissionsFn } from "@/services/permissionsApi";
 
-import getConfig from "@/libs/getConfig";
-import AppError, { AppErrorKind } from "@/libs/exceptions";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { MuiButton } from "@/components/ui";
+import getConfig from "@/libs/getConfig";
 
 
 const appName = getConfig("appName")
 
 
 function ListPickupHistoryWrapper() {
-  const isAllowedReadPickupAddress = usePermission({
-    key: PermissionKey.PickupAddress,
-    actions: "read",
-    queryFn: getPickupAddressPermissionsFn
-  })
-
-  if (!isAllowedReadPickupAddress) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.PickupAddress }).ok_or_throw()
 
   return <PickupAddressList />
 }
@@ -35,10 +27,9 @@ export default function ListPickupHistory() {
   const navigate = useNavigate()
 
   const isAllowedCreatePickupAddress = usePermission({
-    key: PermissionKey.PickupAddress,
-    actions: "create",
-    queryFn: getPickupAddressPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.PickupAddress
+  }).is_ok()
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate("/pickup-address-history/create")

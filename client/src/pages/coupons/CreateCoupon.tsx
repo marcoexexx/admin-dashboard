@@ -1,30 +1,22 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { CreateCouponForm } from '@/components/content/coupons/forms';
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
 import { useNavigate } from 'react-router-dom'
-import { getCouponsPermissionsFn } from '@/services/permissionsApi';
 
 import getConfig from "@/libs/getConfig";
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 
 
 const appName = getConfig("appName")
 
 
 function CreateCouponWrapper() {
-  const isAllowedCreateCoupon = usePermission({
-    key: PermissionKey.Coupon,
-    actions: "create",
-    queryFn: getCouponsPermissionsFn
-  })
-
-  if (!isAllowedCreateCoupon) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Create, resource: Resource.Coupon }).ok_or_throw()
   
   return <Card>
       <CardContent>

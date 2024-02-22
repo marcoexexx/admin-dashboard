@@ -1,15 +1,13 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { UpdateCouponForm } from '@/components/content/coupons/forms';
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
-import { getCouponsPermissionsFn } from "@/services/permissionsApi";
 import { useNavigate } from 'react-router-dom'
 
 import getConfig from "@/libs/getConfig";
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
@@ -18,13 +16,7 @@ const appName = getConfig("appName")
 
 
 function UpdateCouponWrapper() {
-  const isAllowedUpdateCoupon = usePermission({
-    key: PermissionKey.Coupon,
-    actions: "update",
-    queryFn: getCouponsPermissionsFn
-  })
-
-  if (!isAllowedUpdateCoupon) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Update, resource: Resource.Coupon }).ok_or_throw()
   
   return <Card>
       <CardContent>

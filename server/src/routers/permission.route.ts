@@ -1,26 +1,55 @@
 import { Router } from "express";
-import { permissionsAccessLogsHandler, permissionsAuditLogsHandler, permissionsBrandsHandler, permissionsCategoriesHandler, permissionsCouponsHandler, permissionsDashboardHandler, permissionsExchangeHandler, permissionsOrdersHandler, permissionsPickupAddressHandler, permissionsPotetialOrdersHandler, permissionsProductsHandler, permissionsRegionsHandler, permissionsSalesCategoriesHandler, permissionsTownshipsHandler, permissionsUserAddressHandler, permissionsUserHandler } from "../controllers/permission.controller";
+import { deserializeUser } from "../middleware/deserializeUser";
+import { requiredUser } from "../middleware/requiredUser";
+import { validate } from "../middleware/validate";
+import { uploadExcel } from "../upload/excelUpload";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
+import { createMultiPermissionsHandler, createPermissionHandler, deleteMultiPermissionsHandler, deletePermissionHandler, getPermissionsHandler, updatePermissionHandler } from "../controllers/permission.controller";
+import { createPermissionSchema, deleteMultiPermissionsSchema, getPermissionSchema, updatePermissionSchema } from "../schemas/permission.schema";
+
 
 const router = Router()
 
-
-router.get("/dashboard", permissionsDashboardHandler)
-
-router.get("/users", permissionsUserHandler)
-router.get("/exchanges", permissionsExchangeHandler)
-router.get("/products", permissionsProductsHandler)
-router.get("/brands", permissionsBrandsHandler)
-router.get("/category", permissionsCategoriesHandler)
-router.get("/sales-category", permissionsSalesCategoriesHandler)
-router.get("/orders", permissionsOrdersHandler)
-router.get("/potential-orders", permissionsPotetialOrdersHandler)
-router.get("/access-logs", permissionsAccessLogsHandler)
-router.get("/audit-logs", permissionsAuditLogsHandler)
-router.get("/coupons", permissionsCouponsHandler)
-router.get("/regions", permissionsRegionsHandler)
-router.get("/townships", permissionsTownshipsHandler)
-router.get("/user-address", permissionsUserAddressHandler)
-router.get("/pickup-address", permissionsPickupAddressHandler)
+router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 
-export default router
+router.route("/")
+  .get(
+    getPermissionsHandler
+  )
+  .post(
+    validate(createPermissionSchema),
+    createPermissionHandler
+  )
+
+
+router.route("/multi")
+  .delete(
+    validate(deleteMultiPermissionsSchema),
+    deleteMultiPermissionsHandler
+  )
+
+
+// Upload Routes
+router.post("/excel-upload",
+  uploadExcel,
+  createMultiPermissionsHandler
+)
+
+
+router.route("/detail/:permissionId")
+  .get(
+    validate(getPermissionSchema),
+    getPermissionsHandler
+  )
+  .patch(
+    validate(updatePermissionSchema), 
+    updatePermissionHandler
+  )
+  .delete(
+    validate(getPermissionSchema),
+    deletePermissionHandler
+  )
+
+
+export default router 

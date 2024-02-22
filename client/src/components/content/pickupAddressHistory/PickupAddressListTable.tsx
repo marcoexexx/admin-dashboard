@@ -1,33 +1,37 @@
-import { Box, Card, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow,Typography } from "@mui/material"
-import { LoadingTablePlaceholder } from "@/components";
-import { PickupAddress } from "@/services/types";
+import { Box, Card, Divider, TablePagination,Typography } from "@mui/material"
+import { EnhancedTable, TypedColumn } from "@/components";
+import { PickupAddress, Resource } from "@/services/types";
 import { RenderOrderLabel } from "@/components/table-labels";
+import { CacheResource } from "@/context/cacheKey";
 
 
-const columnData: TableColumnHeader<PickupAddress>[] = [
+const columns: TypedColumn<PickupAddress>[] = [
   {
     id: "username",
     align: "left",
-    name: "Username"
+    name: "Username",
+    render: ({value}) => <Typography>{value.username}</Typography>
   },
   {
     id: "phone",
     align: "left",
-    name: "Phone"
+    name: "Phone",
+    render: ({value}) => <Typography>{value.phone}</Typography>
   },
   {
     id: "email",
     align: "left",
-    name: "Email"
+    name: "Email",
+    render: ({value}) => <Typography>{value.email}</Typography>
   },
   {
     id: "orders",
     align: "left",
-    name: "Orders"
+    name: "Orders",
+    render: ({value}) => <>{value.orders?.map(order => <RenderOrderLabel key={order.id} order={order} />)}</>
   },
 ]
 
-const columnHeader = columnData.concat([])
 
 interface PickupAddressListTableProps {
   pickupAddresses: PickupAddress[]
@@ -40,46 +44,17 @@ export function PickupAddressListTable(props: PickupAddressListTableProps) {
 
   return (
     <Card>
-      <TableContainer>
-        {isLoading
-        ? <LoadingTablePlaceholder />
-        : <Table>
-          <TableHead>
-            <TableRow>
-              {columnHeader.map(header => {
-                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-                return header.id !== "actions"
-                  ? render
-                  : null
-              })}
-            </TableRow>
-          </TableHead>
+      <EnhancedTable
+        hideTopActions
+        hideCheckbox
+        refreshKey={[CacheResource.PickupAddress]}
+        rows={pickupAddresses}
+        resource={Resource.PickupAddress}
+        isLoading={isLoading}
+        columns={columns}
+      />
 
-          <TableBody>
-            {pickupAddresses.map(row => {
-              return <TableRow
-                hover
-                key={row.id}
-              >
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {col.id === "username" && row.username}
-                    {col.id === "phone" && row.phone}
-                    {col.id === "email" && row.email}
-                    {col.id === "orders" && row.orders?.map(order => <RenderOrderLabel key={order.id} order={order} />)}
-                  </Typography>
-                </TableCell>)}
-              </TableRow>
-            })}
-          </TableBody>
-        </Table>}
-      </TableContainer>
+      <Divider />
 
       <Box p={2}>
         <TablePagination

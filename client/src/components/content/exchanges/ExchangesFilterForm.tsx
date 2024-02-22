@@ -7,13 +7,12 @@ import { MuiButton } from "@/components/ui";
 import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { DatePickerField } from "@/components/input-fields";
-
-import { priceUnit } from "../products/forms";
+import { PriceUnit } from "@/services/types";
 
 
 const filterExchangesSchema = object({
-  from: z.enum(priceUnit).optional(),
-  to: z.enum(priceUnit).optional(),
+  from: z.nativeEnum(PriceUnit).optional(),
+  to: z.nativeEnum(PriceUnit).optional(),
   rate: number().optional(),
   startDate: z.any(),
   endDate: z.any(),
@@ -95,14 +94,14 @@ export function ExchangesFilterForm() {
         <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
           <TextField 
             {...register("from")} 
-            defaultValue={filterQuery.get("from") || priceUnit[1]}
+            defaultValue={filterQuery.get("from") || PriceUnit.MMK}
             label="Price unit from" 
             error={!!errors.from} 
             helperText={!!errors.from ? errors.from.message : ""} 
             select
             fullWidth
           >
-            {priceUnit.map(t => (
+            {(Object.keys(PriceUnit) as PriceUnit[]).map(t => (
               <MenuItem key={t} value={t}>
                 {t}
               </MenuItem>
@@ -110,14 +109,14 @@ export function ExchangesFilterForm() {
           </TextField>
           <TextField 
             {...register("to")} 
-            defaultValue={filterQuery.get("to") || priceUnit[0]}
+            defaultValue={filterQuery.get("to") || PriceUnit.MMK}
             label="Price unit to" 
             error={!!errors.to} 
             helperText={!!errors.to ? errors.to.message : ""} 
             select
             fullWidth
           >
-            {priceUnit.map(t => (
+            {(Object.keys(PriceUnit) as PriceUnit[]).map(t => (
               <MenuItem key={t} value={t}>
                 {t}
               </MenuItem>

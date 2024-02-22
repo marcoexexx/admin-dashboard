@@ -1,30 +1,22 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
 import { SalesCategoriesList } from "@/components/content/sales-categories";
 import { MuiButton } from "@/components/ui";
+import { OperationAction, Resource } from '@/services/types';
 import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
-import { getSalesCategoryPermissionsFn } from "@/services/permissionsApi";
 
 import getConfig from "@/libs/getConfig";
 import ErrorBoundary from '@/components/ErrorBoundary';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
 
 const appName = getConfig("appName")
 
 function ListSalesCategoryWrapper() {
-  const isAllowedReadSalesCategory = usePermission({
-    key: PermissionKey.SalesCategory,
-    actions: "read",
-    queryFn: getSalesCategoryPermissionsFn
-  })
-
-  if (!isAllowedReadSalesCategory) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.SalesCategory }).ok_or_throw()
 
   return  <SalesCategoriesList />
 }
@@ -34,10 +26,9 @@ export default function ListSalesCategory() {
   const navigate = useNavigate()
 
   const isAllowedCreateSalesCategory = usePermission({
-    key: PermissionKey.SalesCategory,
-    actions: "create",
-    queryFn: getSalesCategoryPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.SalesCategory
+  }).is_ok()
 
   const handleNavigateCreate = () => {
     navigate("/sales-categories/create")

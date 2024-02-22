@@ -1,23 +1,11 @@
+import { PaymentMethodProvider, PotentialOrderStatus } from "@/services/types";
+import { OrderAddressType } from "../../orders/forms";
 import { number, object, string, z } from "zod";
-import { potentialOrderStatus } from ".";
-import { orderAddressType } from "../../orders/forms";
-
-
-const paymentMethodProvider = [
-  "Cash",
-  "AYAPay",
-  "CBPay",
-  "KBZPay",
-  "OnePay",
-  "UABPay",
-  "WavePay",
-  "BankTransfer",
-] as const
 
 
 const updatePotentialOrderSchema = object({
   id: string().optional(),
-  status: z.enum(potentialOrderStatus).default("Processing"),
+  status: z.nativeEnum(PotentialOrderStatus).default(PotentialOrderStatus.Processing),
   // orderItems: object({
   //   price: number().min(0),
   //   quantity: number(),
@@ -29,9 +17,9 @@ const updatePotentialOrderSchema = object({
   totalPrice: number().min(0),
   pickupAddress: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
-  paymentMethodProvider: z.enum(paymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+  paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
   remark: string().optional(),
-  addressType: z.enum(orderAddressType, { required_error: "Order address type is required" })
+  addressType: z.nativeEnum(OrderAddressType, { required_error: "Order address type is required" })
 })
 
 export type UpdatePotentialOrderInput = z.infer<typeof updatePotentialOrderSchema>

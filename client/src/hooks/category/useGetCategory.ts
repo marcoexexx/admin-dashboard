@@ -2,7 +2,7 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { CategoryFilter } from "@/context/category";
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getCategoryFn } from "@/services/categoryApi";
 
@@ -16,7 +16,7 @@ export function useGetCategory({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: [Resource.Category, { id, include }] as CacheKey<"categories">["detail"],
+    queryKey: [CacheResource.Category, { id, include }] as CacheKey<"categories">["detail"],
     queryFn: args => getCategoryFn(args, { categoryId: id, include }),
     select: data => data?.category
   })

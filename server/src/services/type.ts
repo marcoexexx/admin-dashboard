@@ -1,7 +1,69 @@
-import { AuditLog, AuditLogAction, User } from "@prisma/client"
+import { AuditLog, OperationAction, Prisma, Resource, User } from "@prisma/client"
 import { PartialShallow } from "lodash"
-import AppError from "../utils/appError"
-import Result from "../utils/result"
+import { UserWithRole, guestUserAccessResources, shopownerAccessResources } from "../../@types/type";
+
+import AppError, { StatusCode } from "../utils/appError"
+import Result, { Err, Ok } from "../utils/result"
+
+
+export class MetaAppService {
+  constructor(
+    public resource: Resource,
+    public log: { action: OperationAction; resourceIds: string[] } | undefined
+  ) {}
+
+
+  async audit(user: User | undefined, _log?: PartialShallow<typeof this.log>): Promise<Result<AuditLog | undefined, AppError>> {
+    const log = { ...this.log, ..._log }
+
+    // if not user, not create auditlog
+    if (!user) return Ok(undefined)
+
+    if (!log) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit log for this resource: log is undefined`))
+    if (!log.action) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit for this resource: action is undefined`)) 
+    if (!Array.isArray(log.resourceIds) || !log.resourceIds.length) return Ok(undefined)
+
+    const payload: Prisma.AuditLogUncheckedCreateInput = {
+      userId: user.id,
+      resource: this.resource,
+      action: log.action,
+      resourceIds: log.resourceIds
+    }
+
+    // const auditlog = (await createAuditLog(payload))
+    //   .or_else(err => err.status === StatusCode.NotModified ? Ok(undefined) : Err(err))
+    const auditlog = Ok(undefined)
+    console.log({ payload })
+
+    return Ok(auditlog.ok_or_throw())
+  }
+
+
+  /**
+   * Check permissions
+   * if Success return true and if access denied return Err
+   */
+  async checkPermissions(user: UserWithRole | undefined, action: OperationAction = OperationAction.Read): Promise<Result<boolean, AppError>> {
+    if (!user) {
+      const isAccess = guestUserAccessResources.some(perm => perm.resource === this.resource && perm.action === action)
+      if (!isAccess) return Err(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))
+      return Ok(isAccess)
+    }
+
+    if (user.isSuperuser) return Ok(true)
+
+    if (user.shopownerProviderId !== null) {
+      const isAccess = [...guestUserAccessResources, ...shopownerAccessResources]?.some(perm => perm.resource === this.resource && perm.action === action)
+      if (isAccess) return Ok(true)
+    }
+
+    const isAccess = user.role?.permissions.some(perm => perm.resource === this.resource && perm.action === action)
+    if (!isAccess) return Err(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))
+
+    // If does not role, return false
+    return Ok(Boolean(isAccess))
+  }
+}
 
 
 export interface AppService {
@@ -68,12 +130,6 @@ export interface AppService {
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
   tryDeleteMany(args: any): Promise<Result<any, AppError>>
-}
-
-
-export interface Auditable {
-  log?: { action: AuditLogAction; resourceIds: string[] }
-  audit(user: User, config?: PartialShallow<Auditable["log"]>): Promise<Result<AuditLog | undefined, AppError>>
 }
 
 

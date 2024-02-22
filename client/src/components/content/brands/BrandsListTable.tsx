@@ -1,36 +1,27 @@
-import { PermissionKey } from "@/context/cacheKey";
-import { Box, Card, CardContent, Checkbox, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { FormModal } from "@/components/forms";
-import { Brand } from "@/services/types";
-import { BulkActions, LoadingTablePlaceholder } from "@/components";
-import { MuiButton } from "@/components/ui";
-import { CreateBrandInput } from "./forms";
-import { BrandsActions } from ".";
-import { convertToExcel, exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
-import { useState } from "react"
-import { useNavigate } from "react-router-dom";
-import { getBrandPermissionsFn } from "@/services/permissionsApi";
-
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import { Box, Card, Divider, TablePagination, Typography } from "@mui/material"
+import { Brand, Resource } from "@/services/types";
+import { EnhancedTable, TypedColumn } from "@/components";
+import { BrandsFilterForm } from ".";
+import { CacheResource } from "@/context/cacheKey";
+import { RenderBrandLabel } from "@/components/table-labels";
+import { useStore } from "@/hooks";
 
 
-const columnData: TableColumnHeader<Brand>[] = [
+const columns: TypedColumn<Brand>[] = [
   {
     id: "name",
     align: "left",
-    name: "Name"
+    name: "Name",
+    render: ({value}) => <RenderBrandLabel brand={value} />
+  },
+  {
+    id: "createdAt",
+    align: "left",
+    name: "Created At",
+    render: ({value}) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
   },
 ]
 
-const columnHeader = columnData.concat([
-  {
-    id: "actions",
-    align: "right",
-    name: "Actions"
-  }
-])
 
 interface BrandsListTableProps {
   brands: Brand[]
@@ -43,58 +34,7 @@ interface BrandsListTableProps {
 
 export function BrandsListTable(props: BrandsListTableProps) {
   const { brands, count, isLoading, onCreateManyBrands, onDelete, onMultiDelete } = props
-
-  const [deleteId, setDeleteId] = useState("")
-
-  const navigate = useNavigate()
-
-  const theme = useTheme()
-  const { state: {brandFilter, modalForm}, dispatch } = useStore()
-
-  const [selectedRows, setSellectedRows] = useState<string[]>([])
-
-  const selectedBulkActions = selectedRows.length > 0
-
-  const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked } = evt.target
-    setSellectedRows(checked
-      ? brands.map(e => e.id)
-      : []
-    )
-  }
-
-  const handleSelectOne = (id: string) => (_: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedRows.includes(id)) setSellectedRows(prev => ([ ...prev, id ]))
-    else setSellectedRows(prev => prev.filter(prevId => prevId !== id))
-  }
-
-  const handleClickDeleteAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteId(brandId)
-    dispatch({
-      type: "OPEN_MODAL_FORM",
-      payload: "delete-brand"
-    })
-  }
-
-  const handleClickUpdateAction = (brandId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/brands/update/${brandId}`)
-  }
-
-  const handleOnExport = () => {
-    exportToExcel(brands, "Brands")
-  }
-
-  const handleOnImport = (data: CreateBrandInput[]) => {
-    convertToExcel(data, "Brands")
-      .then(excelBuffer => onCreateManyBrands(excelBuffer))
-      .catch(err => dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message: `Failed Excel upload: ${err.message}`,
-          severity: "error"
-        }
-      }))
-  }
+  const { state: {brandFilter}, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
@@ -114,153 +54,21 @@ export function BrandsListTable(props: BrandsListTableProps) {
     })
   }
 
-  const handleCloseDeleteModal = () => {
-    dispatch({
-      type: "CLOSE_ALL_MODAL_FORM"
-    })
-  }
-
-  const isAllowedDeleteBrand = usePermission({
-    key: PermissionKey.Brand,
-    actions: "delete",
-    queryFn: getBrandPermissionsFn
-  })
-
-  const isAllowedUpdateBrand = usePermission({
-    key: PermissionKey.Brand,
-    actions: "update",
-    queryFn: getBrandPermissionsFn
-  })
-
-  const isAllowedCreateBrand = usePermission({
-    key: PermissionKey.Brand,
-    actions: "create",
-    queryFn: getBrandPermissionsFn
-  })
-
-  const selectedAllRows = selectedRows.length === brands.length
-  const selectedSomeRows = selectedRows.length > 0 && 
-    selectedRows.length < brands.length
-
   return (
     <Card>
-      {selectedBulkActions && <Box flex={1} p={2}>
-        <BulkActions
-          field="delete-brand-multi"
-          isAllowedDelete={isAllowedDeleteBrand}
-          onDelete={() => onMultiDelete(selectedRows)}
-        />
-      </Box>}
+      <EnhancedTable 
+        refreshKey={[CacheResource.Brand]}
+        renderFilterForm={<BrandsFilterForm />}
+        rows={brands}
+        resource={Resource.Brand}
+        isLoading={isLoading}
+        columns={columns}
+        onSingleDelete={onDelete}
+        onMultiDelete={onMultiDelete}
+        onMultiCreate={onCreateManyBrands}
+      />
 
       <Divider />
-
-      <CardContent>
-        <BrandsActions 
-          onExport={handleOnExport} 
-          onImport={handleOnImport}  
-          isAllowedImport={isAllowedCreateBrand}
-        />
-      </CardContent>
-
-      <TableContainer>
-        {isLoading
-        ? <LoadingTablePlaceholder />
-        : <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  color="primary"
-                  checked={selectedAllRows}
-                  indeterminate={selectedSomeRows}
-                  onChange={handleSelectAll}
-                />
-              </TableCell>
-
-              {columnHeader.map(header => {
-                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-                return header.id !== "actions"
-                  ? render
-                  : isAllowedUpdateBrand || isAllowedDeleteBrand
-                  ? render
-                  : null
-              })}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {brands.map(row => {
-              const isSelected = selectedRows.includes(row.id)
-              return <TableRow
-                hover
-                key={row.id}
-                selected={isSelected}
-              >
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    color="primary"
-                    checked={isSelected}
-                    onChange={handleSelectOne(row.id)}
-                    value={isSelected}
-                  />
-                </TableCell>
-
-                {columnData.map(col => <TableCell align={col.align} key={col.id}>
-                  <Typography
-                    variant="body1"
-                    fontWeight="normal"
-                    color="text.primary"
-                    gutterBottom
-                    noWrap
-                  >
-                    {row.name}
-                  </Typography>
-                </TableCell>)}
-
-                {isAllowedUpdateBrand || isAllowedDeleteBrand
-                ? <TableCell align="right">
-                    {isAllowedUpdateBrand
-                    ? <Tooltip title="Edit Product" arrow>
-                        <IconButton
-                          sx={{
-                            '&:hover': {
-                              background: theme.colors.primary.lighter
-                            },
-                            color: theme.palette.primary.main
-                          }}
-                          color="inherit"
-                          size="small"
-                          onClick={handleClickUpdateAction(row.id)}
-                        >
-                          <EditTwoToneIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    : null}
-
-                    {isAllowedDeleteBrand
-                    ? <Tooltip title="Delete Product" arrow>
-                        <IconButton
-                          sx={{
-                            '&:hover': {
-                              background: theme.colors.error.lighter
-                            },
-                            color: theme.palette.error.main
-                          }}
-                          onClick={handleClickDeleteAction(row.id)}
-                          color="inherit"
-                          size="small"
-                        >
-                          <DeleteTwoToneIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    : null}
-                  </TableCell>
-                : null}
-              </TableRow>
-            })}
-          </TableBody>
-        </Table>}
-      </TableContainer>
 
       <Box p={2}>
         <TablePagination
@@ -276,23 +84,6 @@ export function BrandsListTable(props: BrandsListTableProps) {
         />
       </Box>
 
-      {modalForm.field === "delete-brand"
-      ? <FormModal
-        field="delete-brand"
-        title="Delete brand"
-        onClose={handleCloseDeleteModal}
-      >
-        <Box display="flex" flexDirection="column" gap={1}>
-          <Box>
-            <Typography>Are you sure want to delete</Typography>
-          </Box>
-          <Box display="flex" flexDirection="row" gap={1}>
-            <MuiButton variant="contained" color="error" onClick={() => onDelete(deleteId)}>Delete</MuiButton>
-            <MuiButton variant="outlined" onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}>Cancel</MuiButton>
-          </Box>
-        </Box>
-      </FormModal>
-      : null}
     </Card>
   )
 }

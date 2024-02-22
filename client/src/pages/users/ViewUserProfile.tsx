@@ -1,15 +1,13 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components"
 import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material"
 import { UserProfile } from "@/components/content/users";
+import { OperationAction, Resource } from '@/services/types';
 import { useNavigate, useParams } from 'react-router-dom'
 import { usePermission } from "@/hooks";
-import { getUserPermissionsFn } from '@/services/permissionsApi';
 
 import getConfig from "@/libs/getConfig";
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
@@ -17,13 +15,7 @@ import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 const appName = getConfig("appName")
 
 function ViewUserWrapper({ username }: { username: string | undefined }) {
-  const isAllowedReadProduct = usePermission({
-    key: PermissionKey.User,
-    actions: "read",
-    queryFn: getUserPermissionsFn
-  })
-
-  if (!isAllowedReadProduct)  throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.User }).ok_or_throw()
 
   return <UserProfile username={username} />
 }
@@ -35,10 +27,9 @@ export default function ViewUser() {
   const navigate = useNavigate()
 
   const isAllowedUpdateUser = usePermission({
-    key: PermissionKey.User,
-    actions: "update",
-    queryFn: getUserPermissionsFn
-  })
+    action: OperationAction.Update,
+    resource: Resource.User
+  }).is_ok()
 
   const handleBack= (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate(-1)

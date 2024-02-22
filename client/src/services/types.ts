@@ -1,9 +1,20 @@
-import { OrderStatus, PaymentMethodProvider } from "@/components/content/orders/forms"
-import { PotentialOrderStatus } from "@/components/content/potential-orders/forms"
-import { PriceUnit, ProductStatus, ProductStockStatus } from "@/components/content/products/forms"
+export const ProductStatus = {
+  Draft: "Draft",
+  Pending: "Pending",
+  Published: "Published"
+} as const
+export type ProductStatus = typeof ProductStatus[keyof typeof ProductStatus]
 
+export const AuthProvider = {
+  Local: "Local",
+  Google: "Google",
+  Facebook: "Facebook"
+} as const
+export type AuthProvider = typeof AuthProvider[keyof typeof AuthProvider]
 
-export const AuditLogResource = {
+export const Resource = {
+  AccessLog: "AccessLog",
+  AuditLog: "AuditLog",
   User: "User",
   Brand: "Brand",
   Category: "Category",
@@ -16,31 +27,71 @@ export const AuditLogResource = {
   Region: "Region",
   SalesCategory: "SalesCategory",
   Township: "Township",
-  UserAddress: "UserAddress"
+  UserAddress: "UserAddress",
+  Role: "Role",
+  Permission: "Permission",
+  Cart: "Cart"
 } as const
-export type AuditLogResource = typeof AuditLogResource[keyof typeof AuditLogResource]
+export type Resource = typeof Resource[keyof typeof Resource]
 
+export const ProductStockStatus = {
+  Available: "Available",
+  OutOfStock: "OutOfStock",
+  AskForStock: "AskForStock",
+  Discontinued: "Discontinued"
+} as const
+export type ProductStockStatus = typeof ProductStockStatus[keyof typeof ProductStockStatus]
 
-export const AuditLogAction = {
+export const PriceUnit = {
+  MMK: "MMK",
+  USD: "USD",
+  SGD: "SGD",
+  THB: "THB",
+  KRW: "KRW"
+} as const
+export type PriceUnit = typeof PriceUnit[keyof typeof PriceUnit]
+
+export const PaymentMethodProvider = {
+  Cash: "Cash",
+  AYAPay: "AYAPay",
+  CBPay: "CBPay",
+  KBZPay: "KBZPay",
+  OnePay: "OnePay",
+  UABPay: "UABPay",
+  WavePay: "WavePay",
+  BankTransfer: "BankTransfer"
+} as const
+export type PaymentMethodProvider = typeof PaymentMethodProvider[keyof typeof PaymentMethodProvider]
+
+export const AddressType = {
+  Delivery: "Delivery",
+  Pickup: "Pickup"
+} as const
+export type AddressType = typeof AddressType[keyof typeof AddressType]
+
+export const OrderStatus = {
+  Pending: "Pending",
+  Processing: "Processing",
+  Shipped: "Shipped",
+  Delivered: "Delivered",
+  Cancelled: "Cancelled"
+} as const
+export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus]
+
+export const PotentialOrderStatus = {
+  Processing: "Processing",
+  Confimed: "Confimed",
+  Cancelled: "Cancelled"
+} as const
+export type PotentialOrderStatus = typeof PotentialOrderStatus[keyof typeof PotentialOrderStatus]
+
+export const OperationAction = {
   Create: "Create",
   Read: "Read",
-  Update: "Updat",
+  Update: "Update",
   Delete: "Delete"
 } as const
-export type AuditLogAction = typeof AuditLogAction[keyof typeof AuditLogAction]
-
-
-export type Role =
-  | "Admin"
-  | "User"
-  | "Shopowner"
-  | "*"
-
-
-export type UserProvider =
-  | "Local"
-  | "Google"
-  | "Facebook"
+export type OperationAction = typeof OperationAction[keyof typeof OperationAction]
 
 
 export type Coupon = {
@@ -77,8 +128,8 @@ export type Reward = {
 
 export type AuditLog = {
   id: string
-  resource: AuditLogResource
-  action: AuditLogAction
+  resource: Resource
+  action: OperationAction
   resourceIds: string[]
   timestamp: Date | string
 
@@ -132,9 +183,9 @@ export type PotentialOrder = {
   remark?: string
   totalPrice: number
 
-  addressType: 
-    | "Delivery"
-    | "Pickup"
+  addressType:
+  | "Delivery"
+  | "Pickup"
 
   // relationship
   user?: User
@@ -159,9 +210,9 @@ export type Order = {
   remark?: string
   totalPrice: number
 
-  addressType: 
-    | "Delivery"
-    | "Pickup"
+  addressType:
+  | "Delivery"
+  | "Pickup"
 
   // relationship
   user?: User
@@ -180,20 +231,66 @@ export type Order = {
 }
 
 
+export type Permission = {
+  id: string
+  action: OperationAction
+  resource: Resource
+
+  // relationship
+  role?: Role
+  roleId?: string
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+export type Role = {
+  id: string
+  name: string
+  remark?: string
+
+  // relationship
+  permissions?: Permission[]
+  users?: User[]
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
+export type ShopownerProvider = {
+  id: string
+  name: string
+  remark?: string
+
+  // relationship
+  users?: User[]
+
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+
 export type User = {
   id: string
   name: string
   email: string
+  isSuperuser: boolean
   password: string
   username: string
-  role: Role
   image: string
   coverImage: string
   verified: boolean
-  provider: UserProvider
+  provider: AuthProvider
   verificationCode?: string
 
   // relationship
+  role?: Role
+  roleId?: string
+  shopownerProvider?: ShopownerProvider
+  shopownerProviderId?: string
+
   review?: Review
   reviewId?: string
   createdProducts?: Product[]
@@ -420,7 +517,7 @@ export type TownshipFees = {
   // relationship
   region?: Region,
   regionId?: string,
-  
+
   createdAt: string | Date
   updatedAt: string | Date
 }
@@ -547,7 +644,7 @@ export type SalesCategoryResponse = Omit<HttpResponse, "message"> & { salesCateg
 
 export type ProductResponse = Omit<HttpResponse, "message"> & { product: Product };
 
-export type ProductSalesCategoriesResponse = { id: string, salesCategoryId: string,  productId: string, discount: number, salesCategory: SalesCategory };
+export type ProductSalesCategoriesResponse = { id: string, salesCategoryId: string, productId: string, discount: number, salesCategory: SalesCategory };
 
 export type BrandResponse = Omit<HttpResponse, "message"> & { brand: Brand };
 

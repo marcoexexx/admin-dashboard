@@ -1,5 +1,6 @@
-import { CreateOrderInput, PaymentMethodProvider, paymentMethodProvider } from '@/components/content/orders/forms'
+import { CreateOrderInput } from '@/components/content/orders/forms'
 import { AddressInputField } from '@/components/input-fields'
+import { PaymentMethodProvider } from '@/services/types'
 import { Box, Card, CardContent, Container, FormLabel, Grid, Radio, Typography, styled } from '@mui/material'
 import { useFormContext } from 'react-hook-form'
 
@@ -69,7 +70,7 @@ export function PaymentMethodStep() {
         <Box display="flex" flexDirection="column" gap={1}>
           <Typography>Select the payment method</Typography>
           <Grid container gap={1}>
-            {paymentMethodProvider.map(payment => {
+            {(Object.keys(PaymentMethodProvider) as PaymentMethodProvider[]).map(payment => {
               return <Grid key={payment} item xs={3.8}>
                 <SelectionCardWrapper key={payment} error={!!errors.paymentMethodProvider ? "true" : "false"} active={selectedPayment === payment ? "true" : "false"} onClick={handleChangeAddressType(payment)}>
                   <Radio

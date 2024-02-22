@@ -6,6 +6,7 @@ import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helpe
 import { CreatePickupAddressInput, DeleteMultiPickupAddressesInput, GetPickupAddressInput } from "../schemas/pickupAddress.schema";
 import { PickupAddressService } from "../services/pickupAddress";
 import { StatusCode } from "../utils/appError";
+import { OperationAction } from "@prisma/client";
 
 
 const service = PickupAddressService.new()
@@ -24,7 +25,12 @@ export async function getPickupAddressesHandler(
     const { _count, user, orders, potentialOrders } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
+    if (!sessionUser) return res.status(StatusCode.OK).json(HttpListResponse([], 0))
+
     const [count, pickupAddresses] = (await service.tryFindManyWithCount(
       {
         pagination: {page, pageSize}
@@ -55,6 +61,9 @@ export async function getPickupAddressHandler(
     const { _count, user, orders, potentialOrders } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const pickupAddress = (await service.tryFindUnique({ 
       where: {id: pickupAddressId}, 
       include: { _count, user, orders, potentialOrders } 
@@ -80,6 +89,9 @@ export async function createPickupAddressHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const pickupAddress = (await service.tryCreate({
       data: { 
         username,
@@ -110,6 +122,9 @@ export async function deletePickupAddressHandler(
     const { pickupAddressId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const pickupAddress = (await service.tryDelete({ where: {id: pickupAddressId} })).ok_or_throw()
 
     // Create audit log
@@ -132,6 +147,9 @@ export async function deleteMultiPickupAddressesHandler(
     const { pickupAddressIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _deletedPickedAddress = await service.tryDeleteMany({
       where: {
         id: {

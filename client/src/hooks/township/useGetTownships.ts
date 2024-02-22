@@ -3,7 +3,7 @@ import Result, { Err, Ok } from "@/libs/result";
 
 import { Pagination } from "@/services/types";
 import { TownshipFilter } from "@/context/township";
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 import { getTownshipsFn } from "@/services/townshipsApi";
 import { useQuery } from "@tanstack/react-query";
 
@@ -18,7 +18,7 @@ export function useGetTownships({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: [Resource.Township, { filter, pagination, include } ] as CacheKey<"townships">["list"],
+    queryKey: [CacheResource.Township, { filter, pagination, include } ] as CacheKey<"townships">["list"],
     queryFn: args => getTownshipsFn(args, { 
       filter,
       pagination,

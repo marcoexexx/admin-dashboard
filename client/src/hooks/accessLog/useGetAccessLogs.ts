@@ -3,7 +3,7 @@ import Result, { Err, Ok } from "@/libs/result";
 
 import { Pagination } from "@/services/types";
 import { AccessLogFilter } from "@/context/accessLog";
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
 import { getAccessLogsFn } from "@/services/accessLogsApi";
 
@@ -18,7 +18,7 @@ export function useGetAccessLogs({
   pagination: Pagination,
   }) {
   const query = useQuery({
-    queryKey: [Resource.AccessLog, { filter, pagination, include }] as CacheKey<"access-logs">["list"],
+    queryKey: [CacheResource.AccessLog, { filter, pagination, include }] as CacheKey<"access-logs">["list"],
     queryFn: args => getAccessLogsFn(args, { 
       filter,
       pagination,

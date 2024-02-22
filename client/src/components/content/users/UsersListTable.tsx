@@ -1,68 +1,57 @@
-import { Box, Card, CardContent, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography, useTheme } from "@mui/material"
-import { PermissionKey } from "@/context/cacheKey";
-import { RenderProileAvatar, RenderToggleBlockUserButton, RenderUsernameLabel } from "@/components/table-labels";
-import { User } from "@/services/types";
-import { UsersActions } from ".";
-import { exportToExcel } from "@/libs/exportToExcel";
-import { usePermission, useStore } from "@/hooks";
-import { useNavigate } from "react-router-dom";
-import { getUserPermissionsFn } from "@/services/permissionsApi";
-
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { Box, Card, Divider, TablePagination, Typography } from "@mui/material"
+import { RenderToggleBlockUserButton, RenderUsernameLabel } from "@/components/table-labels";
+import { Resource, User } from "@/services/types";
+import { UsersFilterForm } from ".";
+import { EnhancedTable, TypedColumn } from "@/components";
+import { CacheResource } from "@/context/cacheKey";
+import { useStore } from "@/hooks";
 
 
-const columnData: TableColumnHeader<User>[] = [
+const columns: TypedColumn<User>[] = [
   {
     id: "name",
     align: "left",
-    name: "Name"
+    name: "Name",
+    render: ({ value, me }) => me ? <RenderUsernameLabel user={value} me={me} /> : null
   },
   {
     id: "email",
     align: "right",
-    name: "Email"
+    name: "Email",
+    render: ({ value }) => <Typography>{value.email}</Typography>
   },
   {
     id: "role",
     align: "right",
-    name: "Role"
+    name: "Role",
+    render: ({ value }) => <Typography>{value.role?.name}</Typography>
+  },
+  {
+    id: "shopownerProvider",
+    align: "right",
+    name: "Shopowner",
+    render: ({ value }) => <Typography>{value.shopownerProvider?.name}</Typography>
   },
   {
     id: "blockedUsers",
     align: "right",
-    name: "Blocked"
+    name: "Blocked",
+    render: ({ value, me }) => me ? <RenderToggleBlockUserButton user={value} me={me} /> : null
   }
 ]
 
-const columnHeader = columnData.concat([
-  {
-    id: "actions",
-    align: "right",
-    name: "Actions"
-  }
-])
 
 interface UsersListTableProps {
   users: User[]
+  isLoading?: boolean
   count: number
-  me: User
+  // onDelete: (id: string) => void
+  // onMultiDelete: (ids: string[]) => void
 }
 
 export function UsersListTable(props: UsersListTableProps) {
-  const { users, count, me } = props
-
-  const navigate = useNavigate()
-
-  const theme = useTheme()
-  const { state: {brandFilter}, dispatch } = useStore()
-
-  const handleClickUpdateAction = (userId: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/users/change-role/${userId}`)
-  }
-
-  const handleOnExport = () => {
-    exportToExcel(users, "Users")
-  }
+  const { users, count, isLoading } = props
+  const { state: { brandFilter }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
@@ -82,95 +71,21 @@ export function UsersListTable(props: UsersListTableProps) {
     })
   }
 
-  const isAllowedUpdateUser = usePermission({
-    key: PermissionKey.User,
-    actions: "update",
-    queryFn: getUserPermissionsFn
-  })
-
 
   return (
     <Card>
-      <CardContent>
-        <UsersActions onExport={handleOnExport} />
-      </CardContent>
+      <EnhancedTable
+        refreshKey={[CacheResource.User]}
+        renderFilterForm={<UsersFilterForm />}
+        rows={users}
+        resource={Resource.User}
+        isLoading={isLoading}
+        columns={columns}
+        // onSingleDelete={onDelete}
+        // onMultiDelete={onMultiDelete}
+      />
 
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">Image</TableCell>
-
-              {columnHeader.map(header => {
-                const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
-                return header.id !== "actions"
-                  ? render
-                  : isAllowedUpdateUser
-                  ? render
-                  : null
-              })}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {users.map(row => {
-              return <TableRow
-                hover
-                key={row.id}
-              >
-                <TableCell align="left">
-                  <RenderProileAvatar
-                    src={row.image}
-                    alt={row.name}
-                  />
-                </TableCell>
-                {columnData.map(col => {
-                  const key = col.id as keyof typeof row
-
-                  return (
-                    <TableCell align={col.align} key={col.id}>
-                      <Typography
-                        variant="body1"
-                        fontWeight="normal"
-                        color="text.primary"
-                        gutterBottom
-                        noWrap
-                      >
-                        {key === "name" ? <RenderUsernameLabel user={row} me={me} /> : null}
-                        {key === "email" ? row.email : null}
-                        {key === "role" ? row.role : null}
-                        {key === "blockedUsers" ? <RenderToggleBlockUserButton user={row} me={me} /> : null}
-                      </Typography>
-                    </TableCell>
-                  )
-                })}
-
-                {isAllowedUpdateUser
-                ? <TableCell align="right">
-                    {isAllowedUpdateUser
-                    ? <Tooltip title="Change Role" arrow>
-                        <IconButton
-                          sx={{
-                            '&:hover': {
-                              background: theme.colors.primary.lighter
-                            },
-                            color: theme.palette.primary.main
-                          }}
-                          onClick={handleClickUpdateAction(row.id)}
-                          color="inherit"
-                          size="small"
-                        >
-                          <AdminPanelSettingsIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    : null}
-                  </TableCell>
-                : null}
-              </TableRow>
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Divider />
 
       <Box p={2}>
         <TablePagination

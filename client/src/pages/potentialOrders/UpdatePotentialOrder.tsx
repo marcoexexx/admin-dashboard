@@ -1,15 +1,13 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { UpdatePotentialOrderForm } from '@/components/content/potential-orders/forms';
+import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
 import { useNavigate } from 'react-router-dom';
-import { getOrderPermissionsFn } from '@/services/permissionsApi';
 
 import getConfig from "@/libs/getConfig";
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
@@ -17,13 +15,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 function UpdatePotentialOrderWrapper() {
-  const isAllowedUpdateOrder = usePermission({
-    key: PermissionKey.PotentialOrder,
-    actions: "update",
-    queryFn: getOrderPermissionsFn
-  })
-
-  if (!isAllowedUpdateOrder) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Update, resource: Resource.PotentialOrder }).ok_or_throw()
 
   return <Card>
     <CardContent>

@@ -6,6 +6,7 @@ import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helpe
 import { CreateCategoryInput, DeleteMultiCategoriesInput, GetCategoryInput, UpdateCategoryInput } from "../schemas/category.schema";
 import { CategoryService } from "../services/category";
 import { StatusCode } from "../utils/appError";
+import { OperationAction } from "@prisma/client";
 
 
 const service = CategoryService.new()
@@ -23,6 +24,10 @@ export async function getCategoriesHandler(
     const { page, pageSize } = query.pagination ?? {}
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, categories] = (await service.tryFindManyWithCount(
       {
@@ -54,6 +59,9 @@ export async function getCategoryHandler(
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const category = (await service.tryFindUnique({ where: {id: categoryId}, include: {_count, products} })).ok_or_throw()
 
     // Create audit log
@@ -75,6 +83,9 @@ export async function createCategoryHandler(
     const { name } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const category = (await service.tryCreate({ data: {name} })).ok_or_throw()
 
     // Create audit log
@@ -99,6 +110,9 @@ export async function createMultiCategoriesHandler(
     if (!excelFile) return res.status(StatusCode.NoContent)
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const categories = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
     // Create audit log
@@ -121,6 +135,9 @@ export async function deleteCategoryHandler(
     const { categoryId } = req.params
     
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const category = (await service.tryDelete({ where: {id: categoryId} })).ok_or_throw()
 
     // Create audit log
@@ -143,6 +160,9 @@ export async function deleteMultiCategoriesHandler(
     const { categoryIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _tryDeleteCategories = await service.tryDeleteMany({
       where: {
         id: {
@@ -173,6 +193,9 @@ export async function updateCategoryHandler(
     const { name } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const category = (await service.tryUpdate({
       where: {
         id: categoryId

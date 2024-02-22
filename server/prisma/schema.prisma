@@ -10,16 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Theme {
+  Light
+}
+
 enum ProductStatus {
   Draft
   Pending
   Published
-}
-
-enum Role {
-  Admin
-  Shopowner
-  User
 }
 
 enum AuthProvider {
@@ -29,6 +27,8 @@ enum AuthProvider {
 }
 
 enum Resource {
+  AccessLog
+  AuditLog
   User
   Brand
   Category
@@ -42,6 +42,9 @@ enum Resource {
   SalesCategory
   Township
   UserAddress
+  Role
+  Permission
+  Cart
 }
 
 enum ProductStockStatus {
@@ -89,12 +92,35 @@ enum PotentialOrderStatus {
   Cancelled
 }
 
-// TODO: rename to AuditLogAction
-enum AuditLogAction {
+enum OperationAction {
   Create
   Read
   Update
   Delete
+}
+
+model Role {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String       @unique
+  remark      String?
+  permissions Permission[]
+  users       User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Permission {
+  id       String          @id @default(auto()) @map("_id") @db.ObjectId
+  action   OperationAction
+  resource Resource
+  role     Role            @relation(fields: [roleId], references: [id])
+  roleId   String          @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([action, resource], name: "action_resource")
 }
 
 model Exchange {
@@ -103,6 +129,9 @@ model Exchange {
   to   PriceUnit
   rate Float
   date DateTime
+
+  shopowner           ShopownerProvider @relation(fields: [shopownerProviderId], references: [id])
+  shopownerProviderId String            @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -135,31 +164,47 @@ model Reward {
   updatedAt DateTime @updatedAt
 }
 
+model ShopownerProvider {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  name      String     @unique
+  remark    String?
+  users     User[]
+  exchanges Exchange[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
-  id               String           @id @default(auto()) @map("_id") @db.ObjectId
-  name             String
-  email            String
-  reward           Reward           @relation(fields: [rewardId], references: [id])
-  rewardId         String           @unique @db.ObjectId
-  username         String           @unique
-  password         String
-  blockedUsers     BlockedUser[]    @relation("User")
-  blockedByUsers   BlockedUser[]    @relation("BlockedBy")
-  role             Role             @default(User)
-  image            String?
-  coverImage       String?
-  verified         Boolean          @default(false)
-  verificationCode String?
-  provider         AuthProvider     @default(Local)
-  favorites        Favorites[]
-  createdProducts  Product[]        @relation("CreatedBy")
-  reviews          Review[]
-  accessLogs       AccessLog[]
-  addresses        UserAddress[]
-  pickupAddresses  PickupAddress[]
-  orders           Order[]
-  potentialOrders  PotentialOrder[]
-  auditLogs        AuditLog[]
+  id                  String             @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  email               String
+  role                Role?              @relation(fields: [roleId], references: [id])
+  roleId              String?            @db.ObjectId
+  isSuperuser         Boolean            @default(false)
+  shopownerProvider   ShopownerProvider? @relation(fields: [shopownerProviderId], references: [id])
+  shopownerProviderId String?            @db.ObjectId
+  reward              Reward             @relation(fields: [rewardId], references: [id])
+  rewardId            String             @unique @db.ObjectId
+  username            String             @unique
+  password            String
+  blockedUsers        BlockedUser[]      @relation("User")
+  blockedByUsers      BlockedUser[]      @relation("BlockedBy")
+  image               String?
+  coverImage          String?
+  verified            Boolean            @default(false)
+  verificationCode    String?
+  provider            AuthProvider       @default(Local)
+  favorites           Favorites[]
+  createdProducts     Product[]          @relation("CreatedBy")
+  reviews             Review[]
+  accessLogs          AccessLog[]
+  addresses           UserAddress[]
+  pickupAddresses     PickupAddress[]
+  orders              Order[]
+  potentialOrders     PotentialOrder[]
+  auditLogs           AuditLog[]
+  cart                Cart?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -418,6 +463,17 @@ model Order {
   updatedAt DateTime @updatedAt
 }
 
+model Cart {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  label      String      @unique
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String      @unique @db.ObjectId
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model OrderItem {
   id                 String          @id @default(auto()) @map("_id") @db.ObjectId
   price              Float
@@ -431,6 +487,8 @@ model OrderItem {
   orderId            String?         @db.ObjectId
   potentialOrder     PotentialOrder? @relation(fields: [potentialOrderId], references: [id])
   potentialOrderId   String?         @db.ObjectId
+  Cart               Cart?           @relation(fields: [cartId], references: [id])
+  cartId             String?         @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -459,13 +517,13 @@ model Region {
 }
 
 model AuditLog {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
-  action      AuditLogAction
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  action      OperationAction
   resource    Resource
   resourceIds String[]
-  user        User           @relation(fields: [userId], references: [id])
-  userId      String         @db.ObjectId
-  timestamp   DateTime       @default(now())
+  user        User            @relation(fields: [userId], references: [id])
+  userId      String          @db.ObjectId
+  timestamp   DateTime        @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

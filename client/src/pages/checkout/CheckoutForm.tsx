@@ -18,12 +18,13 @@ import { OrderItem } from "@/services/types";
 import { PaymentMethodStep } from "./PaymentMethod";
 import { CreatePotentialOrderInput } from "@/components/content/potential-orders/forms";
 import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
+import { CreateTownshipForm } from '@/components/content/townships/forms';
+import { CreateRegionForm } from '@/components/content/regions/forms';
+import { CreatePickupAddressForm } from '@/components/content/pickupAddressHistory/forms';
 
 import ErrorBoundary from "@/components/ErrorBoundary";
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
-import { CreateTownshipForm } from '@/components/content/townships/forms';
-import { CreateRegionForm } from '@/components/content/regions/forms';
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -38,7 +39,8 @@ const QontoConnector = styled(StepConnector)(({ theme }) => ({
     },
   },
   [`&.${stepConnectorClasses.completed}`]: {
-    [`& .${stepConnectorClasses.line}`]: { borderColor: theme.colors.primary.light,
+    [`& .${stepConnectorClasses.line}`]: {
+      borderColor: theme.colors.primary.light,
     },
   },
   [`& .${stepConnectorClasses.line}`]: {
@@ -91,7 +93,7 @@ const steps = [
   "Order Confirmation"
 ]
 
-function RenderStepper({activeStepIdx}: {activeStepIdx: number}) {
+function RenderStepper({ activeStepIdx }: { activeStepIdx: number }) {
   if (activeStepIdx === 0) return <AddressInformationStep />
   if (activeStepIdx === 1) return <PaymentMethodStep />
   if (activeStepIdx === 2) return <CheckoutOrderConfirmation />
@@ -104,7 +106,7 @@ function RenderStepper({activeStepIdx}: {activeStepIdx: number}) {
  * totalPrice is total price of order                   := totalAmount + deliveryFee
  */
 export function CheckoutForm() {
-  const { state: {modalForm}, dispatch } = useStore()
+  const { state: { modalForm } } = useStore()
 
   const [activeStepIdx, setActiveStepIdx] = useState(0)
   const [isConfirmed, setIsConfirmed] = useState(false)
@@ -122,7 +124,7 @@ export function CheckoutForm() {
     reValidateMode: "onChange",
   })
 
-  const { getValues, handleSubmit, setValue, watch, formState: {errors} } = methods
+  const { getValues, handleSubmit, setValue, watch, formState: { errors } } = methods
 
   // Queries
   const deliveryFeeQuery = useGetUserAddress({
@@ -281,8 +283,6 @@ export function CheckoutForm() {
 
   const isLastStep = activeStepIdx == steps.length - 1
 
-  const handleOnCloseModalForm = () => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
-
   const handleGoHome = () => {
     remove("PICKUP_FORM")
     remove("CARTS")
@@ -321,30 +321,30 @@ export function CheckoutForm() {
 
       <Grid item md={12} lg={7}>
         {activeStepIdx === steps.length
-        ? <MuiButton onClick={handleGoHome}>Home</MuiButton>
-        : <ErrorBoundary> 
+          ? <MuiButton onClick={handleGoHome}>Home</MuiButton>
+          : <ErrorBoundary>
             <FormProvider  {...methods}>
               <Box component="form" onSubmit={handleSubmit(onSubmit)}>
                 <RenderStepper activeStepIdx={activeStepIdx} />
 
-                {isLastStep 
+                {isLastStep
                   ? <FormGroup sx={{ p: 1 }}>
-                    <FormControlLabel 
+                    <FormControlLabel
                       control={<Checkbox value={isConfirmed} onChange={handleConfirmOrder} />}
                       label={<Typography>I have read and agreed to the website <Link component={LinkRouter} to="#temas">teams and conditions</Link>.</Typography>} />
                   </FormGroup>
                   : null}
 
                 {Object.keys(errors).length
-                ? <Alert severity="error">{errorMessage}</Alert>
-                : null}
+                  ? <Alert severity="error">{errorMessage}</Alert>
+                  : null}
 
                 <Box mt={2} display="flex" flexDirection="row" alignItems="center" justifyContent="flex-start" gap={1}>
                   <MuiButton disabled={activeStepIdx === 0} onClick={handleBackStep} variant="text">
                     Back
                   </MuiButton>
-                  {isLastStep 
-                    ? <MuiButton onClick={handleNextStep} loading={createOrderMutation.isPending || deletePotentialOrderMutation.isPending} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton> 
+                  {isLastStep
+                    ? <MuiButton onClick={handleNextStep} loading={createOrderMutation.isPending || deletePotentialOrderMutation.isPending} disabled={!isConfirmed} type="submit" variant="contained">Submit</MuiButton>
                     : <MuiButton onClick={handleNextStep} type={"button"} loading={createPotentialOrderMutation.isPending} variant="outlined">Continue</MuiButton>}
                 </Box>
               </Box>
@@ -361,22 +361,28 @@ export function CheckoutForm() {
       </Hidden>
 
       {modalForm.field === "addresses"
-      ? <FormModal field='addresses' title='Create new address' onClose={handleOnCloseModalForm}>
-        <CreateUserAddressForm />
-      </FormModal>
-      : null}
+        ? <FormModal field='addresses' title='Create new address'>
+          <CreateUserAddressForm />
+        </FormModal>
+        : null}
+
+      {modalForm.field === "pickup-addresses"
+        ? <FormModal field='pickup-addresses' title='Create new address'>
+          <CreatePickupAddressForm />
+        </FormModal>
+        : null}
 
       {modalForm.field === "region"
-      ? <FormModal field='region' title='Create new region' onClose={handleOnCloseModalForm}>
-        <CreateRegionForm />
-      </FormModal>
-      : null}
+        ? <FormModal field='region' title='Create new region'>
+          <CreateRegionForm />
+        </FormModal>
+        : null}
 
       {modalForm.field === "townships"
-      ? <FormModal field='townships' title='Create new township' onClose={handleOnCloseModalForm}>
-        <CreateTownshipForm />
-      </FormModal>
-      : null}
+        ? <FormModal field='townships' title='Create new township'>
+          <CreateTownshipForm />
+        </FormModal>
+        : null}
     </Grid>
   )
 }

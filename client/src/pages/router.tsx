@@ -1,8 +1,6 @@
-import { PagePermission } from "@/components";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
 import { lazy } from "react";
-import { accessLogsPermissionsLoader, auditLogsPermissionsLoader, brandPermissionsLoader, categoryPermissionsLoader, couponPermissionsLoader, exchangePermissionsLoader, orderPermissionsLoader, pickupAddressPermissionsLoader, potentialOrderPermissionsLoader, productPermissionsLoader, regionPermissionsLoader, salesCategoryPermissionsLoader, townshipPermissionsLoader, userAddressPermissionsLoader, userPermissionsLoader } from "./permissionLoader";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
 import Loader from "./loader";
@@ -133,7 +131,6 @@ const routes = createBrowserRouter([
           /// PICKUP ADDRESS
           {
             path: "pickup-address-history",
-            loader: pickupAddressPermissionsLoader,
             children: [
               {
                 path: "",
@@ -145,7 +142,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner", "User"]} />,
                 children: [
                   {
                     path: "create",
@@ -163,21 +159,18 @@ const routes = createBrowserRouter([
           /// ACCESS LOGS
           {
             path: "access-logs",
-            loader: accessLogsPermissionsLoader,
             Component: ListAccessLogPage
           },
 
           /// AUDIT LOGS
           {
             path: "audit-logs",
-            loader: auditLogsPermissionsLoader,
             Component: ListAuditLogPage
           },
 
           /// POTENTIAL ORDERS ROUTES
           {
             path: "potential-orders",
-            loader: potentialOrderPermissionsLoader,
             children: [
               {
                 path: "",
@@ -189,7 +182,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner", "User"]} />,
                 children: [
                   {
                     path: "create",
@@ -207,7 +199,6 @@ const routes = createBrowserRouter([
           /// USER ADDRESS ROUTES
           {
             path: "addresses",
-            loader: userAddressPermissionsLoader,
             children: [
               {
                 path: "",
@@ -219,7 +210,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner", "User"]} />,
                 children: [
                   {
                     path: "create",
@@ -237,7 +227,6 @@ const routes = createBrowserRouter([
           /// TOWNSHIPS ROUTES
           {
             path: "townships",
-            loader: townshipPermissionsLoader,
             children: [
               {
                 path: "",
@@ -249,7 +238,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -267,7 +255,6 @@ const routes = createBrowserRouter([
           /// REGIONS ROUTES
           {
             path: "regions",
-            loader: regionPermissionsLoader,
             children: [
               {
                 path: "",
@@ -279,7 +266,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -297,7 +283,6 @@ const routes = createBrowserRouter([
           /// ORDERS ROUTES
           {
             path: "orders",
-            loader: orderPermissionsLoader,
             children: [
               {
                 path: "",
@@ -309,7 +294,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -327,7 +311,6 @@ const routes = createBrowserRouter([
           /// COUPONS ROUTES
           {
             path: "coupons",
-            loader: couponPermissionsLoader,
             children: [
               {
                 path: "",
@@ -339,7 +322,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -357,7 +339,6 @@ const routes = createBrowserRouter([
           /// EXCHANGES ROUTES
           {
             path: "exchanges",
-            loader: exchangePermissionsLoader,
             children: [
               {
                 path: "",
@@ -369,7 +350,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -388,7 +368,6 @@ const routes = createBrowserRouter([
           /// USER ROUTES
           {
             path: "users",
-            loader: userPermissionsLoader,
             children: [
               {
                 path: "",
@@ -400,7 +379,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "change-role/:userId",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "",
@@ -415,7 +393,6 @@ const routes = createBrowserRouter([
           /// BRAND ROUTES
           {
             path: "brands",
-            loader: brandPermissionsLoader,
             children: [
               {
                 path: "",
@@ -427,7 +404,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -445,7 +421,6 @@ const routes = createBrowserRouter([
           /// SALES-CATEGORY ROUTES
           {
             path: "sales-categories",
-            loader: salesCategoryPermissionsLoader,
             children: [
               {
                 path: "",
@@ -457,7 +432,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -475,7 +449,6 @@ const routes = createBrowserRouter([
           /// CATEGORY ROUTES
           {
             path: "categories",
-            loader: categoryPermissionsLoader,
             children: [
               {
                 path: "",
@@ -487,7 +460,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",
@@ -505,7 +477,6 @@ const routes = createBrowserRouter([
           /// PRODUCT ROUTES
           {
             path: "products",
-            loader: productPermissionsLoader,
             children: [
               {
                 path: "",
@@ -521,7 +492,6 @@ const routes = createBrowserRouter([
               },
               {
                 path: "",
-                element: <PagePermission allowedRoles={["Admin", "Shopowner"]} />,
                 children: [
                   {
                     path: "create",

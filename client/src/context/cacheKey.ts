@@ -1,6 +1,6 @@
 import { Pagination } from "@/services/types"
 
-export const Resource = {
+export const CacheResource = {
   AccessLog: "access-logs",
   AuditLog: "audit-logs",
   Brand: "brands",
@@ -20,39 +20,10 @@ export const Resource = {
   AuthUser: "authUser",
   Dashboard: "dashboard"
 } as const
-export type Resource = typeof Resource[keyof typeof Resource]
+export type CacheResource = typeof CacheResource[keyof typeof CacheResource]
 
 
-export type ResourcePermissionMap = {
-  [K in keyof typeof Resource]: [`${typeof Resource[K]}-permission`]
-}
-
-
-export type CacheKey<T extends Resource> = {
+export type CacheKey<T extends CacheResource> = {
   list: [`${T}`, { filter?: object, pagination?: Pagination, include?: object }],
   detail: [`${T}`, { id?: string, include?: object }]
 }
-
-
-export const PermissionKey: ResourcePermissionMap = {
-  AccessLog: ["access-logs-permission"],
-  AuditLog: ["audit-logs-permission"],
-  Brand: ["brands-permission"],
-  Category: ["categories-permission"],
-  Coupon: ["coupons-permission"],
-  Exchange: ["exchanges-permission"],
-  Order: ["orders-permission"],
-  PickupAddress: ["pickup-addresses-permission"],
-  PotentialOrder: ["potential-orders-permission"],
-  Product: ["products-permission"],
-  Region: ["regions-permission"],
-  SalesCategory: ["sales-categories-permission"],
-  Township: ["townships-permission"],
-  UserAddress: ["user-addresses-permission"],
-  User: ["users-permission"],
-  AuthUser: ["authUser-permission"],
-  Dashboard: ["dashboard-permission"],
-  ProductSalesCategory: ["product-sales-categories-permission"]
-}
-export type PermissionKey = typeof PermissionKey[keyof typeof PermissionKey]
-// export type ExcludeResource<T extends PermissionKey> = T extends Array<`${infer U}-permission`> ? U : T

@@ -5,7 +5,8 @@ import { FormModal } from "@/components/forms";
 import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
 import { BrandInputField, CatgoryMultiInputField, EditorInputField, SpecificationInputField } from "@/components/input-fields";
-import { Resource } from "@/context/cacheKey";
+import { PriceUnit, ProductStatus, ProductStockStatus } from "@/services/types";
+import { CacheResource } from "@/context/cacheKey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, number, object, string, z } from "zod";
 import { useStore } from "@/hooks";
@@ -16,18 +17,8 @@ import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
 import { tryParseInt } from "@/libs/result/std";
 
 
-// TODO: Type enum
-export const productStockStatus = ["Available", "OutOfStock", "AskForStock", "Discontinued"] as const
-export const productStatus = ["Draft", "Pending", "Published"] as const
-export const priceUnit = ["MMK", "USD", "SGD", "THB", "KRW"] as const
-
-export type ProductStockStatus = typeof productStockStatus[number]
-export type ProductStatus = typeof productStatus[number]
-export type PriceUnit = typeof priceUnit[number]
-
-
 const createProductSchema = object({
-  price: number({ required_error: "Price is required "}),
+  price: number({ required_error: "Price is required " }),
   brandId: string({ required_error: "Brand is required" })
     .min(2).max(128),
   title: string({ required_error: "Brand is required" })
@@ -39,16 +30,16 @@ const createProductSchema = object({
   overview: string().max(5000).optional(),
   description: string().max(5000).optional(),
   categories: string().array().default([]),
-  instockStatus: z.enum(productStockStatus).default("AskForStock"),
+  instockStatus: z.nativeEnum(ProductStockStatus).default("AskForStock"),
   dealerPrice: number().min(0).optional(),
   marketPrice: number().min(0).optional(),
-  priceUnit: z.enum(priceUnit).default("MMK"),
+  priceUnit: z.nativeEnum(PriceUnit).default("MMK"),
   salesCategory: object({}).array().default([]),
   discount: number().max(100).default(0),
   isDiscountItem: boolean().default(false),
   quantity: number().min(0),
   isPending: boolean().default(false),
-  status: z.enum(productStatus).default("Draft"),
+  status: z.nativeEnum(ProductStatus).default("Draft"),
 
   itemCode: string().nullable().optional(),
 })
@@ -56,7 +47,7 @@ const createProductSchema = object({
 export type CreateProductInput = z.infer<typeof createProductSchema>
 
 export function CreateProductForm() {
-  const { state: {modalForm}, dispatch } = useStore()
+  const { state: { modalForm } } = useStore()
 
   const methods = useForm<CreateProductInput>({
     resolver: zodResolver(createProductSchema)
@@ -76,7 +67,7 @@ export function CreateProductForm() {
 
   useEffect(() => {
     queryClient.invalidateQueries({
-      queryKey: [Resource.Exchange, "latest", methods.getValues("priceUnit")],
+      queryKey: [CacheResource.Exchange, "latest", methods.getValues("priceUnit")],
     })
   }, [methods.watch("priceUnit")])
 
@@ -91,15 +82,11 @@ export function CreateProductForm() {
   }, [methods.watch("marketPrice"), methods.watch("price")])
 
 
-  const handleOnCloseModalForm = () => {
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: "*" })
-  }
-
   const onSubmit: SubmitHandler<CreateProductInput> = (value) => {
     createProductMutation.mutate({
       ...value,
-      status: value.isPending 
-        ? "Pending" 
+      status: value.isPending
+        ? "Pending"
         : "Draft",
       salesCategory: []
     })
@@ -120,12 +107,12 @@ export function CreateProductForm() {
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField fullWidth {...register("title")} label="Title" error={!!errors.title} helperText={!!errors.title ? errors.title.message : ""} />
-              <OutlinedInput 
-                fullWidth 
-                {...register("price", { valueAsNumber: true })} 
-                type="number" 
-                placeholder="Price" 
-                error={!!errors.price} 
+              <OutlinedInput
+                fullWidth
+                {...register("price", { valueAsNumber: true })}
+                type="number"
+                placeholder="Price"
+                error={!!errors.price}
                 inputProps={{
                   step: "0.01"
                 }}
@@ -151,17 +138,17 @@ export function CreateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                {...register("priceUnit")} 
-                defaultValue={priceUnit[0]}
+              <TextField
+                {...register("priceUnit")}
+                defaultValue={PriceUnit.MMK}
                 name="priceUnit"
-                label="Price unit" 
+                label="Price unit"
                 select
-                error={!!errors.priceUnit} 
-                helperText={!!errors.priceUnit ? errors.priceUnit.message : ""} 
+                error={!!errors.priceUnit}
+                helperText={!!errors.priceUnit ? errors.priceUnit.message : ""}
                 fullWidth
               >
-                {priceUnit.map(t => (
+                {(Object.keys(PriceUnit) as PriceUnit[]).map(t => (
                   <MenuItem key={t} value={t}>
                     {t}
                   </MenuItem>
@@ -197,16 +184,16 @@ export function CreateProductForm() {
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("instockStatus")} 
-                defaultValue={productStockStatus[2]}
+              <TextField
+                fullWidth
+                {...register("instockStatus")}
+                defaultValue={ProductStockStatus.AskForStock}
                 select
-                label="Instock Status" 
-                error={!!errors.instockStatus} 
-                helperText={!!errors.instockStatus ? errors.instockStatus.message : ""} 
+                label="Instock Status"
+                error={!!errors.instockStatus}
+                helperText={!!errors.instockStatus ? errors.instockStatus.message : ""}
               >
-                {productStockStatus.map(status => (
+                {(Object.keys(ProductStockStatus) as ProductStockStatus[]).map(status => (
                   <MenuItem key={status} value={status}>
                     {status}
                   </MenuItem>
@@ -214,11 +201,11 @@ export function CreateProductForm() {
               </TextField>
               <BrandInputField />
               <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
-              <TextField 
-                fullWidth 
+              <TextField
+                fullWidth
                 focused
-                type="number" 
-                {...register("discount", { valueAsNumber: true })} 
+                type="number"
+                {...register("discount", { valueAsNumber: true })}
                 inputProps={{
                   step: "0.01"
                 }}
@@ -241,13 +228,13 @@ export function CreateProductForm() {
           <Grid item xs={12}>
             <FormControlLabel
               label="Discounted item"
-              control={<Switch 
+              control={<Switch
                 {...register("isDiscountItem")}
               />}
             />
             <FormControlLabel
               label="Request review"
-              control={<Switch 
+              control={<Switch
                 {...register("isPending")}
               />}
             />
@@ -259,18 +246,18 @@ export function CreateProductForm() {
         </Grid>
       </FormProvider>
 
-      
+
       {modalForm.field === "brands"
-      ? <FormModal field='brands' title='Create new brand' onClose={handleOnCloseModalForm}>
-        <CreateBrandForm />
-      </FormModal>
-      : null}
+        ? <FormModal field='brands' title='Create new brand'>
+          <CreateBrandForm />
+        </FormModal>
+        : null}
 
       {modalForm.field === "categories"
-      ? <FormModal field='categories' title='Create new category' onClose={handleOnCloseModalForm}>
-        <CreateCategoryForm />
-      </FormModal>
-      : null}
+        ? <FormModal field='categories' title='Create new category'>
+          <CreateCategoryForm />
+        </FormModal>
+        : null}
     </>
   )
 }

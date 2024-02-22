@@ -1,6 +1,4 @@
 import { Router } from "express";
-import { permissionUser } from "../middleware/permissionUser";
-import { salesCategoryPermission } from "../utils/auth/permissions/salesCategory.permission";
 import { createMultiSalesCategoriesHandler, createSalesCategoryHandler, deleteMultiSalesCategoriesHandler, deleteSalesCategoryHandler, getSalesCategoriesHandler, getSalesCategoryHandler, updateSalesCategoryHandler } from "../controllers/salesCategory.controller";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
@@ -15,14 +13,12 @@ const router = Router()
 
 router.route("")
   .get(
-    permissionUser("read", salesCategoryPermission),
     getSalesCategoriesHandler,
   )
   .post(
     deserializeUser,
     requiredUser,
     checkBlockedUser,
-    permissionUser("create", salesCategoryPermission),
     validate(createSalesCategorySchema),
     createSalesCategoryHandler
   )
@@ -33,7 +29,6 @@ router.route("/multi")
     deserializeUser,
     requiredUser,
     checkBlockedUser,
-    permissionUser("delete", salesCategoryPermission),
     validate(deleteMultiSalesCategoriesSchema),
     deleteMultiSalesCategoriesHandler
   )
@@ -44,7 +39,6 @@ router.post("/excel-upload",
   deserializeUser,
   requiredUser,
   checkBlockedUser,
-  permissionUser("create", salesCategoryPermission),
   uploadExcel,
   createMultiSalesCategoriesHandler
 )
@@ -52,7 +46,6 @@ router.post("/excel-upload",
 
 router.route("/detail/:salesCategoryId")
   .get(
-    permissionUser("read", salesCategoryPermission),
     validate(getSalesCategorySchema),
     getSalesCategoryHandler
   )
@@ -60,7 +53,6 @@ router.route("/detail/:salesCategoryId")
     deserializeUser, 
     requiredUser, 
     checkBlockedUser,
-    permissionUser("update", salesCategoryPermission),
     validate(updateSalesCategorySchema), 
     updateSalesCategoryHandler
   )
@@ -68,7 +60,6 @@ router.route("/detail/:salesCategoryId")
     deserializeUser,
     requiredUser,
     checkBlockedUser,
-    permissionUser("delete", salesCategoryPermission),
     validate(getSalesCategorySchema),
     deleteSalesCategoryHandler
   )

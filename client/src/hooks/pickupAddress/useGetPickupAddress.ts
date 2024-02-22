@@ -1,7 +1,7 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { CacheKey, Resource } from "@/context/cacheKey";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
 import { PickupAddressFilter } from "@/context/pickupAddress";
 import { useQuery } from "@tanstack/react-query";
 import { getPickupAddressFn } from "@/services/pickupAddressApi";
@@ -16,7 +16,7 @@ export function useGetPickupAddress({
   }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: [Resource.PickupAddress, { id, include }] as CacheKey<"pickup-addresses">["detail"],
+    queryKey: [CacheResource.PickupAddress, { id, include }] as CacheKey<"pickup-addresses">["detail"],
     queryFn: args => getPickupAddressFn(args, { pickupAddressId: id, include }),
     // queryFn: () => Promise.reject(AppError.new(AppErrorKind.PermissionError))
   })

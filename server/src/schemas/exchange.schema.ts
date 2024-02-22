@@ -1,5 +1,5 @@
+import { PriceUnit } from "@prisma/client";
 import { number, object, string, z } from "zod";
-import { priceUnit } from "./product.schema";
 
 
 const params = {
@@ -10,33 +10,44 @@ const params = {
 
 export const createExchangeSchema = object({
   body: object({
-    from: z.enum(priceUnit).default("MMK"),
-    to: z.enum(priceUnit).default("USD"),
+    from: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
+    to: z.nativeEnum(PriceUnit).default(PriceUnit.USD),
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" })
+  }).refine(data => data.from !== data.to, {
+    path: ["to"],
+    message: "to and from must different"
   })
 })
 
 export const updateExchangeSchema = object({
   ...params,
   body: object({
-    from: z.enum(priceUnit).default("MMK"),
-    to: z.enum(priceUnit).default("USD"),
+    from: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
+    to: z.nativeEnum(PriceUnit).default(PriceUnit.USD),
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" })
+  }).refine(data => data.from !== data.to, {
+    path: ["to"],
+    message: "to and from must different"
   })
 })
 
 export const createMultiExchangesSchema = object({
   body: object({
     id: string({ required_error: "Id is required" }),
-    from: z.enum(priceUnit).default("MMK"),
-    to: z.enum(priceUnit).default("USD"),
+    from: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
+    to: z.nativeEnum(PriceUnit).default(PriceUnit.USD),
     rate: number({ required_error: "rate is required" })
       .min(0),
-    date: string({ required_error: "Date field is required" })
+    date: string({ required_error: "Date field is required" }),
+
+    "shopownerProvider.name": string({ required_error: "shopownerProvider is required" })
+  }).refine(data => data.from !== data.to, {
+    path: ["to"],
+    message: "to and from must different"
   }).array()
 })
 

@@ -1,5 +1,5 @@
-import { PermissionKey } from '@/context/cacheKey';
 import { Suspense } from 'react';
+import { OperationAction, Resource } from '@/services/types';
 import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components"
 import { Container, Grid, Typography } from "@mui/material"
@@ -7,11 +7,9 @@ import { CategoriesList } from "@/components/content/categories";
 import { MuiButton } from "@/components/ui";
 import { useNavigate } from "react-router-dom";
 import { usePermission } from "@/hooks";
-import { getCategoryPermissionsFn } from "@/services/permissionsApi";
 
 import getConfig from "@/libs/getConfig";
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import AppError, { AppErrorKind } from '@/libs/exceptions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 
@@ -19,13 +17,7 @@ const appName = getConfig("appName")
 
 
 function ListCategoryWrapper() {
-  const isAllowedReadCategory = usePermission({
-    key: PermissionKey.Category,
-    actions: "read",
-    queryFn: getCategoryPermissionsFn
-  })
-
-  if (!isAllowedReadCategory) throw AppError.new(AppErrorKind.AccessDeniedError)
+  usePermission({ action: OperationAction.Read, resource: Resource.Category }).ok_or_throw()
 
   return <CategoriesList />
 
@@ -36,10 +28,9 @@ export default function ListCategory() {
   const navigate = useNavigate()
 
   const isAllowedCreateCategory = usePermission({
-    key: PermissionKey.Category,
-    actions: "create",
-    queryFn: getCategoryPermissionsFn
-  })
+    action: OperationAction.Create,
+    resource: Resource.Category
+  }).is_ok()
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate("/categories/create")

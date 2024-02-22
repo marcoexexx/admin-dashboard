@@ -7,25 +7,25 @@ import { useSearchParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
 
 
-const filterBrandsSchema = object({
+const filterPotentialOrdersSchema = object({
   name: string().min(0).max(128).optional(),
   insensitive: boolean().optional().default(false),
 })
 
-export type FilterBrandsInput = z.infer<typeof filterBrandsSchema>
+export type FilterPotentialOrdersInput = z.infer<typeof filterPotentialOrdersSchema>
 
-export function BrandsFilterForm() {
+export function PotentialOrdersFilterForm() {
   const { dispatch } = useStore()
 
   const [filterQuery, setFilterQuery] = useSearchParams()
 
-  const methods = useForm<FilterBrandsInput>({
-    resolver: zodResolver(filterBrandsSchema)
+  const methods = useForm<FilterPotentialOrdersInput>({
+    resolver: zodResolver(filterPotentialOrdersSchema)
   })
 
   const { handleSubmit, register, formState: { errors }, setValue } = methods
 
-  const onSubmit: SubmitHandler<FilterBrandsInput> = (value) => {
+  const onSubmit: SubmitHandler<FilterPotentialOrdersInput> = (value) => {
     const { name, insensitive } = value
 
     setFilterQuery(prev => ({ ...prev, ...value }))

@@ -19,6 +19,55 @@ import { RegionFilter } from "./region"
 import { PickupAddressFilter } from "./pickupAddress"
 
 
+export type ModalFormField = 
+  | "*"
+  | "cart"
+
+  | "brands"
+  | "products"
+  | "categories"
+  | "sales-categories"
+  | "region"
+  | "townships"
+  | "addresses"
+  | "pickup-addresses"
+
+  | "update-product"  // Only for on publish product
+  | "delete-product"
+  | "delete-product-multi"
+
+  | "delete-category"
+  | "delete-category-multi"
+
+  | "delete-sales-category"
+  | "delete-sales-category-multi"
+
+  | "delete-brand"
+  | "delete-brand-multi"
+
+  | "delete-exchange"
+  | "delete-exchange-multi"
+
+  | "delete-coupon"
+  | "delete-coupon-multi"
+
+  | "delete-township"
+  | "delete-township-multi"
+
+  | "delete-user-address"
+  | "delete-user-address-multi"
+
+  | "delete-order"
+  | "delete-order-multi"
+
+  | "delete-potential-order"
+  | "delete-potential-order-multi"
+
+  | "delete-region"
+  | "delete-region-multi"
+
+  | "delete-product-sale"
+
 export type Store = {
   theme:
     | "light"
@@ -34,58 +83,12 @@ export type Store = {
   },
   modalForm: {
     // TODO: multi create exel modal
-    field:
-      | "*"
-      | "cart"
-
-      | "brands"
-      | "products"
-      | "categories"
-      | "sales-categories"
-      | "region"
-      | "townships"
-      | "addresses"
-      | "pickup-addresses"
-
-      | "update-product"  // Only for on publish product
-      | "delete-product"
-      | "delete-product-multi"
-
-      | "delete-category"
-      | "delete-category-multi"
-
-      | "delete-sales-category"
-      | "delete-sales-category-multi"
-
-      | "delete-brand"
-      | "delete-brand-multi"
-
-      | "delete-exchange"
-      | "delete-exchange-multi"
-
-      | "delete-coupon"
-      | "delete-coupon-multi"
-
-      | "delete-township"
-      | "delete-township-multi"
-
-      | "delete-user-address"
-      | "delete-user-address-multi"
-
-      | "delete-order"
-      | "delete-order-multi"
-
-      | "delete-potential-order"
-      | "delete-potential-order-multi"
-
-      | "delete-region"
-      | "delete-region-multi"
-
-      | "delete-product-sale"
+    field: ModalFormField
     state: boolean
   },
   user?: User
   slidebar: boolean
+  backdrop: boolean
   local: Local
   accessLogFilter?: AccessLogFilter,
   auditLogFilter?: AuditLogFilter,
@@ -105,9 +108,22 @@ export type Store = {
   disableCheckOut: boolean
 }
 
+interface ToggleBackdropActions {
+  type: "TOGGLE_BACKDROP",
+}
+
+interface OpenBackdropActions {
+  type: "OPEN_BACKDROP",
+}
+
+interface CloseBackdropActions {
+  type: "CLOSE_BACKDROP",
+}
+
 interface EnableCheckOutActions {
   type: "DISABLE_CHECKOUT",
 }
+
 interface DisableCheckOutActions {
   type: "ENABLE_CHECKOUT",
 }
@@ -246,6 +262,9 @@ type Action =
   | SlidebarOpenActions
   | SlidebarToggleActions
   | SlidebarCloseActions
+  | OpenBackdropActions
+  | CloseBackdropActions
+  | ToggleBackdropActions
 
   | OrderFilterActions
   | PickupAddressFilterActions
@@ -285,6 +304,7 @@ const initialState: Store = {
   },
   local: i18n.local,
   slidebar: false,
+  backdrop: false,
   modalForm: {
     field: "*",
     state: false
@@ -416,6 +436,18 @@ const stateReducer = (state: Store, action: Action): Store => {
 
     case "CLOSE_TOAST": {
       return { ...state, toast: { ...state.toast, status: false } }
+    }
+
+    case "OPEN_BACKDROP": {
+      return { ...state, backdrop: true }
+    }
+
+    case "CLOSE_BACKDROP": {
+      return { ...state, backdrop: false }
+    }
+
+    case "TOGGLE_BACKDROP": {
+      return { ...state, backdrop: !state.backdrop }
     }
 
     case "SET_USER": {

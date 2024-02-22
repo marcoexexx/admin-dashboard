@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { DeleteAccessLogSchema } from "../schemas/accessLog.schema";
 import { AccessLogService } from "../services/accessLog";
+import { OperationAction } from "@prisma/client";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { checkUser } from "../services/checkUser";
@@ -26,12 +27,17 @@ export async function getAccessLogsHandler(
     const { page, pageSize } = query.pagination ?? {}
     const { user } = convertStringToBoolean(query.include) ?? {}
 
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const [count, logs] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: {
+          userId: sessionUser.isSuperuser ? undefined : sessionUser.id,
           id,
           browser,
           ip,
@@ -58,7 +64,16 @@ export async function deleteAccessLogsHandler(
   try {
     const { accessLogId } = req.params
 
-    const accessLog = (await service.tryDelete({ where: { id: accessLogId } })).ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
+    const accessLog = (await service.tryDelete({
+      where: {
+        userId: sessionUser.isSuperuser ? undefined : sessionUser.id,
+        id: accessLogId
+      }
+    })).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ accessLog }))
   } catch (err) {

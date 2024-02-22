@@ -6,6 +6,7 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { RegionService } from "../services/region";
 import { StatusCode } from "../utils/appError";
+import { OperationAction } from "@prisma/client";
 
 
 const service = RegionService.new()
@@ -23,6 +24,10 @@ export async function getRegionsHandler(
     const { page, pageSize } = query.pagination ?? {}
     const { _count, townships, userAddresses } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, regions] = (await service.tryFindManyWithCount(
       {
@@ -54,6 +59,9 @@ export async function getRegionHandler(
     const { _count, townships, userAddresses } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
+
     const region = (await service.tryFindUnique({ where: {id: regionId}, include: { _count, townships, userAddresses } })).ok_or_throw()
 
     if (region && sessionUser) {
@@ -79,6 +87,9 @@ export async function createMultiRegionsHandler(
     if (!excelFile) return res.status(StatusCode.NoContent)
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const regions = (await service.tryExcelUpload(excelFile)).ok_or_throw()
 
     // Create audit log
@@ -101,6 +112,9 @@ export async function createRegionHandler(
     const { name, townships } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
     const region = (await service.tryCreate({
       data: {
         name,
@@ -130,6 +144,9 @@ export async function deleteRegionHandler(
     const { regionId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const region = (await service.tryDelete({ where: {id: regionId} })).ok_or_throw()
 
     // Create audit log
@@ -152,6 +169,9 @@ export async function deleteMultilRegionsHandler(
     const { regionIds } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
     const _deletedRegions = await service.tryDeleteMany({
       where: {
         id: {
@@ -182,6 +202,9 @@ export async function updateRegionHandler(
     const data = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
     const region = (await service.tryUpdate({
       where: { id: regionId },
       data: {
