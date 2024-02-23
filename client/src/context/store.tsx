@@ -5,9 +5,9 @@ import { i18n, Local } from "@/i18n"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 import { ProductFilter } from "./product"
 import { ExchangeFilter } from "./exchange"
-import { AccessLogFilter } from "./accessLog"
-import { AuditLogFilter } from "./auditLogs"
-import { BrandFilter } from "./brand"
+import { AccessLogWhereInput } from "./accessLog"
+import { AuditLogWhereInput } from "./auditLogs"
+import { BrandWhereInput } from "./brand"
 import { CategoryFilter } from "./category"
 import { UserAddressFilter } from "./userAddress"
 import { CouponFilter } from "./coupon"
@@ -90,8 +90,8 @@ export type Store = {
   slidebar: boolean
   backdrop: boolean
   local: Local
-  accessLogFilter?: AccessLogFilter,
-  auditLogFilter?: AuditLogFilter,
+  accessLogFilter?: AccessLogWhereInput,
+  auditLogFilter?: AuditLogWhereInput,
   orderFilter?: OrderFilter,
   potentialOrderFilter?: PotentialOrderFilter,
   userFilter?: UserFilter,
@@ -100,7 +100,7 @@ export type Store = {
   productFilter?: ProductFilter,
   salesCategoryFilter?: SalesCategoryFilter,
   categoryFilter?: CategoryFilter,
-  brandFilter?: BrandFilter,
+  brandFilter?: BrandWhereInput,
   townshipFilter?: TownshipFilter,
   regionFilter?: RegionFilter,
   exchangeFilter?: ExchangeFilter,

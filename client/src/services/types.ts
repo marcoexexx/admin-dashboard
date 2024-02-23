@@ -632,32 +632,10 @@ export type QueryOptionArgs = {
   signal: AbortSignal,
   meta: Record<string, unknown> | undefined
 }
+
+
 export type LoginResponse = Omit<HttpResponse, "message"> & { accessToken: string };
-
 export type UserResponse = Omit<HttpResponse, "message"> & { user: User, redirectUrl: string | undefined };
-
-export type CategoryResponse = Omit<HttpResponse, "message"> & { category: Category };
-
-export type CouponResponse = Omit<HttpResponse, "message"> & { coupon: Coupon };
-
-export type SalesCategoryResponse = Omit<HttpResponse, "message"> & { salesCategory: SalesCategory };
-
-export type ProductResponse = Omit<HttpResponse, "message"> & { product: Product };
-
 export type ProductSalesCategoriesResponse = { id: string, salesCategoryId: string, productId: string, discount: number, salesCategory: SalesCategory };
 
-export type BrandResponse = Omit<HttpResponse, "message"> & { brand: Brand };
-
-export type TownshipResponse = Omit<HttpResponse, "message"> & { township: TownshipFees };
-
-export type RegionResponse = Omit<HttpResponse, "message"> & { region: Region };
-
-export type ExchangeResponse = Omit<HttpResponse, "message"> & { exchange: Exchange };
-
-export type UserAddressResponse = Omit<HttpResponse, "message"> & { userAddress: Address };
-
-export type PickupAddressResponse = Omit<HttpResponse, "message"> & { pickupAddress: PickupAddress };
-
-export type PotentialOrderResponse = Omit<HttpResponse, "message"> & { potentialOrder: PotentialOrder };
-
-export type OrderResponse = Omit<HttpResponse, "message"> & { order: Order };
+export type GenericResponse<T, L extends string> = Omit<HttpResponse, "message"> & {[K in L]: T}

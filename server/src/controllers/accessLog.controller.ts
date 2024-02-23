@@ -46,6 +46,9 @@ export async function getAccessLogsHandler(
         },
         include: {
           user
+        },
+        orderBy: {
+          updatedAt: "desc"
         }
       }
     )).ok_or_throw()

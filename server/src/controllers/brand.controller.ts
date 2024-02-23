@@ -23,7 +23,6 @@ export async function getBrandsHandler(
     const { id, name } = query.filter ?? {}
     const { page, pageSize } = query.pagination ?? {}
     const { _count, products } = convertStringToBoolean(query.include) ?? {}
-    const orderBy = query.orderBy ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
@@ -31,7 +30,7 @@ export async function getBrandsHandler(
 
     const [count, brands] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: {
@@ -39,10 +38,12 @@ export async function getBrandsHandler(
           name
         },
         include: {
-        _count,
-        products
+          _count,
+          products
         },
-        orderBy
+        orderBy: {
+          updatedAt: "desc"
+        }
       }
     )).ok_or_throw()
 
@@ -122,7 +123,7 @@ export async function createBrandHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
-    const brand = (await service.tryCreate({ data: {name} })).ok_or_throw()
+    const brand = (await service.tryCreate({ data: { name } })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)
@@ -147,7 +148,7 @@ export async function deleteBrandHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    const brand = (await service.tryDelete({ where: {id: brandId} })).ok_or_throw()
+    const brand = (await service.tryDelete({ where: { id: brandId } })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)
@@ -205,7 +206,7 @@ export async function updateBrandHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
     _isAccess.ok_or_throw()
 
-    const brand = (await service.tryUpdate({ where: {id: brandId}, data: { name } })).ok_or_throw()
+    const brand = (await service.tryUpdate({ where: { id: brandId }, data: { name } })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)
