@@ -22,3 +22,4 @@ pnpm install
 
 echo "[ BUILD ] building client...\n"
 pnpm run build
+
