@@ -31,7 +31,7 @@ export async function getRegionsHandler(
 
     const [count, regions] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: { id, name },
@@ -62,7 +62,7 @@ export async function getRegionHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
     _isAccess.ok_or_throw()
 
-    const region = (await service.tryFindUnique({ where: {id: regionId}, include: { _count, townships, userAddresses } })).ok_or_throw()
+    const region = (await service.tryFindUnique({ where: { id: regionId }, include: { _count, townships, userAddresses } })).ok_or_throw()
 
     if (region && sessionUser) {
       const _auditLog = await service.audit(sessionUser)
@@ -147,7 +147,7 @@ export async function deleteRegionHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    const region = (await service.tryDelete({ where: {id: regionId} })).ok_or_throw()
+    const region = (await service.tryDelete({ where: { id: regionId } })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)

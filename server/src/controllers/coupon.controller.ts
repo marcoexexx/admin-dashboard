@@ -32,7 +32,7 @@ export async function getCouponsHandler(
 
     const [count, coupons] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: {
@@ -43,7 +43,7 @@ export async function getCouponsHandler(
           isUsed: isUsed === "true" ? true : false,
           expiredDate
         },
-        include: {reward, product},
+        include: { reward, product },
         orderBy
       }
     )).ok_or_throw()
@@ -70,7 +70,7 @@ export async function getCouponHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
     _isAccess.ok_or_throw()
 
-    const coupon = (await service.tryFindUnique({ where: {id: couponId}, include: {reward, product} })).ok_or_throw()
+    const coupon = (await service.tryFindUnique({ where: { id: couponId }, include: { reward, product } })).ok_or_throw()
 
     // Create audit log
     if (coupon && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
@@ -125,7 +125,7 @@ export async function createMultiCouponsHandler(
     const excelFile = req.file
 
     if (!excelFile) return res.status(StatusCode.NoContent)
-    
+
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
@@ -155,7 +155,7 @@ export async function deleteCouponHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    const coupon = (await service.tryDelete({ where: {id: couponId} })).ok_or_throw()
+    const coupon = (await service.tryDelete({ where: { id: couponId } })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)

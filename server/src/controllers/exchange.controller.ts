@@ -6,6 +6,7 @@ import { CreateExchangeInput, DeleteMultiExchangesInput, GetExchangeInput, Updat
 import { ExchangeService } from "../services/exchange";
 import AppError, { StatusCode } from "../utils/appError";
 import { OperationAction } from "@prisma/client";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 
 
 const service = ExchangeService.new()
@@ -21,6 +22,7 @@ export async function getExchangesHandler(
 
     const { id, from, to, startDate, endDate, rate } = query.filter ?? {}
     const { page, pageSize } = query.pagination ?? {}
+    const { shopowner } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
@@ -29,7 +31,7 @@ export async function getExchangesHandler(
 
     const [count, exchanges] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: {
@@ -40,9 +42,12 @@ export async function getExchangesHandler(
             lte: endDate,
             gte: startDate
           },
-          rate
+          rate,
         },
-        orderBy
+        orderBy,
+        include: {
+          shopowner
+        }
       }
     )).ok_or_throw()
 
@@ -59,13 +64,19 @@ export async function getExchangeHandler(
   next: NextFunction
 ) {
   try {
+    const query = convertNumericStrings(req.query)
+
     const { exchangeId } = req.params
+    const { shopowner } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
     _isAccess.ok_or_throw()
 
-    const exchange = (await service.tryFindUnique({ where: {id: exchangeId} })).ok_or_throw()
+    const exchange = (await service.tryFindUnique({
+      where: { id: exchangeId },
+      include: { shopowner }
+    })).ok_or_throw()
 
     // Create event action audit log
     if (exchange && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
@@ -187,7 +198,7 @@ export async function deleteExchangeHandler(
 ) {
   try {
     const { exchangeId } = req.params
-    
+
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()

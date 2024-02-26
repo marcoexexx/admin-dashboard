@@ -34,7 +34,7 @@ export async function getSalesCategoriesHandler(
 
     const [count, categories] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: { id, name },
@@ -65,7 +65,7 @@ export async function getSalesCategoriesInProductHandler(
     const [count, salesCategories] = (await _salesService.tryFindManyWithCount(
       {
         pagination: { page: 1, pageSize: 10 }
-      }, 
+      },
       {
         where: { productId },
         include: { salesCategory: true },
@@ -94,7 +94,7 @@ export async function getSalesCategoryHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
     _isAccess.ok_or_throw()
 
-    const salesCategory = (await service.tryFindUnique({ where: {id: salesCategoryId}, include: { _count, products } })).ok_or_throw()
+    const salesCategory = (await service.tryFindUnique({ where: { id: salesCategoryId }, include: { _count, products } })).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ salesCategory }))
   } catch (err) {
@@ -202,7 +202,7 @@ export async function deleteSalesCategoryHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    const category = (await service.tryDelete({ where: {id: salesCategoryId} })).ok_or_throw()
+    const category = (await service.tryDelete({ where: { id: salesCategoryId } })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)
