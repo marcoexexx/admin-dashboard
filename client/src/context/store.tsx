@@ -24,11 +24,16 @@ import { AllModalFormCloseActions, CloseBackdropActions, DisableCheckOutActions,
 const INITIAL_LIST_PAGE_LIMIT = 10
 export const INITIAL_PAGINATION: Pagination = { page: 1, pageSize: INITIAL_LIST_PAGE_LIMIT }
 
+type Singular<T> = T extends `${infer Y}ies` ? `${Y}y`
+  // : T extends `${infer S}es` ? S
+  : T extends `${infer U}s` ? U
+  : never
+
 export type ModalFormField =
   | "*"
   | "cart"
-  | `create-${CacheResource}`
-  | `delete-${CacheResource}`
+  | `create-${Singular<CacheResource>}`
+  | `delete-${Singular<CacheResource>}`
   | `delete-${CacheResource}-multi`
   | `excel-${CacheResource}`
 

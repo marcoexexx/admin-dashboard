@@ -63,7 +63,7 @@ export function UpdateCouponForm() {
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<UpdateCouponInput> = (value) => {
-    if (couponId) updateCouponMutation.mutate({ couponId, coupon: value })
+    if (couponId) updateCouponMutation.mutate({ id: couponId, payload: value })
   }
 
   return (

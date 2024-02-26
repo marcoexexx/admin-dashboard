@@ -33,7 +33,7 @@ const deleteSingleRowKeys: Record<Resource, ModalFormField> = {
   [Resource.Region]: "delete-region",
   [Resource.SalesCategory]: "delete-sales-category",
   [Resource.Township]: "delete-township",
-  [Resource.UserAddress]: "delete-user-address"
+  [Resource.UserAddress]: "delete-user-addresse"
 }
 
 const deleteMultiRowKeys: Record<Resource, ModalFormField> = {
@@ -45,17 +45,17 @@ const deleteMultiRowKeys: Record<Resource, ModalFormField> = {
   [Resource.AuditLog]: "*",
   [Resource.User]: "*",
   [Resource.PickupAddress]: "*",
-  [Resource.Brand]: "delete-brand-multi",
-  [Resource.Category]: "delete-category-multi",
-  [Resource.Coupon]: "delete-coupon-multi",
-  [Resource.Exchange]: "delete-exchange-multi",
-  [Resource.Order]: "delete-order-multi",
-  [Resource.PotentialOrder]: "delete-potential-order-multi",
-  [Resource.Product]: "delete-product-multi",
-  [Resource.Region]: "delete-region-multi",
-  [Resource.SalesCategory]: "delete-sales-category-multi",
-  [Resource.Township]: "delete-township-multi",
-  [Resource.UserAddress]: "delete-user-address-multi"
+  [Resource.Brand]: "delete-brands-multi",
+  [Resource.Category]: "delete-categories-multi",
+  [Resource.Coupon]: "delete-coupons-multi",
+  [Resource.Exchange]: "delete-exchanges-multi",
+  [Resource.Order]: "delete-orders-multi",
+  [Resource.PotentialOrder]: "delete-potential-orders-multi",
+  [Resource.Product]: "delete-products-multi",
+  [Resource.Region]: "delete-regions-multi",
+  [Resource.SalesCategory]: "delete-sales-categories-multi",
+  [Resource.Township]: "delete-townships-multi",
+  [Resource.UserAddress]: "delete-user-addresses-multi"
 }
 
 
