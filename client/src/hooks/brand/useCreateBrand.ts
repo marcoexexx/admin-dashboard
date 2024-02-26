@@ -3,6 +3,7 @@ import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 import { CacheResource } from "@/context/cacheKey"
 import { BrandApiService } from "@/services/brandsApi"
+import { CreateBrandInput } from "@/components/content/brands/forms"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
@@ -20,7 +21,7 @@ export function useCreateBrand() {
   const from = "/brands"
 
   const mutation = useMutation({
-    mutationFn: apiService.create,
+    mutationFn: (payload: CreateBrandInput) => apiService.create(payload),
     onSuccess: () => {
       dispatch({
         type: "OPEN_TOAST", payload: {

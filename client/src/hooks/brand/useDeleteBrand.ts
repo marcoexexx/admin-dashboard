@@ -16,7 +16,7 @@ export function useDeleteBrand() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: apiService.delete,
+    mutationFn: (id: string) => apiService.delete(id),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {

@@ -7,6 +7,7 @@ import { CacheResource } from "@/context/cacheKey";
 import { numberFormat } from "@/libs/numberFormat";
 import { useStore } from "@/hooks";
 import { useMemo } from "react";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const potentialOrderStatus: {
@@ -77,7 +78,7 @@ interface PotentialOrdersListTableProps {
 
 export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
   const { potentialOrders, count, isLoading, onDelete, onMultiDelete } = props
-  const { state: { potentialOrderFilter }, dispatch } = useStore()
+  const { state: { potentialOrderFilter: { pagination } }, dispatch } = useStore()
 
   const theme = useTheme()
 
@@ -111,19 +112,15 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_POTENTIAL_ORDER_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_POTENTIAL_ORDER_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_POTENTIAL_ORDER_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_POTENTIAL_ORDER_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -149,10 +146,10 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={potentialOrderFilter?.page
-            ? potentialOrderFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={potentialOrderFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

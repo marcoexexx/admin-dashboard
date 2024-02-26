@@ -4,6 +4,7 @@ import { DynamicColumn, EnhancedTable, TypedColumn } from "@/components";
 import { AuditLog, Resource } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { RenderResourceItemLabel, RenderUsernameLabel } from "@/components/table-labels";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const typedCols: TypedColumn<AuditLog>[] = [
@@ -45,23 +46,19 @@ interface AuditLogsListTableProps {
 
 export function AuditLogsListTable(props: AuditLogsListTableProps) {
   const { auditLogs, count, isLoading } = props
-  const { state: { auditLogFilter }, dispatch } = useStore()
+  const { state: { auditLogFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_AUDIT_LOG_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_AUDIT_LOG_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_AUDIT_LOG_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_AUDIT_LOG_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -84,10 +81,10 @@ export function AuditLogsListTable(props: AuditLogsListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={auditLogFilter?.page
-            ? auditLogFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={auditLogFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

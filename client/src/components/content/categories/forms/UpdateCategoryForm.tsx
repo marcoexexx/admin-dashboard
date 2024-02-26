@@ -47,7 +47,7 @@ export function UpdateCategoryForm() {
   }, [setFocus])
 
   const onSubmit: SubmitHandler<UpdateCategoryInput> = (value) => {
-    if (categoryId) updateCategoryMutation.mutate({ categoryId, category: value })
+    if (categoryId) updateCategoryMutation.mutate({ id: categoryId, payload: value })
   }
 
   return (

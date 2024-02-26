@@ -5,6 +5,7 @@ import { CategoriesFilterForm } from ".";
 import { RenderCategoryLabel } from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const columns: TypedColumn<Category>[] = [
@@ -12,13 +13,13 @@ const columns: TypedColumn<Category>[] = [
     id: "name",
     align: "left",
     name: "Name",
-    render: ({value}) => <RenderCategoryLabel category={value} />
+    render: ({ value }) => <RenderCategoryLabel category={value} />
   },
   {
     id: "createdAt",
     align: "left",
     name: "Created At",
-    render: ({value}) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
+    render: ({ value }) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
   },
 ]
 
@@ -33,23 +34,19 @@ interface CategoriesListTableProps {
 
 export function CategoriesListTable(props: CategoriesListTableProps) {
   const { categories, count, isLoading, onCreateManyCategories, onDelete, onMultiDelete } = props
-  const { state: {categoryFilter}, dispatch } = useStore()
+  const { state: { categoryFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_CATEGORY_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_CATEGORY_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_CATEGORY_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_CATEGORY_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -76,10 +73,10 @@ export function CategoriesListTable(props: CategoriesListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={categoryFilter?.page
-            ? categoryFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={categoryFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

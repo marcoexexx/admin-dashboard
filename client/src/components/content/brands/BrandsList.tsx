@@ -4,18 +4,16 @@ import { BrandsListTable } from "@/components/content/brands";
 
 import { useStore } from "@/hooks";
 import { useCreateMultiBrands, useDeleteBrand, useDeleteMultiBrands, useGetBrands } from "@/hooks/brand";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function BrandsList() {
-  const { state: {brandFilter} } = useStore()
+  const { state: { brandFilter } } = useStore()
 
   // Queries
   const brandsQuery = useGetBrands({
-    filter: brandFilter?.fields,
-    pagination: {
-      page: brandFilter?.page || 1,
-      pageSize: brandFilter?.limit || 10
-    },
+    filter: brandFilter.where,
+    pagination: brandFilter.pagination || INITIAL_PAGINATION,
   })
 
   // Mutations
@@ -43,11 +41,11 @@ export function BrandsList() {
 
 
   return <Card>
-    <BrandsListTable 
+    <BrandsListTable
       isLoading={brandsQuery.isLoading}
-      brands={data.results} 
-      count={data.count} 
-      onCreateManyBrands={handleCreateManyBrands} 
+      brands={data.results}
+      count={data.count}
+      onCreateManyBrands={handleCreateManyBrands}
       onDelete={handleDeleteBrand}
       onMultiDelete={handleDeleteMultiBrands}
     />

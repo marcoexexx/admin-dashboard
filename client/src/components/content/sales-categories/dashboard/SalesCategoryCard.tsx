@@ -7,6 +7,7 @@ import { useGetSalesCategories } from "@/hooks/salsCategory";
 import { useNavigate } from "react-router-dom";
 
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone'
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function SalesCategoryCard() {
@@ -15,11 +16,8 @@ export function SalesCategoryCard() {
   const navigate = useNavigate()
 
   const { try_data, isLoading } = useGetSalesCategories({
-    filter: salesCategoryFilter?.fields,
-    pagination: {
-      page: salesCategoryFilter?.page || 1,
-      pageSize: salesCategoryFilter?.limit || 2
-    },
+    filter: salesCategoryFilter.where,
+    pagination: salesCategoryFilter.pagination || INITIAL_PAGINATION,
   })
   const sales = try_data.ok_or_throw()?.results
 

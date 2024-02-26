@@ -1,255 +1,75 @@
-import { User } from "@/services/types"
+import { Pagination, User } from "@/services/types"
 import { createContext, useReducer } from "react"
 import { i18n, Local } from "@/i18n"
 
 import AppError, { AppErrorKind } from "@/libs/exceptions"
-import { ProductFilter } from "./product"
-import { ExchangeFilter } from "./exchange"
-import { AccessLogWhereInput } from "./accessLog"
-import { AuditLogWhereInput } from "./auditLogs"
-import { BrandWhereInput } from "./brand"
-import { CategoryFilter } from "./category"
-import { UserAddressFilter } from "./userAddress"
-import { CouponFilter } from "./coupon"
-import { UserFilter } from "./user"
-import { OrderFilter, PotentialOrderFilter } from "./order"
-import { SalesCategoryFilter } from "./salesCategory"
-import { TownshipFilter } from "./township"
-import { RegionFilter } from "./region"
-import { PickupAddressFilter } from "./pickupAddress"
+import { ChangeProductPageActions, ChangeProductPageSizeActions, ProductFilterActions, ProductWhereInput } from "./product"
+import { ChangeExchangePageActions, ChangeExchangePageSizeActions, ExchangeFilterActions, ExchangeWhereInput } from "./exchange"
+import { AccessLogFilterActions, AccessLogWhereInput, ChangeAccessLogPageActions, ChangeAccessLogPageSizeActions } from "./accessLog"
+import { AuditLogFilterActions, AuditLogWhereInput, ChangeAuditLogPageActions, ChangeAuditLogPageSizeActions } from "./auditLogs"
+import { BrandFilterActions, BrandWhereInput, ChangeBrandPageActions, ChangeBrandPageSizeActions } from "./brand"
+import { CategoryFilterActions, CategoryWhereInput, ChangeCategoryPageActions, ChangeCategoryPageSizeActions } from "./category"
+import { ChangeUserAddressPageActions, ChangeUserAddressPageSizeActions, UserAddressFilterActions, UserAddressWhereInput } from "./userAddress"
+import { ChangeCouponPageActions, ChangeCouponPageSizeActions, CouponFilterActions, CouponWhereInput } from "./coupon"
+import { ChangeUserPageActions, ChangeUserPageSizeActions, UserFilterActions, UserWhereInput } from "./user"
+import { ChangeSalesCategoryPageActions, ChangeSalesCategoryPageSizeActions, SalesCategoryFilterActions, SalesCategoryWhereInput } from "./salesCategory"
+import { ChangeTownshipPageActions, ChangeTownshipPageSizeActions, TownshipFilterActions, TownshipWhereInput } from "./township"
+import { ChangeRegionPageActions, ChangeRegionPageSizeActions, RegionFilterActions, RegionWhereInput } from "./region"
+import { ChangePickupPageActions, ChangePickupPageSizeActions, PickupAddressFilterActions, PickupAddressWhereInput } from "./pickupAddress"
+import { CacheResource } from "./cacheKey"
+import { ChangeOrderPageActions, ChangeOrderPageSizeActions, ChangePotentialOrderPageActions, ChangePotentialOrderPageSizeActions, OrderFilterActions, OrderWhereInput, PotentialOrderFilterActions, PotentialOrderWhereInput } from "./order"
+import { AllModalFormCloseActions, CloseBackdropActions, DisableCheckOutActions, EnableCheckOutActions, LocalActions, ModalFormCloseActions, ModalFormOpenActions, OpenBackdropActions, SlidebarCloseActions, SlidebarOpenActions, SlidebarToggleActions, ThemeActions, ToastCloseActions, ToastOpenActions, ToggleBackdropActions, UserActions } from "./actions"
 
 
-export type ModalFormField = 
+const INITIAL_LIST_PAGE_LIMIT = 10
+export const INITIAL_PAGINATION: Pagination = { page: 1, pageSize: INITIAL_LIST_PAGE_LIMIT }
+
+export type ModalFormField =
   | "*"
   | "cart"
-
-  | "brands"
-  | "products"
-  | "categories"
-  | "sales-categories"
-  | "region"
-  | "townships"
-  | "addresses"
-  | "pickup-addresses"
-
-  | "update-product"  // Only for on publish product
-  | "delete-product"
-  | "delete-product-multi"
-
-  | "delete-category"
-  | "delete-category-multi"
-
-  | "delete-sales-category"
-  | "delete-sales-category-multi"
-
-  | "delete-brand"
-  | "delete-brand-multi"
-
-  | "delete-exchange"
-  | "delete-exchange-multi"
-
-  | "delete-coupon"
-  | "delete-coupon-multi"
-
-  | "delete-township"
-  | "delete-township-multi"
-
-  | "delete-user-address"
-  | "delete-user-address-multi"
-
-  | "delete-order"
-  | "delete-order-multi"
-
-  | "delete-potential-order"
-  | "delete-potential-order-multi"
-
-  | "delete-region"
-  | "delete-region-multi"
-
-  | "delete-product-sale"
+  | `create-${CacheResource}`
+  | `delete-${CacheResource}`
+  | `delete-${CacheResource}-multi`
+  | `excel-${CacheResource}`
 
 export type Store = {
   theme:
-    | "light"
-    | "dark"
+  | "light"
+  | "dark"
   toast: {
     status: boolean,
     message?: string,
-    severity: 
-      | "success"
-      | "error"
-      | "warning"
-      | "info"
+    severity:
+    | "success"
+    | "error"
+    | "warning"
+    | "info"
   },
   modalForm: {
     // TODO: multi create exel modal
     field: ModalFormField
     state: boolean
   },
-  user?: User
+  user: User | undefined
   slidebar: boolean
   backdrop: boolean
   local: Local
-  accessLogFilter?: AccessLogWhereInput,
-  auditLogFilter?: AuditLogWhereInput,
-  orderFilter?: OrderFilter,
-  potentialOrderFilter?: PotentialOrderFilter,
-  userFilter?: UserFilter,
-  userAddressFilter?: UserAddressFilter,
-  pickupAddressFilter?: PickupAddressFilter,
-  productFilter?: ProductFilter,
-  salesCategoryFilter?: SalesCategoryFilter,
-  categoryFilter?: CategoryFilter,
-  brandFilter?: BrandWhereInput,
-  townshipFilter?: TownshipFilter,
-  regionFilter?: RegionFilter,
-  exchangeFilter?: ExchangeFilter,
-  couponFilter?: CouponFilter,
+  accessLogFilter: AccessLogWhereInput,
+  auditLogFilter: AuditLogWhereInput,
+  orderFilter: OrderWhereInput,
+  potentialOrderFilter: PotentialOrderWhereInput,
+  userFilter: UserWhereInput,
+  userAddressFilter: UserAddressWhereInput,
+  pickupAddressFilter: PickupAddressWhereInput,
+  productFilter: ProductWhereInput,
+  salesCategoryFilter: SalesCategoryWhereInput,
+  categoryFilter: CategoryWhereInput,
+  brandFilter: BrandWhereInput,
+  townshipFilter: TownshipWhereInput,
+  regionFilter: RegionWhereInput,
+  exchangeFilter: ExchangeWhereInput,
+  couponFilter: CouponWhereInput,
   disableCheckOut: boolean
-}
-
-interface ToggleBackdropActions {
-  type: "TOGGLE_BACKDROP",
-}
-
-interface OpenBackdropActions {
-  type: "OPEN_BACKDROP",
-}
-
-interface CloseBackdropActions {
-  type: "CLOSE_BACKDROP",
-}
-
-interface EnableCheckOutActions {
-  type: "DISABLE_CHECKOUT",
-}
-
-interface DisableCheckOutActions {
-  type: "ENABLE_CHECKOUT",
-}
-
-interface OrderFilterActions {
-  type: "SET_ORDER_FILTER",
-  payload: Store["orderFilter"]
-}
-
-interface PotentialOrderFilterActions {
-  type: "SET_POTENTIAL_ORDER_FILTER",
-  payload: Store["potentialOrderFilter"]
-}
-
-interface UserAddressFilterActions {
-  type: "SET_USER_ADDRESS_FILTER",
-  payload: Store["userAddressFilter"]
-}
-
-interface PickupAddressFilterActions {
-  type: "SET_PICKUP_ADDRESS_FILTER",
-  payload: Store["pickupAddressFilter"]
-}
-
-interface AuditLogFilterActions {
-  type: "SET_AUDIT_LOG_FILTER",
-  payload: Store["auditLogFilter"]
-}
-
-interface AccessLogFilterActions {
-  type: "SET_ACCESS_LOG_FILTER",
-  payload: Store["accessLogFilter"]
-}
-
-interface TownshipFilterActions {
-  type: "SET_TOWNSHIP_FILTER",
-  payload: Store["townshipFilter"]
-}
-
-interface CouponFilterActions {
-  type: "SET_COUPON_FILTER",
-  payload: Store["couponFilter"]
-}
-
-interface UserFilterActions {
-  type: "SET_USER_FILTER",
-  payload: Store["userFilter"]
-}
-
-interface ProductFilterActions {
-  type: "SET_PRODUCT_FILTER",
-  payload: Store["productFilter"]
-}
-
-interface BrandFilterActions {
-  type: "SET_BRAND_FILTER",
-  payload: Store["brandFilter"]
-}
-
-interface RegionFilterActions {
-  type: "SET_REGION_FILTER",
-  payload: Store["regionFilter"]
-}
-
-interface ExchangeFilterActions {
-  type: "SET_EXCHANGE_FILTER",
-  payload: Store["exchangeFilter"]
-}
-
-interface SalesCategoryFilterActions {
-  payload: Store["salesCategoryFilter"]
-  type: "SET_SALES_CATEGORY_FILTER",
-}
-
-interface CategoryFilterActions {
-  type: "SET_CATEGORY_FILTER",
-  payload: Store["categoryFilter"]
-}
-
-interface ModalFormOpenActions {
-  type: "OPEN_MODAL_FORM",
-  payload: Store["modalForm"]["field"]
-}
-
-interface ModalFormCloseActions {
-  type: "CLOSE_MODAL_FORM",
-  payload: Store["modalForm"]["field"]
-}
-
-interface AllModalFormCloseActions {
-  type: "CLOSE_ALL_MODAL_FORM",
-}
-
-interface SlidebarToggleActions {
-  type: "TOGGLE_SLIDEBAR",
-}
-
-interface SlidebarOpenActions {
-  type: "OPEN_SLIDEBAR",
-}
-
-interface SlidebarCloseActions {
-  type: "CLOSE_SLIDEBAR",
-}
-
-interface ThemeActions {
-  type: "TOGGLE_THEME",
-}
-
-interface ToastCloseActions {
-  type: "CLOSE_TOAST",
-}
-
-interface UserActions {
-  type: "SET_USER",
-  payload: Store["user"]
-}
-
-interface ToastOpenActions {
-  type: "OPEN_TOAST",
-  payload: Omit<Store["toast"], "status">
-}
-
-interface LocalActions {
-  type: "SET_LOCAL",
-  payload: Store["local"] | Local
 }
 
 
@@ -266,21 +86,22 @@ type Action =
   | CloseBackdropActions
   | ToggleBackdropActions
 
-  | OrderFilterActions
-  | PickupAddressFilterActions
-  | PotentialOrderFilterActions
-  | UserAddressFilterActions
-  | TownshipFilterActions
-  | AuditLogFilterActions
-  | AccessLogFilterActions
-  | UserFilterActions
-  | ProductFilterActions
-  | BrandFilterActions
-  | ExchangeFilterActions
-  | CategoryFilterActions
-  | SalesCategoryFilterActions
-  | CouponFilterActions
-  | RegionFilterActions
+  // Resources
+  | AccessLogFilterActions | ChangeAccessLogPageActions | ChangeAccessLogPageSizeActions
+  | AuditLogFilterActions | ChangeAuditLogPageActions | ChangeAuditLogPageSizeActions
+  | BrandFilterActions | ChangeBrandPageActions | ChangeBrandPageSizeActions
+  | CategoryFilterActions | ChangeCategoryPageActions | ChangeCategoryPageSizeActions
+  | CouponFilterActions | ChangeCouponPageActions | ChangeCouponPageSizeActions
+  | ExchangeFilterActions | ChangeExchangePageActions | ChangeExchangePageSizeActions
+  | OrderFilterActions | ChangeOrderPageActions | ChangeOrderPageSizeActions
+  | PotentialOrderFilterActions | ChangePotentialOrderPageActions | ChangePotentialOrderPageSizeActions
+  | PickupAddressFilterActions | ChangePickupPageActions | ChangePickupPageSizeActions
+  | ProductFilterActions | ChangeProductPageActions | ChangeProductPageSizeActions
+  | RegionFilterActions | ChangeRegionPageActions | ChangeRegionPageSizeActions
+  | SalesCategoryFilterActions | ChangeSalesCategoryPageActions | ChangeSalesCategoryPageSizeActions
+  | TownshipFilterActions | ChangeTownshipPageActions | ChangeTownshipPageSizeActions
+  | UserFilterActions | ChangeUserPageActions | ChangeUserPageSizeActions
+  | UserAddressFilterActions | ChangeUserAddressPageActions | ChangeUserAddressPageSizeActions
 
   | ModalFormOpenActions
   | ModalFormCloseActions
@@ -292,11 +113,12 @@ type Action =
 type Dispatch = (action: Action) => void
 
 export const StoreContext = createContext<
-  { state: Store, dispatch: Dispatch} | undefined
+  { state: Store, dispatch: Dispatch } | undefined
 >(undefined)
 
 
 const initialState: Store = {
+  user: undefined,
   theme: localStorage.getItem("theme") as Store["theme"] || "light",
   toast: {
     status: false,
@@ -310,44 +132,49 @@ const initialState: Store = {
     state: false
   },
   auditLogFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
+    pagination: INITIAL_PAGINATION
   },
   accessLogFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
+    pagination: INITIAL_PAGINATION
   },
   orderFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
+    pagination: INITIAL_PAGINATION
   },
   potentialOrderFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
+    pagination: INITIAL_PAGINATION
   },
   userFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
+    pagination: INITIAL_PAGINATION
   },
   userAddressFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
+    pagination: INITIAL_PAGINATION
   },
   pickupAddressFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
+    pagination: INITIAL_PAGINATION
+  },
+  townshipFilter: {
+    pagination: INITIAL_PAGINATION,
+  },
+  regionFilter: {
+    pagination: INITIAL_PAGINATION,
+  },
+  exchangeFilter: {
+    pagination: INITIAL_PAGINATION,
+  },
+  couponFilter: {
+    pagination: INITIAL_PAGINATION,
+  },
+  brandFilter: {
+    pagination: INITIAL_PAGINATION,
+  },
+  categoryFilter: {
+    pagination: INITIAL_PAGINATION,
+  },
+  salesCategoryFilter: {
+    pagination: INITIAL_PAGINATION,
   },
   productFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
+    pagination: INITIAL_PAGINATION,
     include: {
       _count: false,
       specification: false,
@@ -363,60 +190,6 @@ const initialState: Store = {
         }
       },
     },
-  },
-  townshipFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
-    include: {
-    },
-  },
-  regionFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
-    include: {
-    },
-  },
-  brandFilter: {
-    page: 1,
-    limit: 10,
-    mode: "default",
-    include: {
-      _count: false,
-    },
-  },
-  categoryFilter: {
-    page: 1,
-    limit: 10,
-    include: {
-      _count: false,
-    },
-    mode: "default"
-  },
-  salesCategoryFilter: {
-    page: 1,
-    limit: 10,
-    include: {
-      _count: false,
-    },
-    mode: "default"
-  },
-  exchangeFilter: {
-    page: 1,
-    limit: 10,
-    include: {
-      _count: false,
-    },
-    mode: "default"
-  },
-  couponFilter: {
-    page: 1,
-    limit: 10,
-    include: {
-      _count: false,
-    },
-    mode: "default"
   },
 
   disableCheckOut: true
@@ -484,109 +257,473 @@ const stateReducer = (state: Store, action: Action): Store => {
     }
 
     case "SET_USER_FILTER": {
-      return { ...state, userFilter: {
-        ...state.userFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, userFilter: {
+          ...state.userFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_USER_PAGE": {
+      return {
+        ...state, userFilter: {
+          ...state.userFilter,
+          pagination: {
+            pageSize: state.userFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_USER_PAGE_SIZE": {
+      return {
+        ...state, userFilter: {
+          ...state.userFilter,
+          pagination: {
+            page: state.userFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_ORDER_FILTER": {
-      return { ...state, orderFilter: {
-        ...state.orderFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, orderFilter: {
+          ...state.orderFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_ORDER_PAGE": {
+      return {
+        ...state, orderFilter: {
+          ...state.orderFilter,
+          pagination: {
+            pageSize: state.orderFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_ORDER_PAGE_SIZE": {
+      return {
+        ...state, orderFilter: {
+          ...state.orderFilter,
+          pagination: {
+            page: state.orderFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_POTENTIAL_ORDER_FILTER": {
-      return { ...state, potentialOrderFilter: {
-        ...state.potentialOrderFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, potentialOrderFilter: {
+          ...state.potentialOrderFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_POTENTIAL_ORDER_PAGE": {
+      return {
+        ...state, potentialOrderFilter: {
+          ...state.potentialOrderFilter,
+          pagination: {
+            pageSize: state.potentialOrderFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_POTENTIAL_ORDER_PAGE_SIZE": {
+      return {
+        ...state, potentialOrderFilter: {
+          ...state.potentialOrderFilter,
+          pagination: {
+            page: state.potentialOrderFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_PICKUP_ADDRESS_FILTER": {
-      return { ...state, pickupAddressFilter: {
-        ...state.pickupAddressFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, pickupAddressFilter: {
+          ...state.pickupAddressFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_PICKUP_PAGE": {
+      return {
+        ...state, pickupAddressFilter: {
+          ...state.pickupAddressFilter,
+          pagination: {
+            pageSize: state.pickupAddressFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_PICKUP_PAGE_SIZE": {
+      return {
+        ...state, pickupAddressFilter: {
+          ...state.pickupAddressFilter,
+          pagination: {
+            page: state.pickupAddressFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_USER_ADDRESS_FILTER": {
-      return { ...state, userAddressFilter: {
-        ...state.userAddressFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, userAddressFilter: {
+          ...state.userAddressFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_USER_ADDRESS_PAGE": {
+      return {
+        ...state, userAddressFilter: {
+          ...state.userAddressFilter,
+          pagination: {
+            pageSize: state.userAddressFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_USER_ADDRESS_PAGE_SIZE": {
+      return {
+        ...state, userAddressFilter: {
+          ...state.userAddressFilter,
+          pagination: {
+            page: state.userAddressFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_AUDIT_LOG_FILTER": {
-      return { ...state, auditLogFilter: {
-        ...state.auditLogFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, auditLogFilter: {
+          ...state.auditLogFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_AUDIT_LOG_PAGE": {
+      return {
+        ...state, auditLogFilter: {
+          ...state.auditLogFilter,
+          pagination: {
+            pageSize: state.auditLogFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_AUDIT_LOG_PAGE_SIZE": {
+      return {
+        ...state, auditLogFilter: {
+          ...state.auditLogFilter,
+          pagination: {
+            page: state.auditLogFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_ACCESS_LOG_FILTER": {
-      return { ...state, accessLogFilter: {
-        ...state.accessLogFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, accessLogFilter: {
+          ...state.accessLogFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_ACCESS_LOG_PAGE": {
+      return {
+        ...state, accessLogFilter: {
+          ...state.accessLogFilter,
+          pagination: {
+            pageSize: state.accessLogFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_ACCESS_LOG_PAGE_SIZE": {
+      return {
+        ...state, accessLogFilter: {
+          ...state.accessLogFilter,
+          pagination: {
+            page: state.accessLogFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_EXCHANGE_FILTER": {
-      return { ...state, exchangeFilter: {
-        ...state.exchangeFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, exchangeFilter: {
+          ...state.exchangeFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_EXCHANGE_PAGE": {
+      return {
+        ...state,
+        exchangeFilter: {
+          ...state.exchangeFilter,
+          pagination: {
+            pageSize: state.exchangeFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_EXCHANGE_PAGE_SIZE": {
+      return {
+        ...state,
+        exchangeFilter: {
+          ...state.exchangeFilter,
+          pagination: {
+            page: state.exchangeFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_COUPON_FILTER": {
-      return { ...state, couponFilter: {
-        ...state.couponFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, couponFilter: {
+          ...state.couponFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_COUPON_PAGE": {
+      return {
+        ...state,
+        couponFilter: {
+          ...state.couponFilter,
+          pagination: {
+            pageSize: state.couponFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_COUPON_PAGE_SIZE": {
+      return {
+        ...state,
+        couponFilter: {
+          ...state.couponFilter,
+          pagination: {
+            page: state.couponFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_CATEGORY_FILTER": {
-      return { ...state, categoryFilter: {
-        ...state.categoryFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, categoryFilter: {
+          ...state.categoryFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_CATEGORY_PAGE": {
+      return {
+        ...state,
+        categoryFilter: {
+          ...state.categoryFilter,
+          pagination: {
+            pageSize: state.categoryFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_CATEGORY_PAGE_SIZE": {
+      return {
+        ...state,
+        categoryFilter: {
+          ...state.categoryFilter,
+          pagination: {
+            page: state.categoryFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_SALES_CATEGORY_FILTER": {
-      return { ...state, salesCategoryFilter: {
-        ...state.salesCategoryFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, salesCategoryFilter: {
+          ...state.salesCategoryFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_SALES_CATEGORY_PAGE": {
+      return {
+        ...state, salesCategoryFilter: {
+          ...state.salesCategoryFilter,
+          pagination: {
+            pageSize: state.salesCategoryFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_SALES_CATEGORY_PAGE_SIZE": {
+      return {
+        ...state, salesCategoryFilter: {
+          ...state.salesCategoryFilter,
+          pagination: {
+            page: state.salesCategoryFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_BRAND_FILTER": {
-      return { ...state, brandFilter: {
-        ...state.brandFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, brandFilter: {
+          ...state.brandFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_BRAND_PAGE": {
+      return {
+        ...state, brandFilter: {
+          ...state.brandFilter,
+          pagination: {
+            pageSize: state.brandFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_BRAND_PAGE_SIZE": {
+      return {
+        ...state, brandFilter: {
+          ...state.brandFilter,
+          pagination: {
+            page: state.brandFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_TOWNSHIP_FILTER": {
-      return { ...state, townshipFilter: {
-        ...state.townshipFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, townshipFilter: {
+          ...state.townshipFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_TOWNSHIP_PAGE": {
+      return {
+        ...state, townshipFilter: {
+          ...state.townshipFilter,
+          pagination: {
+            pageSize: state.townshipFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_TOWNSHIP_PAGE_SIZE": {
+      return {
+        ...state, townshipFilter: {
+          ...state.townshipFilter,
+          pagination: {
+            page: state.townshipFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_REGION_FILTER": {
-      return { ...state, regionFilter: {
-        ...state.regionFilter,
-        ...action.payload
-      } }
+      return {
+        ...state, regionFilter: {
+          ...state.regionFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_REGION_PAGE": {
+      return {
+        ...state, regionFilter: {
+          ...state.regionFilter,
+          pagination: {
+            pageSize: state.regionFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_REGION_PAGE_SIZE": {
+      return {
+        ...state, regionFilter: {
+          ...state.regionFilter,
+          pagination: {
+            page: state.regionFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
     }
 
     case "SET_PRODUCT_FILTER": {
-      return { 
+      return {
         ...state,
         productFilter: {
           ...state.productFilter,
           ...action.payload
+        }
+      }
+    }
+    case "SET_PRODUCT_PAGE": {
+      return {
+        ...state, productFilter: {
+          ...state.productFilter,
+          pagination: {
+            pageSize: state.productFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_PRODUCT_PAGE_SIZE": {
+      return {
+        ...state, productFilter: {
+          ...state.productFilter,
+          pagination: {
+            page: state.productFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
         }
       }
     }

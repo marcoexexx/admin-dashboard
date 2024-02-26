@@ -13,7 +13,14 @@ export class AccessLogApiService extends BaseApiService<AccessLogWhereInput, Acc
   }
 
 
-  async findMany(opt: QueryOptionArgs, where: { filter: Record<keyof AccessLog, any> | undefined; pagination: Pagination; include?: { user?: boolean | undefined; } | undefined }): Promise<HttpListResponse<AccessLog>> {
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: AccessLogWhereInput["where"],
+      pagination: Pagination;
+      include?: AccessLogWhereInput["include"]
+    }
+  ): Promise<HttpListResponse<AccessLog>> {
     const url = `/${this.repo}`
     const { filter, pagination, include } = where
 

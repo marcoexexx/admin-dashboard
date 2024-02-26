@@ -12,7 +12,16 @@ export class AuditLogApiService extends BaseApiService<AuditLogWhereInput, Audit
     return new AuditLogApiService(CacheResource.AuditLog)
   }
 
-  async findMany(opt: QueryOptionArgs, where: { filter: Record<keyof AuditLog, any> | undefined; pagination: Pagination; include?: { user?: boolean | undefined; } | undefined; orderBy?: Record<keyof AuditLog, any> | undefined; }): Promise<HttpListResponse<AuditLog>> {
+
+  async findMany(
+    opt: QueryOptionArgs, 
+    where: {
+      filter?: Record<keyof AuditLog, any>;
+      pagination: Pagination;
+      include?: AuditLogWhereInput["include"];
+      orderBy?: Record<keyof AuditLog, any> 
+    }
+  ): Promise<HttpListResponse<AuditLog>> {
     const url = `/${this.repo}`
     const { filter, pagination, include } = where
 

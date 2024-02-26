@@ -1,10 +1,13 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import { HttpListResponse, Pagination, QueryOptionArgs } from "./types";
+import { CacheResource } from "@/context/cacheKey";
 
 
 export abstract class BaseApiService<Where extends { fields?: any; include?: any }, Return> {
+  public abstract repo: CacheResource
+
   findMany(_opt: QueryOptionArgs, _where: {
-    filter: Where["fields"],
+    filter?: Where["fields"],
     pagination: Pagination,
     include?: Where["include"],
     orderBy?: Where["fields"]
@@ -15,7 +18,7 @@ export abstract class BaseApiService<Where extends { fields?: any; include?: any
   /**
   * @returns GenericResponse<Return, string>
   */
-  find(_opt: QueryOptionArgs, _where: { filter: { id: string | undefined }; include: { _count?: boolean | undefined; products?: boolean | undefined; } | undefined; }): Promise<any> {
+  find(_opt: QueryOptionArgs, _where: { filter: { id: string }; include?: Where["include"] }): Promise<any> {
     return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Unimplemented feature`))
   }
 

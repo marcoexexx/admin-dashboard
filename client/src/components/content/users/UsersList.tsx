@@ -3,17 +3,15 @@ import { SuspenseLoader } from "@/components";
 import { UsersListTable } from ".";
 import { useStore } from "@/hooks";
 import { useGetUsers } from "@/hooks/user";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function UsersList() {
   const { state: {userFilter} } = useStore()
 
   const usersQuery = useGetUsers({
-    filter: userFilter?.fields,
-    pagination: {
-      page: userFilter?.page || 1,
-      pageSize: userFilter?.limit || 10
-    },
+    filter: userFilter.where,
+    pagination: userFilter.pagination || INITIAL_PAGINATION,
     include: {
       blockedUsers: true,
     }

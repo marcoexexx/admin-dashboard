@@ -7,6 +7,7 @@ import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
 import { numberFormat } from "@/libs/numberFormat";
 import { useMemo } from "react";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const productStatus: {
@@ -92,7 +93,7 @@ interface ProductsListTableProps {
 
 export function ProductsListTable(props: ProductsListTableProps) {
   const { products, count, isLoading, onDelete, onMultiDelete, onCreateManyProducts, onStatusChange } = props
-  const { state: { productFilter }, dispatch } = useStore()
+  const { state: { productFilter: { pagination } }, dispatch } = useStore()
 
   const theme = useTheme()
 
@@ -162,19 +163,15 @@ export function ProductsListTable(props: ProductsListTableProps) {
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_PRODUCT_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_PRODUCT_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_PRODUCT_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_PRODUCT_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -201,10 +198,10 @@ export function ProductsListTable(props: ProductsListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={productFilter?.page
-            ? productFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={productFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30, 100]}
         />
       </Box>

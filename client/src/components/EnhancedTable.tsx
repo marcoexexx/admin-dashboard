@@ -15,6 +15,10 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 
 
 const deleteSingleRowKeys: Record<Resource, ModalFormField> = {
+  [Resource.Role]: "*",
+  [Resource.Permission]: "*",
+  [Resource.Cart]: "*",
+
   [Resource.AccessLog]: "*",
   [Resource.AuditLog]: "*",
   [Resource.User]: "*",
@@ -33,6 +37,10 @@ const deleteSingleRowKeys: Record<Resource, ModalFormField> = {
 }
 
 const deleteMultiRowKeys: Record<Resource, ModalFormField> = {
+  [Resource.Role]: "*",
+  [Resource.Permission]: "*",
+  [Resource.Cart]: "*",
+
   [Resource.AccessLog]: "*",
   [Resource.AuditLog]: "*",
   [Resource.User]: "*",

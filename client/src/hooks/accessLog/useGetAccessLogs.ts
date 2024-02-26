@@ -15,7 +15,7 @@ export function useGetAccessLogs({
   pagination,
   include,
 }: {
-  filter?: AccessLogWhereInput["fields"],
+  filter?: AccessLogWhereInput["where"],
   include?: AccessLogWhereInput["include"],
   pagination: Pagination,
 }) {

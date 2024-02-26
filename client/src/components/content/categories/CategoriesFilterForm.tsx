@@ -1,8 +1,8 @@
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { useStore } from "@/hooks";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
 
@@ -30,23 +30,27 @@ export function CategoriesFilterForm() {
 
     setFilterQuery(prev => ({ ...prev, ...value }))
 
-    dispatch({ type: "SET_CATEGORY_FILTER", payload: {
-      fields: {
-        name: {
-          contains: name || undefined,
-          mode: insensitive ? "insensitive" : "default"
-        }
-      },
-    } })
+    dispatch({
+      type: "SET_CATEGORY_FILTER", payload: {
+        where: {
+          name: {
+            contains: name || undefined,
+            mode: insensitive ? "insensitive" : "default"
+          }
+        },
+      }
+    })
   }
 
   const handleOnClickReset = () => {
     setFilterQuery({})
     setValue("name", undefined)
     setValue("insensitive", false)
-    dispatch({ type: "SET_CATEGORY_FILTER", payload: {
-      fields: undefined
-    } })
+    dispatch({
+      type: "SET_CATEGORY_FILTER", payload: {
+        where: undefined
+      }
+    })
   }
 
   return <FormProvider {...methods}>
@@ -54,7 +58,7 @@ export function CategoriesFilterForm() {
       <Grid item xs={12}>
         <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
           <TextField fullWidth defaultValue={filterQuery.get("name")} {...register("name")} label="Name" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
-          <FormControlLabel 
+          <FormControlLabel
             {...register("insensitive")}
             label="Insensitive"
             control={<Checkbox defaultChecked={filterQuery.get("insensitive") === "true"} />}
@@ -70,5 +74,5 @@ export function CategoriesFilterForm() {
         <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
       </Grid>
     </Grid>
-  </FormProvider> 
+  </FormProvider>
 }

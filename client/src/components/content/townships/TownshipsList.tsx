@@ -3,18 +3,16 @@ import { SuspenseLoader } from "@/components";
 import { TownshipsListTable } from ".";
 import { useStore } from "@/hooks";
 import { useCreateMultiTownships, useDeleteMultiTownships, useDeleteTownship, useGetTownships } from "@/hooks/township";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function TownshipsList() {
-  const { state: {townshipFilter} } = useStore()
+  const { state: { townshipFilter } } = useStore()
 
   // Quries
   const { try_data, isLoading } = useGetTownships({
-    filter: townshipFilter?.fields,
-    pagination: {
-      page: townshipFilter?.page || 1,
-      pageSize: townshipFilter?.limit || 10
-    },
+    filter: townshipFilter.where,
+    pagination: townshipFilter.pagination || INITIAL_PAGINATION,
     include: {
       region: true
     }
@@ -46,9 +44,9 @@ export function TownshipsList() {
   return <Card>
     <TownshipsListTable
       isLoading={isLoading}
-      townships={townships.results} 
-      count={townships.count} 
-      onCreateManyTownships={handleCreateManyTownships} 
+      townships={townships.results}
+      count={townships.count}
+      onCreateManyTownships={handleCreateManyTownships}
       onDelete={handleDeleteTownship}
       onMultiDelete={handleDeleteMultiTownships}
     />

@@ -16,7 +16,7 @@ export function useCreateMultiBrands() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: apiService.uploadExcel,
+    mutationFn: (buf: ArrayBuffer) => apiService.uploadExcel(buf),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {

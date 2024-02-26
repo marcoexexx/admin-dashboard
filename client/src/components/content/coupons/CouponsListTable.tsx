@@ -5,6 +5,7 @@ import { RenderProductLabel } from "@/components/table-labels";
 import { Coupon, Resource } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const columns: TypedColumn<Coupon>[] = [
@@ -52,23 +53,19 @@ interface CouponsListTableProps {
 
 export function CouponsListTable(props: CouponsListTableProps) {
   const { coupons, count, isLoading, onCreateManyCoupons, onDelete, onMultiDelete } = props
-  const { state: { couponFilter }, dispatch } = useStore()
+  const { state: { couponFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_COUPON_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_COUPON_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_COUPON_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_COUPON_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -95,10 +92,10 @@ export function CouponsListTable(props: CouponsListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={couponFilter?.page
-            ? couponFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={couponFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

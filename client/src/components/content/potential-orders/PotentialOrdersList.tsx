@@ -5,18 +5,16 @@ import { useStore } from "@/hooks";
 import { useGetPotentialOrders } from "@/hooks/potentialOrder/useGetPotentialOrders";
 import { useDeletePotentialOrder } from "@/hooks/potentialOrder";
 import { useDeleteMultiPotentialOrders } from "@/hooks/potentialOrder/useDeleteMultiPotentialOrders";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function PotentialOrdersList() {
-  const { state: {potentialOrderFilter} } = useStore()
+  const { state: { potentialOrderFilter } } = useStore()
 
   // Quries
   const { try_data, isError, isLoading, error } = useGetPotentialOrders({
-    filter: potentialOrderFilter?.fields,
-    pagination: {
-      page: potentialOrderFilter?.page || 1,
-      pageSize: potentialOrderFilter?.limit || 10
-    },
+    filter: potentialOrderFilter.where,
+    pagination: potentialOrderFilter.pagination || INITIAL_PAGINATION,
     include: {
       user: true,
       orderItems: {
@@ -52,8 +50,8 @@ export function PotentialOrdersList() {
   return <Card>
     <PotentialOrdersListTable
       isLoading={isLoading}
-      potentialOrders={potentialOrders.results} 
-      count={potentialOrders.count} 
+      potentialOrders={potentialOrders.results}
+      count={potentialOrders.count}
       onDelete={handleDeletePotentialOrder}
       onMultiDelete={handleDeleteMultiPotentialOrders}
     />

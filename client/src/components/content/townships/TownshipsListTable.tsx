@@ -6,6 +6,7 @@ import { TownshipsFilterForm } from ".";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
 import { numberFormat } from "@/libs/numberFormat";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const columns: TypedColumn<TownshipFees>[] = [
@@ -41,23 +42,19 @@ interface TownshipsListTableProps {
 
 export function TownshipsListTable(props: TownshipsListTableProps) {
   const { townships, count, isLoading, onCreateManyTownships, onDelete, onMultiDelete } = props
-  const { state: { townshipFilter }, dispatch } = useStore()
+  const { state: { townshipFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_TOWNSHIP_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_TOWNSHIP_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_TOWNSHIP_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_TOWNSHIP_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -84,10 +81,10 @@ export function TownshipsListTable(props: TownshipsListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={townshipFilter?.page
-            ? townshipFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={townshipFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

@@ -20,7 +20,7 @@ const AvatarWrapper = styled(Card)(({ theme }) => ({
   }
 }));
 
-const ButtonUploadWrapper = styled(Box)(({theme}) => ({
+const ButtonUploadWrapper = styled(Box)(({ theme }) => ({
   position: "absolute",
   width: theme.spacing(4),
   height: theme.spacing(4),
@@ -42,7 +42,7 @@ const ButtonUploadWrapper = styled(Box)(({theme}) => ({
   }
 }))
 
-const CardCover = styled(Card)(({theme}) => ({
+const CardCover = styled(Card)(({ theme }) => ({
   position: "relative",
 
   ".MuiCardMedia-root": {
@@ -50,7 +50,7 @@ const CardCover = styled(Card)(({theme}) => ({
   }
 }))
 
-const CardCoverAction = styled(Box)(({theme}) => ({
+const CardCoverAction = styled(Box)(({ theme }) => ({
   position: "absolute",
   right: theme.spacing(2),
   bottom: theme.spacing(2)
@@ -61,7 +61,7 @@ interface ProfileCoverProps {
   user: User
 }
 
-export function ProfileCover({user}: ProfileCoverProps) {
+export function ProfileCover({ user }: ProfileCoverProps) {
   const navigate = useNavigate()
 
   const handleViewAs = () => {

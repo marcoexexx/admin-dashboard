@@ -3,6 +3,7 @@ import { SuspenseLoader } from "@/components";
 import { UserAddressesListTable } from ".";
 import { useStore } from "@/hooks";
 import { useDeleteMultiUserAddresses, useDeleteUserAddress, useGetUserAddresses } from "@/hooks/userAddress";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function UserAddressesList() {
@@ -10,11 +11,8 @@ export function UserAddressesList() {
 
   // Quries
   const { try_data, isLoading } = useGetUserAddresses({
-    filter: userAddressFilter?.fields,
-    pagination: {
-      page: userAddressFilter?.page || 1,
-      pageSize: userAddressFilter?.limit || 10
-    },
+    filter: userAddressFilter.where,
+    pagination: userAddressFilter.pagination || INITIAL_PAGINATION,
   })
 
   // Mutations

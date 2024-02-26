@@ -1,10 +1,13 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { CategoryFilter } from "@/context/category";
+import { CategoryWhereInput } from "@/context/category";
 import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { CategoryApiService } from "@/services/categoryApi";
 import { useQuery } from "@tanstack/react-query";
-import { getCategoryFn } from "@/services/categoryApi";
+
+
+const apiService = CategoryApiService.new()
 
 
 export function useGetCategory({
@@ -12,12 +15,12 @@ export function useGetCategory({
   include,
 }: {
   id: string | undefined,
-  include?: CategoryFilter["include"],
+  include?: CategoryWhereInput["include"],
   }) {
   const query = useQuery({
     enabled: !!id,
     queryKey: [CacheResource.Category, { id, include }] as CacheKey<"categories">["detail"],
-    queryFn: args => getCategoryFn(args, { categoryId: id, include }),
+    queryFn: args => apiService.find(args, { filter: { id }, include }),
     select: data => data?.category
   })
 

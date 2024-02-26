@@ -14,7 +14,15 @@ export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
   }
 
 
-  async findMany(opt: QueryOptionArgs, where: { filter: Record<keyof Brand, any> | undefined; pagination: Pagination; include?: { _count?: boolean | undefined; products?: boolean | undefined; } | undefined; orderBy?: Record<keyof Brand, any> | undefined; }): Promise<HttpListResponse<Brand>> {
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: Record<keyof Brand, any>;
+      pagination: Pagination;
+      include?: BrandWhereInput["include"];
+      orderBy?: Record<keyof Brand, any>;
+    }
+  ): Promise<HttpListResponse<Brand>> {
     const url = `/${this.repo}`
     const { filter, pagination, include } = where
 
@@ -33,7 +41,13 @@ export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
   }
 
 
-  async find(opt: QueryOptionArgs, where: { filter: { id: string | undefined }; include: { _count?: boolean | undefined; products?: boolean | undefined; } | undefined; }): Promise<GenericResponse<Brand, "brand"> | undefined> {
+  async find(
+    opt: QueryOptionArgs,
+    where: {
+      filter: { id: string | undefined };
+      include?: BrandWhereInput["include"];
+    }
+  ): Promise<GenericResponse<Brand, "brand"> | undefined> {
     const { filter: { id }, include } = where
     const url = `/${this.repo}/detail/${id}`
 

@@ -3,6 +3,7 @@ import { SuspenseLoader } from "@/components";
 import { RegionsListTable } from ".";
 import { useStore } from "@/hooks";
 import { useCreateMultiRegions, useDeleteMultiRegions, useDeleteRegion, useGetRegions } from "@/hooks/region";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function RegionsList() {
@@ -10,11 +11,8 @@ export function RegionsList() {
 
   // Queries
   const { try_data, isLoading } = useGetRegions({
-    filter: regionFilter?.fields,
-    pagination: {
-      page: regionFilter?.page || 1,
-      pageSize: regionFilter?.limit || 10
-    },
+    filter: regionFilter.where,
+    pagination: regionFilter.pagination || INITIAL_PAGINATION,
     include: {
       townships: true
     }

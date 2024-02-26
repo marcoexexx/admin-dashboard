@@ -1,8 +1,8 @@
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { useStore } from "@/hooks";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
 
@@ -31,7 +31,7 @@ export function RegionsFilterForm() {
     setFilterQuery(prev => ({ ...prev, ...value }))
 
     dispatch({ type: "SET_REGION_FILTER", payload: {
-      fields: {
+      where: {
         name: {
           contains: name || undefined,
           mode: insensitive ? "insensitive" : "default"
@@ -45,7 +45,7 @@ export function RegionsFilterForm() {
     setValue("name", undefined)
     setValue("insensitive", false)
     dispatch({ type: "SET_REGION_FILTER", payload: {
-      fields: undefined
+      where: undefined
     } })
   }
 

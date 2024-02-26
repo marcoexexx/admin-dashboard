@@ -4,25 +4,27 @@ import { AccessLog, Resource } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
 
+import { INITIAL_PAGINATION } from "@/context/store";
+
 
 const columns: TypedColumn<AccessLog>[] = [
   {
     id: "browser",
     align: "left",
     name: "Browser",
-    render: ({value}) => <Typography>{value.browser}</Typography>
+    render: ({ value }) => <Typography>{value.browser}</Typography>
   },
   {
     id: "platform",
     align: "left",
     name: "Platform",
-    render: ({value}) => <Typography>{value.platform}</Typography>
+    render: ({ value }) => <Typography>{value.platform}</Typography>
   },
   {
     id: "date",
     align: "left",
     name: "Date",
-    render: ({value}) => <Typography>{new Date(value.date).toUTCString()}</Typography>
+    render: ({ value }) => <Typography>{new Date(value.date).toUTCString()}</Typography>
   },
 ]
 
@@ -34,23 +36,19 @@ interface AccessLogsListTableProps {
 
 export function AccessLogsListTable(props: AccessLogsListTableProps) {
   const { accessLogs, count, isLoading } = props
-  const { state: {accessLogFilter}, dispatch } = useStore()
+  const { state: { accessLogFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_ACCESS_LOG_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_ACCESS_LOG_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_ACCESS_LOG_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_ACCESS_LOG_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -73,10 +71,10 @@ export function AccessLogsListTable(props: AccessLogsListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={accessLogFilter?.page
-            ? accessLogFilter.page - 1
+          page={pagination?.page
+            ? pagination?.page - 1
             : 0}
-          rowsPerPage={accessLogFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

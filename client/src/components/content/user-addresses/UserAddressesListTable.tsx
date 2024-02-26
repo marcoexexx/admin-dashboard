@@ -4,13 +4,14 @@ import { Address, Resource } from "@/services/types";
 import { UserAddressesFilterForm } from ".";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const columns: TypedColumn<Address>[] = [
   {
     id: "username",
     align: "left",
-    name: "Name",
+    name: "Username",
     render: ({ value }) => <Typography>{value.username}</Typography>
   },
   {
@@ -50,23 +51,19 @@ interface UserAddressesListTableProps {
 
 export function UserAddressesListTable(props: UserAddressesListTableProps) {
   const { userAddresses, count, isLoading, onDelete, onMultiDelete } = props
-  const { state: { userAddressFilter }, dispatch } = useStore()
+  const { state: { userAddressFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_USER_ADDRESS_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_USER_ADDRESS_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_USER_ADDRESS_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_USER_ADDRESS_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -91,10 +88,10 @@ export function UserAddressesListTable(props: UserAddressesListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={userAddressFilter?.page
-            ? userAddressFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={userAddressFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

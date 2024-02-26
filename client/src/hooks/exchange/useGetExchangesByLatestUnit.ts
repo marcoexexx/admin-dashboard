@@ -3,14 +3,17 @@ import Result, { Err, Ok } from "@/libs/result";
 
 import { CacheResource } from "@/context/cacheKey";
 import { PriceUnit } from "@/services/types";
+import { ExchangeApiService } from "@/services/exchangesApi";
 import { useQuery } from "@tanstack/react-query";
-import { getExchangesFn } from "@/services/exchangesApi";
+
+
+const apiService = ExchangeApiService.new()
 
 
 export function useGetExchangeByLatestUnit(unit: PriceUnit) {
   const query = useQuery({
     queryKey: [CacheResource.Exchange, "latest", unit],
-    queryFn: args => getExchangesFn(args, {
+    queryFn: args => apiService.findMany(args, {
       filter: {
         to: "MMK",
         from: unit,

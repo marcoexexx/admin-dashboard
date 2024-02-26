@@ -7,6 +7,7 @@ import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
 import { numberFormat } from "@/libs/numberFormat";
 import { useMemo } from "react";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const orderStatus: {
@@ -86,7 +87,7 @@ interface OrdersListTableProps {
 
 export function OrdersListTable(props: OrdersListTableProps) {
   const { orders, count, isLoading, onStatusChange, onDelete, onMultiDelete } = props
-  const { state: { orderFilter }, dispatch } = useStore()
+  const { state: { orderFilter: { pagination } }, dispatch } = useStore()
 
   const theme = useTheme()
 
@@ -120,19 +121,15 @@ export function OrdersListTable(props: OrdersListTableProps) {
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_ORDER_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_ORDER_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_ORDER_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_ORDER_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -158,10 +155,10 @@ export function OrdersListTable(props: OrdersListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={orderFilter?.page
-            ? orderFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={orderFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>
