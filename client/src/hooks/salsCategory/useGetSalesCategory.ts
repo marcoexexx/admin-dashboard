@@ -1,10 +1,13 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { SalesCategoryFilter } from "@/context/salesCategory";
 import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { SalesCategoryApiService } from "@/services/salesCategoryApi";
+import { SalesCategoryWhereInput } from "@/context/salesCategory";
 import { useQuery } from "@tanstack/react-query";
-import { getSalesCategoryFn } from "@/services/salesCategoryApi";
+
+
+const apiService = SalesCategoryApiService.new()
 
 
 export function useGetSalesCategory({
@@ -12,18 +15,18 @@ export function useGetSalesCategory({
   include,
 }: {
   id: string | undefined,
-  include?: SalesCategoryFilter["include"],
-  }) {
+  include?: SalesCategoryWhereInput["include"],
+}) {
   const query = useQuery({
     enabled: !!id,
     queryKey: [CacheResource.SalesCategory, { id, include }] as CacheKey<"sales-categories">["detail"],
-    queryFn: args => getSalesCategoryFn(args, { salesCategoryId: id, include }),
+    queryFn: args => apiService.find(args, { filter: { id }, include }),
     select: data => data?.salesCategory
   })
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

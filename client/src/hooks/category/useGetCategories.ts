@@ -16,7 +16,7 @@ export function useGetCategories({
   pagination,
   include,
 }: {
-  filter?: CategoryWhereInput["fields"],
+  filter?: CategoryWhereInput["where"],
   include?: CategoryWhereInput["include"],
   pagination: Pagination,
   }) {

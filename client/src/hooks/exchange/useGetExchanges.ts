@@ -16,7 +16,7 @@ export function useGetExchanges({
   pagination,
   include,
 }: {
-  filter?: ExchangeWhereInput["fields"],
+  filter?: ExchangeWhereInput["where"],
   include?: ExchangeWhereInput["include"],
   pagination: Pagination,
 }) {

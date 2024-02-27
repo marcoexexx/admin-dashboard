@@ -1,56 +1,103 @@
-import { authApi } from "./authApi";
-import { HttpListResponse, HttpResponse, Pagination, PickupAddress, PickupAddressResponse, QueryOptionArgs } from "./types";
-import { PickupAddressFilter } from "@/context/pickupAddress";
+import AppError, { AppErrorKind } from "@/libs/exceptions";
+
 import { CreatePickupAddressInput } from "@/components/content/pickupAddressHistory/forms";
+import { GenericResponse, HttpListResponse, HttpResponse, Pagination, PickupAddress, QueryOptionArgs } from "./types";
+import { PickupAddressWhereInput } from "@/context/pickupAddress";
+import { BaseApiService } from "./baseApiService";
+import { CacheResource } from "@/context/cacheKey";
+
+import { authApi } from "./authApi";
 
 
-export async function getPickupAddressesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: PickupAddressFilter["fields"], pagination: Pagination, include?: PickupAddressFilter["include"] }) {
-  const { data } = await authApi.get<HttpListResponse<PickupAddress>>("/pickup-addresses", {
-    ...opt,
-    params: {
-      filter,
-      pagination,
-      orderBy: {
-        updatedAt: "desc"
-      },
-      include
-    },
-  })
-  return data
-}
+export class PickupAddressApiService extends BaseApiService<PickupAddressWhereInput, PickupAddress> {
+  constructor(public repo: CacheResource) { super() }
+
+  static new() {
+    return new PickupAddressApiService(CacheResource.PickupAddress)
+  }
 
 
-export async function getPickupAddressFn(opt: QueryOptionArgs, { pickupAddressId, include }: { pickupAddressId: string | undefined, include?: PickupAddressFilter["include"] }) {
-  if (!pickupAddressId) return
-  const { data } = await authApi.get<PickupAddressResponse>(`/pickup-addresses/detail/${pickupAddressId}?include[township]=true`, {
-    ...opt,
-    params: {
-      include
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: PickupAddressWhereInput["where"];
+      pagination: Pagination;
+      include?: PickupAddressWhereInput["include"];
     }
-  })
-  return data
-}
+  ): Promise<HttpListResponse<PickupAddress>> {
+    const url = `/${this.repo}`
+    const { filter, pagination, include } = where
+
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: {
+        filter,
+        pagination,
+        include,
+        orderBy: {
+          updatedAt: "desc"
+        },
+      },
+    })
+    return data
+  }
 
 
-export async function createPickupAddressFn(address: CreatePickupAddressInput) {
-  const { data } = await authApi.post<PickupAddressResponse>("/pickup-addresses", address)
-  return data
-}
+  async find(
+    opt: QueryOptionArgs,
+    where: {
+      filter: { id: string | undefined };
+      include?: PickupAddressWhereInput["include"];
+    }
+  ): Promise<GenericResponse<PickupAddress, "pickupAddress"> | undefined> {
+    const { filter: { id }, include } = where
+    const url = `/${this.repo}/detail/${id}`
+
+    if (!id) return
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: { include }
+    })
+    return data
+  }
 
 
-// export async function updatePickupAddressFn({pickupAddressId, address}: {pickupAddressId: string, address: UpdatePickupAddressInput}) {
-//   const { data } = await authApi.patch<PickupAddressResponse>(`/pickup-addresses/detail/${pickupAddressId}`, address)
-//   return data
-// }
+  async create(payload: CreatePickupAddressInput): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
+    const url = `/${this.repo}`
+
+    const { data } = await authApi.post(url, payload)
+    return data
+  }
 
 
-export async function deleteMultiPickupAddressesFn(userAddressIds: string[]) {
-  const { data } = await authApi.delete<PickupAddressResponse>("/pickup-addresses/multi", { data: { userAddressIds } })
-  return data
-}
+  /**
+  * Not Support yet!
+  */
+  async uploadExcel(_buf: ArrayBuffer): Promise<HttpListResponse<PickupAddress>> {
+    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`))
+  }
 
 
-export async function deletePickupAddressFn(userAddressId: string) {
-  const { data } = await authApi.delete<HttpResponse>(`/pickup-addresses/detail/${userAddressId}`)
-  return data
+  /**
+  * Not Support yet!
+  */
+  async update(_arg: { id: string; payload: any }): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
+    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`))
+  }
+
+
+  async deleteMany(ids: string[]): Promise<HttpResponse> {
+    const url = `/${this.repo}/multi`
+
+    const { data } = await authApi.delete(url, { data: { pickupAddressIds: ids } })
+    return data
+  }
+
+
+  async delete(id: string): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.delete(url)
+    return data
+  }
 }

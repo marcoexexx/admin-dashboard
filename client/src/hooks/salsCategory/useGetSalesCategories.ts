@@ -2,10 +2,13 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { useQuery } from "@tanstack/react-query";
-import { getSalesCategoriesFn } from "@/services/salesCategoryApi";
 import { Pagination } from "@/services/types";
-import { SalesCategoryFilter } from "@/context/salesCategory";
 import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { SalesCategoryApiService } from "@/services/salesCategoryApi";
+import { SalesCategoryWhereInput } from "@/context/salesCategory";
+
+
+const apiService = SalesCategoryApiService.new()
 
 
 export function useGetSalesCategories({
@@ -13,13 +16,13 @@ export function useGetSalesCategories({
   pagination,
   include,
 }: {
-  filter?: SalesCategoryFilter["fields"],
-  include?: SalesCategoryFilter["include"],
+  filter?: SalesCategoryWhereInput["where"],
+  include?: SalesCategoryWhereInput["include"],
   pagination: Pagination,
-  }) {
+}) {
   const query = useQuery({
-    queryKey: [CacheResource.SalesCategory, { filter, pagination, include } ] as CacheKey<"sales-categories">["list"],
-    queryFn: args => getSalesCategoriesFn(args, { 
+    queryKey: [CacheResource.SalesCategory, { filter, pagination, include }] as CacheKey<"sales-categories">["list"],
+    queryFn: args => apiService.findMany(args, {
       filter,
       pagination,
       include
@@ -29,7 +32,7 @@ export function useGetSalesCategories({
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

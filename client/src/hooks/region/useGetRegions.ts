@@ -2,10 +2,13 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { useQuery } from "@tanstack/react-query";
-import { getRegionsFn } from "@/services/regionsApi";
 import { Pagination } from "@/services/types";
-import { RegionFilter } from "@/context/region";
 import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { RegionApiService } from "@/services/regionsApi";
+import { RegionWhereInput } from "@/context/region";
+
+
+const apiService = RegionApiService.new()
 
 
 export function useGetRegions({
@@ -13,13 +16,13 @@ export function useGetRegions({
   pagination,
   include,
 }: {
-  filter?: RegionFilter["fields"],
-  include?: RegionFilter["include"],
+  filter?: RegionWhereInput["where"],
+  include?: RegionWhereInput["include"],
   pagination: Pagination,
-  }) {
+}) {
   const query = useQuery({
-    queryKey: [CacheResource.Region, { filter, pagination, include } ] as CacheKey<"regions">["list"],
-    queryFn: args => getRegionsFn(args, { 
+    queryKey: [CacheResource.Region, { filter, pagination, include }] as CacheKey<"regions">["list"],
+    queryFn: args => apiService.findMany(args, {
       filter,
       pagination,
       include
@@ -29,7 +32,7 @@ export function useGetRegions({
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

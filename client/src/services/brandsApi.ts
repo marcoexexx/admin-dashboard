@@ -17,10 +17,9 @@ export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
   async findMany(
     opt: QueryOptionArgs,
     where: {
-      filter?: Record<keyof Brand, any>;
+      filter?: BrandWhereInput["where"];
       pagination: Pagination;
       include?: BrandWhereInput["include"];
-      orderBy?: Record<keyof Brand, any>;
     }
   ): Promise<HttpListResponse<Brand>> {
     const url = `/${this.repo}`

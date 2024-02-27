@@ -16,10 +16,9 @@ export class AuditLogApiService extends BaseApiService<AuditLogWhereInput, Audit
   async findMany(
     opt: QueryOptionArgs, 
     where: {
-      filter?: Record<keyof AuditLog, any>;
+      filter?: AuditLogWhereInput["where"];
       pagination: Pagination;
       include?: AuditLogWhereInput["include"];
-      orderBy?: Record<keyof AuditLog, any> 
     }
   ): Promise<HttpListResponse<AuditLog>> {
     const url = `/${this.repo}`

@@ -4,8 +4,11 @@ import Result, { Err, Ok } from "@/libs/result";
 import { useQuery } from "@tanstack/react-query";
 import { Pagination } from "@/services/types";
 import { CacheKey, CacheResource } from "@/context/cacheKey";
-import { PickupAddressFilter } from "@/context/pickupAddress";
-import { getPickupAddressesFn } from "@/services/pickupAddressApi";
+import { PickupAddressApiService } from "@/services/pickupAddressApi";
+import { PickupAddressWhereInput } from "@/context/pickupAddress";
+
+
+const apiService = PickupAddressApiService.new()
 
 
 export function useGetPickupAddresses({
@@ -13,13 +16,13 @@ export function useGetPickupAddresses({
   pagination,
   include,
 }: {
-  filter?: PickupAddressFilter["fields"],
-  include?: PickupAddressFilter["include"],
+  filter?: PickupAddressWhereInput["where"],
+  include?: PickupAddressWhereInput["include"],
   pagination: Pagination,
-  }) {
+}) {
   const query = useQuery({
-    queryKey: [CacheResource.PickupAddress, { filter, pagination, include } ] as CacheKey<"pickup-addresses">["list"],
-    queryFn: args => getPickupAddressesFn(args, { 
+    queryKey: [CacheResource.PickupAddress, { filter, pagination, include }] as CacheKey<"pickup-addresses">["list"],
+    queryFn: args => apiService.findMany(args, {
       filter,
       pagination,
       include
@@ -29,7 +32,7 @@ export function useGetPickupAddresses({
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

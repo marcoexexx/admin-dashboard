@@ -296,14 +296,14 @@ export function UpdateProductForm() {
       </FormProvider>
 
 
-      {modalForm.field === "brands"
-        ? <FormModal field='brands' title='Create new brand'>
+      {modalForm.field === "create-brand"
+        ? <FormModal field='create-brand' title='Create new brand'>
           <CreateBrandForm />
         </FormModal>
         : null}
 
-      {modalForm.field === "categories"
-        ? <FormModal field='categories' title='Create new category'>
+      {modalForm.field === "create-category"
+        ? <FormModal field='create-category' title='Create new category'>
           <CreateCategoryForm />
         </FormModal>
         : null}

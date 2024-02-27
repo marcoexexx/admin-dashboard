@@ -6,11 +6,9 @@ import { MuiButton, Text } from '@/components/ui'
 import { OrderItem, Product } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { memoize } from "lodash";
-import { useMutation } from "@tanstack/react-query";
 import { useLocalStorage, useStore } from "@/hooks";
 import { queryClient } from "@/components";
-import { likeProductByUserFn, unLikeProductByUserFn } from "@/services/productsApi";
-import { playSoundEffect } from "@/libs/playSound";
+import { useLikeProduct, useUnLikeProduct } from "@/hooks/product";
 
 import ProductRelationshipTable from "./ProductRelationshipTable";
 import ProductSpecificationTable from "./ProductSpecificationTable"
@@ -37,7 +35,7 @@ export const calculateProductDiscount = memoize((product: Product | undefined) =
 })
 
 
-const CardActionsWrapper = styled(CardActions)(({theme}) => ({
+const CardActionsWrapper = styled(CardActions)(({ theme }) => ({
   background: theme.colors.alpha.black[5],
   padding: theme.spacing(3)
 }))
@@ -54,59 +52,8 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
 
   const { set, get } = useLocalStorage()
 
-  const { mutate: likeProduct, isPending: likeIsPending } = useMutation({
-    mutationFn: likeProductByUserFn,
-    onSuccess() {
-      dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message: `Success Like product ${product.title}`,
-          severity: "success"
-        }
-      })
-      queryClient.invalidateQueries({
-        queryKey: [CacheResource.Product]
-      })
-      playSoundEffect("success")
-    },
-    onError(err: any) {
-      dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message: `Failed like product ${product.title}: ${err.data.response.message}`,
-          severity: "success"
-        }
-      })
-      playSoundEffect("error")
-    }
-  })
-
-  const { mutate: unLikeProduct, isPending: unLikeIsPending } = useMutation({
-    mutationFn: unLikeProductByUserFn,
-    onSuccess() {
-      dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message: `Unlike product ${product.title}`,
-          severity: "success"
-        }
-      })
-      queryClient.invalidateQueries({
-        queryKey: [CacheResource.Product]
-      })
-      playSoundEffect("success")
-    },
-    onError(err: any) {
-      dispatch({
-        type: "OPEN_TOAST",
-        payload: {
-          message: `Failed unlike product ${product.title}: ${err.data.response.message}`,
-          severity: "success"
-        }
-      })
-      playSoundEffect("error")
-    }
-  })
+  const { mutate: likeProduct, isPending: likeIsPending } = useLikeProduct()
+  const { mutate: unLikeProduct, isPending: unLikeIsPending } = useUnLikeProduct()
 
   const handleAddToCart = () => {
     const initialQuality = 1
@@ -137,7 +84,8 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       const originalTotalPrice = (cart[idx].quantity + 1) * cart[idx].price
       const totalPrice = (cart[idx].quantity + 1) * productDiscountAmount
 
-      cart[idx] = { ...item,
+      cart[idx] = {
+        ...item,
         quantity: cart[idx].quantity + 1,
         originalTotalPrice,
         totalPrice,
@@ -168,8 +116,8 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
     if (state.user) unLikeProduct({ productId: product.id, userId: state.user.id })
   }
 
-  const isLiked = (product as Product & {likedUsers: { productId: string, userId: string }[]} ).likedUsers.find(fav => fav.userId === state.user?.id) 
-    ? true 
+  const isLiked = (product as Product & { likedUsers: { productId: string, userId: string }[] }).likedUsers.find(fav => fav.userId === state.user?.id)
+    ? true
     : false
 
   const handleRefreshList = () => {
@@ -181,7 +129,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
 
   return (
     <Card>
-      <CardMedia 
+      <CardMedia
         sx={{ minHeight: 800 }}
         image={product.images[0] || "/pubic/default.jpg"}
         title={product.title}
@@ -204,8 +152,8 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         <div dangerouslySetInnerHTML={{ __html: product.description }} />
 
         {product.specification
-        ? <ProductSpecificationTable specs={product.specification} />
-        : "There is no specifications"}
+          ? <ProductSpecificationTable specs={product.specification} />
+          : "There is no specifications"}
 
         <ProductRelationshipTable
           brand={product.brand}
@@ -237,11 +185,11 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         }}
       >
         <Box display="flex" flexDirection={{ xs: "column", sm: "row" }} alignItems="start" gap={1}>
-          <MuiButton 
+          <MuiButton
             fullWidth
             startIcon={isLiked
               ? <ThumbUpTwoToneIcon />
-              : <ThumbUpAltTwoToneIcon />} 
+              : <ThumbUpAltTwoToneIcon />}
             variant="contained"
             onClick={isLiked
               ? handleOnUnLikeProduct
@@ -249,8 +197,8 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
             loading={isPending}
           >
             {isLiked
-            ? "Unlike"
-            : "Like"}
+              ? "Unlike"
+              : "Like"}
           </MuiButton>
           {/* TODO: review product */}
           <MuiButton
@@ -266,7 +214,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
             variant="outlined"
             onClick={handleAddToCart}
           >
-            Add 
+            Add
           </MuiButton>
         </Box>
 

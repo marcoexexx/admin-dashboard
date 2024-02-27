@@ -153,6 +153,9 @@ export async function createSaleCategoryForProductHandler(
         salesCategoryId,
         productId,
         discount
+      },
+      include: {
+        salesCategory: true
       }
     })).ok_or_throw()
 

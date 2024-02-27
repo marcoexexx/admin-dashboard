@@ -10,7 +10,6 @@ export abstract class BaseApiService<Where extends { fields?: any; include?: any
     filter?: Where["fields"],
     pagination: Pagination,
     include?: Where["include"],
-    orderBy?: Where["fields"]
   }): Promise<HttpListResponse<Return>> {
     return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Unimplemented feature`))
   }

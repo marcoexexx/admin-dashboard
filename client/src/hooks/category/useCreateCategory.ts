@@ -3,7 +3,6 @@ import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 import { CacheResource } from "@/context/cacheKey"
 import { CategoryApiService } from "@/services/categoryApi"
-import { CreateCategoryInput } from "@/components/content/categories/forms"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
@@ -21,7 +20,7 @@ export function useCreateCategory() {
   const from = "/categories"
 
   const mutation = useMutation({
-    mutationFn: (payload: CreateCategoryInput) => apiService.create(payload),
+    mutationFn: (...args: Parameters<typeof apiService.create>) => apiService.create(...args),
     onSuccess: () => {
       dispatch({
         type: "OPEN_TOAST", payload: {

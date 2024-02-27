@@ -1,11 +1,14 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { Pagination } from "@/services/types";
-import { UserFilter } from "@/context/user";
-import { CacheKey, CacheResource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
-import { getUsersFn } from "@/services/usersApi";
+import { Pagination } from "@/services/types";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { UserApiService } from "@/services/usersApi";
+import { UserWhereInput } from "@/context/user";
+
+
+const apiService = UserApiService.new()
 
 
 export function useGetUsers({
@@ -13,13 +16,13 @@ export function useGetUsers({
   pagination,
   include,
 }: {
-  filter?: UserFilter["fields"],
-  include?: UserFilter["include"],
+  filter?: UserWhereInput["where"],
+  include?: UserWhereInput["include"],
   pagination: Pagination,
-  }) {
+}) {
   const query = useQuery({
-    queryKey: [CacheResource.User, { filter, pagination, include } ] as CacheKey<"users">["list"],
-    queryFn: args => getUsersFn(args, { 
+    queryKey: [CacheResource.User, { filter, pagination, include }] as CacheKey<"users">["list"],
+    queryFn: args => apiService.findMany(args, {
       filter,
       pagination,
       include
@@ -29,7 +32,7 @@ export function useGetUsers({
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

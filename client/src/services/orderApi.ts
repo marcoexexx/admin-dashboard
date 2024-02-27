@@ -1,54 +1,111 @@
+import { GenericResponse, HttpListResponse, HttpResponse, Order, Pagination, QueryOptionArgs } from "./types";
+import { CacheResource } from "@/context/cacheKey";
+import { BaseApiService } from "./baseApiService";
+import { OrderWhereInput } from "@/context/order";
 import { CreateOrderInput, UpdateOrderInput } from "@/components/content/orders/forms";
 import { authApi } from "./authApi";
-import { HttpListResponse, HttpResponse, Order, OrderResponse, Pagination, QueryOptionArgs } from "./types";
 
 
-export async function getOrdersFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
-  const { data } = await authApi.get<HttpListResponse<Order>>("/orders", {
-    ...opt,
-    params: {
-      filter,
-      pagination,
-      orderBy: {
-        updatedAt: "desc"
+export class OrderApiService extends BaseApiService<OrderWhereInput, Order> {
+  constructor(public repo: CacheResource) { super() }
+
+  static new() {
+    return new OrderApiService(CacheResource.Order)
+  }
+
+
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: OrderWhereInput["where"];
+      pagination: Pagination;
+      include?: OrderWhereInput["include"];
+    }
+  ): Promise<HttpListResponse<Order>> {
+    const url = `/${this.repo}`
+    const { filter, pagination, include } = where
+
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: {
+        filter,
+        pagination,
+        include,
+        orderBy: {
+          updatedAt: "desc"
+        },
       },
-      include
-    },
-  })
-  return data
+    })
+    return data
+  }
+
+
+  async find(
+    opt: QueryOptionArgs,
+    where: {
+      filter: { id: string | undefined };
+      include?: OrderWhereInput["include"];
+    }
+  ): Promise<GenericResponse<Order, "order"> | undefined> {
+    const { filter: { id }, include } = where
+    const url = `/${this.repo}/detail/${id}`
+
+    if (!id) return
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: { include }
+    })
+    return data
+  }
+
+
+  async create(payload: CreateOrderInput): Promise<GenericResponse<Order, "order">> {
+    const url = `/${this.repo}`
+
+    const { data } = await authApi.post(url, payload)
+    return data
+  }
+
+
+  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<Order>> {
+    const url = `/${this.repo}/excel-upload`
+
+    const formData = new FormData()
+    const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+    formData.append("excel", blob, `Orders_${Date.now()}.xlsx`)
+
+    const { data } = await authApi.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+
+    return data
+  }
+
+
+  async update(arg: { id: string; payload: UpdateOrderInput }): Promise<GenericResponse<Order, "order">> {
+    const { id, payload } = arg
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.patch(url, payload)
+    return data
+  }
+
+
+  async deleteMany(ids: string[]): Promise<HttpResponse> {
+    const url = `/${this.repo}/multi`
+
+    const { data } = await authApi.delete(url, { data: { orderIds: ids } })
+    return data
+  }
+
+
+  async delete(id: string): Promise<GenericResponse<Order, "order">> {
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.delete(url)
+    return data
+  }
 }
-
-
-export async function getOrderFn(opt: QueryOptionArgs, { orderId }: { orderId: string | undefined }) {
-  if (!orderId) return
-  const { data } = await authApi.get<OrderResponse>(`/orders/detail/${orderId}`, {
-    ...opt,
-  })
-  return data
-}
-
-
-export async function createOrderFn(order: CreateOrderInput) {
-  const { data } = await authApi.post<OrderResponse>("/orders", order)
-  return data
-}
-
-
-export async function updateOrderFn({orderId, order}: {orderId: string, order: UpdateOrderInput}) {
-  const { data } = await authApi.patch<OrderResponse>(`/orders/detail/${orderId}`, order)
-  return data
-}
-
-
-export async function deleteMultiOrdersFn(orderIds: string[]) {
-  const { data } = await authApi.delete<HttpResponse>("/orders/multi", { data: { orderIds } })
-  return data
-}
-
-
-export async function deleteOrderFn(orderId: string) {
-  const { data } = await authApi.delete<HttpResponse>(`/orders/detail/${orderId}`)
-  return data
-}
-
-

@@ -3,7 +3,6 @@ import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 import { CacheResource } from "@/context/cacheKey"
 import { ExchangeApiService } from "@/services/exchangesApi"
-import { CreateExchangeInput } from "@/components/content/exchanges/forms"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
@@ -21,7 +20,7 @@ export function useCreateExchange() {
   const from = "/exchanges"
 
   const mutation = useMutation({
-    mutationFn: (payload: CreateExchangeInput) => apiService.create(payload),
+    mutationFn: (...args: Parameters<typeof apiService.create>) => apiService.create(...args),
     onSuccess: () => {
       dispatch({
         type: "OPEN_TOAST", payload: {

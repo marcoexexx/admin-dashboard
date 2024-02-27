@@ -3,7 +3,6 @@ import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 import { CacheResource } from "@/context/cacheKey"
 import { CouponApiService } from "@/services/couponsApi"
-import { CreateCouponInput } from "@/components/content/coupons/forms"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
@@ -21,7 +20,7 @@ export function useCreateCoupon() {
   const from = "/coupons"
 
   const mutation = useMutation({
-    mutationFn: (payload: CreateCouponInput) => apiService.create(payload),
+    mutationFn: (...args: Parameters<typeof apiService.create>) => apiService.create(...args),
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success created a new coupon.",

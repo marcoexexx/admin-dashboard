@@ -16,7 +16,7 @@ export function useGetCategory({
 }: {
   id: string | undefined,
   include?: CategoryWhereInput["include"],
-  }) {
+}) {
   const query = useQuery({
     enabled: !!id,
     queryKey: [CacheResource.Category, { id, include }] as CacheKey<"categories">["detail"],
@@ -26,7 +26,7 @@ export function useGetCategory({
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

@@ -1,13 +1,16 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 import Result, { Err, Ok } from "@/libs/result"
 
-import { CacheResource } from "@/context/cacheKey"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
 import { useNavigate } from "react-router-dom"
-import { updateTownshipFn } from "@/services/townshipsApi"
+import { CacheResource } from "@/context/cacheKey"
+import { TownshipApiService } from "@/services/townshipsApi"
+
+
+const apiService = TownshipApiService.new()
 
 
 export function useUpdateTownship() {
@@ -17,7 +20,7 @@ export function useUpdateTownship() {
   const from = "/townships"
 
   const mutation = useMutation({
-    mutationFn: updateTownshipFn,
+    mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success updated a township.",

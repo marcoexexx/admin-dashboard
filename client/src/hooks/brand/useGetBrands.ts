@@ -16,7 +16,7 @@ export function useGetBrands({
   pagination,
   include,
 }: {
-  filter?: BrandWhereInput["fields"],
+  filter?: BrandWhereInput["where"],
   include?: BrandWhereInput["include"],
   pagination: Pagination,
 }) {

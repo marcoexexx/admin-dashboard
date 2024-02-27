@@ -37,7 +37,7 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
     setToDeleteProductSale(id)
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: "delete-product-sale"
+      payload: "delete-product-sales-category"
     })
   }
 
@@ -66,16 +66,16 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
         </Grid>
       </Grid>
 
-      {modalForm.field === "sales-categories"
-        ? <FormModal field='sales-categories' title='Create new sale'>
+      {modalForm.field === "create-sales-category"
+        ? <FormModal field='create-sales-category' title='Create new sale'>
           <CreateSalesCategoryForm />
         </FormModal>
         : null}
 
 
-      {modalForm.field === "delete-product-sale" && toDeleteProductSale
+      {modalForm.field === "delete-product-sales-category" && toDeleteProductSale
         ? <FormModal
-          field="delete-product-sale"
+          field="delete-product-sales-category"
           title="Delete product sale"
         >
           <Box display="flex" flexDirection="column" gap={1}>

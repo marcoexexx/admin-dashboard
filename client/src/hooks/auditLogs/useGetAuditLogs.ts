@@ -16,7 +16,7 @@ export function useGetAuditLogs({
   pagination,
   include,
 }: {
-  filter?: AuditLogWhereInput["fields"],
+  filter?: AuditLogWhereInput["where"],
   include?: AuditLogWhereInput["include"],
   pagination: Pagination,
 }) {

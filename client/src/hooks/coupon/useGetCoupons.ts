@@ -16,7 +16,7 @@ export function useGetCoupons({
   pagination,
   include,
 }: {
-  filter?: CouponWhereInput["fields"],
+  filter?: CouponWhereInput["where"],
   include?: CouponWhereInput["include"],
   pagination: Pagination,
 }) {

@@ -2,12 +2,15 @@ import AppError, { AppErrorKind } from "@/libs/exceptions"
 import Result, { Err, Ok } from "@/libs/result"
 
 import { CacheResource } from "@/context/cacheKey"
+import { SalesCategoryApiService } from "@/services/salesCategoryApi"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
 import { useNavigate } from "react-router-dom"
-import { updateSalesCategoryFn } from "@/services/salesCategoryApi"
+
+
+const apiService = SalesCategoryApiService.new()
 
 
 export function useUpdateSalesCategory() {
@@ -17,7 +20,7 @@ export function useUpdateSalesCategory() {
   const from = "/sales-categories"
 
   const mutation = useMutation({
-    mutationFn: updateSalesCategoryFn,
+    mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success updated a sale category.",

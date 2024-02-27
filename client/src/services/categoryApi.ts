@@ -17,7 +17,7 @@ export class CategoryApiService extends BaseApiService<CategoryWhereInput, Categ
   async findManys(
     opt: QueryOptionArgs,
     where: {
-      filter?: Record<keyof Category, any>;
+      filter?: CategoryWhereInput['where'];
       pagination: Pagination;
       include?: CategoryWhereInput["include"];
       orderBy?: Record<keyof Category, any>;
@@ -44,7 +44,7 @@ export class CategoryApiService extends BaseApiService<CategoryWhereInput, Categ
   async find(
     opt: QueryOptionArgs,
     where: {
-      filter: Record<keyof Category, any>;
+      filter: { id: string | undefined };
       include?: CategoryWhereInput["include"];
     }
   ): Promise<GenericResponse<Category, "category"> | undefined> {

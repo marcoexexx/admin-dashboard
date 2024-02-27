@@ -3,7 +3,6 @@ import Result, { Err, Ok } from "@/libs/result"
 
 import { CacheResource } from "@/context/cacheKey"
 import { CouponApiService } from "@/services/couponsApi"
-import { UpdateCouponInput } from "@/components/content/coupons/forms"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
@@ -21,7 +20,7 @@ export function useUpdateCoupon() {
   const from = "/coupons"
 
   const mutation = useMutation({
-    mutationFn: (arg: { id: string, payload: UpdateCouponInput }) => apiService.update(arg),
+    mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
     onSuccess: () => {
       dispatch({
         type: "OPEN_TOAST", payload: {

@@ -1,14 +1,17 @@
 import Result, { Err, Ok } from "@/libs/result"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 
-import { CacheResource } from "@/context/cacheKey"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
+import { CacheResource } from "@/context/cacheKey"
+import { UserAddressApiService } from "@/services/userAddressApi"
 
 
-// TODO:Multi create user addresses
+const apiService = UserAddressApiService.new()
+
+
 export function useCreateMultiUserAddresses() {
   const { dispatch } = useStore()
 

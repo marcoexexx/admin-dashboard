@@ -3,12 +3,12 @@ import Result, { Err, Ok } from "@/libs/result"
 
 import { CacheResource } from "@/context/cacheKey"
 import { CategoryApiService } from "@/services/categoryApi"
-import { UpdateCategoryInput } from "@/components/content/categories/forms"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
 import { useNavigate } from "react-router-dom"
+
 
 const apiService = CategoryApiService.new()
 
@@ -20,7 +20,7 @@ export function useUpdateCategory() {
   const from = "/categories"
 
   const mutation = useMutation({
-    mutationFn: (arg: { id: string, payload: UpdateCategoryInput }) => apiService.update(arg),
+    mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
     onSuccess: () => {
       dispatch({
         type: "OPEN_TOAST", payload: {

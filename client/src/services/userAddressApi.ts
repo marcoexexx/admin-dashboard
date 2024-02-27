@@ -1,56 +1,104 @@
+import AppError, { AppErrorKind } from "@/libs/exceptions";
+
+import { Address, GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
+import { BaseApiService } from "./baseApiService";
+import { CacheResource } from "@/context/cacheKey";
+import { UserAddressWhereInput } from "@/context/userAddress";
 import { CreateUserAddressInput, UpdateUserAddressInput } from "@/components/content/user-addresses/forms";
+
 import { authApi } from "./authApi";
-import { Address, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, UserAddressResponse } from "./types";
-import { UserAddressFilter } from "@/context/userAddress";
 
 
-export async function getUserAddressesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: UserAddressFilter["fields"], pagination: Pagination, include?: UserAddressFilter["include"] }) {
-  const { data } = await authApi.get<HttpListResponse<Address>>("/addresses", {
-    ...opt,
-    params: {
-      filter,
-      pagination,
-      orderBy: {
-        updatedAt: "desc"
-      },
-      include
-    },
-  })
-  return data
-}
+export class UserAddressApiService extends BaseApiService<UserAddressWhereInput, Address> {
+  constructor(public repo: CacheResource) { super() }
+
+  static new() {
+    return new UserAddressApiService(CacheResource.UserAddress)
+  }
 
 
-export async function getUserAddressFn(opt: QueryOptionArgs, { userAddressId, include }: { userAddressId: string | undefined, include?: UserAddressFilter["include"] }) {
-  if (!userAddressId) return
-  const { data } = await authApi.get<UserAddressResponse>(`/addresses/detail/${userAddressId}?include[township]=true`, {
-    ...opt,
-    params: {
-      include
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: UserAddressWhereInput["where"];
+      pagination: Pagination;
+      include?: UserAddressWhereInput["include"];
     }
-  })
-  return data
-}
+  ): Promise<HttpListResponse<Address>> {
+    const url = `/${this.repo}`
+    const { filter, pagination, include } = where
+
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: {
+        filter,
+        pagination,
+        include,
+        orderBy: {
+          updatedAt: "desc"
+        },
+      },
+    })
+    return data
+  }
 
 
-export async function createUserAddressFn(address: CreateUserAddressInput) {
-  const { data } = await authApi.post<UserAddressResponse>("/addresses", address)
-  return data
-}
+  async find(
+    opt: QueryOptionArgs,
+    where: {
+      filter: { id: string | undefined };
+      include?: UserAddressWhereInput["include"];
+    }
+  ): Promise<GenericResponse<Address, "userAddress"> | undefined> {
+    const { filter: { id }, include } = where
+    const url = `/${this.repo}/detail/${id}`
+
+    if (!id) return
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: { include }
+    })
+    return data
+  }
 
 
-export async function updateUserAddressFn({userAddressId, address}: {userAddressId: string, address: UpdateUserAddressInput}) {
-  const { data } = await authApi.patch<UserAddressResponse>(`/addresses/detail/${userAddressId}`, address)
-  return data
-}
+  async create(payload: CreateUserAddressInput): Promise<GenericResponse<Address, "userAddress">> {
+    const url = `/${this.repo}`
+
+    const { data } = await authApi.post(url, payload)
+    return data
+  }
 
 
-export async function deleteMultiUserAddressesFn(userAddressIds: string[]) {
-  const { data } = await authApi.delete<UserAddressResponse>("/addresses/multi", { data: { userAddressIds } })
-  return data
-}
+  /**
+  * Not Support yet!
+  */
+  async uploadExcel(_buf: ArrayBuffer): Promise<HttpListResponse<Address>> {
+    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`))
+  }
 
 
-export async function deleteUserAddressFn(userAddressId: string) {
-  const { data } = await authApi.delete<HttpResponse>(`/addresses/detail/${userAddressId}`)
-  return data
+  async update(arg: { id: string; payload: UpdateUserAddressInput }): Promise<GenericResponse<Address, "userAddress">> {
+    const { id, payload } = arg
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.patch(url, payload)
+    return data
+  }
+
+
+  async deleteMany(ids: string[]): Promise<HttpResponse> {
+    const url = `/${this.repo}/multi`
+
+    const { data } = await authApi.delete(url, { data: { userAddressIds: ids } })
+    return data
+  }
+
+
+  async delete(id: string): Promise<GenericResponse<Address, "userAddress">> {
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.delete(url)
+    return data
+  }
 }

@@ -2,17 +2,20 @@ import AppError, { AppErrorKind } from "@/libs/exceptions"
 import Result, { Err, Ok } from "@/libs/result"
 
 import { CacheResource } from "@/context/cacheKey"
+import { UserApiService } from "@/services/usersApi"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { queryClient } from "@/components"
-import { createBlockUserFn } from "@/services/usersApi"
+
+
+const apiService = UserApiService.new()
 
 
 export function useBlockUser() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: createBlockUserFn,
+    mutationFn: (...args: Parameters<typeof apiService.block>) => apiService.block(...args), // createBlockUserFn,
     onSuccess() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.User]
