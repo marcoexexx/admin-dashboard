@@ -18,17 +18,21 @@ export function useCreateMultiUserAddresses() {
   const mutation = useMutation({
     mutationFn: () => Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable)),
     onError(err: any) {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: `failed: ${err.response.data.message}`,
+          severity: "error"
+        }
+      })
       playSoundEffect("error")
     },
     onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success created new user addresses.",
-        severity: "success"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: "Success created new user addresses.",
+          severity: "success"
+        }
+      })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
         queryKey: [CacheResource.UserAddress]
@@ -38,7 +42,7 @@ export function useCreateMultiUserAddresses() {
   })
 
   const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message)) 
+    ? Err(AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message))
     : Ok(mutation.data)
 
   return { ...mutation, try_data }

@@ -2,13 +2,13 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { UserResponse } from "@/services/types";
-import { UserFilter } from "@/context/user";
 import { CacheResource } from "@/context/cacheKey";
+import { UserWhereInput } from "@/context/user";
 import { useQuery } from "@tanstack/react-query";
 import { getMeFn } from "@/services/authApi";
 
 
-export function useMe({enabled = true, include}: {enabled?: boolean, include?: UserFilter["include"]}) {
+export function useMe({ enabled = true, include }: { enabled?: boolean, include?: UserWhereInput["include"] }) {
   const query = useQuery({
     enabled,
     queryKey: [CacheResource.AuthUser, { include }],
@@ -21,7 +21,7 @@ export function useMe({enabled = true, include}: {enabled?: boolean, include?: U
   })
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
   return {

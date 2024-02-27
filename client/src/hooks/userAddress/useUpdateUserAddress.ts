@@ -1,13 +1,16 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 import Result, { Err, Ok } from "@/libs/result"
 
-import { CacheResource } from "@/context/cacheKey"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
 import { useNavigate } from "react-router-dom"
-import { updateUserAddressFn } from "@/services/userAddressApi"
+import { CacheResource } from "@/context/cacheKey"
+import { UserAddressApiService } from "@/services/userAddressApi"
+
+
+const apiService = UserAddressApiService.new()
 
 
 export function useUpdateUserAddress() {
@@ -17,7 +20,7 @@ export function useUpdateUserAddress() {
   const from = "/addresses"
 
   const mutation = useMutation({
-    mutationFn: updateUserAddressFn,
+    mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
     onSuccess: () => {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success updated a user address.",
