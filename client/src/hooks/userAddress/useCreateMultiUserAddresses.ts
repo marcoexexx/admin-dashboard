@@ -16,7 +16,7 @@ export function useCreateMultiUserAddresses() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: () => Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable)),
+    mutationFn: (...args: Parameters<typeof apiService.uploadExcel>) => apiService.uploadExcel(...args),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {

@@ -58,7 +58,7 @@ export function SalesCategoriesInputField({updateField = false}: SalesCategories
   }
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "sales-categories" })
+    dispatch({ type: "OPEN_MODAL_FORM", payload: "create-sales-category" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))

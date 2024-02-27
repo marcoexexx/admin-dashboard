@@ -128,7 +128,7 @@ export function UpdateProductForm() {
     if (product?.status !== "Draft") return
 
     updateProductMutation.mutate({
-      id: productId, product: {
+      id: productId, payload: {
         ...value,
         status: value.isPending ? "Pending" : value.status
       }

@@ -73,6 +73,18 @@ const columns: TypedColumn<Product>[] = [
     render: ({ value }) => <Typography>{value.priceUnit}</Typography>
   },
   {
+    id: "discount",
+    align: "right",
+    name: "Discount",
+    render: ({ value }) => <Typography>{value.discount} %</Typography>
+  },
+  {
+    id: "isDiscountItem",
+    align: "right",
+    name: "Is discount item",
+    render: ({ value }) => <Typography>{value.isDiscountItem ? `Discounted: item` : "No"}</Typography>
+  },
+  {
     id: "creator",
     align: "right",
     name: "Creator",

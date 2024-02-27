@@ -119,14 +119,14 @@ export function CreateUserAddressForm() {
       </FormProvider>
 
 
-      {modalForm.field === "region"
-        ? <FormModal field='region' title='Create new region'>
+      {modalForm.field === "create-region"
+        ? <FormModal field='create-region' title='Create new region'>
           <CreateRegionForm />
         </FormModal>
         : null}
 
-      {modalForm.field === "townships"
-        ? <FormModal field='townships' title='Create new township'>
+      {modalForm.field === "create-township"
+        ? <FormModal field='create-township' title='Create new township'>
           <CreateTownshipForm />
         </FormModal>
         : null}

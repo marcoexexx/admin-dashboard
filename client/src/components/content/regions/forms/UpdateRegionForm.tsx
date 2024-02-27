@@ -50,7 +50,7 @@ export function UpdateRegionForm() {
   }, [setFocus])
 
   const onSubmit: SubmitHandler<UpdateRegionInput> = (value) => {
-    if (regionId) updateRegion({ regionId, region: value })
+    if (regionId) updateRegion({ id: regionId, payload: value })
   }
 
 
@@ -78,8 +78,8 @@ export function UpdateRegionForm() {
         </Grid>
       </FormProvider>
 
-      {modalForm.field === "townships"
-        ? <FormModal field="townships" title='Create new city'>
+      {modalForm.field === "create-township"
+        ? <FormModal field="create-township" title='Create new city'>
           <CreateTownshipForm />
         </FormModal>
         : null}

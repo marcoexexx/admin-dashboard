@@ -15,7 +15,12 @@ export type UserWhereInput = {
     accessLogs?: boolean,
     auditLogs?: boolean,
     createdProducts?: boolean,
-    pickupAddresses?: boolean,
+    pickupAddresses?: {
+      include: {
+        orders: true
+      }
+    } | boolean,
+    blockedUsers?: boolean
   }
 }
 

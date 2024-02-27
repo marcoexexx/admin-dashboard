@@ -58,7 +58,7 @@ export function PickupAddressInputField({updateField = false}: PickupAddressInpu
   }
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "pickup-addresses" })
+    dispatch({ type: "OPEN_MODAL_FORM", payload: "create-pickup-addresse" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))

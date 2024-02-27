@@ -37,7 +37,7 @@ export function OrdersList() {
     if (!order.billingAddressId) return
 
     updateOrderMutation.mutate({
-      orderId: order.id, order: {
+      id: order.id, payload: {
         ...order,
         status,
         deliveryAddressId: order.deliveryAddressId || undefined,

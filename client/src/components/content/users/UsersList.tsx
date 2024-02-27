@@ -7,7 +7,7 @@ import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function UsersList() {
-  const { state: {userFilter} } = useStore()
+  const { state: { userFilter } } = useStore()
 
   const usersQuery = useGetUsers({
     filter: userFilter.where,
@@ -24,8 +24,8 @@ export function UsersList() {
 
   return <Card>
     <UsersListTable
-      users={users.results} 
-      count={users.count} 
+      users={users.results}
+      count={users.count}
     />
   </Card>
 }

@@ -56,12 +56,12 @@ export function ProductsList() {
 
   function handleChangeStatusProduct(product: Product, status: ProductStatus) {
     statusChangeProductMutation.mutate({
-      id: product.id, product: {
+      id: product.id, payload: {
         ...product,
         overview: product.overview || undefined,
         description: product.description || undefined,
         status,
-        categories: product.categories?.map(x => x.categoryId),
+        categories: product.categories?.map(x => x.categoryId) || [],
         // TODO: fix type 
         // @ts-ignore
         salesCategory: product.salesCategory?.map(({ salesCategoryId, discount }) => ({

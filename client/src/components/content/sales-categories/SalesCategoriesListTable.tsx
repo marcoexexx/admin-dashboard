@@ -95,7 +95,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
           page={pagination?.page
             ? pagination.page - 1
             : 0}
-          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

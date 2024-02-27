@@ -44,7 +44,7 @@ export function UpdateTownshipForm() {
   }, [setFocus])
 
   const onSubmit: SubmitHandler<UpdateTownshipInput> = (value) => {
-    if (townshipId) updateTownship({ townshipId, township: value })
+    if (townshipId) updateTownship({ id: townshipId, payload: value })
   }
 
   return (

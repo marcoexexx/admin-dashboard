@@ -53,7 +53,7 @@ export function UpdateUserAddressForm() {
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<UpdateUserAddressInput> = (value) => {
-    if (userAddressId) updateUserAddress({ userAddressId, address: value })
+    if (userAddressId) updateUserAddress({ id: userAddressId, payload: value })
   }
 
 

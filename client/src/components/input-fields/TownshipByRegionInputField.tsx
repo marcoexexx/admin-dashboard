@@ -35,6 +35,7 @@ export function TownshipByRegionInputField({updateField = false}: TownshipByRegi
     error
   } = useGetTownships({
     filter: {
+      // @ts-ignore :: region is probably undefined
       region: {
         id: {
           equals: regionId
@@ -66,7 +67,7 @@ export function TownshipByRegionInputField({updateField = false}: TownshipByRegi
   }
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "townships" })
+    dispatch({ type: "OPEN_MODAL_FORM", payload: "create-township" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))
