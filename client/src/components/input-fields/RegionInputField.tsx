@@ -58,7 +58,7 @@ export function RegionInputField({updateField = false}: RegionInputFieldProps) {
   }
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "region" })
+    dispatch({ type: "OPEN_MODAL_FORM", payload: "create-region" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))

@@ -31,11 +31,11 @@ export async function getCategoriesHandler(
 
     const [count, categories] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
-        where: {id, name},
-        include: {_count, products},
+        where: { id, name },
+        include: { _count, products },
         orderBy
       }
     )).ok_or_throw()
@@ -62,7 +62,7 @@ export async function getCategoryHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
     _isAccess.ok_or_throw()
 
-    const category = (await service.tryFindUnique({ where: {id: categoryId}, include: {_count, products} })).ok_or_throw()
+    const category = (await service.tryFindUnique({ where: { id: categoryId }, include: { _count, products } })).ok_or_throw()
 
     // Create audit log
     if (category && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
@@ -86,7 +86,7 @@ export async function createCategoryHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
-    const category = (await service.tryCreate({ data: {name} })).ok_or_throw()
+    const category = (await service.tryCreate({ data: { name } })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)
@@ -133,12 +133,12 @@ export async function deleteCategoryHandler(
 ) {
   try {
     const { categoryId } = req.params
-    
+
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    const category = (await service.tryDelete({ where: {id: categoryId} })).ok_or_throw()
+    const category = (await service.tryDelete({ where: { id: categoryId } })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)

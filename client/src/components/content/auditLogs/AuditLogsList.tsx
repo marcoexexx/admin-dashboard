@@ -3,19 +3,17 @@ import { useGetAuditLogs } from "@/hooks/auditLogs";
 import { Card } from "@mui/material";
 import { SuspenseLoader } from "@/components";
 import { AuditLogsListTable } from ".";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function AuditLogsList() {
-  const { state: {auditLogFilter} } = useStore()
+  const { state: { auditLogFilter } } = useStore()
 
 
   // Quries
   const auditLogsQuery = useGetAuditLogs({
-    filter: auditLogFilter?.fields,
-    pagination: {
-      page: auditLogFilter?.page || 1,
-      pageSize: auditLogFilter?.limit || 10
-    },
+    filter: auditLogFilter.where,
+    pagination: auditLogFilter.pagination || INITIAL_PAGINATION,
     include: {
       user: true
     }
@@ -31,8 +29,8 @@ export function AuditLogsList() {
   return <Card>
     <AuditLogsListTable
       isLoading={auditLogsQuery.isLoading}
-      auditLogs={data.results} 
-      count={data.count} 
+      auditLogs={data.results}
+      count={data.count}
     />
   </Card>
 }

@@ -55,7 +55,7 @@ export function UpdateExchangeForm() {
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<UpdateExchangeInput> = (value) => {
-    if (exchangeId) updateExchangeMutation.mutate({ exchangeId, exchange: value })
+    if (exchangeId) updateExchangeMutation.mutate({ id: exchangeId, payload: value })
   }
 
   return (

@@ -2,18 +2,21 @@ import Result, { Err, Ok } from "@/libs/result"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 import { CacheResource } from "@/context/cacheKey"
+import { CategoryApiService } from "@/services/categoryApi"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
-import { deleteMultiCategoriesFn } from "@/services/categoryApi"
+
+
+const apiService = CategoryApiService.new()
 
 
 export function useDeleteMultiCategories() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: deleteMultiCategoriesFn,
+    mutationFn: (...args: Parameters<typeof apiService.deleteMany>) => apiService.deleteMany(...args),
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,

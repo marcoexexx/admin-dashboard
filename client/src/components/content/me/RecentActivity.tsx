@@ -6,7 +6,7 @@ import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
 import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
 
 
-const AvatarPrimary = styled(Avatar)(({theme}) => ({
+const AvatarPrimary = styled(Avatar)(({ theme }) => ({
   background: theme.colors.primary.lighter,
   color: theme.colors.primary.main,
   width: theme.spacing(7),
@@ -18,7 +18,7 @@ interface RecentActivityProps {
   user: User
 }
 
-export function RecentActivity({user}: RecentActivityProps) {
+export function RecentActivity({ user }: RecentActivityProps) {
   const theme = useTheme()
 
   const orderTotal = user._count.orders

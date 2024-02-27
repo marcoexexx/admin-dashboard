@@ -74,7 +74,6 @@ export function RenderResourceItemLabel({resource, id}: {resource: Resource, id:
         return
       }
 
-
       case Resource.Township: {
         navigate("/townships/detail/" + id)
         return
@@ -82,6 +81,21 @@ export function RenderResourceItemLabel({resource, id}: {resource: Resource, id:
 
       case Resource.UserAddress: {
         navigate("/addresses/detail/" + id)
+        return
+      }
+
+      case Resource.Role: {
+        navigate("/roles/detail/" + id)
+        return
+      }
+
+      case Resource.Permission: {
+        navigate("/permissions/detail/" + id)
+        return
+      }
+
+      case Resource.Cart: {
+        navigate("/cart/detail/" + id)
         return
       }
 

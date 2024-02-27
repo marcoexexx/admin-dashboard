@@ -4,6 +4,7 @@ import { EnhancedTable, TypedColumn } from "@/components";
 import { ExchangesFilterForm } from ".";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const columns: TypedColumn<Exchange>[] = [
@@ -17,7 +18,7 @@ const columns: TypedColumn<Exchange>[] = [
     id: "from",
     align: "left",
     name: "From",
-    render: ({ value}) => <Typography>{value.from}</Typography>
+    render: ({ value }) => <Typography>{value.from}</Typography>
   },
   {
     id: "rate",
@@ -44,23 +45,19 @@ interface ExchangesListTableProps {
 
 export function ExchangesListTable(props: ExchangesListTableProps) {
   const { exchanges, count, isLoading, onCreateManyExchanges, onDelete, onMultiDelete } = props
-  const { state: { exchangeFilter }, dispatch } = useStore()
+  const { state: { exchangeFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_EXCHANGE_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_EXCHANGE_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_EXCHANGE_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_EXCHANGE_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -87,10 +84,10 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={exchangeFilter?.page
-            ? exchangeFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={exchangeFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

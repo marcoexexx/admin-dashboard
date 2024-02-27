@@ -1,74 +1,115 @@
 import { CreateExchangeInput, UpdateExchangeInput } from "@/components/content/exchanges/forms";
-import { Exchange, ExchangeResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
-import { ExchangeFilter } from "@/context/exchange";
+import { Exchange, GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
+import { ExchangeWhereInput } from "@/context/exchange";
+import { BaseApiService } from "./baseApiService";
+import { CacheResource } from "@/context/cacheKey";
+
 import { authApi } from "./authApi";
 
 
-export async function getExchangesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: ExchangeFilter["fields"], pagination: Pagination, include?: ExchangeFilter["include"] }) {
-  const { data } = await authApi.get<HttpListResponse<Exchange>>("/exchanges", {
-    ...opt,
-    params: {
-      filter,
-      pagination,
-      orderBy: {
-        updatedAt: "desc"
+export class ExchangeApiService extends BaseApiService<ExchangeWhereInput, Exchange> {
+  constructor(public repo: CacheResource) { super() }
+
+  static new() {
+    return new ExchangeApiService(CacheResource.Exchange)
+  }
+
+
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: ExchangeWhereInput["where"];
+      pagination: Pagination;
+      include?: ExchangeWhereInput["include"];
+      orderBy?: Record<keyof Exchange, any>;
+    }
+  ): Promise<HttpListResponse<Exchange>> {
+    const url = `/${this.repo}`
+    const { filter, pagination, include } = where
+
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: {
+        filter,
+        pagination,
+        include,
+        orderBy: {
+          updatedAt: "desc"
+        },
       },
-      include
-    },
-  })
-  return data
-}
+    })
+    return data
+  }
 
 
-export async function getExchangeFn(opt: QueryOptionArgs, { exchangeId, include }: { exchangeId: string | undefined, include?: ExchangeFilter["include"] }) {
-  if (!exchangeId) return
-  const { data } = await authApi.get<ExchangeResponse>(`/exchanges/detail/${exchangeId}`, {
-    ...opt,
-    params: {
-      include
+  async find(
+    opt: QueryOptionArgs,
+    where: {
+      filter: { id: string | undefined };
+      include?: ExchangeWhereInput["include"];
     }
-  })
-  return data
+  ): Promise<GenericResponse<Exchange, "exchange"> | undefined> {
+    const { filter: { id }, include } = where
+    const url = `/${this.repo}/detail/${id}`
+
+    if (!id) return
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: { include }
+    })
+    return data
+  }
+
+
+  async create(payload: CreateExchangeInput): Promise<GenericResponse<Exchange, "brand">> {
+    const url = `/${this.repo}`
+
+    const { data } = await authApi.post(url, payload)
+    return data
+  }
+
+
+  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<Exchange>> {
+    const url = `/${this.repo}/excel-upload`
+
+    const formData = new FormData()
+    const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+    formData.append("excel", blob, `Exchange_${Date.now()}.xlsx`)
+
+    const { data } = await authApi.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+
+    return data
+  }
+
+
+  async update(arg: { id: string; payload: UpdateExchangeInput }): Promise<GenericResponse<Exchange, "exchange">> {
+    const { id, payload } = arg
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.patch(url, payload)
+    return data
+  }
+
+
+  async deleteMany(ids: string[]): Promise<HttpResponse> {
+    const url = `/${this.repo}/multi`
+
+    const { data } = await authApi.delete(url, { data: { exchangeIds: ids } })
+    return data
+  }
+
+
+  async delete(id: string): Promise<GenericResponse<Exchange, "exchange">> {
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.delete(url)
+    return data
+  }
 }
 
-
-export async function createExchangeFn(exchange: CreateExchangeInput) {
-  const { data } = await authApi.post<ExchangeResponse>("/exchanges", exchange)
-  return data
-}
-
-
-export async function updateExchangeFn({ exchangeId, exchange }: {exchangeId: string, exchange: UpdateExchangeInput}) {
-  const { data } = await authApi.patch<ExchangeResponse>(`/exchanges/detail/${exchangeId}`, exchange)
-  return data
-}
-
-
-export async function createMultiExchangesFn(buf: ArrayBuffer) {
-  const formData = new FormData()
-
-  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-
-  formData.append("excel", blob, `Categories_${Date.now()}.xlsx`)
-
-  const { data } = await authApi.post<HttpResponse>("/exchanges/excel-upload", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data"
-    }
-  })
-
-  return data
-}
-
-
-export async function deleteMultiExchangesFn(exchangeIds: string[]) {
-  const { data } = await authApi.delete<HttpResponse>("/exchanges/multi", { data: { exchangeIds } })
-  return data
-}
-
-
-export async function deleteExchangeFn(exchangeId: string) {
-  const { data } = await authApi.delete<HttpResponse>(`/exchanges/detail/${exchangeId}`)
-  return data
-}
 

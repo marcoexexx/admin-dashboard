@@ -5,6 +5,7 @@ import { Card } from "@mui/material";
 import { ProductsListTable } from ".";
 import { Product, ProductStatus } from "@/services/types";
 import { SuspenseLoader } from "@/components";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function ProductsList() {
@@ -12,11 +13,8 @@ export function ProductsList() {
 
   // Queries
   const productsQuery = useGetProducts({
-    filter: productFilter?.fields,
-    pagination: {
-      page: productFilter?.fields?.page || 1,
-      pageSize: productFilter?.fields?.limit || 10
-    },
+    filter: productFilter.where,
+    pagination: productFilter.pagination || INITIAL_PAGINATION,
     include: {
       specification: true,
       brand: true,
@@ -58,12 +56,12 @@ export function ProductsList() {
 
   function handleChangeStatusProduct(product: Product, status: ProductStatus) {
     statusChangeProductMutation.mutate({
-      id: product.id, product: {
+      id: product.id, payload: {
         ...product,
         overview: product.overview || undefined,
         description: product.description || undefined,
         status,
-        categories: product.categories?.map(x => x.categoryId),
+        categories: product.categories?.map(x => x.categoryId) || [],
         // TODO: fix type 
         // @ts-ignore
         salesCategory: product.salesCategory?.map(({ salesCategoryId, discount }) => ({

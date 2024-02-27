@@ -1,11 +1,14 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { Pagination } from "@/services/types";
-import { TownshipFilter } from "@/context/township";
-import { CacheKey, CacheResource } from "@/context/cacheKey";
-import { getTownshipsFn } from "@/services/townshipsApi";
 import { useQuery } from "@tanstack/react-query";
+import { Pagination } from "@/services/types";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { TownshipWhereInput } from "@/context/township";
+import { TownshipApiService } from "@/services/townshipsApi";
+
+
+const apiService = TownshipApiService.new()
 
 
 export function useGetTownships({
@@ -13,13 +16,13 @@ export function useGetTownships({
   pagination,
   include,
 }: {
-  filter?: TownshipFilter["fields"],
-  include?: TownshipFilter["include"],
+  filter?: TownshipWhereInput["where"],
+  include?: TownshipWhereInput["include"],
   pagination: Pagination,
-  }) {
+}) {
   const query = useQuery({
-    queryKey: [CacheResource.Township, { filter, pagination, include } ] as CacheKey<"townships">["list"],
-    queryFn: args => getTownshipsFn(args, { 
+    queryKey: [CacheResource.Township, { filter, pagination, include }] as CacheKey<"townships">["list"],
+    queryFn: args => apiService.findMany(args, {
       filter,
       pagination,
       include
@@ -29,7 +32,7 @@ export function useGetTownships({
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

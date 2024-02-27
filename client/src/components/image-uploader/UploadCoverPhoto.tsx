@@ -1,13 +1,14 @@
 import { Button, styled } from "@mui/material"
 import { CacheResource } from "@/context/cacheKey"
+import { UserApiService } from "@/services/usersApi"
 import { useStore } from "@/hooks"
 import { object, z } from "zod"
-import { uploadCoverPhotoFn } from "@/services/usersApi"
 import { useMutation } from "@tanstack/react-query"
 import { queryClient } from ".."
 
 import UploadTwoToneIcon from '@mui/icons-material/UploadTwoTone'
 
+const apiService = UserApiService.new()
 
 const Input = styled("input")({
   display: "none"
@@ -25,7 +26,7 @@ export function UploadCoverPhoto() {
   const { dispatch } = useStore()
 
   const { mutate: upload } = useMutation({
-    mutationFn: uploadCoverPhotoFn,
+    mutationFn: (...args: Parameters<typeof apiService.uploadCoverPhoto>) => apiService.uploadCoverPhoto(...args),
     onSuccess() {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: "Success upload cover photo",

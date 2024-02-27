@@ -4,27 +4,25 @@ import { Card } from "@mui/material";
 import { useStore } from "@/hooks";
 import { useCreateMultiSalesCategories, useDeleteMultiSalesCategories, useGetSalesCategories } from "@/hooks/salsCategory";
 import { useDeleteCategory } from "@/hooks/category";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function SalesCategoriesList() {
-  const { state: {salesCategoryFilter} } = useStore()
+  const { state: { salesCategoryFilter } } = useStore()
 
   // Queries
   const { try_data, isLoading } = useGetSalesCategories({
-    filter: salesCategoryFilter?.fields,
-    pagination: {
-      page: salesCategoryFilter?.page || 1,
-      pageSize: salesCategoryFilter?.limit || 10,
-    },
+    filter: salesCategoryFilter.where,
+    pagination: salesCategoryFilter.pagination || INITIAL_PAGINATION,
     include: {
       _count: true
     }
   })
 
   // Mutations
-  const  { mutate: createSalesCategories } = useCreateMultiSalesCategories()
-  const  { mutate: deleteSalesCategory } = useDeleteCategory()
-  const  { mutate: deleteSalesCategories } = useDeleteMultiSalesCategories()
+  const { mutate: createSalesCategories } = useCreateMultiSalesCategories()
+  const { mutate: deleteSalesCategory } = useDeleteCategory()
+  const { mutate: deleteSalesCategories } = useDeleteMultiSalesCategories()
 
   // Extraction
   const sales = try_data.ok_or_throw()
@@ -46,10 +44,10 @@ export function SalesCategoriesList() {
 
   return <Card>
     <SalesCategoriesListTable
-      salesCategoiries={sales.results} 
-      count={sales.count} 
+      salesCategoiries={sales.results}
+      count={sales.count}
       isLoading={isLoading}
-      onCreateManySalesCategories={handleCreateManySalesCategories} 
+      onCreateManySalesCategories={handleCreateManySalesCategories}
       onDelete={handleDeleteBrand}
       onMultiDelete={handleDeleteMultiSalesCategories}
     />

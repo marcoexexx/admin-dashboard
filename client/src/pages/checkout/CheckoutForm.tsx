@@ -360,26 +360,26 @@ export function CheckoutForm() {
         </Grid>
       </Hidden>
 
-      {modalForm.field === "addresses"
-        ? <FormModal field='addresses' title='Create new address'>
+      {modalForm.field === "create-user-addresse"
+        ? <FormModal field='create-user-addresse' title='Create new address'>
           <CreateUserAddressForm />
         </FormModal>
         : null}
 
-      {modalForm.field === "pickup-addresses"
-        ? <FormModal field='pickup-addresses' title='Create new address'>
+      {modalForm.field === "create-pickup-addresse"
+        ? <FormModal field='create-pickup-addresse' title='Create new address'>
           <CreatePickupAddressForm />
         </FormModal>
         : null}
 
-      {modalForm.field === "region"
-        ? <FormModal field='region' title='Create new region'>
+      {modalForm.field === "create-region"
+        ? <FormModal field='create-region' title='Create new region'>
           <CreateRegionForm />
         </FormModal>
         : null}
 
-      {modalForm.field === "townships"
-        ? <FormModal field='townships' title='Create new township'>
+      {modalForm.field === "create-township"
+        ? <FormModal field='create-township' title='Create new township'>
           <CreateTownshipForm />
         </FormModal>
         : null}

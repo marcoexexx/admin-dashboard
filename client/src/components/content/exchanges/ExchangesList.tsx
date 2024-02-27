@@ -3,18 +3,16 @@ import { SuspenseLoader } from "@/components";
 import { ExchangesListTable } from ".";
 import { useStore } from "@/hooks";
 import { useCreateMultiExchanges, useDeleteExchange, useDeleteMultiExchanges, useGetExchanges } from "@/hooks/exchange";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function ExchangesList() {
-  const { state: {exchangeFilter} } = useStore()
+  const { state: { exchangeFilter } } = useStore()
 
   // Queries
   const exchangesQuery = useGetExchanges({
-    filter: exchangeFilter?.fields,
-    pagination: {
-      page: exchangeFilter?.page || 1,
-      pageSize: exchangeFilter?.limit || 10
-    },
+    filter: exchangeFilter.where,
+    pagination: exchangeFilter.pagination || INITIAL_PAGINATION,
   })
 
   // Mutations
@@ -43,10 +41,10 @@ export function ExchangesList() {
 
   return <Card>
     <ExchangesListTable
-      exchanges={data.results} 
-      count={data.count} 
+      exchanges={data.results}
+      count={data.count}
       isLoading={exchangesQuery.isLoading}
-      onCreateManyExchanges={handleCreateManyExchanges} 
+      onCreateManyExchanges={handleCreateManyExchanges}
       onDelete={handleDeleteExchange}
       onMultiDelete={handleDeleteMultiExchanges}
     />

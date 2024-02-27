@@ -1,26 +1,45 @@
-import { AccessLogFilter } from "@/context/accessLog";
+import { AccessLog, GenericResponse, HttpListResponse, Pagination, QueryOptionArgs } from "./types";
+import { BaseApiService } from "./baseApiService";
+import { CacheResource } from "@/context/cacheKey";
+import { AccessLogWhereInput } from "@/context/accessLog";
 import { authApi } from "./authApi";
-import { AccessLog, HttpListResponse, Pagination, QueryOptionArgs } from "./types";
 
 
-export async function getAccessLogsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: AccessLogFilter["fields"], pagination: Pagination, include?: any }) {
-  const { data } = await authApi.get<HttpListResponse<AccessLog>>("/access-logs", {
-    ...opt,
-    params: {
-      filter,
-      pagination,
-      orderBy: {
-        updatedAt: "desc"
+export class AccessLogApiService extends BaseApiService<AccessLogWhereInput, AccessLog> {
+  constructor(public repo: CacheResource) { super() }
+
+  static new() {
+    return new AccessLogApiService(CacheResource.AccessLog)
+  }
+
+
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: AccessLogWhereInput["where"],
+      pagination: Pagination;
+      include?: AccessLogWhereInput["include"]
+    }
+  ): Promise<HttpListResponse<AccessLog>> {
+    const url = `/${this.repo}`
+    const { filter, pagination, include } = where
+
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: {
+        filter,
+        pagination,
+        include,
       },
-      include
-    },
-  })
-  return data
+    })
+    return data
+  }
+
+
+  async delete(id: string): Promise<GenericResponse<AccessLog, "accessLog">> {
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.delete(url)
+    return data
+  }
 }
-
-
-export async function deleteAccessLogFn(accessLogId: string) {
-  const { data } = await authApi.delete<HttpListResponse<AccessLog>>(`/access-logs/detail/${accessLogId}`)
-  return data
-}
-

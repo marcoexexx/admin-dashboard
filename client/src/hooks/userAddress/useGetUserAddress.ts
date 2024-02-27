@@ -1,10 +1,13 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
-import { UserAddressFilter } from "@/context/userAddress";
 
-import { CacheKey, CacheResource } from "@/context/cacheKey";
 import { useQuery } from "@tanstack/react-query";
-import { getUserAddressFn } from "@/services/userAddressApi";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { UserAddressApiService } from "@/services/userAddressApi";
+import { UserAddressWhereInput } from "@/context/userAddress";
+
+
+const apiService = UserAddressApiService.new()
 
 
 export function useGetUserAddress({
@@ -12,18 +15,18 @@ export function useGetUserAddress({
   include,
 }: {
   id: string | undefined,
-  include?: UserAddressFilter["include"],
-  }) {
+  include?: UserAddressWhereInput["include"],
+}) {
   const query = useQuery({
     enabled: !!id,
     queryKey: [CacheResource.UserAddress, { id, include }] as CacheKey<"user-addresses">["detail"],
-    queryFn: args => getUserAddressFn(args, { userAddressId: id, include }),
+    queryFn: args => apiService.find(args, { filter: { id }, include }),
     // queryFn: () => Promise.reject(AppError.new(AppErrorKind.PermissionError))
   })
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

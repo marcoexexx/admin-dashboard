@@ -46,7 +46,7 @@ export function UpdateBrandForm() {
   }, [setFocus])
 
   const onSubmit: SubmitHandler<UpdateBrandInput> = (value) => {
-    if (brandId) updateBrandMutation.mutate({ brandId, brand: value })
+    if (brandId) updateBrandMutation.mutate({ id: brandId, payload: value })
   }
 
   return (

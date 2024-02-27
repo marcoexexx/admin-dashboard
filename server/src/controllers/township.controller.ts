@@ -3,7 +3,7 @@ import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { checkUser } from "../services/checkUser";
 import { CreateTownshipInput, DeleteMultiTownshipsInput, GetTownshipInput, UpdateTownshipInput } from "../schemas/township.schema";
 import { NextFunction, Request, Response } from "express";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper"; 
+import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { TownshipService } from "../services/township";
 import { StatusCode } from "../utils/appError";
 import { OperationAction } from "@prisma/client";
@@ -31,11 +31,11 @@ export async function getTownshipsHandler(
 
     const [count, townships] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
-        where: {id, name, fees},
-        include: {_count, userAddresses, region},
+        where: { id, name, fees },
+        include: { _count, userAddresses, region },
         orderBy
       }
     )).ok_or_throw()

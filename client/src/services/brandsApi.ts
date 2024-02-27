@@ -1,72 +1,111 @@
 import { CreateBrandInput, UpdateBrandInput } from "@/components/content/brands/forms";
-import { Brand, BrandResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
+import { Brand, GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
+import { BrandWhereInput } from "@/context/brand";
+import { BaseApiService } from "./baseApiService";
+import { CacheResource } from "@/context/cacheKey";
 import { authApi } from "./authApi";
-import { BrandFilter } from "@/context/brand";
 
 
-export async function getBrandsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: BrandFilter["fields"], pagination: Pagination, include?: BrandFilter["include"] }) {
-  const { data } = await authApi.get<HttpListResponse<Brand>>("/brands", {
-    ...opt,
-    params: {
-      filter,
-      pagination,
-      orderBy: {
-        updatedAt: "desc"
-      },
-      include
-    },
-  })
-  return data
-}
+export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
+  constructor(public repo: CacheResource) { super() }
+
+  static new() {
+    return new BrandApiService(CacheResource.Brand)
+  }
 
 
-export async function getBrandFn(opt: QueryOptionArgs, { brandId, include }: { brandId: string | undefined, include: BrandFilter["include"] }) {
-  if (!brandId) return
-  const { data } = await authApi.get<BrandResponse>(`/brands/detail/${brandId}`, {
-    ...opt,
-    params: { include }
-  })
-  return data
-}
-
-
-export async function createBrandFn(brand: CreateBrandInput) {
-  const { data } = await authApi.post<BrandResponse>("/brands", brand)
-  return data
-}
-
-
-export async function createMultiBrandsFn(buf: ArrayBuffer) {
-  const formData = new FormData()
-
-  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-
-  formData.append("excel", blob, `Brands_${Date.now()}.xlsx`)
-
-  const { data } = await authApi.post<HttpResponse>("/brands/excel-upload", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data"
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: BrandWhereInput["where"];
+      pagination: Pagination;
+      include?: BrandWhereInput["include"];
     }
-  })
+  ): Promise<HttpListResponse<Brand>> {
+    const url = `/${this.repo}`
+    const { filter, pagination, include } = where
 
-  return data
-
-}
-
-
-export async function updateBrandFn({brandId, brand}: {brandId: string, brand: UpdateBrandInput}) {
-  const { data } = await authApi.patch<BrandResponse>(`/brands/detail/${brandId}`, brand)
-  return data
-}
-
-
-export async function deleteMultiBrandsFn(brandIds: string[]) {
-  const { data } = await authApi.delete<HttpResponse>("/brands/multi", { data: { brandIds } })
-  return data
-}
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: {
+        filter,
+        pagination,
+        include,
+        orderBy: {
+          updatedAt: "desc"
+        },
+      },
+    })
+    return data
+  }
 
 
-export async function deleteBrandFn(brandId: string) {
-  const { data } = await authApi.delete<HttpResponse>(`/brands/detail/${brandId}`)
-  return data
+  async find(
+    opt: QueryOptionArgs,
+    where: {
+      filter: { id: string | undefined };
+      include?: BrandWhereInput["include"];
+    }
+  ): Promise<GenericResponse<Brand, "brand"> | undefined> {
+    const { filter: { id }, include } = where
+    const url = `/${this.repo}/detail/${id}`
+
+    if (!id) return
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: { include }
+    })
+    return data
+  }
+
+
+  async create(payload: CreateBrandInput): Promise<GenericResponse<Brand, "brand">> {
+    const url = `/${this.repo}`
+
+    const { data } = await authApi.post(url, payload)
+    return data
+  }
+
+
+  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<Brand>> {
+    const url = `/${this.repo}/excel-upload`
+
+    const formData = new FormData()
+    const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+    formData.append("excel", blob, `Brands_${Date.now()}.xlsx`)
+
+    const { data } = await authApi.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+
+    return data
+  }
+
+
+  async update(arg: { id: string; payload: UpdateBrandInput }): Promise<GenericResponse<Brand, "brand">> {
+    const { id, payload } = arg
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.patch(url, payload)
+    return data
+  }
+
+
+  async deleteMany(ids: string[]): Promise<HttpResponse> {
+    const url = `/${this.repo}/multi`
+
+    const { data } = await authApi.delete(url, { data: { brandIds: ids } })
+    return data
+  }
+
+
+  async delete(id: string): Promise<GenericResponse<Brand, "brand">> {
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.delete(url)
+    return data
+  }
 }

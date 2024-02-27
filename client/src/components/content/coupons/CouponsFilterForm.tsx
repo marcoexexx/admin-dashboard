@@ -1,11 +1,11 @@
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { DatePickerField } from "@/components/input-fields";
+import { useStore } from "@/hooks";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "react-router-dom";
 import { boolean, number, object, z } from "zod";
-import { DatePickerField } from "@/components/input-fields";
 import dayjs from "dayjs";
 
 
@@ -39,23 +39,25 @@ export function CouponsFilterForm() {
 
     setFilterQuery(prev => ({ ...prev, ...value }))
 
-    dispatch({ type: "SET_COUPON_FILTER", payload: {
-      fields: {
-        points: {
-          gte: minPoint,
-          lte: maxPoint,
+    dispatch({
+      type: "SET_COUPON_FILTER", payload: {
+        where: {
+          points: {
+            gte: minPoint,
+            lte: maxPoint,
+          },
+          dolla: {
+            gte: minDolla,
+            lte: maxDolla,
+          },
+          isUsed,
+          expiredDate: (() => {
+            try { return expiredDate?.toISOString() }
+            catch (_) { return undefined }
+          })()
         },
-        dolla: {
-          gte: minDolla,
-          lte: maxDolla,
-        },
-        isUsed,
-        expiredDate: (() => {
-          try { return expiredDate?.toISOString() }
-          catch (_) { return undefined }
-        })()
-      },
-    } })
+      }
+    })
   }
 
   const handleOnClickReset = () => {
@@ -68,38 +70,40 @@ export function CouponsFilterForm() {
     setValue("isUsed", false)
     setValue("expiredDate", undefined)
 
-    dispatch({ type: "SET_COUPON_FILTER", payload: {
-      fields: {}
-    } })
+    dispatch({
+      type: "SET_COUPON_FILTER", payload: {
+        where: undefined
+      }
+    })
   }
 
   return <FormProvider {...methods}>
     <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
       <Grid item xs={12} md={6}>
         <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-          <TextField 
-            fullWidth 
+          <TextField
+            fullWidth
             {...register("minPoint", {
-              setValueAs: value => value === "" ? undefined : parseInt(value, 10) 
-            })} 
+              setValueAs: value => value === "" ? undefined : parseInt(value, 10)
+            })}
             defaultValue={filterQuery.get("minPoint")}
             type="number"
             inputProps={{
               step: "0.01"
             }}
-            label="Minium points" 
-            error={!!errors.minPoint} 
-            helperText={!!errors.minPoint ? errors.minPoint.message : ""} 
+            label="Minium points"
+            error={!!errors.minPoint}
+            helperText={!!errors.minPoint ? errors.minPoint.message : ""}
           />
-          <TextField 
+          <TextField
             {...register("minDolla", {
-              setValueAs: value => value === "" ? undefined : parseInt(value, 10) 
-            })} 
+              setValueAs: value => value === "" ? undefined : parseInt(value, 10)
+            })}
             defaultValue={filterQuery.get("minDolla")}
             type="number"
-            label="Minium dolla" 
-            error={!!errors.minDolla} 
-            helperText={!!errors.minDolla ? errors.minDolla.message : ""} 
+            label="Minium dolla"
+            error={!!errors.minDolla}
+            helperText={!!errors.minDolla ? errors.minDolla.message : ""}
             fullWidth
           />
         </Box>
@@ -107,26 +111,26 @@ export function CouponsFilterForm() {
 
       <Grid item xs={12} md={6}>
         <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-          <TextField 
+          <TextField
             {...register("maxPoint", {
-              setValueAs: value => value === "" ? undefined : parseInt(value, 10) 
-            })} 
+              setValueAs: value => value === "" ? undefined : parseInt(value, 10)
+            })}
             defaultValue={filterQuery.get("maxPoint")}
             type="number"
-            label="Maxium points" 
-            error={!!errors.maxPoint} 
-            helperText={!!errors.maxPoint ? errors.maxPoint.message : ""} 
+            label="Maxium points"
+            error={!!errors.maxPoint}
+            helperText={!!errors.maxPoint ? errors.maxPoint.message : ""}
             fullWidth
           />
-          <TextField 
+          <TextField
             {...register("maxDolla", {
-              setValueAs: value => value === "" ? undefined : parseInt(value, 10) 
-            })} 
+              setValueAs: value => value === "" ? undefined : parseInt(value, 10)
+            })}
             defaultValue={filterQuery.get("maxDolla")}
             type="number"
-            label="Maxium dolla" 
-            error={!!errors.minDolla} 
-            helperText={!!errors.minDolla ? errors.minDolla.message : ""} 
+            label="Maxium dolla"
+            error={!!errors.minDolla}
+            helperText={!!errors.minDolla ? errors.minDolla.message : ""}
             fullWidth
           />
         </Box>
@@ -135,7 +139,7 @@ export function CouponsFilterForm() {
       <Grid item xs={12}>
         <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
           <DatePickerField fieldName="expiredDate" />
-          <FormControlLabel 
+          <FormControlLabel
             {...register("isUsed")}
             label="Used"
             control={<Checkbox defaultChecked={filterQuery.get("isUsed") === "true"} />}
@@ -151,5 +155,5 @@ export function CouponsFilterForm() {
         <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
       </Grid>
     </Grid>
-  </FormProvider> 
+  </FormProvider>
 }

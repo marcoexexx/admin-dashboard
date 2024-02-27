@@ -5,6 +5,7 @@ import { Resource, SalesCategory } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { SalesCategorysFilterForm } from ".";
 import { useStore } from "@/hooks";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const columns: TypedColumn<SalesCategory>[] = [
@@ -52,23 +53,19 @@ interface SalesCategoriesListTableProps {
 
 export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
   const { salesCategoiries, count, isLoading, onCreateManySalesCategories, onDelete, onMultiDelete } = props
-  const { state: { salesCategoryFilter }, dispatch } = useStore()
+  const { state: { salesCategoryFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_SALES_CATEGORY_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_SALES_CATEGORY_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_SALES_CATEGORY_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_SALES_CATEGORY_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -95,10 +92,10 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={salesCategoryFilter?.page
-            ? salesCategoryFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={salesCategoryFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

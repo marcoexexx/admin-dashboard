@@ -1,13 +1,13 @@
-import dayjs from "dayjs";
-import { useStore } from "@/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "react-router-dom";
-import { number, object, z } from "zod";
 import { MuiButton } from "@/components/ui";
 import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { DatePickerField } from "@/components/input-fields";
 import { PriceUnit } from "@/services/types";
+import { useStore } from "@/hooks";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useSearchParams } from "react-router-dom";
+import { number, object, z } from "zod";
+import dayjs from "dayjs";
 
 
 const filterExchangesSchema = object({
@@ -40,21 +40,23 @@ export function ExchangesFilterForm() {
 
     setFilterQuery(prev => ({ ...prev, ...value }))
 
-    dispatch({ type: "SET_EXCHANGE_FILTER", payload: {
-      fields: {
-        to,
-        from,
-        rate,
-        startDate: (() => {
-          try { return startDate?.toISOString() }
-          catch (_) { return undefined }
-        })(),
-        endDate: (() => {
-          try { return endDate?.toISOString() }
-          catch (_) { return undefined }
-        })()
-      },
-    } })
+    dispatch({
+      type: "SET_EXCHANGE_FILTER", payload: {
+        where: {
+          to,
+          from,
+          rate,
+          startDate: (() => {
+            try { return startDate?.toISOString() }
+            catch (_) { return undefined }
+          })(),
+          endDate: (() => {
+            try { return endDate?.toISOString() }
+            catch (_) { return undefined }
+          })()
+        },
+      }
+    })
   }
 
   const handleOnClickReset = () => {
@@ -64,40 +66,42 @@ export function ExchangesFilterForm() {
     setValue("rate", undefined)
     setValue("startDate", undefined)
     setValue("endDate", undefined)
-    dispatch({ type: "SET_EXCHANGE_FILTER", payload: {
-      fields: undefined
-    } })
+    dispatch({
+      type: "SET_EXCHANGE_FILTER", payload: {
+        where: undefined
+      }
+    })
   }
 
   return <FormProvider {...methods}>
     <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
       <Grid item xs={12}>
         <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-          <TextField 
-            fullWidth 
+          <TextField
+            fullWidth
             {...register("rate", {
-              setValueAs: value => value === "" ? undefined : parseInt(value, 10) 
-            })} 
+              setValueAs: value => value === "" ? undefined : parseInt(value, 10)
+            })}
             defaultValue={filterQuery.get("rate")}
             type="number"
             inputProps={{
               step: "0.01"
             }}
-            label="Rate" 
-            error={!!errors.rate} 
-            helperText={!!errors.rate ? errors.rate.message : ""} 
+            label="Rate"
+            error={!!errors.rate}
+            helperText={!!errors.rate ? errors.rate.message : ""}
           />
         </Box>
       </Grid>
 
       <Grid item xs={12} md={6}>
         <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-          <TextField 
-            {...register("from")} 
+          <TextField
+            {...register("from")}
             defaultValue={filterQuery.get("from") || PriceUnit.MMK}
-            label="Price unit from" 
-            error={!!errors.from} 
-            helperText={!!errors.from ? errors.from.message : ""} 
+            label="Price unit from"
+            error={!!errors.from}
+            helperText={!!errors.from ? errors.from.message : ""}
             select
             fullWidth
           >
@@ -107,12 +111,12 @@ export function ExchangesFilterForm() {
               </MenuItem>
             ))}
           </TextField>
-          <TextField 
-            {...register("to")} 
+          <TextField
+            {...register("to")}
             defaultValue={filterQuery.get("to") || PriceUnit.MMK}
-            label="Price unit to" 
-            error={!!errors.to} 
-            helperText={!!errors.to ? errors.to.message : ""} 
+            label="Price unit to"
+            error={!!errors.to}
+            helperText={!!errors.to ? errors.to.message : ""}
             select
             fullWidth
           >
@@ -140,5 +144,5 @@ export function ExchangesFilterForm() {
         <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
       </Grid>
     </Grid>
-  </FormProvider> 
+  </FormProvider>
 }

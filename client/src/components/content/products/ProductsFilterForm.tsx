@@ -14,8 +14,8 @@ const filterProductsSchema = object({
   //   .min(0).max(128).optional(),
   title: string()
     .min(0).max(128).optional(),
-  specification: string()
-    .min(0).max(1024).optional(),
+  // specification: string()
+  //   .min(0).max(1024).optional(),
   // overview: string()
   //   .min(0).max(1024).optional(),
   // features: string()
@@ -36,7 +36,7 @@ const filterProductsSchema = object({
   // // salesCategory: string().array(),
   // quantity: number().min(0),
   insensitive: boolean().default(false)
-}) 
+})
 
 export type FilterProductsInput = z.infer<typeof filterProductsSchema>
 
@@ -56,35 +56,34 @@ export function ProductdsFilterForm() {
       minPrice,
       maxPrice,
       insensitive,
-      specification
     } = value
     setFilterQuery(prev => ({ ...prev, ...value }))
-    dispatch({ type: "SET_PRODUCT_FILTER", payload: {
-      fields: {
-        title: {
-          contains: title || undefined,
-          mode: insensitive ? "insensitive" : "default",
+    dispatch({
+      type: "SET_PRODUCT_FILTER", payload: {
+        where: {
+          title: {
+            contains: title || undefined,
+            mode: insensitive ? "insensitive" : "default",
+          },
+          description: {
+            mode: insensitive ? "insensitive" : "default",
+            contains: description || undefined
+          },
+          price: {
+            gte: maxPrice,
+            lte: minPrice,
+          }
         },
-        description: {
-          mode: insensitive ? "insensitive" : "default",
-          contains: description || undefined
-        },
-        specification: {
-          mode: insensitive ? "insensitive" : "default",
-          contains: specification || undefined
-        },
-        price: {
-          gte: maxPrice,
-          lte: minPrice,
-        }
-      },
-    } })
+      }
+    })
   }
 
   const handleOnClickReset = () => {
-    dispatch({ type: "SET_PRODUCT_FILTER", payload: {
-      fields: undefined
-    } })
+    dispatch({
+      type: "SET_PRODUCT_FILTER", payload: {
+        where: undefined
+      }
+    })
   }
 
   return <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
@@ -103,29 +102,23 @@ export function ProductdsFilterForm() {
 
     <Grid item xs={6} md={3}>
       <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-        <TextField 
-          fullWidth 
-          type="number" 
-          defaultValue={filterQuery.get("maxPrice")} 
-          {...register("maxPrice", { 
-            setValueAs: value => value === "" ? undefined : parseInt(value, 10) 
-          })} 
-          label="Maximum price" 
-          error={!!errors.maxPrice} 
-          helperText={!!errors.maxPrice ? errors.maxPrice.message : ""} 
+        <TextField
+          fullWidth
+          type="number"
+          defaultValue={filterQuery.get("maxPrice")}
+          {...register("maxPrice", {
+            setValueAs: value => value === "" ? undefined : parseInt(value, 10)
+          })}
+          label="Maximum price"
+          error={!!errors.maxPrice}
+          helperText={!!errors.maxPrice ? errors.maxPrice.message : ""}
         />
-      </Box>
-    </Grid>
-
-    <Grid item xs={12} md={6}>
-      <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-        <TextField fullWidth defaultValue={filterQuery.get("specification")} {...register("specification")} label="Specification" error={!!errors.specification} helperText={!!errors.specification ? errors.specification.message : ""} />
       </Box>
     </Grid>
 
     <Grid item xs={12}>
       <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-        <FormControlLabel 
+        <FormControlLabel
           {...register("insensitive")}
           label="Insensitive"
           control={<Checkbox defaultChecked={filterQuery.get("insensitive") === "true"} />}

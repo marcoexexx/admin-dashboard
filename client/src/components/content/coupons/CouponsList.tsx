@@ -3,18 +3,16 @@ import { SuspenseLoader } from "@/components";
 import { CouponsListTable } from ".";
 import { useStore } from "@/hooks";
 import { useCreateMultiCoupons, useDeleteCoupon, useDeleteMultiCoupons, useGetCoupons } from "@/hooks/coupon";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function CouponsList() {
-  const { state: {couponFilter} } = useStore()
+  const { state: { couponFilter } } = useStore()
 
   // Queries
   const couponsQuery = useGetCoupons({
-    filter: couponFilter?.fields,
-    pagination: {
-      page: couponFilter?.page || 1,
-      pageSize: couponFilter?.limit || 10
-    },
+    filter: couponFilter.where,
+    pagination: couponFilter.pagination || INITIAL_PAGINATION,
     include: {
       product: true
     }
@@ -46,10 +44,10 @@ export function CouponsList() {
 
   return <Card>
     <CouponsListTable
-      coupons={data.results} 
-      count={data.count} 
+      coupons={data.results}
+      count={data.count}
       isLoading={couponsQuery.isLoading}
-      onCreateManyCoupons={handleCreateManyCoupons} 
+      onCreateManyCoupons={handleCreateManyCoupons}
       onDelete={handleDeleteCoupon}
       onMultiDelete={handleDeleteMultiCoupons}
     />

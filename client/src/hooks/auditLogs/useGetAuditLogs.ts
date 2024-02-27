@@ -2,10 +2,13 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { Pagination } from "@/services/types";
-import { AuditLogFilter } from "@/context/auditLogs";
 import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { AuditLogApiService } from "@/services/auditLogsApi";
+import { AuditLogWhereInput } from "@/context/auditLogs";
 import { useQuery } from "@tanstack/react-query";
-import { getAuditLogsFn } from "@/services/auditLogsApi";
+
+
+const apiService = AuditLogApiService.new()
 
 
 export function useGetAuditLogs({
@@ -13,13 +16,13 @@ export function useGetAuditLogs({
   pagination,
   include,
 }: {
-  filter?: AuditLogFilter["fields"],
-  include?: AuditLogFilter["include"],
+  filter?: AuditLogWhereInput["where"],
+  include?: AuditLogWhereInput["include"],
   pagination: Pagination,
-  }) {
+}) {
   const query = useQuery({
     queryKey: [CacheResource.AuditLog, { filter, pagination, include }] as CacheKey<"audit-logs">["list"],
-    queryFn: args => getAuditLogsFn(args, { 
+    queryFn: args => apiService.findMany(args, {
       filter,
       pagination,
       include
@@ -29,7 +32,7 @@ export function useGetAuditLogs({
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

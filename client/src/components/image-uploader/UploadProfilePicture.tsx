@@ -1,12 +1,15 @@
 import { IconButton, styled } from "@mui/material"
 import { CacheResource } from "@/context/cacheKey"
+import { UserApiService } from "@/services/usersApi"
 import { useStore } from "@/hooks"
 import { object, z } from "zod"
-import { uploadProfilePictureFn } from "@/services/usersApi"
 import { useMutation } from "@tanstack/react-query"
 import { queryClient } from ".."
 
 import UploadTwoToneIcon from '@mui/icons-material/UploadTwoTone'
+
+
+const apiService = UserApiService.new()
 
 
 const Input = styled("input")({
@@ -25,21 +28,25 @@ export function UploadProfilePicture() {
   const { dispatch } = useStore()
 
   const { mutate: upload } = useMutation({
-    mutationFn: uploadProfilePictureFn,
+    mutationFn: (...args: Parameters<typeof apiService.uploadProfilePicture>) => apiService.uploadProfilePicture(...args),
     onSuccess() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success upload profile picture",
-        severity: "success"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: "Success upload profile picture",
+          severity: "success"
+        }
+      })
       queryClient.invalidateQueries({
         queryKey: [CacheResource.AuthUser, "proile"]
       })
     },
     onError() {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "failed upload profile picture",
-        severity: "error"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: "failed upload profile picture",
+          severity: "error"
+        }
+      })
     }
   })
 

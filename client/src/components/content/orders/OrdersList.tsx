@@ -4,18 +4,16 @@ import { OrdersListTable } from ".";
 import { Order, OrderStatus } from "@/services/types";
 import { useStore } from "@/hooks";
 import { useDeleteMultiOrders, useDeleteOrder, useGetOrders, useUpdateOrder } from "@/hooks/order";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function OrdersList() {
-  const { state: {orderFilter} } = useStore()
+  const { state: { orderFilter } } = useStore()
 
   // Queries
   const ordersQuery = useGetOrders({
-    filter: orderFilter?.fields,
-    pagination: {
-      page: orderFilter?.page || 1,
-      pageSize: orderFilter?.limit || 10
-    },
+    filter: orderFilter.where,
+    pagination: orderFilter.pagination || INITIAL_PAGINATION,
     include: {
       user: true,
       orderItems: {
@@ -38,14 +36,16 @@ export function OrdersList() {
   function handleChangeStatusOrder(order: Order, status: OrderStatus) {
     if (!order.billingAddressId) return
 
-    updateOrderMutation.mutate({ orderId: order.id, order: {
-      ...order,
-      status,
-      deliveryAddressId: order.deliveryAddressId || undefined,
-      pickupAddressId: order.pickupAddressId || undefined,
-      billingAddressId: order.billingAddressId,
-      remark: order.remark || undefined,
-    } })
+    updateOrderMutation.mutate({
+      id: order.id, payload: {
+        ...order,
+        status,
+        deliveryAddressId: order.deliveryAddressId || undefined,
+        pickupAddressId: order.pickupAddressId || undefined,
+        billingAddressId: order.billingAddressId,
+        remark: order.remark || undefined,
+      }
+    })
   }
 
 
@@ -63,8 +63,8 @@ export function OrdersList() {
     <OrdersListTable
       onStatusChange={handleChangeStatusOrder}
       isLoading={ordersQuery.isLoading}
-      orders={data.results} 
-      count={data.count} 
+      orders={data.results}
+      count={data.count}
       onDelete={handleDeleteOrder}
       onMultiDelete={handleDeleteMultiOrders}
     />

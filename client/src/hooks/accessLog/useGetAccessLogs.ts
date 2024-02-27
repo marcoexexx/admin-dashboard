@@ -2,24 +2,26 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { Pagination } from "@/services/types";
-import { AccessLogFilter } from "@/context/accessLog";
 import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { AccessLogApiService } from "@/services/accessLogsApi";
+import { AccessLogWhereInput } from "@/context/accessLog";
 import { useQuery } from "@tanstack/react-query";
-import { getAccessLogsFn } from "@/services/accessLogsApi";
 
+
+const apiService = AccessLogApiService.new()
 
 export function useGetAccessLogs({
   filter,
   pagination,
   include,
 }: {
-  filter?: AccessLogFilter["fields"],
-  include?: any,  // TODO: type fix
+  filter?: AccessLogWhereInput["where"],
+  include?: AccessLogWhereInput["include"],
   pagination: Pagination,
-  }) {
+}) {
   const query = useQuery({
     queryKey: [CacheResource.AccessLog, { filter, pagination, include }] as CacheKey<"access-logs">["list"],
-    queryFn: args => getAccessLogsFn(args, { 
+    queryFn: args => apiService.findMany(args, {
       filter,
       pagination,
       include
@@ -29,7 +31,7 @@ export function useGetAccessLogs({
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

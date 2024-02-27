@@ -58,7 +58,7 @@ export function ProductInputField({updateField = false}: ProductInputFieldProps)
   }
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "products" })
+    dispatch({ type: "OPEN_MODAL_FORM", payload: "create-product" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))

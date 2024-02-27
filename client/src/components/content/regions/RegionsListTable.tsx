@@ -5,6 +5,7 @@ import { EnhancedTable, TypedColumn } from "@/components";
 import { Region, Resource } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const columns: TypedColumn<Region>[] = [
@@ -34,20 +35,19 @@ interface RegionsListTableProps {
 
 export function RegionsListTable(props: RegionsListTableProps) {
   const { regions, count, isLoading, onCreateManyRegions, onDelete, onMultiDelete } = props
-  const { state: { regionFilter }, dispatch } = useStore()
+  const { state: { regionFilter:{pagination} }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_REGION_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_REGION_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_REGION_FILTER", payload: { limit: parseInt(evt.target.value, 10) }
+      type: "SET_REGION_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
@@ -74,10 +74,10 @@ export function RegionsListTable(props: RegionsListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={regionFilter?.page
-            ? regionFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={regionFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

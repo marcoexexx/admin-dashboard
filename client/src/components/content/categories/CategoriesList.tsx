@@ -3,18 +3,16 @@ import { SuspenseLoader } from "@/components";
 import { CategoriesListTable } from "@/components/content/categories";
 import { useStore } from "@/hooks";
 import { useCreateMultiCategories, useDeleteCategory, useDeleteMultiCategories, useGetCategories } from "@/hooks/category";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function CategoriesList() {
-  const { state: {categoryFilter} } = useStore()
+  const { state: { categoryFilter } } = useStore()
 
   // Queries
   const categoriesQuery = useGetCategories({
-    filter: categoryFilter?.fields,
-    pagination: {
-      page: categoryFilter?.page || 1,
-      pageSize: categoryFilter?.limit || 10
-    },
+    filter: categoryFilter.where,
+    pagination: categoryFilter.pagination || INITIAL_PAGINATION,
   })
 
   // Mutations
@@ -41,11 +39,11 @@ export function CategoriesList() {
   }
 
   return <Card>
-    <CategoriesListTable 
-      categories={data.results} 
-      count={data.count} 
+    <CategoriesListTable
+      categories={data.results}
+      count={data.count}
       isLoading={categoriesQuery.isLoading}
-      onCreateManyCategories={handleCreateManyCategories} 
+      onCreateManyCategories={handleCreateManyCategories}
       onDelete={handleDeleteCategory}
       onMultiDelete={handleDeleteMultiCategories}
     />

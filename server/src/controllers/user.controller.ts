@@ -22,7 +22,7 @@ export async function getMeHandler(
 
     const query = convertNumericStrings(req.query)
 
-    const { 
+    const {
       _count,
       reviews,
       potentialOrders,
@@ -146,7 +146,7 @@ export async function getUsersHandler(
 
     const { id, name, email, username } = query.filter ?? {}
     const { page, pageSize } = query.pagination ?? {}
-    const { 
+    const {
       _count,
       reviews,
       potentialOrders,
@@ -169,10 +169,10 @@ export async function getUsersHandler(
 
     const [count, users] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
-        where: {id, name, email, username},
+        where: { id, name, email, username },
         include: {
           _count,
           reviews,

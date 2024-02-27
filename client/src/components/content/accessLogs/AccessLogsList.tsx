@@ -4,17 +4,16 @@ import { AccessLogsListTable } from ".";
 import { useStore } from "@/hooks";
 import { useGetAccessLogs } from "@/hooks/accessLog";
 
+import { INITIAL_PAGINATION } from "@/context/store";
+
 
 export function AccessLogsList() {
-  const { state: {accessLogFilter} } = useStore()
+  const { state: { accessLogFilter } } = useStore()
 
   // Queries
   const accessLogsQuery = useGetAccessLogs({
-    filter: accessLogFilter?.fields,
-    pagination: {
-      page: accessLogFilter?.page || 1,
-      pageSize: accessLogFilter?.limit || 10
-    }
+    filter: accessLogFilter.where,
+    pagination: accessLogFilter.pagination || INITIAL_PAGINATION
   })
 
   // Extraction
@@ -28,8 +27,8 @@ export function AccessLogsList() {
   return <Card>
     <AccessLogsListTable
       isLoading={accessLogsQuery.isLoading}
-      accessLogs={data.results} 
-      count={data.count} 
+      accessLogs={data.results}
+      count={data.count}
     />
   </Card>
 }

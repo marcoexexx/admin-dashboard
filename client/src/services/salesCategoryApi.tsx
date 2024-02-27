@@ -1,73 +1,111 @@
-import { authApi } from "./authApi";
+import { GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, SalesCategory } from "./types";
+import { BaseApiService } from "./baseApiService";
+import { CacheResource } from "@/context/cacheKey";
+import { SalesCategoryWhereInput } from "@/context/salesCategory";
 import { CreateSalesCategoryInput, UpdateSalesCategoryInput } from "@/components/content/sales-categories/forms";
-import { HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, SalesCategory, SalesCategoryResponse } from "./types";
-import { SalesCategoryFilter } from "@/context/salesCategory";
+import { authApi } from "./authApi";
 
 
-export async function getSalesCategoriesFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: SalesCategoryFilter["fields"], pagination: Pagination, include?: SalesCategoryFilter["include"] }) {
-  const { data } = await authApi.get<HttpListResponse<SalesCategory>>("/sales-categories", {
-    ...opt,
-    params: {
-      filter,
-      pagination,
-      orderBy: {
-        updatedAt: "desc"
+export class SalesCategoryApiService extends BaseApiService<SalesCategoryWhereInput, SalesCategory> {
+  constructor(public repo: CacheResource) { super() }
+
+  static new() {
+    return new SalesCategoryApiService(CacheResource.SalesCategory)
+  }
+
+
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: SalesCategoryWhereInput["where"];
+      pagination: Pagination;
+      include?: SalesCategoryWhereInput["include"];
+    }
+  ): Promise<HttpListResponse<SalesCategory>> {
+    const url = `/${this.repo}`
+    const { filter, pagination, include } = where
+
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: {
+        filter,
+        pagination,
+        include,
+        orderBy: {
+          updatedAt: "desc"
+        },
       },
-      include
-    },
-  })
-  return data
-}
+    })
+    return data
+  }
 
 
-export async function getSalesCategoryFn(opt: QueryOptionArgs, { salesCategoryId, include }: { salesCategoryId: string | undefined, include?: SalesCategoryFilter["include"] }) {
-  if (!salesCategoryId) return
-  const { data } = await authApi.get<SalesCategoryResponse>(`/sales-categories/detail/${salesCategoryId}`, {
-    ...opt,
-    params: {
-      include
+  async find(
+    opt: QueryOptionArgs,
+    where: {
+      filter: { id: string | undefined };
+      include?: SalesCategoryWhereInput["include"];
     }
-  })
-  return data
-}
+  ): Promise<GenericResponse<SalesCategory, "salesCategory"> | undefined> {
+    const { filter: { id }, include } = where
+    const url = `/${this.repo}/detail/${id}`
+
+    if (!id) return
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: { include }
+    })
+    return data
+  }
 
 
-export async function createSalesCategoryFn(category: CreateSalesCategoryInput) {
-  const { data } = await authApi.post<SalesCategoryResponse>("/sales-categories", category)
-  return data
-}
+  async create(payload: CreateSalesCategoryInput): Promise<GenericResponse<SalesCategory, "salesCategory">> {
+    const url = `/${this.repo}`
+
+    const { data } = await authApi.post(url, payload)
+    return data
+  }
 
 
-export async function createMultiSalesCategorisFn(buf: ArrayBuffer) {
-  const formData = new FormData()
+  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<SalesCategory>> {
+    const url = `/${this.repo}/excel-upload`
 
-  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const formData = new FormData()
+    const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
 
-  formData.append("excel", blob, `Products_${Date.now()}.xlsx`)
+    formData.append("excel", blob, `SalesCategories_${Date.now()}.xlsx`)
 
-  const { data } = await authApi.post<HttpResponse>("/sales-categories/excel-upload", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data"
-    }
-  })
+    const { data } = await authApi.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
 
-  return data
-}
-
-
-export async function updateSalesCategoryFn({salesCategoryId, salesCategory}: {salesCategoryId: string, salesCategory: UpdateSalesCategoryInput}) {
-  const { data } = await authApi.patch<SalesCategoryResponse>(`/sales-categories/detail/${salesCategoryId}`, salesCategory)
-  return data
-}
+    return data
+  }
 
 
-export async function deleteMultiSalesCategoriesFn(categoryIds: string[]) {
-  const { data } = await authApi.delete<HttpResponse>("/sales-categories/multi", { data: { salesCategoryIds: categoryIds } })
-  return data
-}
+  async update(arg: { id: string; payload: UpdateSalesCategoryInput }): Promise<GenericResponse<SalesCategory, "salesCategory">> {
+    const { id, payload } = arg
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.patch(url, payload)
+    return data
+  }
 
 
-export async function deleteSalesCategoryFn(salesCategoryId: string) {
-  const { data } = await authApi.delete<HttpResponse>(`/sales-categories/detail/${salesCategoryId}`)
-  return data
+  async deleteMany(ids: string[]): Promise<HttpResponse> {
+    const url = `/${this.repo}/multi`
+
+    const { data } = await authApi.delete(url, { data: { brandIds: ids } })
+    return data
+  }
+
+
+  async delete(id: string): Promise<GenericResponse<SalesCategory, "salesCategory">> {
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.delete(url)
+    return data
+  }
 }

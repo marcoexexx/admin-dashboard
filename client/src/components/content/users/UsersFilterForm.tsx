@@ -1,8 +1,8 @@
+import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { MuiButton } from "@/components/ui";
 import { useStore } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
 
@@ -10,7 +10,6 @@ import { boolean, object, string, z } from "zod";
 const filterUsersSchema = object({
   name: string().min(0).max(128).optional(),
   email: string().min(0).max(128).optional(),
-  role: z.enum(["User", "Admin", "Admin"]).optional(),
   insensitive: boolean().optional().default(false),
 })
 
@@ -28,18 +27,17 @@ export function UsersFilterForm() {
   const { handleSubmit, register, formState: { errors }, setValue } = methods
 
   const onSubmit: SubmitHandler<FilterUsersInput> = (value) => {
-    const { name, insensitive, email, role } = value
+    const { name, insensitive, email } = value
 
     setFilterQuery(prev => ({ ...prev, ...value }))
 
     dispatch({ type: "SET_USER_FILTER", payload: {
-      fields: {
+      where: {
         name: {
           contains: name || undefined,
           mode: insensitive ? "insensitive" : "default"
         },
         email,
-        role
       },
     } })
   }
@@ -49,7 +47,7 @@ export function UsersFilterForm() {
     setValue("name", undefined)
     setValue("insensitive", false)
     dispatch({ type: "SET_USER_FILTER", payload: {
-      fields: undefined
+      where: undefined
     } })
   }
 

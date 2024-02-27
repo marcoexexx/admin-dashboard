@@ -1,6 +1,6 @@
 import { LoginUserInput, RegisterUserInput } from "@/components/forms/auth";
 import { HttpResponse, LoginResponse, QueryOptionArgs, UserResponse } from "./types";
-import { UserFilter } from "@/context/user";
+import { UserWhereInput } from "@/context/user";
 import axios from "axios";
 import getConfig from "@/libs/getConfig";
 import AppError, { AppErrorKind } from "@/libs/exceptions";
@@ -49,7 +49,7 @@ authApi.interceptors.response.use(
   }
 )
 
-export async function getMeFn(opt: QueryOptionArgs, { include }: { include?: UserFilter["include"]}) {
+export async function getMeFn(opt: QueryOptionArgs, { include }: { include?: UserWhereInput["include"]}) {
   const res = await authApi.get<UserResponse>("me", {
     ...opt,
     params: {

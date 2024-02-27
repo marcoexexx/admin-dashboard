@@ -21,17 +21,17 @@ export async function getUserAddressesHandler(
 
     const query = convertNumericStrings(req.query)
 
-    const { 
+    const {
       id,
       username,
       isDefault,
       phone,
       email,
       fullAddress,
-      remark 
+      remark
     } = query.filter ?? {}
     const { page, pageSize } = query.pagination ?? {}
-    const { 
+    const {
       _count,
       region,
       user,
@@ -39,7 +39,7 @@ export async function getUserAddressesHandler(
       deliveryOrders,
       deveryPotentialOrders,
       billingOrders,
-      billingPotentialOrders 
+      billingPotentialOrders
     } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
@@ -50,7 +50,7 @@ export async function getUserAddressesHandler(
 
     const [count, userAddresses] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: {
@@ -93,7 +93,7 @@ export async function getUserAddressHandler(
     const query = convertNumericStrings(req.query)
 
     const { userAddressId } = req.params
-    const { 
+    const {
       _count,
       region,
       user,
@@ -101,7 +101,7 @@ export async function getUserAddressHandler(
       deliveryOrders,
       deveryPotentialOrders,
       billingOrders,
-      billingPotentialOrders 
+      billingPotentialOrders
     } = convertStringToBoolean(query.include) ?? {}
 
     // @ts-ignore  for mocha testing
@@ -143,7 +143,7 @@ export async function createUserAddressHandler(
   next: NextFunction
 ) {
   try {
-    const { username, isDefault, phone, email,  regionId, townshipFeesId, fullAddress, remark } = req.body
+    const { username, isDefault, phone, email, regionId, townshipFeesId, fullAddress, remark } = req.body
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw()
@@ -151,7 +151,7 @@ export async function createUserAddressHandler(
     _isAccess.ok_or_throw()
 
     const userAddress = (await service.tryCreate({
-      data: { 
+      data: {
         isDefault,
         username,
         phone,

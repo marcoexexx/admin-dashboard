@@ -60,7 +60,7 @@ export function TownshipMultiInputField({updateField = false}: TownshipMultiInpu
   }
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "townships" })
+    dispatch({ type: "OPEN_MODAL_FORM", payload: "create-township" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))

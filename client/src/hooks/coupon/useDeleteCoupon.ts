@@ -2,18 +2,21 @@ import AppError, { AppErrorKind } from "@/libs/exceptions"
 import Result, { Err, Ok } from "@/libs/result"
 
 import { CacheResource } from "@/context/cacheKey"
+import { CouponApiService } from "@/services/couponsApi"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
-import { deleteCouponFn } from "@/services/couponsApi"
+
+
+const apiService = CouponApiService.new()
 
 
 export function useDeleteCoupon() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: deleteCouponFn,
+    mutationFn: (...args: Parameters<typeof apiService.delete>) => apiService.delete(...args),
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,

@@ -2,18 +2,21 @@ import Result, { Err, Ok } from "@/libs/result"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 
 import { CacheResource } from "@/context/cacheKey"
+import { CategoryApiService } from "@/services/categoryApi"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
-import { createMultiCategorisFn } from "@/services/categoryApi"
+
+
+const apiService = CategoryApiService.new()
 
 
 export function useCreateMultiCategories() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: createMultiCategorisFn,
+    mutationFn: (...args: Parameters<typeof apiService.uploadExcel>) => apiService.uploadExcel(...args),
     onError(err: any) {
       dispatch({ type: "OPEN_TOAST", payload: {
         message: `failed: ${err.response.data.message}`,

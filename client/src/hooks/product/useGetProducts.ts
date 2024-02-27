@@ -1,11 +1,14 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { ProductFilter } from "@/context/product";
 import { Pagination } from "@/services/types";
 import { CacheKey, CacheResource } from "@/context/cacheKey";
-import { getProductsFn } from "@/services/productsApi";
+import { ProductApiService } from "@/services/productsApi";
+import { ProductWhereInput } from "@/context/product";
 import { useQuery } from "@tanstack/react-query";
+
+
+const apiService = ProductApiService.new()
 
 
 export function useGetProducts({
@@ -13,13 +16,13 @@ export function useGetProducts({
   pagination,
   include,
 }: {
-  filter?: ProductFilter["fields"],
-  include?: ProductFilter["include"],
+  filter?: ProductWhereInput["where"],
+  include?: ProductWhereInput["include"],
   pagination: Pagination,
   }) {
   const query = useQuery({
     queryKey: [CacheResource.Product, { filter, pagination, include } ] as CacheKey<"products">["list"],
-    queryFn: args => getProductsFn(args, { 
+    queryFn: args => apiService.findMany(args, { 
       filter,
       pagination,
       include,

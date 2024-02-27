@@ -2,10 +2,13 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { Pagination } from "@/services/types";
-import { OrderFilter } from "@/context/order";
 import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { OrderApiService } from "@/services/orderApi";
+import { OrderWhereInput } from "@/context/order";
 import { useQuery } from "@tanstack/react-query";
-import { getOrdersFn } from "@/services/orderApi";
+
+
+const apiService = OrderApiService.new()
 
 
 export function useGetOrders({
@@ -13,13 +16,13 @@ export function useGetOrders({
   pagination,
   include,
 }: {
-  filter?: OrderFilter["fields"],
-  include?: OrderFilter["include"],
+  filter?: OrderWhereInput["where"],
+  include?: OrderWhereInput["include"],
   pagination: Pagination,
-  }) {
+}) {
   const query = useQuery({
-    queryKey: [CacheResource.Order, { filter, pagination, include } ] as CacheKey<"orders">["list"],
-    queryFn: args => getOrdersFn(args, { 
+    queryKey: [CacheResource.Order, { filter, pagination, include }] as CacheKey<"orders">["list"],
+    queryFn: args => apiService.findMany(args, {
       filter,
       pagination,
       include
@@ -29,7 +32,7 @@ export function useGetOrders({
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

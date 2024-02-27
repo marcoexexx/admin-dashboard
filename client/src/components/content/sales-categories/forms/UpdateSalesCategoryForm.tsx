@@ -56,7 +56,7 @@ export function UpdateSalesCategoryForm() {
   const { handleSubmit, register, formState: { errors } } = methods
 
   const onSubmit: SubmitHandler<UpdateSalesCategoryInput> = (value) => {
-    if (salesCategoryId) updateSalesCategory({ salesCategoryId, salesCategory: value })
+    if (salesCategoryId) updateSalesCategory({ id: salesCategoryId, payload: value })
   }
 
 

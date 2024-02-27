@@ -33,7 +33,7 @@ export async function getPickupAddressesHandler(
 
     const [count, pickupAddresses] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize}
+        pagination: { page, pageSize }
       },
       {
         where: { id, username, phone, email, userId: sessionUser.id },
@@ -64,10 +64,10 @@ export async function getPickupAddressHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
     _isAccess.ok_or_throw()
 
-    const pickupAddress = (await service.tryFindUnique({ 
-      where: {id: pickupAddressId}, 
-      include: { _count, user, orders, potentialOrders } 
-    } )).ok_or_throw()
+    const pickupAddress = (await service.tryFindUnique({
+      where: { id: pickupAddressId },
+      include: { _count, user, orders, potentialOrders }
+    })).ok_or_throw()
 
     // Create audit log
     if (pickupAddress && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
@@ -93,7 +93,7 @@ export async function createPickupAddressHandler(
     _isAccess.ok_or_throw()
 
     const pickupAddress = (await service.tryCreate({
-      data: { 
+      data: {
         username,
         phone,
         email,
@@ -125,7 +125,7 @@ export async function deletePickupAddressHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    const pickupAddress = (await service.tryDelete({ where: {id: pickupAddressId} })).ok_or_throw()
+    const pickupAddress = (await service.tryDelete({ where: { id: pickupAddressId } })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)

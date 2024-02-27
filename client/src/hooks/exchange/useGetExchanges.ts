@@ -2,10 +2,13 @@ import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
 import { Pagination } from "@/services/types";
-import { ExchangeFilter } from "@/context/exchange";
+import { ExchangeWhereInput } from "@/context/exchange";
 import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { ExchangeApiService } from "@/services/exchangesApi";
 import { useQuery } from "@tanstack/react-query";
-import { getExchangesFn } from "@/services/exchangesApi";
+
+
+const apiService = ExchangeApiService.new()
 
 
 export function useGetExchanges({
@@ -13,13 +16,13 @@ export function useGetExchanges({
   pagination,
   include,
 }: {
-  filter?: ExchangeFilter["fields"],
-  include?: ExchangeFilter["include"],
+  filter?: ExchangeWhereInput["where"],
+  include?: ExchangeWhereInput["include"],
   pagination: Pagination,
-  }) {
+}) {
   const query = useQuery({
-    queryKey: [CacheResource.Exchange, { filter, pagination, include } ] as CacheKey<"exchanges">["list"],
-    queryFn: args => getExchangesFn(args, { 
+    queryKey: [CacheResource.Exchange, { filter, pagination, include }] as CacheKey<"exchanges">["list"],
+    queryFn: args => apiService.findMany(args, {
       filter,
       pagination,
       include
@@ -29,7 +32,7 @@ export function useGetExchanges({
 
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message)) 
+    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
     : Ok(query.data)
 
 

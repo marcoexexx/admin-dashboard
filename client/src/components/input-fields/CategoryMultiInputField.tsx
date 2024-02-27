@@ -59,7 +59,7 @@ export function CatgoryMultiInputField({updateField = false}: CatgoryMultiInputF
   }
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "categories" })
+    dispatch({ type: "OPEN_MODAL_FORM", payload: "create-category" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))

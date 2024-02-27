@@ -5,6 +5,7 @@ import { BrandsFilterForm } from ".";
 import { CacheResource } from "@/context/cacheKey";
 import { RenderBrandLabel } from "@/components/table-labels";
 import { useStore } from "@/hooks";
+import { INITIAL_PAGINATION } from "@/context/store";
 
 
 const columns: TypedColumn<Brand>[] = [
@@ -12,13 +13,13 @@ const columns: TypedColumn<Brand>[] = [
     id: "name",
     align: "left",
     name: "Name",
-    render: ({value}) => <RenderBrandLabel brand={value} />
+    render: ({ value }) => <RenderBrandLabel brand={value} />
   },
   {
     id: "createdAt",
     align: "left",
     name: "Created At",
-    render: ({value}) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
+    render: ({ value }) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
   },
 ]
 
@@ -34,29 +35,25 @@ interface BrandsListTableProps {
 
 export function BrandsListTable(props: BrandsListTableProps) {
   const { brands, count, isLoading, onCreateManyBrands, onDelete, onMultiDelete } = props
-  const { state: {brandFilter}, dispatch } = useStore()
+  const { state: { brandFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
-      type: "SET_BRAND_FILTER",
-      payload: {
-        page: page += 1
-      }
+      type: "SET_BRAND_PAGE",
+      payload: page += 1
     })
   }
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: "SET_BRAND_FILTER",
-      payload: {
-        limit: parseInt(evt.target.value, 10)
-      }
+      type: "SET_BRAND_PAGE_SIZE",
+      payload: parseInt(evt.target.value, 10)
     })
   }
 
   return (
     <Card>
-      <EnhancedTable 
+      <EnhancedTable
         refreshKey={[CacheResource.Brand]}
         renderFilterForm={<BrandsFilterForm />}
         rows={brands}
@@ -76,10 +73,10 @@ export function BrandsListTable(props: BrandsListTableProps) {
           count={count}
           onPageChange={handleChangePagination}
           onRowsPerPageChange={handleChangeLimit}
-          page={brandFilter?.page
-            ? brandFilter.page - 1
+          page={pagination?.page
+            ? pagination.page - 1
             : 0}
-          rowsPerPage={brandFilter?.limit || 10}
+          rowsPerPage={pagination?.pageSize || INITIAL_PAGINATION.pageSize}
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>

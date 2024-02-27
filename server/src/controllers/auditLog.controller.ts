@@ -4,12 +4,12 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { DeleteAuditLogSchema } from "../schemas/auditLog.schema";
 import { AuditLogService } from "../services/auditLog";
-import { OperationAction, Resource } from "@prisma/client";
+import { OperationAction } from "@prisma/client";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
+import { checkUser } from "../services/checkUser";
 
 
-const resource = Resource.AuditLog
 const service = AuditLogService.new()
 
 
@@ -24,35 +24,28 @@ export async function getAuditLogsHandler(
     const { id, resource, action } = query.filter ?? {}
     const { page, pageSize } = query.pagination ?? {}
     const { user } = convertStringToBoolean(query.include) ?? {}
-    const orderBy = query.orderBy ?? {}
+
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    _isAccess.ok_or_throw()
 
     const [count, logs] = (await service.tryFindManyWithCount(
       {
-        pagination: {page, pageSize},
+        pagination: { page, pageSize },
       },
       {
-        where: { 
+        where: {
           user: {
-            OR: [
-              { isSuperuser: true },
-              {
-                role: {
-                  permissions: {
-                    some: {
-                      action: OperationAction.Read,
-                      resource
-                    }
-                  }
-                }
-              }
-            ]
+            id: sessionUser.isSuperuser ? undefined : sessionUser.id
           },
 
-          id, resource, 
-          action 
+          id, resource,
+          action
         },
         include: { user },
-        orderBy
+        orderBy: {
+          updatedAt: "desc"
+        }
       }
     )).ok_or_throw()
 
@@ -70,26 +63,18 @@ export async function deleteAuditLogsHandler(
   try {
     const { auditLogId } = req.params
 
-    const auditLog = (await service.tryDelete({ 
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    _isAccess.ok_or_throw()
+
+    const auditLog = (await service.tryDelete({
       where: {
         user: {
-          OR: [
-            { isSuperuser: true },
-            {
-              role: {
-                permissions: {
-                  some: {
-                    action: OperationAction.Delete,
-                    resource
-                  }
-                }
-              }
-            }
-          ]
+          id: sessionUser.isSuperuser ? undefined : sessionUser.id
         },
 
         id: auditLogId
-      } 
+      }
     })).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ auditLog }))

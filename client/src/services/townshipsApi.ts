@@ -1,75 +1,112 @@
+import { GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, TownshipFees } from "./types";
+import { BaseApiService } from "./baseApiService";
+import { CacheResource } from "@/context/cacheKey";
+import { TownshipWhereInput } from "@/context/township";
 import { CreateTownshipInput, UpdateTownshipInput } from "@/components/content/townships/forms";
+
 import { authApi } from "./authApi";
-import { HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, TownshipFees, TownshipResponse } from "./types";
-import { TownshipFilter } from "@/context/township";
 
 
-export async function getTownshipsFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: TownshipFilter["fields"], pagination: Pagination, include?: TownshipFilter["include"] }) {
-  const { data } = await authApi.get<HttpListResponse<TownshipFees>>("/townships", {
-    ...opt,
-    params: {
-      filter,
-      pagination,
-      orderBy: {
-        updatedAt: "desc"
+export class TownshipApiService extends BaseApiService<TownshipWhereInput, TownshipFees> {
+  constructor(public repo: CacheResource) { super() }
+
+  static new() {
+    return new TownshipApiService(CacheResource.Township)
+  }
+
+
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: TownshipWhereInput["where"];
+      pagination: Pagination;
+      include?: TownshipWhereInput["include"];
+    }
+  ): Promise<HttpListResponse<TownshipFees>> {
+    const url = `/${this.repo}`
+    const { filter, pagination, include } = where
+
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: {
+        filter,
+        pagination,
+        include,
+        orderBy: {
+          updatedAt: "desc"
+        },
       },
-      include
-    },
-  })
-  return data
-}
+    })
+    return data
+  }
 
 
-export async function getTownshipFn(opt: QueryOptionArgs, { townshipId, include }: { townshipId?: string, include?: TownshipFilter["include"] }) {
-  if (!townshipId) return
-  const { data } = await authApi.get<TownshipResponse>(`/townships/detail/${townshipId}`, {
-    ...opt,
-    params: {
-      include
+  async find(
+    opt: QueryOptionArgs,
+    where: {
+      filter: { id: string | undefined };
+      include?: TownshipWhereInput["include"];
     }
-  })
-  return data
+  ): Promise<GenericResponse<TownshipFees, "township"> | undefined> {
+    const { filter: { id }, include } = where
+    const url = `/${this.repo}/detail/${id}`
+
+    if (!id) return
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: { include }
+    })
+    return data
+  }
+
+
+  async create(payload: CreateTownshipInput): Promise<GenericResponse<TownshipFees, "township">> {
+    const url = `/${this.repo}`
+
+    const { data } = await authApi.post(url, payload)
+    return data
+  }
+
+
+  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<TownshipFees>> {
+    const url = `/${this.repo}/excel-upload`
+
+    const formData = new FormData()
+    const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+    formData.append("excel", blob, `TownshipFees_${Date.now()}.xlsx`)
+
+    const { data } = await authApi.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+
+    return data
+  }
+
+
+  async update(arg: { id: string; payload: UpdateTownshipInput }): Promise<GenericResponse<TownshipFees, "township">> {
+    const { id, payload } = arg
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.patch(url, payload)
+    return data
+  }
+
+
+  async deleteMany(ids: string[]): Promise<HttpResponse> {
+    const url = `/${this.repo}/multi`
+
+    const { data } = await authApi.delete(url, { data: { townshipIds: ids } })
+    return data
+  }
+
+
+  async delete(id: string): Promise<GenericResponse<TownshipFees, "township">> {
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.delete(url)
+    return data
+  }
 }
-
-
-export async function createTownshipFn(city: CreateTownshipInput) {
-  const { data } = await authApi.post<TownshipResponse>("/townships", city)
-  return data
-}
-
-
-export async function createMultiTownshipsFn(buf: ArrayBuffer) {
-  const formData = new FormData()
-
-  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-
-  formData.append("excel", blob, `Cities_{Date.now()}.xlsx`)
-
-  const { data } = await authApi.post<HttpResponse>("/townships/excel-upload", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data"
-    }
-  })
-
-  return data
-
-}
-
-
-export async function updateTownshipFn({townshipId, township}: {townshipId: string, township: UpdateTownshipInput}) {
-  const { data } = await authApi.patch<TownshipResponse>(`/townships/detail/${townshipId}`, township)
-  return data
-}
-
-
-export async function deleteMultiTownshipsFn(townshipIds: string[]) {
-  const { data } = await authApi.delete<HttpResponse>("/townships/multi", { data: { townshipIds } })
-  return data
-}
-
-
-export async function deleteTownshipFn(townshipId: string) {
-  const { data } = await authApi.delete<HttpResponse>(`/townships/detail/${townshipId}`)
-  return data
-}
-

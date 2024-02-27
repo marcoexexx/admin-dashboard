@@ -62,8 +62,8 @@ export function CreateRegionForm() {
         </Grid>
       </FormProvider>
 
-      {modalForm.field === "townships"
-        ? <FormModal field="townships" title='Create new township'>
+      {modalForm.field === "create-township"
+        ? <FormModal field="create-township" title='Create new township'>
           <CreateTownshipForm />
         </FormModal>
         : null}

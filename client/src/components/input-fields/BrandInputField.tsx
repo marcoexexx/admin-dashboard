@@ -58,7 +58,7 @@ export function BrandInputField({updateField = false}: BrandInputFieldProps) {
   }
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "brands" })
+    dispatch({ type: "OPEN_MODAL_FORM", payload: "create-brand" })
   }
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) => new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200))

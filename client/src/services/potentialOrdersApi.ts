@@ -1,53 +1,104 @@
+import AppError, { AppErrorKind } from "@/libs/exceptions";
+
 import { CreatePotentialOrderInput, UpdatePotentialOrderInput } from "@/components/content/potential-orders/forms";
+import { GenericResponse, HttpListResponse, HttpResponse, Pagination, PotentialOrder, QueryOptionArgs } from "./types";
+import { PotentialOrderWhereInput } from "@/context/order";
+import { BaseApiService } from "./baseApiService";
+import { CacheResource } from "@/context/cacheKey";
+
 import { authApi } from "./authApi";
-import { HttpListResponse, HttpResponse, Pagination, PotentialOrder, PotentialOrderResponse, QueryOptionArgs } from "./types";
 
 
-export async function getPotentialOrdersFn(opt: QueryOptionArgs, { filter, pagination, include }: { filter: any, pagination: Pagination, include?: any }) {
-  const { data } = await authApi.get<HttpListResponse<PotentialOrder>>("/potential-orders", {
-    ...opt,
-    params: {
-      filter,
-      pagination,
-      orderBy: {
-        updatedAt: "desc"
+export class PotentialOrderApiService extends BaseApiService<PotentialOrderWhereInput, PotentialOrder> {
+  constructor(public repo: CacheResource) { super() }
+
+  static new() {
+    return new PotentialOrderApiService(CacheResource.PotentialOrder)
+  }
+
+
+  async findMany(
+    opt: QueryOptionArgs,
+    where: {
+      filter?: PotentialOrderWhereInput["where"];
+      pagination: Pagination;
+      include?: PotentialOrderWhereInput["include"];
+    }
+  ): Promise<HttpListResponse<PotentialOrder>> {
+    const url = `/${this.repo}`
+    const { filter, pagination, include } = where
+
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: {
+        filter,
+        pagination,
+        include,
+        orderBy: {
+          updatedAt: "desc"
+        },
       },
-      include
-    },
-  })
-  return data
+    })
+    return data
+  }
+
+
+  async find(
+    opt: QueryOptionArgs,
+    where: {
+      filter: { id: string | undefined };
+      include?: PotentialOrderWhereInput["include"];
+    }
+  ): Promise<GenericResponse<PotentialOrder, "potentialOrder"> | undefined> {
+    const { filter: { id }, include } = where
+    const url = `/${this.repo}/detail/${id}`
+
+    if (!id) return
+    const { data } = await authApi.get(url, {
+      ...opt,
+      params: { include }
+    })
+    return data
+  }
+
+
+  async create(payload: CreatePotentialOrderInput): Promise<GenericResponse<PotentialOrder, "potentialOrder">> {
+    const url = `/${this.repo}`
+
+    const { data } = await authApi.post(url, payload)
+    return data
+  }
+
+
+  /**
+  * Not Support yet!
+  */
+  async uploadExcel(_buf: ArrayBuffer): Promise<HttpListResponse<PotentialOrder>> {
+    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`))
+  }
+
+
+  async update(arg: { id: string; payload: UpdatePotentialOrderInput }): Promise<GenericResponse<PotentialOrder, "potentialOrder">> {
+    const { id, payload } = arg
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.patch(url, payload)
+    return data
+  }
+
+
+  async deleteMany(ids: string[]): Promise<HttpResponse> {
+    const url = `/${this.repo}/multi`
+
+    const { data } = await authApi.delete(url, { data: { brandIds: ids } })
+    return data
+  }
+
+
+  async delete(id: string): Promise<GenericResponse<PotentialOrder, "potentialOrder">> {
+    const url = `/${this.repo}/detail/${id}`
+
+    const { data } = await authApi.delete(url)
+    return data
+  }
 }
-
-
-export async function getPotentialOrderFn(opt: QueryOptionArgs, { potentialOrderId }: { potentialOrderId: string | undefined }) {
-  if (!potentialOrderId) return
-  const { data } = await authApi.get<PotentialOrderResponse>(`/potential-orders/detail/${potentialOrderId}`, {
-    ...opt,
-  })
-  return data
-}
-
-
-export async function createPotentialOrderFn(potentialOrder: CreatePotentialOrderInput) {
-  const { data } = await authApi.post<PotentialOrderResponse>("/potential-orders", potentialOrder)
-  return data
-}
-
-
-export async function updatePotentialOrderFn({potentialOrderId, potentialOrder}: {potentialOrderId: string, potentialOrder: UpdatePotentialOrderInput}) {
-  const { data } = await authApi.patch<PotentialOrderResponse>(`/potential-orders/detail/${potentialOrderId}`, potentialOrder)
-  return data
-}
-
-
-export async function deleteMultiPotentialOrdersFn(potentialOrderIds: string[]) {
-  const { data } = await authApi.delete<HttpResponse>("/potential-orders/multi", { data: { potentialOrderIds } })
-  return data
-}
-
-
-export async function deletePotentialOrderFn(potentialOrderId: string) {
-  const { data } = await authApi.delete<HttpResponse>(`/potential-orders/detail/${potentialOrderId}`)
-  return data
-}
-

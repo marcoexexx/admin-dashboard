@@ -479,7 +479,6 @@ export type SalesCategory = {
     salesCategoryId: string
     product: Product
   }[]
-
   _count: {
     products: number
   }
@@ -517,6 +516,10 @@ export type TownshipFees = {
   // relationship
   region?: Region,
   regionId?: string,
+  userAddresses?: Address[]
+  _count?: {
+    userAddresses: number
+  }
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -529,6 +532,11 @@ export type Region = {
 
   // relationship
   townships?: TownshipFees[]
+  userAddresses?: Address[]
+  _count?: {
+    townships: number,
+    userAddresses: number
+  }
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -556,6 +564,7 @@ export type PickupAddress = {
 
   orders?: Order[]
   potentialOrders?: PotentialOrder[]
+  user?: User, 
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -578,6 +587,16 @@ export type Address = {
   regionId?: string
   township?: TownshipFees
   townshipFeesId?: string
+  deliveryOrders?: Order[],
+  deveryPotentialOrders?: PotentialOrder[],
+  billingOrders?: Order[],
+  billingPotentialOrders?: PotentialOrder[],
+  _count?: {
+    deliveryOrders: number,
+    billingPotentialOrders: number,
+    deveryPotentialOrders: number,
+    billingOrders: number,
+  }
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -632,32 +651,66 @@ export type QueryOptionArgs = {
   signal: AbortSignal,
   meta: Record<string, unknown> | undefined
 }
+
+
+type NumberFilter = {
+  equals?: number;
+  not?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+} | number
+
+type StringFilter = {
+  equals?: string;
+  not?: string;
+  in?: string[];
+  notIn?: string[];
+  contains?: string;
+  startsWith?: string;
+  endsWith?: string;
+  lt?: string;
+  lte?: string;
+  gt?: string;
+  gte?: string;
+  mode?: "insensitive" | "default",
+} | string
+
+type BooleanFilter = {
+  equals?: boolean;
+  not?: boolean;
+} | boolean
+
+type DateTimeFilter = {
+  equals?: Date;
+  not?: Date;
+  in?: Date[];
+  notIn?: Date[];
+  lt?: Date;
+  lte?: Date;
+  gt?: Date;
+  gte?: Date;
+} | Date | string
+
+type RelationshipFilter<T> = {
+  is?: T;
+  isNot?: T;
+};
+
+export type WhereInput<T> = {
+  [K in keyof T]?: T[K] extends number ? NumberFilter :
+                   T[K] extends string ? StringFilter :
+                   T[K] extends boolean ? BooleanFilter :
+                   T[K] extends Date ? DateTimeFilter :
+                   T[K] extends object ? RelationshipFilter<T[K]> :
+                   never
+}
+
 export type LoginResponse = Omit<HttpResponse, "message"> & { accessToken: string };
-
 export type UserResponse = Omit<HttpResponse, "message"> & { user: User, redirectUrl: string | undefined };
-
-export type CategoryResponse = Omit<HttpResponse, "message"> & { category: Category };
-
-export type CouponResponse = Omit<HttpResponse, "message"> & { coupon: Coupon };
-
-export type SalesCategoryResponse = Omit<HttpResponse, "message"> & { salesCategory: SalesCategory };
-
-export type ProductResponse = Omit<HttpResponse, "message"> & { product: Product };
-
 export type ProductSalesCategoriesResponse = { id: string, salesCategoryId: string, productId: string, discount: number, salesCategory: SalesCategory };
 
-export type BrandResponse = Omit<HttpResponse, "message"> & { brand: Brand };
-
-export type TownshipResponse = Omit<HttpResponse, "message"> & { township: TownshipFees };
-
-export type RegionResponse = Omit<HttpResponse, "message"> & { region: Region };
-
-export type ExchangeResponse = Omit<HttpResponse, "message"> & { exchange: Exchange };
-
-export type UserAddressResponse = Omit<HttpResponse, "message"> & { userAddress: Address };
-
-export type PickupAddressResponse = Omit<HttpResponse, "message"> & { pickupAddress: PickupAddress };
-
-export type PotentialOrderResponse = Omit<HttpResponse, "message"> & { potentialOrder: PotentialOrder };
-
-export type OrderResponse = Omit<HttpResponse, "message"> & { order: Order };
+export type GenericResponse<T, L extends string> = Omit<HttpResponse, "message"> & {[K in L]: T}
