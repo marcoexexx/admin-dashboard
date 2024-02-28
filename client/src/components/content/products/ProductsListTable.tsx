@@ -1,7 +1,7 @@
 import { Box, Card, Divider, TablePagination, Typography, Theme, Select, MenuItem, useTheme, SelectChangeEvent } from "@mui/material"
 import { EnhancedTable, TypedColumn } from "@/components";
 import { ProductdsFilterForm } from ".";
-import { RenderBrandLabel, RenderCategoryLabel, RenderProductLabel, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
+import { RenderBrandLabel, RenderCategoryLabel, RenderProductDiscountLabel, RenderProductLabel, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
 import { Product, ProductStatus, Resource } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
@@ -76,7 +76,7 @@ const columns: TypedColumn<Product>[] = [
     id: "discount",
     align: "right",
     name: "Discount",
-    render: ({ value }) => <Typography>{value.discount} %</Typography>
+    render: ({ value }) => <RenderProductDiscountLabel product={value} />
   },
   {
     id: "isDiscountItem",

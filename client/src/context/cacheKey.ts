@@ -18,7 +18,10 @@ export const CacheResource = {
   UserAddress: "user-addresses",
   User: "users",
   AuthUser: "authUser",
-  Dashboard: "dashboard"
+  Dashboard: "dashboard",
+  Role: "roles",
+  Permission: "permissions",
+  Cart: "cart"
 } as const
 export type CacheResource = typeof CacheResource[keyof typeof CacheResource]
 

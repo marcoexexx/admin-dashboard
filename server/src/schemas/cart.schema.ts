@@ -9,8 +9,8 @@ const params = {
 
 export const initialCartSchema = object({
   body: object({
-    label: string().optional(),
     orderItems: object({
+      id: string().optional(),
       price: number(),
       quantity: number(),
       productId: string(),
@@ -24,6 +24,13 @@ export const getCartSchema = object({
   ...params,
 })
 
+export const deleteCartOrderItemSchema = object({
+  params: object({
+    orderItemId: string({ required_error: "orderItemId is required."})
+  })
+})
+
 
 export type InitialCartInput = z.infer<typeof initialCartSchema>["body"]
 export type GetCartInput = z.infer<typeof getCartSchema>
+export type DeleteCartOrderItemInput = z.infer<typeof deleteCartOrderItemSchema>["params"]

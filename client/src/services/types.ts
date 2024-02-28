@@ -94,6 +94,18 @@ export const OperationAction = {
 export type OperationAction = typeof OperationAction[keyof typeof OperationAction]
 
 
+export type Cart = {
+  id: string,
+  label?: string,
+
+  user?: User,
+  userId?: string,
+  orderItems?: OrderItem[],
+
+  createdAt: string | Date,
+  updatedAt: string | Date
+}
+
 export type Coupon = {
   id: string
   points: number
@@ -299,6 +311,7 @@ export type User = {
   addresses?: Address[]
   pickupAddresses?: PickupAddress[]
   orders?: Order[]
+  cart?: Cart
 
   // relationship (MM)
   blockedUsers: {

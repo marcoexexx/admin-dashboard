@@ -433,7 +433,8 @@ export async function updateProductHandler(
       categories,
       discount,
       isDiscountItem,
-      status
+      status,
+      quantity
     } = req.body
 
     const originalProductState = (await service.tryFindUnique({
@@ -459,6 +460,7 @@ export async function updateProductHandler(
         price,
         brandId,
         title,
+        quantity,
         specification: {
           upsert: specification.map(spec => ({
             where: {

@@ -6,9 +6,10 @@ import { MuiButton, Text } from '@/components/ui'
 import { OrderItem, Product } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { memoize } from "lodash";
-import { useLocalStorage, useStore } from "@/hooks";
+import { useStore } from "@/hooks";
 import { queryClient } from "@/components";
 import { useLikeProduct, useUnLikeProduct } from "@/hooks/product";
+import { useCart, useGetCart } from "@/hooks/cart";
 
 import ProductRelationshipTable from "./ProductRelationshipTable";
 import ProductSpecificationTable from "./ProductSpecificationTable"
@@ -48,12 +49,16 @@ interface ProductDetailTabProps {
 export default function ProductDetailTab(props: ProductDetailTabProps) {
   const { product } = props
 
-  const { state, dispatch } = useStore()
+  const { state } = useStore()
 
-  const { set, get } = useLocalStorage()
+  const { try_data } = useGetCart()
 
+  const { mutate: initializeCart, isPending: cartIsPending } = useCart()
   const { mutate: likeProduct, isPending: likeIsPending } = useLikeProduct()
   const { mutate: unLikeProduct, isPending: unLikeIsPending } = useUnLikeProduct()
+
+  const cart = try_data.ok_or_throw()
+
 
   const handleAddToCart = () => {
     const initialQuality = 1
@@ -63,9 +68,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
     const originalTotalPrice = initialQuality * product.price
     const totalPrice = initialQuality * productDiscountAmount
 
-    const item: OrderItem = {
-      id: crypto.randomUUID(),  // For unique item, not necessary for api
-      product,
+    const item: Omit<OrderItem, "id"> = {
       productId: product.id,
       price: product.price,
       quantity: initialQuality,
@@ -77,30 +80,26 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       updatedAt: new Date(),
     }
 
-    const cart = get<OrderItem[]>("CARTS") || []
-    const idx = cart.findIndex(i => i.productId === item.productId)
+    const items = (cart?.orderItems || []) as (typeof item)[]
+    const idx = items.findIndex(i => i.productId === item.productId)
 
     if (idx !== -1) {
-      const originalTotalPrice = (cart[idx].quantity + 1) * cart[idx].price
-      const totalPrice = (cart[idx].quantity + 1) * productDiscountAmount
+      const originalTotalPrice = (items[idx].quantity + 1) * items[idx].price
+      const totalPrice = (items[idx].quantity + 1) * productDiscountAmount
 
-      cart[idx] = {
+      items[idx] = {
         ...item,
-        quantity: cart[idx].quantity + 1,
+        quantity: items[idx].quantity + 1,
         originalTotalPrice,
         totalPrice,
         saving: originalTotalPrice - totalPrice,
       }
     } else {
-      cart.push(item)
+      items.push(item)
     }
 
-    set("CARTS", cart)
-
-    dispatch({
-      type: "OPEN_MODAL_FORM",
-      payload: "cart"
-    })
+    // Remove useLocalStorage and useCart
+    initializeCart({ orderItems: items })
   }
 
   const likedTotal = product._count.likedUsers
@@ -213,6 +212,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
             startIcon={<ShoppingCartIcon />}
             variant="outlined"
             onClick={handleAddToCart}
+            loading={cartIsPending}
           >
             Add
           </MuiButton>

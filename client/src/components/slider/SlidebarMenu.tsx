@@ -208,6 +208,7 @@ export default function SlidebarMenu() {
   }
 
   const handleToggleExpandMenu = (id: ExpandMenu["id"]) => (_: React.MouseEvent<HTMLButtonElement>) => {
+    navigate(`/${id}`)
     if (isExpandMenu.id !== id && isExpandMenu.state) {
       setIsExpandMenu({ id, state: true })
       return

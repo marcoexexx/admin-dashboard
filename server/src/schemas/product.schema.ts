@@ -136,6 +136,7 @@ export const updateProductSchema = object({
     marketPrice: number().min(0).optional(),
     priceUnit: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
+    quantity: number().min(0),
 
     itemCode: string().nullable().optional(),
   })

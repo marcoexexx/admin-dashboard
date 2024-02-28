@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '@/hooks';
+import { useGetBrands } from '@/hooks/brand';
 import { Autocomplete, Paper, TextField, styled } from '@mui/material';
 import { Controller, useFormContext } from 'react-hook-form';
 import { MuiButton } from '@/components/ui';
@@ -7,7 +8,6 @@ import { Brand } from '@/services/types';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import { useGetBrands } from '@/hooks/brand';
 
 
 const InnerPaper = styled(Paper)(() => ({

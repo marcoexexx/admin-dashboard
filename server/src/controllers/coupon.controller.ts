@@ -1,6 +1,6 @@
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
-import { generateCouponLabel } from "../utils/generateCouponLabel";
+import { generateLabel } from "../utils/generateCouponLabel";
 import { checkUser } from "../services/checkUser";
 import { NextFunction, Request, Response } from "express";
 import { CreateCouponInput, DeleteMultiCouponsInput, GetCouponInput, UpdateCouponInput } from "../schemas/coupon.schema";
@@ -99,7 +99,7 @@ export async function createCouponHandler(
         points,
         dolla,
         productId,
-        label: generateCouponLabel(),
+        label: generateLabel("coupon"),
         isUsed,
         expiredDate
       }

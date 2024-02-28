@@ -203,7 +203,6 @@ export function CreateProductForm() {
               <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
               <TextField
                 fullWidth
-                focused
                 type="number"
                 {...register("discount", { valueAsNumber: true })}
                 inputProps={{

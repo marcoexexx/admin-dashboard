@@ -77,7 +77,6 @@ export class UserService extends MetaAppService implements AppService {
 
   async tryCount(): Promise<Result<number, AppError>> {
     const opt = as_result_async(this.repository.count)
-
     const result = (await opt()).map_err(convertPrismaErrorToAppError)
 
     this.log = {
@@ -91,12 +90,11 @@ export class UserService extends MetaAppService implements AppService {
   async tryFindManyWithCount(...args: [{ pagination: Pagination; }, ...Parameters<typeof this.repository.findMany>]): Promise<
     Result<[number, Awaited<ReturnType<typeof this.repository.findMany>>], AppError>
   > {
-    const [{pagination}, arg] = args
+    const [{ pagination }, arg] = args
     const { page = 1, pageSize = 10 } = pagination
     const offset = (page - 1) * pageSize
 
     const opt = as_result_async(this.repository.findMany)
-
     const count = await this.tryCount()
     if (count.is_err()) return Err(count.unwrap_err())
 
@@ -117,7 +115,6 @@ export class UserService extends MetaAppService implements AppService {
     const [arg] = args
 
     const opt = as_result_async(this.repository.findUnique)
-
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     const _res = result.ok()
@@ -137,7 +134,6 @@ export class UserService extends MetaAppService implements AppService {
     const [arg] = args
 
     const opt = as_result_async(this.repository.findFirst)
-
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     const _res = result.ok()
@@ -157,7 +153,6 @@ export class UserService extends MetaAppService implements AppService {
     const [arg] = args
 
     const opt = as_result_async(this.repository.create)
-
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     this.log = {
@@ -174,7 +169,6 @@ export class UserService extends MetaAppService implements AppService {
     const [arg] = args
 
     const opt = as_result_async(this.repository.update)
-
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     this.log = {
@@ -191,7 +185,6 @@ export class UserService extends MetaAppService implements AppService {
     const [arg] = args
 
     const opt = as_result_async(this.repository.delete)
-
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     this.log = {
@@ -208,7 +201,6 @@ export class UserService extends MetaAppService implements AppService {
     const [arg] = args
 
     const opt = as_result_async(this.repository.deleteMany)
-
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
 
     const _res = (arg?.where?.id as any)?.in
@@ -216,6 +208,36 @@ export class UserService extends MetaAppService implements AppService {
       action: OperationAction.Delete,
       resourceIds: _res
     }
+    return result
+  }
+
+
+  async tryInializeCart(...args: Parameters<typeof db.cart.upsert>): Promise<Result<Awaited<ReturnType<typeof db.cart.update>>, AppError>> {
+    const [arg] = args
+
+    const opt = as_result_async(db.cart.upsert)
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
+
+    return result
+  }
+
+
+  async tryCleanCart(...args: Parameters<typeof db.cart.delete>): Promise<Result<Awaited<ReturnType<typeof db.cart.delete>>, AppError>> {
+    const [arg] = args
+
+    const opt = as_result_async(db.cart.delete)
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
+
+    return result
+  }
+
+
+  async tryRemoveSingleOrderItem(...args: Parameters<typeof db.orderItem.delete>): Promise<Result<Awaited<ReturnType<typeof db.orderItem.delete>>, AppError>> {
+    const [arg] = args
+
+    const opt = as_result_async(db.orderItem.delete)
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
+
     return result
   }
 
