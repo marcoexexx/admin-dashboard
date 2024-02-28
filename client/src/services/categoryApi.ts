@@ -14,7 +14,7 @@ export class CategoryApiService extends BaseApiService<CategoryWhereInput, Categ
   }
 
 
-  async findManys(
+  async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: CategoryWhereInput['where'];
