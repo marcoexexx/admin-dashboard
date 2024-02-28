@@ -60,6 +60,10 @@ import { safeDeserializeUser } from './middleware/deserializeUser';
 validateEnv()
 
 if (!getConfig("hideBanner")) show_bannar()
+console.log({
+  redis: getConfig("redisUrl"),
+  env: getConfig("nodeEnv")
+})
 
 
 export const app = express()

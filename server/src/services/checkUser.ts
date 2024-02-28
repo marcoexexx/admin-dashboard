@@ -1,4 +1,4 @@
-import { UserWithRole } from "../../@types/type";
+import { UserWithRole } from "../type";
 
 import Result, { Err, Ok } from "../utils/result";
 import AppError, { StatusCode } from "../utils/appError";

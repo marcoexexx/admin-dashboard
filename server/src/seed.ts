@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { OperationAction, PrismaClient, Resource } from "@prisma/client"
-import { guestUserAccessResources } from '../@types/type';
+import { guestUserAccessResources } from './type';
 
 const prisma = new PrismaClient()
 

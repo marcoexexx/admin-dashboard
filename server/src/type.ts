@@ -196,3 +196,4 @@ export const shopownerAccessResources: Pick<Permission, "action" | "resource">[]
 
   // UserAddress
 ]
+
