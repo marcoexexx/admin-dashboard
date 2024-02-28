@@ -1,6 +1,6 @@
 import { AuditLog, OperationAction, Prisma, Resource, User } from "@prisma/client"
 import { PartialShallow } from "lodash"
-import { UserWithRole, guestUserAccessResources, shopownerAccessResources } from "../../@types/type";
+import { UserWithRole, guestUserAccessResources, shopownerAccessResources } from "../type";
 
 import AppError, { StatusCode } from "../utils/appError"
 import Result, { Err, Ok } from "../utils/result"
