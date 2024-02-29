@@ -24,8 +24,8 @@ const createProductSchema = object({
   title: string({ required_error: "Brand is required" })
     .min(2).max(128),
   specification: object({
-    name: string({ required_error: "Specification name is required" }),
-    value: string({ required_error: "Specification value is required" }),
+    name: string({ required_error: "Specification name is required" }).min(1),
+    value: string({ required_error: "Specification value is required" }).min(1),
   }).array(),
   overview: string().max(5000).optional(),
   description: string().max(5000).optional(),

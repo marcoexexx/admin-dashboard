@@ -18,6 +18,7 @@ const deleteSingleRowKeys: Record<Resource, ModalFormField> = {
   [Resource.Role]: "*",
   [Resource.Permission]: "*",
   [Resource.Cart]: "*",
+  [Resource.OrderItem]: "*",
 
   [Resource.AccessLog]: "*",
   [Resource.AuditLog]: "*",
@@ -40,6 +41,7 @@ const deleteMultiRowKeys: Record<Resource, ModalFormField> = {
   [Resource.Role]: "*",
   [Resource.Permission]: "*",
   [Resource.Cart]: "*",
+  [Resource.OrderItem]: "*",
 
   [Resource.AccessLog]: "*",
   [Resource.AuditLog]: "*",

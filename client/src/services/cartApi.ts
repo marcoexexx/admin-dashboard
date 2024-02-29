@@ -2,7 +2,7 @@ import { Cart, GenericResponse, OrderItem, QueryOptionArgs } from "./types";
 import { BaseApiService } from "./baseApiService";
 import { CacheResource } from "@/context/cacheKey";
 import { CartWhereInput } from "@/context/cart";
-import { CreateCartInput } from "@/components/cart/CartsTable";
+import { CreateCartOrderItemInput, UpdateCartOrderItemInput } from "@/components/cart/CartsTable";
 import { authApi } from "./authApi";
 
 
@@ -33,7 +33,7 @@ export class CartApiService extends BaseApiService<CartWhereInput, Cart> {
   }
 
 
-  async initialize(payload: CreateCartInput): Promise<GenericResponse<Cart, "cart">> {
+  async createCartOrderItem(payload: CreateCartOrderItemInput): Promise<GenericResponse<OrderItem, "orderItem">> {
     const url = `/${this.repo}`
 
     const { data } = await authApi.post(url, payload)
@@ -53,6 +53,15 @@ export class CartApiService extends BaseApiService<CartWhereInput, Cart> {
     const url = `/${this.repo}/orderItems/detail/${itemId}`
 
     const { data } = await authApi.delete(url)
+    return data
+  }
+
+
+  async update(arg: { id: string; payload: UpdateCartOrderItemInput }): Promise<GenericResponse<OrderItem, "orderItem">> {
+    const { id, payload } = arg
+    const url = `/${this.repo}/orderItems/detail/${id}`
+
+    const { data } = await authApi.patch(url, payload)
     return data
   }
 }

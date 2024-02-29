@@ -3,8 +3,8 @@ import { validate } from "../middleware/validate";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
-import { deleteCartOrderItemSchema, getCartSchema, initialCartSchema } from "../schemas/cart.schema";
-import { deleteCartHandler, deleteCartOrderItemHandler, getCartHandler, initialCartHandler } from "../controllers/cart.controller";
+import { createCartOrderItemSchema, deleteCartOrderItemSchema, getCartSchema, updateCartOrderItemSchema } from "../schemas/cart.schema";
+import { createCartOrderItemHandler, deleteCartHandler, deleteCartOrderItemHandler, getCartHandler, updateCartOrderItemHandler } from "../controllers/cart.controller";
 
 
 const router = Router()
@@ -15,8 +15,8 @@ router.route("")
     deserializeUser,
     requiredUser,
     checkBlockedUser,
-    validate(initialCartSchema),
-    initialCartHandler
+    validate(createCartOrderItemSchema),
+    createCartOrderItemHandler
   )
 
 
@@ -34,8 +34,15 @@ router.route("/detail/:cartId")
   )
 
 
-router.route("/orderItems/detail/:orderItemId").delete(validate(deleteCartOrderItemSchema), deleteCartOrderItemHandler)
+router.route("/orderItems/detail/:orderItemId")
+  .patch(
+    validate(updateCartOrderItemSchema),
+    updateCartOrderItemHandler
+  )
+  .delete(
+    validate(deleteCartOrderItemSchema), 
+    deleteCartOrderItemHandler
+  )
 
 
 export default router
-

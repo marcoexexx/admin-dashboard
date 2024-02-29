@@ -49,6 +49,10 @@ export function RenderResourceItemLabel({resource, id}: {resource: Resource, id:
         return
       }
 
+      case Resource.OrderItem: {
+        return
+      }
+
       case Resource.PickupAddress: {
         navigate("/pickup-addresses/detail/" + id)
         return

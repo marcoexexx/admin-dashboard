@@ -14,7 +14,6 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { CreateOrderInput, createOrderSchema } from "@/components/content/orders/forms";
 import { FormModal } from "@/components/forms";
 import { CreateUserAddressForm } from "@/components/content/user-addresses/forms";
-import { OrderItem } from "@/services/types";
 import { PaymentMethodStep } from "./PaymentMethod";
 import { CreatePotentialOrderInput } from "@/components/content/potential-orders/forms";
 import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
@@ -25,6 +24,7 @@ import { CreatePickupAddressForm } from '@/components/content/pickupAddressHisto
 import ErrorBoundary from "@/components/ErrorBoundary";
 import AddressInformationStep from "./AddressInformation";
 import Check from '@mui/icons-material/Check'
+import { useGetCart } from '@/hooks/cart';
 
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -115,7 +115,9 @@ export function CheckoutForm() {
 
   const navigate = useNavigate()
 
-  const cartItems = get<OrderItem[]>("CARTS") || []
+  const { try_data } = useGetCart()
+
+  const cartItems = try_data.ok_or_throw()?.orderItems || []
   const values = get<CreateOrderInput>("PICKUP_FORM")
 
 
@@ -285,7 +287,6 @@ export function CheckoutForm() {
 
   const handleGoHome = () => {
     remove("PICKUP_FORM")
-    remove("CARTS")
     remove("CHECKOUT_FORM_ACTIVE_STEP")
 
     navigate("/home")

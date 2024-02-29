@@ -1,11 +1,11 @@
 import { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useLocalStorage, useMe, useStore } from "@/hooks"
+import { useMe, useStore } from "@/hooks"
 import { useUserLogout } from "@/hooks/user"
+import { useGetCart } from "@/hooks/cart"
 
 import { Avatar, Badge, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
 import { MuiButton } from "@/components/ui"
-import { OrderItem } from "@/services/types"
 
 import SecurityIcon from '@mui/icons-material/Security';
 import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone'
@@ -48,11 +48,11 @@ const UserBoxDescription = styled(Typography)(({ theme }) => ({
 
 export default function HeaderUserBox() {
   const { dispatch } = useStore()
-  const { get } = useLocalStorage()
 
   const navigate = useNavigate()
 
-  const cartsCount = (get<OrderItem[]>("CARTS") || []).length
+  const { try_data } = useGetCart()
+  const cartItemsCount = try_data.ok()?.orderItems?.length
 
   const userQuery = useMe({})
   const userLogoutMutation = useUserLogout()
@@ -110,7 +110,7 @@ export default function HeaderUserBox() {
 
   if (try_user.is_ok()) return (
     <>
-      <Badge badgeContent={cartsCount} color="primary" anchorOrigin={{
+      <Badge badgeContent={cartItemsCount} color="primary" anchorOrigin={{
         vertical: "top",
         horizontal: "right"
       }}>
@@ -157,7 +157,7 @@ export default function HeaderUserBox() {
         <List sx={{ p: 1 }} component="nav">
           <ListItemButton onClick={handleOpenCart}>
             <ListItemIcon>
-              <Badge badgeContent={cartsCount} color="primary">
+              <Badge badgeContent={cartItemsCount} color="primary">
                 <ShoppingCartIcon fontSize="small" />
               </Badge>
             </ListItemIcon>

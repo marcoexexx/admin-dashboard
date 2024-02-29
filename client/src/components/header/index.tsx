@@ -1,5 +1,4 @@
 import { useStore } from "@/hooks"
-import { useGetCart } from "@/hooks/cart";
 import { FormModal } from "../forms";
 import { Carts } from "../cart";
 import { Box, Divider, IconButton, Stack, Tooltip, alpha, lighten, styled } from "@mui/material"

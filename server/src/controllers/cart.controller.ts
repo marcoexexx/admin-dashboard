@@ -2,16 +2,17 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse } from "../utils/helper";
 import { StatusCode } from "../utils/appError";
 import { OperationAction } from "@prisma/client";
-import { DeleteCartOrderItemInput, GetCartInput, InitialCartInput } from "../schemas/cart.schema";
+import { CreateCartOrderItemInput, DeleteCartOrderItemInput, GetCartInput, UpdateCartOrderItemInput } from "../schemas/cart.schema";
 import { UserService } from "../services/user";
+import { OrderItemService } from "../services/orderItem";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { checkUser } from "../services/checkUser";
 import { generateLabel } from "../utils/generateCouponLabel";
-import { generateUuid } from "../utils/generateUuid";
 
 
-const service = UserService.new()
+const userService = UserService.new()
+const orderItemService = OrderItemService.new()
 
 
 export async function getCartHandler(
@@ -24,10 +25,10 @@ export async function getCartHandler(
     const { _count, orderItems } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
+    const _isAccess = await userService.checkPermissions(sessionUser, OperationAction.Read)
     _isAccess.ok_or_throw()
 
-    const cart = (await service.tryFindUnique({
+    const cart = (await userService.tryFindUnique({
       where: { id: sessionUser?.id },
       include: {
         cart: {
@@ -37,11 +38,11 @@ export async function getCartHandler(
           }
         }
       }
-    // @ts-ignore
+      // @ts-ignore
     })).ok_or_throw()?.cart
 
     // Create audit log
-    if (cart && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
+    if (cart && sessionUser) (await userService.audit(sessionUser)).ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ cart }))
   } catch (err) {
@@ -50,62 +51,122 @@ export async function getCartHandler(
 }
 
 
-export async function initialCartHandler(
-  req: Request<{}, {}, InitialCartInput>,
+// On click `Add to cart`
+// Just create new cart if does not exist and create a orderItem for a product
+export async function createCartOrderItemHandler(
+  req: Request<{}, {}, CreateCartOrderItemInput>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { orderItems } = req.body
+    const { quantity, productId, price, totalPrice } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
+    const _isAccess = await userService.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
-    
-    console.log(orderItems)
 
-    const cart = (await service.tryInializeCart({
-      where: {
-        userId: sessionUser.id
-      },
-      create: {
-        label: generateLabel("cart"),
-        userId: sessionUser.id,
-        orderItems: {
-          createMany: {
-            data: orderItems.map(item => ({
-              ...item,
-              originalTotalPrice: item.price * item.quantity
-            }))
+    // Create or update item if same product in cart
+    const upsertItem = async (cartId: string) => {
+
+      return (await orderItemService.tryUpsert({
+        where: {
+          cartId_productId: {
+            cartId,
+            productId
+          },
+        },
+        create: {
+          productId,
+          cartId,
+          quantity,
+          price,
+          totalPrice,
+          originalTotalPrice: quantity * price,
+          saving: (quantity * price) - totalPrice,
+        },
+        update: {
+          quantity: {
+            increment: quantity
+          },
+          saving: {
+            increment: (quantity * price) - totalPrice
+          },
+          totalPrice: {
+            increment: totalPrice
+          },
+          originalTotalPrice: {
+            increment: quantity * price
           }
         }
-      },
-      update: {
-        userId: sessionUser.id,
-        orderItems: {
-          upsert: orderItems.map(item => ({
-            where: {
-              id: item.id || generateUuid()
-            },
-            create: {
-              ...item,
-              originalTotalPrice: item.price * item.quantity
-            },
-            update: {
-              ...item,
-              id: undefined,
-              originalTotalPrice: item.price * item.quantity
-            },
-          }))
+      })).ok_or_throw()
+    }
+
+    // Session user cart
+    const cartId = sessionUser.cart?.id
+
+    const orderItem = cartId
+      ? await upsertItem(cartId)
+      : await upsertItem((await userService.tryUpdate({
+        where: {
+          id: sessionUser.id
+        },
+        data: {
+          cart: {
+            upsert: {
+              where: {
+                id: cartId
+              },
+              create: {
+                label: generateLabel("cart"),
+              },
+              update: {}  // Not update cart
+            }
+          }
         }
-      }
-    })).ok_or_throw()
+      })).ok_or_throw().id)
 
     // Create audit log
-    const _auditLog = await service.audit(sessionUser)
+    const _auditLog = await orderItemService.audit(sessionUser)
     _auditLog.ok_or_throw()
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ cart }))
+    res.status(StatusCode.Created).json(HttpDataResponse({ orderItem }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function updateCartOrderItemHandler(
+  req: Request<UpdateCartOrderItemInput["params"], {}, UpdateCartOrderItemInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { orderItemId } = req.params
+    const { quantity, price, totalPrice } = req.body
+
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await userService.checkPermissions(sessionUser, OperationAction.Create)
+    _isAccess.ok_or_throw()
+
+    const orderItem = (await orderItemService.tryUpdate({
+      where: {
+        id: orderItemId,
+      },
+      data: {
+        quantity,
+        price,
+        totalPrice,
+        originalTotalPrice: quantity * price,
+        saving: (quantity * price) - totalPrice,
+      }
+    }))
+
+    // Create audit log
+    const _auditLog = await userService.audit(sessionUser)
+    _auditLog.ok_or_throw()
+
+    res.status(StatusCode.Created).json(HttpDataResponse({ orderItem }))
   } catch (err) {
     next(err)
   }
@@ -121,13 +182,13 @@ export async function deleteCartHandler(
     const { cartId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    const _isAccess = await userService.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    const cart = (await service.tryCleanCart({ where: { id: cartId } })).ok_or_throw()
+    const cart = (await userService.tryCleanCart({ where: { id: cartId } })).ok_or_throw()
 
     // Create audit log
-    const _auditLog = await service.audit(sessionUser)
+    const _auditLog = await userService.audit(sessionUser)
     _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ cart }))
@@ -146,13 +207,13 @@ export async function deleteCartOrderItemHandler(
     const { orderItemId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
+    const _isAccess = await userService.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    const orderItem = (await service.tryRemoveSingleOrderItem({ where: { id: orderItemId } })).ok_or_throw()
+    const orderItem = (await userService.tryRemoveSingleOrderItem({ where: { id: orderItemId } })).ok_or_throw()
 
     // Create audit log
-    const _auditLog = await service.audit(sessionUser)
+    const _auditLog = await userService.audit(sessionUser)
     _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ orderItem }))

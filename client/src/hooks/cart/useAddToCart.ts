@@ -1,22 +1,22 @@
 import { CartApiService } from "@/services/cartApi"
+import { CacheResource } from "@/context/cacheKey"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
+import { queryClient } from "@/components"
 
 import Result, { Err, Ok } from "@/libs/result"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
-import { queryClient } from "@/components"
-import { CacheResource } from "@/context/cacheKey"
 
 
 const apiService = CartApiService.new()
 
 
-export function useCart() {
+export function useAddToCart() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: (...args: Parameters<typeof apiService.initialize>) => apiService.initialize(...args),
+    mutationFn: (...args: Parameters<typeof apiService.createCartOrderItem>) => apiService.createCartOrderItem(...args),
     onSuccess: () => {
       dispatch({ type: "OPEN_MODAL_FORM", payload: "cart" })
       queryClient.invalidateQueries({

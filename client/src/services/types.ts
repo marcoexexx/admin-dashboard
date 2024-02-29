@@ -21,6 +21,7 @@ export const Resource = {
   Coupon: "Coupon",
   Exchange: "Exchange",
   Order: "Order",
+  OrderItem: "OrderItem",
   PickupAddress: "PickupAddress",
   PotentialOrder: "PotentialOrder",
   Product: "Product",

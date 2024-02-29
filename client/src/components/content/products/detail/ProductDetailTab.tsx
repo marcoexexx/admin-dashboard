@@ -3,13 +3,14 @@ import isBetween from "dayjs/plugin/isBetween"
 
 import { Box, Card, CardActions, CardMedia, Divider, IconButton, Tooltip, Typography, styled } from "@mui/material"
 import { MuiButton, Text } from '@/components/ui'
-import { OrderItem, Product } from "@/services/types";
+import { Product } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
+import { CreateCartOrderItemInput } from "@/components/cart/CartsTable";
 import { memoize } from "lodash";
 import { useStore } from "@/hooks";
 import { queryClient } from "@/components";
 import { useLikeProduct, useUnLikeProduct } from "@/hooks/product";
-import { useCart, useGetCart } from "@/hooks/cart";
+import { useAddToCart } from "@/hooks/cart";
 
 import ProductRelationshipTable from "./ProductRelationshipTable";
 import ProductSpecificationTable from "./ProductSpecificationTable"
@@ -51,55 +52,25 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
 
   const { state } = useStore()
 
-  const { try_data } = useGetCart()
-
-  const { mutate: initializeCart, isPending: cartIsPending } = useCart()
+  const { mutate: addToCart, isPending: cartIsPending } = useAddToCart()
   const { mutate: likeProduct, isPending: likeIsPending } = useLikeProduct()
   const { mutate: unLikeProduct, isPending: unLikeIsPending } = useUnLikeProduct()
 
-  const cart = try_data.ok_or_throw()
-
 
   const handleAddToCart = () => {
-    const initialQuality = 1
-
     const { productDiscountAmount } = calculateProductDiscount(product)
-
-    const originalTotalPrice = initialQuality * product.price
+    const initialQuality = 1
     const totalPrice = initialQuality * productDiscountAmount
 
-    const item: Omit<OrderItem, "id"> = {
+    const item: CreateCartOrderItemInput = {
       productId: product.id,
-      price: product.price,
       quantity: initialQuality,
-      originalTotalPrice,
+      price: product.price,
       totalPrice,
-      saving: originalTotalPrice - totalPrice,
-
-      createdAt: new Date(),
-      updatedAt: new Date(),
     }
 
-    const items = (cart?.orderItems || []) as (typeof item)[]
-    const idx = items.findIndex(i => i.productId === item.productId)
-
-    if (idx !== -1) {
-      const originalTotalPrice = (items[idx].quantity + 1) * items[idx].price
-      const totalPrice = (items[idx].quantity + 1) * productDiscountAmount
-
-      items[idx] = {
-        ...item,
-        quantity: items[idx].quantity + 1,
-        originalTotalPrice,
-        totalPrice,
-        saving: originalTotalPrice - totalPrice,
-      }
-    } else {
-      items.push(item)
-    }
-
-    // Remove useLocalStorage and useCart
-    initializeCart({ orderItems: items })
+    // TODO: add useLocalStorage for guest user
+    addToCart(item)
   }
 
   const likedTotal = product._count.likedUsers
