@@ -50,7 +50,7 @@ export function RenderQuantityButtons({
 
       <Typography>{numberFormat(item.quantity)}</Typography>
 
-      {item.quantity !== 0
+      {item.quantity < 0
         ? <Tooltip title="decrement">
           <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickDecrementAction}>
             <RemoveIcon color="primary" fontSize="small" />

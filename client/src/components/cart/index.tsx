@@ -3,12 +3,19 @@ import { CartsTable } from "./CartsTable"
 import { MuiButton } from "../ui"
 import { useNavigate } from "react-router-dom"
 import { useStore } from "@/hooks"
+import { useGetCart } from "@/hooks/cart"
 
 
 export function Carts() {
   const { dispatch } = useStore()
 
+  const { try_data, isLoading } = useGetCart()
+
   const navigate = useNavigate()
+
+  const itemsCount = try_data.ok_or_throw()?.orderItems?.length
+  const disableCheckout = !itemsCount
+
 
   const handleNavigate = () => {
     dispatch({ type: "CLOSE_MODAL_FORM", payload: "cart" })
@@ -25,8 +32,7 @@ export function Carts() {
         </Grid>
 
         <Grid item xs={6}>
-          {/* TODO: disable is product 404 */}
-          <MuiButton onClick={handleNavigate}>Checkout</MuiButton>
+          <MuiButton onClick={handleNavigate} loading={isLoading} disabled={disableCheckout}>Checkout</MuiButton>
         </Grid>
       </Grid>
     </Container>

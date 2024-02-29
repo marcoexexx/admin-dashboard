@@ -58,7 +58,7 @@ const columns: TypedColumn<OrderItem & { discount: number, image: string }>[] = 
     render: () => null
   },
   {
-    id: "totalPrice",  // TODO: need manual
+    id: "totalPrice",
     align: "right",
     name: "Total price",
     render: () => null
