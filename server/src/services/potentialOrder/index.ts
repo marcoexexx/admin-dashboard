@@ -137,6 +137,23 @@ export class PotentialOrderService extends MetaAppService implements AppService 
   }
 
 
+  async tryUpsert(...args: Parameters<typeof this.repository.upsert>): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.upsert>>, AppError>
+  > {
+    const [arg] = args
+
+    const opt = as_result_async(this.repository.upsert)
+
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError)
+
+    this.log = {
+      action: OperationAction.Update,
+      resourceIds: [result.ok_or_throw().id]
+    }
+    return result
+  }
+
+
   async tryDelete(...args: Parameters<typeof this.repository.delete>): Promise<
     Result<Awaited<ReturnType<typeof this.repository.delete>>, AppError>
   > {
