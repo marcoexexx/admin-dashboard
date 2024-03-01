@@ -1,4 +1,3 @@
-import { db } from "../utils/db";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { checkUser } from "../services/checkUser";
@@ -116,14 +115,14 @@ export async function createPotentialOrderHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
-    const potentialOrder = await db.potentialOrder.upsert({
+    const potentialOrder = (await service.tryUpsert({
       where: {
         id
       },
       create: {
         addressType,
         orderItems: {
-          connect: orderItems.map(id => ({ id }))
+          connect: orderItems.map(orderItemId => ({ id: orderItemId }))
         },
         userId: sessionUser?.id,
         status,
@@ -144,13 +143,14 @@ export async function createPotentialOrderHandler(
         paymentMethodProvider,
         remark
       }
-    })
+    })).ok_or_throw()
 
     // Create audit log
     if (sessionUser) (await service.audit(sessionUser)).ok_or_throw()
 
     res.status(StatusCode.Created).json(HttpDataResponse({ potentialOrder }))
   } catch (err) {
+    console.log("Err:", err)
     next(err)
   }
 }
