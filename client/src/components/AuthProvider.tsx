@@ -16,7 +16,10 @@ export function AuthProvider(props: AuthProviderProps) {
   const [cookies] = useCookies(["logged_in"])
 
   const meQuery = useMe({
-    enabled: !!cookies.logged_in
+    enabled: !!cookies.logged_in,
+    include: {
+      cart: true
+    }
   })
 
   const me = meQuery.try_data.ok_or_throw()
