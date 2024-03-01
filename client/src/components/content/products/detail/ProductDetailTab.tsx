@@ -10,7 +10,7 @@ import { memoize } from "lodash";
 import { useStore } from "@/hooks";
 import { queryClient } from "@/components";
 import { useLikeProduct, useUnLikeProduct } from "@/hooks/product";
-import { useAddToCart } from "@/hooks/cart";
+import { useAddToCart, useGetCart } from "@/hooks/cart";
 
 import ProductRelationshipTable from "./ProductRelationshipTable";
 import ProductSpecificationTable from "./ProductSpecificationTable"
@@ -50,11 +50,15 @@ interface ProductDetailTabProps {
 export default function ProductDetailTab(props: ProductDetailTabProps) {
   const { product } = props
 
-  const { state } = useStore()
+  const { state, dispatch } = useStore()
+
+  const { try_data } = useGetCart()
 
   const { mutate: addToCart, isPending: cartIsPending } = useAddToCart()
   const { mutate: likeProduct, isPending: likeIsPending } = useLikeProduct()
   const { mutate: unLikeProduct, isPending: unLikeIsPending } = useUnLikeProduct()
+
+  const itemsInCart = try_data.ok_or_throw()?.orderItems || []
 
 
   const handleAddToCart = () => {
@@ -69,8 +73,15 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       totalPrice,
     }
 
+    // INFO: check quantity if beyound the limit, just open modal
+    const itemInCartIdx = itemsInCart.findIndex(item => item.productId === product.id && product.quantity <= item.quantity)
+    if (itemInCartIdx !== -1) {
+      return dispatch({ type: "OPEN_MODAL_FORM", payload: "cart" })
+    }
+
     // TODO: add useLocalStorage for guest user
     addToCart(item)
+    return
   }
 
   const likedTotal = product._count.likedUsers
