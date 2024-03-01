@@ -12,13 +12,13 @@ import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
 
-function ViewProductReadWrapper({productId}: {productId: string | undefined}) {
+function ViewWrapper({ productId }: { productId: string | undefined }) {
   usePermission({ action: OperationAction.Read, resource: Resource.Product }).ok_or_throw()
 
   return <ProductDetail productId={productId} />
 }
 
-export default function ViewProduct() {
+export default function ViewDetailPage() {
   const { productId } = useParams()
 
   const navigate = useNavigate()
@@ -35,7 +35,7 @@ export default function ViewProduct() {
   const handleUpdate = (_: React.MouseEvent<HTMLButtonElement>) => {
     navigate(`/products/update/${productId}`)
   }
-  
+
 
   return (
     <>
@@ -58,7 +58,7 @@ export default function ViewProduct() {
           </Grid>
 
           {isAllowedUpdateProduct
-          ? <Grid item>
+            ? <Grid item>
               <MuiButton
                 sx={{ mt: { xs: 2, md: 0 } }}
                 variant="contained"
@@ -66,14 +66,14 @@ export default function ViewProduct() {
                 onClick={handleUpdate}
               >Update product</MuiButton>
             </Grid>
-          : null}
+            : null}
         </Grid>
       </PageTitle>
 
       <Container maxWidth="lg">
         <ErrorBoundary>
           <Suspense fallback={<SuspenseLoader />}>
-            <ViewProductReadWrapper productId={productId} />
+            <ViewWrapper productId={productId} />
           </Suspense>
         </ErrorBoundary>
       </Container>

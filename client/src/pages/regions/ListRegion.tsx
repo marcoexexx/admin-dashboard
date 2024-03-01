@@ -14,14 +14,14 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 
 const appName = getConfig("appName")
 
-function ListRegionWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.Region }).ok_or_throw()
 
   return <RegionsList />
 }
 
 
-export default function ListRegion() {
+export default function ListPage() {
   const navigate = useNavigate()
 
   const isAllowedCreateRegion = usePermission({
@@ -70,7 +70,7 @@ export default function ListRegion() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ListRegionWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

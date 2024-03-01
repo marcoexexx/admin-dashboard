@@ -13,7 +13,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 
 const appName = getConfig("appName")
 
-function UpdateUserWrapper() {
+function UpdateFormWrapper() {
   usePermission({ action: OperationAction.Update, resource: Resource.User }).ok_or_throw()
 
   return  <Card>
@@ -24,7 +24,7 @@ function UpdateUserWrapper() {
 }
 
 
-export default function UpdateUser() {
+export default function UpdateForm() {
   return (
     <>
       <Helmet>
@@ -57,7 +57,7 @@ export default function UpdateUser() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <UpdateUserWrapper />
+                <UpdateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

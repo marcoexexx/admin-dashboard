@@ -16,14 +16,14 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 
-function ListExchangeWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.Exchange }).ok_or_throw()
 
   return <ExchangesList />
 }
 
 
-export default function ListExchange() {
+export default function ListPage() {
   const navigate = useNavigate()
 
   const isAllowedCreateExchange = usePermission({
@@ -73,7 +73,7 @@ export default function ListExchange() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ListExchangeWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

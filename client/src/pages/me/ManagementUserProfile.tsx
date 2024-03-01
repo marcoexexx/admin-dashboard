@@ -26,7 +26,7 @@ export async function meProfileLoader() {
   })
 }
 
-export default function ManagementUserProfile() {
+export default function ManagementUserProfilePage() {
   const userQuery = useMe({
     include: {
       _count: true,

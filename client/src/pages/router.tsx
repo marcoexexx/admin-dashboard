@@ -19,6 +19,11 @@ const CreatePickupAddressHistoryPage = Loader(lazy(() => import("@/pages/pickupH
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))
 const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.page")))
 
+// roles
+const ListRolePage = Loader(lazy(() => import("@/pages/roles/ListRole")))
+const CreateRolePage = Loader(lazy(() => import("@/pages/roles/CreateRole")))
+const UpdateRolePage = Loader(lazy(() => import("@/pages/roles/UpdateRole")))
+
 // potential-orders
 const ListPotentialOrderPage = Loader(lazy(() => import("@/pages/potentialOrders/ListPotentialOrder")))
 const CreatePotentialOrderPage = Loader(lazy(() => import("@/pages/potentialOrders/CreatePotentialOrder")))
@@ -166,6 +171,34 @@ const routes = createBrowserRouter([
           {
             path: "audit-logs",
             Component: ListAuditLogPage
+          },
+
+          /// ROLES ROUTES
+          {
+            path: "roles",
+            children: [
+              {
+                path: "",
+                Component: ListRolePage
+              },
+              {
+                path: "list",
+                element: <Navigate to="/roles" />
+              },
+              {
+                path: "",
+                children: [
+                  {
+                    path: "create",
+                    Component: CreateRolePage
+                  },
+                  {
+                    path: "update/:roleId",
+                    Component: UpdateRolePage
+                  }
+                ]
+              },
+            ]
           },
 
           /// POTENTIAL ORDERS ROUTES

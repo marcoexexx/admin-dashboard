@@ -30,11 +30,11 @@ interface BrandsListTableProps {
   count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyBrands: (buf: ArrayBuffer) => void
+  onCreateMany: (buf: ArrayBuffer) => void
 }
 
 export function BrandsListTable(props: BrandsListTableProps) {
-  const { brands, count, isLoading, onCreateManyBrands, onDelete, onMultiDelete } = props
+  const { brands, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
   const { state: { brandFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -62,7 +62,7 @@ export function BrandsListTable(props: BrandsListTableProps) {
         columns={columns}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
-        onMultiCreate={onCreateManyBrands}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

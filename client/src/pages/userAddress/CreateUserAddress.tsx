@@ -14,7 +14,7 @@ import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 const appName = getConfig("appName")
 
-function CreateUserAddressWrapper() {
+function CreateFormWrapper() {
   usePermission({ action: OperationAction.Create, resource: Resource.UserAddress }).ok_or_throw()
 
   return <Card>
@@ -25,7 +25,7 @@ function CreateUserAddressWrapper() {
 }
 
 
-export default function CreateUserAddress() {
+export default function CreatePage() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -64,7 +64,7 @@ export default function CreateUserAddress() {
           <Grid item xs={12} md={8}>
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <CreateUserAddressWrapper />
+                <CreateFormWrapper />
               </Suspense>
             </ErrorBoundary>
           </Grid>

@@ -84,7 +84,7 @@ export function ProductsList() {
       onStatusChange={handleChangeStatusProduct}
       products={data.results}
       count={data.count}
-      onCreateManyProducts={handleCreateManyProducts}
+      onCreateMany={handleCreateManyProducts}
       onDelete={handleDeleteProduct}
       onMultiDelete={handleDeleteMultiProducts}
     />

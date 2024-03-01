@@ -13,14 +13,14 @@ import getConfig from "@/libs/getConfig";
 const appName = getConfig("appName")
 
 
-function ListUserWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.User }).ok_or_throw()
 
   return <UsersList />
 }
 
 
-export default function ListUser() {
+export default function ListPage() {
   return (
     <>
       <Helmet>
@@ -46,7 +46,7 @@ export default function ListUser() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ListUserWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

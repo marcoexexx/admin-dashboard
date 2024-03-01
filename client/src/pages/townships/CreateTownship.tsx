@@ -15,7 +15,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 
-function CreateTownshipWrapper() {
+function CreateFormWrapper() {
   usePermission({ action: OperationAction.Create, resource: Resource.Township }).ok_or_throw()
 
   return <Card>
@@ -26,8 +26,7 @@ function CreateTownshipWrapper() {
 }
 
 
-export default function CreateTownship() {
-  
+export default function CreatePage() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -67,7 +66,7 @@ export default function CreateTownship() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <CreateTownshipWrapper />
+                <CreateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

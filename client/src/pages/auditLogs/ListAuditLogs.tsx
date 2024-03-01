@@ -13,14 +13,14 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 const appName = getConfig("appName")
 
 
-function ListAuditLogsWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.AuditLog }).ok_or_throw()
 
   return <AuditLogsList />
 }
 
 
-export default function ListAuditLogs() {
+export default function ListPage() {
   return (
     <>
       <Helmet>
@@ -46,7 +46,7 @@ export default function ListAuditLogs() {
 
             <ErrorBoundary>
               <Suspense>
-                <ListAuditLogsWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

@@ -37,11 +37,11 @@ interface TownshipsListTableProps {
   count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyTownships: (buf: ArrayBuffer) => void
+  onCreateMany: (buf: ArrayBuffer) => void
 }
 
 export function TownshipsListTable(props: TownshipsListTableProps) {
-  const { townships, count, isLoading, onCreateManyTownships, onDelete, onMultiDelete } = props
+  const { townships, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
   const { state: { townshipFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -70,7 +70,7 @@ export function TownshipsListTable(props: TownshipsListTableProps) {
         columns={columns}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
-        onMultiCreate={onCreateManyTownships}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

@@ -15,7 +15,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 
-function UpdateBrandWrapper() {
+function UpdateFormWrapper() {
   usePermission({ action: OperationAction.Update, resource: Resource.Brand }).ok_or_throw()
 
   return (
@@ -28,7 +28,7 @@ function UpdateBrandWrapper() {
 }
 
 
-export default function UpdateBrand() {
+export default function UpdatePage() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -69,7 +69,7 @@ export default function UpdateBrand() {
 
             <ErrorBoundary>
               <Suspense>
-                <UpdateBrandWrapper />
+                <UpdateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

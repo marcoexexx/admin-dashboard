@@ -100,11 +100,11 @@ interface ProductsListTableProps {
   onDelete: (id: string) => void
   onStatusChange: (product: Product, status: ProductStatus) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyProducts: (data: ArrayBuffer) => void
+  onCreateMany: (data: ArrayBuffer) => void
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
-  const { products, count, isLoading, onDelete, onMultiDelete, onCreateManyProducts, onStatusChange } = props
+  const { products, count, isLoading, onDelete, onMultiDelete, onCreateMany, onStatusChange } = props
   const { state: { productFilter: { pagination } }, dispatch } = useStore()
 
   const theme = useTheme()
@@ -199,7 +199,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
         columns={columnsWithEditableStatus}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
-        onMultiCreate={onCreateManyProducts}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

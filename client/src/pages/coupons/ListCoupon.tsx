@@ -16,14 +16,14 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 
-function ListCouponWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.Coupon }).ok_or_throw()
 
   return <CouponsList />
 }
 
 
-export default function ListCoupon() {
+export default function ListPage() {
   const navigate = useNavigate()
 
   const isAllowedCreateCoupons = usePermission({
@@ -73,7 +73,7 @@ export default function ListCoupon() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ListCouponWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

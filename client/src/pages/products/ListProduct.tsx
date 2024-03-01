@@ -15,14 +15,14 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 
 const appName = getConfig("appName")
 
-function ListProductWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.Product }).ok_or_throw()
 
   return <ProductsList />
 }
 
 
-export default function ListProduct() {
+export default function ListPage() {
   const navigate = useNavigate()
 
   const isAllowedCreateProduct = usePermission({
@@ -72,7 +72,7 @@ export default function ListProduct() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ListProductWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

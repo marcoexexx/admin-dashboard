@@ -46,7 +46,7 @@ export function RegionsList() {
       isLoading={isLoading}
       regions={regions.results} 
       count={regions.count} 
-      onCreateManyRegions={handleCreateManyRegions} 
+      onCreateMany={handleCreateManyRegions} 
       onDelete={handleDeleteRegion}
       onMultiDelete={handleDeleteMultiRegions}
     />

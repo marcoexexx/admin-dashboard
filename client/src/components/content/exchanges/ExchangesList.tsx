@@ -44,7 +44,7 @@ export function ExchangesList() {
       exchanges={data.results}
       count={data.count}
       isLoading={exchangesQuery.isLoading}
-      onCreateManyExchanges={handleCreateManyExchanges}
+      onCreateMany={handleCreateManyExchanges}
       onDelete={handleDeleteExchange}
       onMultiDelete={handleDeleteMultiExchanges}
     />

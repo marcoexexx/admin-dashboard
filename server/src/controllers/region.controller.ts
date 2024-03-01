@@ -199,7 +199,7 @@ export async function updateRegionHandler(
 ) {
   try {
     const { regionId } = req.params
-    const data = req.body
+    const { townships, name } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
@@ -208,8 +208,9 @@ export async function updateRegionHandler(
     const region = (await service.tryUpdate({
       where: { id: regionId },
       data: {
+        name,
         townships: {
-          set: data.townships.map(townshipId => ({ id: townshipId }))
+          set: townships.map(townshipId => ({ id: townshipId }))
         }
       }
     })).ok_or_throw()

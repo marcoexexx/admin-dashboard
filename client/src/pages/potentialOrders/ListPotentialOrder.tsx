@@ -15,14 +15,14 @@ import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
 const appName = getConfig("appName")
 
-function ListPotentialOrderWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.PotentialOrder }).ok_or_throw()
 
   return <PotentialOrdersList />
 }
 
 
-export default function ListPotentialOrder() {
+export default function ListPage() {
   const navigate = useNavigate()
 
 
@@ -73,7 +73,7 @@ export default function ListPotentialOrder() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ListPotentialOrderWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

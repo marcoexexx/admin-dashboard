@@ -14,7 +14,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 
 const appName = getConfig("appName")
 
-function CreatePotentialOrderWrapper() {
+function CreateFormWrapper() {
   usePermission({ action: OperationAction.Create, resource: Resource.PotentialOrder }).ok_or_throw()
 
   return <Card>
@@ -25,7 +25,7 @@ function CreatePotentialOrderWrapper() {
 }
 
 
-export default function CreatePotentialOrder() {
+export default function CreatePage() {
   
   const navigate = useNavigate()
 
@@ -66,7 +66,7 @@ export default function CreatePotentialOrder() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <CreatePotentialOrderWrapper />
+                <CreateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

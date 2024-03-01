@@ -116,13 +116,20 @@ export async function createRoleHandler(
   next: NextFunction
 ) {
   try {
-    const { name } = req.body
+    const { name, permissions } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
-    const role = (await service.tryCreate({ data: { name } })).ok_or_throw()
+    const role = (await service.tryCreate({
+      data: {
+        name,
+        permissions: {
+          connect: permissions.map(permissionId => ({ id: permissionId }))
+        }
+      }
+    })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)
@@ -199,13 +206,23 @@ export async function updateRoleHandler(
 ) {
   try {
     const { roleId } = req.params
-    const { name } = req.body
+    const { name, permissions } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
     _isAccess.ok_or_throw()
 
-    const role = (await service.tryUpdate({ where: { id: roleId }, data: { name } })).ok_or_throw()
+    const role = (await service.tryUpdate({
+      where: {
+        id: roleId
+      },
+      data: {
+        name,
+        permissions: {
+          set: permissions.map(permissionId => ({ id: permissionId }))
+        }
+      }
+    })).ok_or_throw()
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser)

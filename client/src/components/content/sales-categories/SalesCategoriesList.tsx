@@ -47,7 +47,7 @@ export function SalesCategoriesList() {
       salesCategoiries={sales.results}
       count={sales.count}
       isLoading={isLoading}
-      onCreateManySalesCategories={handleCreateManySalesCategories}
+      onCreateMany={handleCreateManySalesCategories}
       onDelete={handleDeleteBrand}
       onMultiDelete={handleDeleteMultiSalesCategories}
     />

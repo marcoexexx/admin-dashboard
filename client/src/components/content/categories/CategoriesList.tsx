@@ -43,7 +43,7 @@ export function CategoriesList() {
       categories={data.results}
       count={data.count}
       isLoading={categoriesQuery.isLoading}
-      onCreateManyCategories={handleCreateManyCategories}
+      onCreateMany={handleCreateManyCategories}
       onDelete={handleDeleteCategory}
       onMultiDelete={handleDeleteMultiCategories}
     />

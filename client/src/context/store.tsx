@@ -19,6 +19,7 @@ import { ChangePickupPageActions, ChangePickupPageSizeActions, PickupAddressFilt
 import { CacheResource } from "./cacheKey"
 import { ChangeOrderPageActions, ChangeOrderPageSizeActions, ChangePotentialOrderPageActions, ChangePotentialOrderPageSizeActions, OrderFilterActions, OrderWhereInput, PotentialOrderFilterActions, PotentialOrderWhereInput } from "./order"
 import { AllModalFormCloseActions, CloseBackdropActions, DisableCheckOutActions, EnableCheckOutActions, LocalActions, ModalFormCloseActions, ModalFormOpenActions, OpenBackdropActions, SlidebarCloseActions, SlidebarOpenActions, SlidebarToggleActions, ThemeActions, ToastCloseActions, ToastOpenActions, ToggleBackdropActions, UserActions } from "./actions"
+import { ChangeRolePageActions, ChangeRolePageSizeActions, RoleFilterActions, RoleWhereInput } from "./role"
 
 
 const INITIAL_LIST_PAGE_LIMIT = 10
@@ -59,6 +60,7 @@ export type Store = {
   slidebar: boolean
   backdrop: boolean
   local: Local
+  roleFilter: RoleWhereInput,
   accessLogFilter: AccessLogWhereInput,
   auditLogFilter: AuditLogWhereInput,
   orderFilter: OrderWhereInput,
@@ -107,6 +109,7 @@ type Action =
   | TownshipFilterActions | ChangeTownshipPageActions | ChangeTownshipPageSizeActions
   | UserFilterActions | ChangeUserPageActions | ChangeUserPageSizeActions
   | UserAddressFilterActions | ChangeUserAddressPageActions | ChangeUserAddressPageSizeActions
+  | RoleFilterActions | ChangeRolePageActions | ChangeRolePageSizeActions
 
   | ModalFormOpenActions
   | ModalFormCloseActions
@@ -135,6 +138,9 @@ const initialState: Store = {
   modalForm: {
     field: "*",
     state: false
+  },
+  roleFilter: {
+    pagination: INITIAL_PAGINATION
   },
   auditLogFilter: {
     pagination: INITIAL_PAGINATION
@@ -286,6 +292,37 @@ const stateReducer = (state: Store, action: Action): Store => {
           ...state.userFilter,
           pagination: {
             page: state.userFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
+    }
+
+    case "SET_ROLE_FILTER": {
+      return {
+        ...state, roleFilter: {
+          ...state.roleFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_ROLE_PAGE": {
+      return {
+        ...state, roleFilter: {
+          ...state.roleFilter,
+          pagination: {
+            pageSize: state.roleFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_ROLE_PAGE_SIZE": {
+      return {
+        ...state, roleFilter: {
+          ...state.roleFilter,
+          pagination: {
+            page: state.roleFilter.pagination?.page || INITIAL_PAGINATION.page,
             pageSize: action.payload
           }
         }

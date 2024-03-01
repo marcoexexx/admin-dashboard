@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { Box, Collapse, List, ListItem, ListSubheader, alpha, styled } from "@mui/material"
+import clsx from "clsx";
+
 import { MuiButton } from '@/components/ui'
+import { CacheResource } from "@/context/cacheKey";
+import { Box, Collapse, List, ListItem, ListSubheader, alpha, styled } from "@mui/material"
+import { useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from "@/hooks"
-import clsx from "clsx";
 
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
@@ -20,6 +22,7 @@ import SellIcon from '@mui/icons-material/Sell';
 import BadgeIcon from '@mui/icons-material/Badge';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 
 const DotWrapper = styled(Box)(({theme}) => ({
@@ -157,18 +160,7 @@ const SubMenuWrapper = styled(Box)(({theme}) => ({
 }))
 
 type ExpandMenu = {
-  id:
-    | "*"
-    | "products"
-    | "townships"
-    | "regions"
-    | "categories"
-    | "brands"
-    | "sales-categories"
-    | "exchanges"
-    | "users"
-    | "coupons"
-    | "potential-orders"
+  id: "*" | CacheResource
   state: boolean
 }
 
@@ -480,34 +472,6 @@ export default function SlidebarMenu() {
                 </List>
               </Collapse>
 
-              {/* User Menues */}
-              <ListItem component="div">
-                <MuiButton
-                  onClick={handleToggleExpandMenu("users")}
-                  startIcon={<PeopleIcon />}
-                  endIcon={getStateCurrentExpandMenu("users")
-                    ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
-                >
-                  Users
-                </MuiButton>
-              </ListItem>
-
-              <Collapse in={getStateCurrentExpandMenu("users")}>
-                <List component="div" disablePadding>
-                  <ListItem component="div">
-                    <MuiButton
-                      className={clsx({"active": currentMenu === "/users" })}
-                      onClick={handleOpenMenu("/users")}
-                    >
-                      <DotWrapper />
-                      List
-                    </MuiButton>
-                  </ListItem>
-                </List>
-              </Collapse>
-
               {/* Exchange Menues */}
               <ListItem component="div">
                 <MuiButton
@@ -648,6 +612,71 @@ export default function SlidebarMenu() {
                     <MuiButton
                       className={clsx({"active": currentMenu === "/sales-categories/create" })}
                       onClick={handleOpenMenu("/sales-categories/create")}
+                    >
+                      <DotWrapper />
+                      Create
+                    </MuiButton>
+                  </ListItem>
+                </List>
+              </Collapse>
+
+              {/* User Menues */}
+              <ListItem component="div">
+                <MuiButton
+                  onClick={handleToggleExpandMenu("users")}
+                  startIcon={<PeopleIcon />}
+                  endIcon={getStateCurrentExpandMenu("users")
+                    ? <ExpandLessIcon />
+                    : <ExpandMoreIcon />
+                  }
+                >
+                  Users
+                </MuiButton>
+              </ListItem>
+
+              <Collapse in={getStateCurrentExpandMenu("users")}>
+                <List component="div" disablePadding>
+                  <ListItem component="div">
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/users" })}
+                      onClick={handleOpenMenu("/users")}
+                    >
+                      <DotWrapper />
+                      List
+                    </MuiButton>
+                  </ListItem>
+                </List>
+              </Collapse>
+
+              {/* Role Menues */}
+              <ListItem component="div">
+                <MuiButton
+                  onClick={handleToggleExpandMenu(CacheResource.Role)}
+                  startIcon={<AdminPanelSettingsIcon />}
+                  endIcon={getStateCurrentExpandMenu(CacheResource.Role)
+                    ? <ExpandLessIcon />
+                    : <ExpandMoreIcon />
+                  }
+                >
+                  Roles
+                </MuiButton>
+              </ListItem>
+
+              <Collapse in={getStateCurrentExpandMenu(CacheResource.Role)}>
+                <List component="div" disablePadding>
+                  <ListItem component="div">
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/roles" })}
+                      onClick={handleOpenMenu("/roles")}
+                    >
+                      <DotWrapper />
+                      List
+                    </MuiButton>
+                  </ListItem>
+                  <ListItem component="div">
+                    <MuiButton
+                      className={clsx({"active": currentMenu === "/roles/create" })}
+                      onClick={handleOpenMenu("/roles/create")}
                     >
                       <DotWrapper />
                       Create

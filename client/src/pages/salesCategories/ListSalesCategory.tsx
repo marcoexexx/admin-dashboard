@@ -15,14 +15,14 @@ import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
 const appName = getConfig("appName")
 
-function ListSalesCategoryWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.SalesCategory }).ok_or_throw()
 
   return  <SalesCategoriesList />
 }
 
 
-export default function ListSalesCategory() {
+export default function ListPage() {
   const navigate = useNavigate()
 
   const isAllowedCreateSalesCategory = usePermission({
@@ -72,7 +72,7 @@ export default function ListSalesCategory() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ListSalesCategoryWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

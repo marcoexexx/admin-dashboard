@@ -15,14 +15,14 @@ import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
 const appName = getConfig("appName")
 
-function ListUserAddressWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.UserAddress }).ok_or_throw()
 
   return <UserAddressesList />
 }
 
 
-export default function ListUserAddress() {
+export default function ListPage() {
   const navigate = useNavigate()
 
   const isAllowedCreateUserAddress = usePermission({
@@ -71,7 +71,7 @@ export default function ListUserAddress() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ListUserAddressWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 
