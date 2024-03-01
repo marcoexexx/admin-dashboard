@@ -21,7 +21,7 @@ export function useGetUserAddresses({
   pagination: Pagination,
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.UserAddress, { filter, pagination, include }] as CacheKey<"user-addresses">["list"],
+    queryKey: [CacheResource.UserAddress, { filter, pagination, include }] as CacheKey<"addresses">["list"],
     queryFn: args => apiService.findMany(args, {
       filter,
       pagination,

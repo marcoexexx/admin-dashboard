@@ -4,9 +4,10 @@ import AppError, { AppErrorKind } from "@/libs/exceptions"
 import { PotentialOrderApiService } from "@/services/potentialOrdersApi"
 import { CacheResource } from "@/context/cacheKey"
 import { useMutation } from "@tanstack/react-query"
-import { useStore } from ".."
+import { useLocalStorage, useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
+import { CreateOrderInput } from "@/components/content/orders/forms"
 
 
 const apiService = PotentialOrderApiService.new()
@@ -14,6 +15,7 @@ const apiService = PotentialOrderApiService.new()
 
 export function useDeleteMultiPotentialOrders() {
   const { dispatch } = useStore()
+  const { set, get } = useLocalStorage()
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.deleteMany>) => apiService.deleteMany(...args),
@@ -26,7 +28,7 @@ export function useDeleteMultiPotentialOrders() {
       })
       playSoundEffect("error")
     },
-    onSuccess() {
+    onSuccess(_, ids) {
       dispatch({
         type: "OPEN_TOAST", payload: {
           message: "Success delete multi potential orders.",
@@ -37,6 +39,10 @@ export function useDeleteMultiPotentialOrders() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.PotentialOrder]
       })
+      // Clean created PotentialOrder from localStorage
+      const pickupForm = get<CreateOrderInput>("PICKUP_FORM")
+      const isCartOrderId = pickupForm?.createdPotentialOrderId && ids.includes(pickupForm.createdPotentialOrderId)
+      if (isCartOrderId) set<CreateOrderInput>("PICKUP_FORM", { ...pickupForm, createdPotentialOrderId: undefined })
       playSoundEffect("success")
     }
   })

@@ -34,7 +34,7 @@ const deleteSingleRowKeys: Record<Resource, ModalFormField> = {
   [Resource.Region]: "delete-region",
   [Resource.SalesCategory]: "delete-sales-category",
   [Resource.Township]: "delete-township",
-  [Resource.UserAddress]: "delete-user-addresse"
+  [Resource.UserAddress]: "delete-addresse"
 }
 
 const deleteMultiRowKeys: Record<Resource, ModalFormField> = {
@@ -57,7 +57,7 @@ const deleteMultiRowKeys: Record<Resource, ModalFormField> = {
   [Resource.Region]: "delete-regions-multi",
   [Resource.SalesCategory]: "delete-sales-categories-multi",
   [Resource.Township]: "delete-townships-multi",
-  [Resource.UserAddress]: "delete-user-addresses-multi"
+  [Resource.UserAddress]: "delete-addresses-multi"
 }
 
 
@@ -150,10 +150,12 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
     render: () => null
   }), [])
 
-  const unimplementedFeature = () => dispatch({ type: "OPEN_TOAST", payload: {
-    message: `Unimplemented feature: ${resource}`,
-    severity: "warning"
-  } })
+  const unimplementedFeature = () => dispatch({
+    type: "OPEN_TOAST", payload: {
+      message: `Unimplemented feature: ${resource}`,
+      severity: "warning"
+    }
+  })
 
   const isAllowedUpdate = usePermission({
     action: OperationAction.Update,
@@ -246,8 +248,8 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
         : <Table>
           <TableHead>
             <TableRow>
-              {hideCheckbox 
-                ? null 
+              {hideCheckbox
+                ? null
                 : <TableCell padding="checkbox">
                   <Checkbox
                     color="primary"

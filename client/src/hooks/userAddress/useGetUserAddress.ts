@@ -19,7 +19,7 @@ export function useGetUserAddress({
 }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: [CacheResource.UserAddress, { id, include }] as CacheKey<"user-addresses">["detail"],
+    queryKey: [CacheResource.UserAddress, { id, include }] as CacheKey<"addresses">["detail"],
     queryFn: args => apiService.find(args, { filter: { id }, include }),
     // queryFn: () => Promise.reject(AppError.new(AppErrorKind.PermissionError))
   })

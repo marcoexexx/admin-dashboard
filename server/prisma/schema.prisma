@@ -488,7 +488,7 @@ model OrderItem {
   orderId            String?         @db.ObjectId
   potentialOrder     PotentialOrder? @relation(fields: [potentialOrderId], references: [id])
   potentialOrderId   String?         @db.ObjectId
-  Cart               Cart?           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  Cart               Cart?           @relation(fields: [cartId], references: [id])
   cartId             String?         @db.ObjectId
 
   createdAt DateTime @default(now())

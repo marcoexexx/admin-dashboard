@@ -4,8 +4,9 @@ import Result, { Err, Ok } from "@/libs/result"
 import { PotentialOrderApiService } from "@/services/potentialOrdersApi"
 import { CacheResource } from "@/context/cacheKey"
 import { useMutation } from "@tanstack/react-query"
-import { useStore } from ".."
+import { useLocalStorage, useStore } from ".."
 import { queryClient } from "@/components"
+import { CreateOrderInput } from "@/components/content/orders/forms"
 
 
 const apiService = PotentialOrderApiService.new()
@@ -13,6 +14,7 @@ const apiService = PotentialOrderApiService.new()
 
 export function useDeletePotentialOrder() {
   const { dispatch } = useStore()
+  const { set, get } = useLocalStorage()
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.delete>) => apiService.delete(...args),
@@ -24,10 +26,14 @@ export function useDeletePotentialOrder() {
         }
       })
     },
-    onSuccess() {
+    onSuccess(data) {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.PotentialOrder]
       })
+      // Clean created PotentialOrder from localStorage
+      const pickupForm = get<CreateOrderInput>("PICKUP_FORM")
+      const isCartOrderId = data.potentialOrder.id === pickupForm?.createdPotentialOrderId
+      if (isCartOrderId) set<CreateOrderInput>("PICKUP_FORM", { ...pickupForm, createdPotentialOrderId: undefined })
     }
   })
 

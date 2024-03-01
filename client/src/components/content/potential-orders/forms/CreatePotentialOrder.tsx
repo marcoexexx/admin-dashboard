@@ -5,21 +5,15 @@ import { number, object, string, z } from "zod";
 
 const createPotentialOrderSchema = object({
   id: string().optional(),
+  orderItems: string().array().default([]),
   status: z.nativeEnum(PotentialOrderStatus).default(PotentialOrderStatus.Processing),
-  orderItems: object({
-    price: number().min(0),
-    quantity: number(),
-    productId: string(),
-    totalPrice: number().min(0),
-    saving: number()
-  }).array(),
   deliveryAddressId: string().optional(),
   totalPrice: number().min(0),
+  addressType: z.nativeEnum(OrderAddressType),
   pickupAddressId: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
   paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
-  remark: string().optional(),
-  addressType: z.nativeEnum(OrderAddressType, { required_error: "Order address type is required" })
+  remark: string().optional()
 })
 
 export type CreatePotentialOrderInput = z.infer<typeof createPotentialOrderSchema>

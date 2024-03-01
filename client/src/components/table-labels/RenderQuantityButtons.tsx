@@ -43,26 +43,32 @@ export function RenderQuantityButtons({
       gap={.5}
     >
       <Tooltip title="add">
-        <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickIncrementAction}>
-          <AddIcon color="primary" fontSize="small" />
-        </IconButton>
+        <>
+          <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickIncrementAction}>
+            <AddIcon color="primary" fontSize="small" />
+          </IconButton>
+        </>
       </Tooltip>
 
       <Typography>{numberFormat(item.quantity)}</Typography>
 
       {item.quantity < 0
         ? <Tooltip title="decrement">
-          <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickDecrementAction}>
-            <RemoveIcon color="primary" fontSize="small" />
-          </IconButton>
+          <>
+            <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickDecrementAction}>
+              <RemoveIcon color="primary" fontSize="small" />
+            </IconButton>
+          </>
         </Tooltip>
         : null
       }
 
       <Tooltip title="remove">
-        <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickRemoveAction}>
-          <DeleteIcon color="primary" fontSize="small" />
-        </IconButton>
+        <>
+          <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickRemoveAction}>
+            <DeleteIcon color="primary" fontSize="small" />
+          </IconButton>
+        </>
       </Tooltip>
     </Box>
   )

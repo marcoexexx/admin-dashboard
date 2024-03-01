@@ -15,7 +15,7 @@ export const CacheResource = {
   Region: "regions",
   SalesCategory: "sales-categories",
   Township: "townships",
-  UserAddress: "user-addresses",
+  UserAddress: "addresses",
   User: "users",
   AuthUser: "authUser",
   Dashboard: "dashboard",
