@@ -7,6 +7,8 @@ import { object, string, z } from "zod";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useGetRole, useUpdateRole } from "@/hooks/role";
+import { useStore } from "@/hooks";
+import { FormModal } from "@/components/forms";
 
 
 const updateRoleSchema = object({
@@ -18,6 +20,7 @@ export type UpdateRoleInput = z.infer<typeof updateRoleSchema>
 
 export function UpdateRoleForm() {
   const { roleId } = useParams()
+  const { state: { modalForm } } = useStore()
 
   // Queries
   const roleQuery = useGetRole({
@@ -83,6 +86,13 @@ export function UpdateRoleForm() {
           </Grid>
         </Grid>
       </FormProvider>
+
+      {modalForm.field === "create-permission"
+        ? <FormModal field='create-permission' title='Create new permission'>
+          {/* <CreateBrandForm /> */}
+          Not impl yet!
+        </FormModal>
+        : null}
     </>
   )
 }

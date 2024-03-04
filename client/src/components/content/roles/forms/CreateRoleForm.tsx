@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
 import { useEffect } from "react";
 import { useCreateRole } from "@/hooks/role";
+import { useStore } from "@/hooks";
+import { FormModal } from "@/components/forms";
 
 
 const createRoleSchema = object({
@@ -16,6 +18,8 @@ const createRoleSchema = object({
 export type CreateRoleInput = z.infer<typeof createRoleSchema>
 
 export function CreateRoleForm() {
+  const { state: { modalForm } } = useStore()
+
   const createRoleMutation = useCreateRole()
 
   const methods = useForm<CreateRoleInput>({
@@ -38,12 +42,12 @@ export function CreateRoleForm() {
         <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
           <Grid item xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("name")} 
-                label="Name" 
-                error={!!errors.name} 
-                helperText={!!errors.name ? errors.name.message : ""} 
+              <TextField
+                fullWidth
+                {...register("name")}
+                label="Name"
+                error={!!errors.name}
+                helperText={!!errors.name ? errors.name.message : ""}
               />
             </Box>
           </Grid>
@@ -59,6 +63,13 @@ export function CreateRoleForm() {
           </Grid>
         </Grid>
       </FormProvider>
+
+      {modalForm.field === "create-permission"
+        ? <FormModal field='create-permission' title='Create new permission'>
+          {/* <CreateBrandForm /> */}
+          Not impl yet!
+        </FormModal>
+        : null}
     </>
   )
 }
