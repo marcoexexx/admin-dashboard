@@ -13,6 +13,9 @@ export function RolesList() {
   const rolesQuery = useGetRoles({
     filter: roleFilter.where,
     pagination: roleFilter.pagination || INITIAL_PAGINATION,
+    include: {
+      _count: true
+    }
   })
 
   // Mutations

@@ -266,6 +266,10 @@ export type Role = {
   // relationship
   permissions?: Permission[]
   users?: User[]
+  _count?: {
+    users?: boolean,
+    permissions?: boolean
+  },
 
   createdAt: string | Date
   updatedAt: string | Date

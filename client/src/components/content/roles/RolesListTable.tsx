@@ -2,7 +2,7 @@ import { Box, Card, Divider, TablePagination, Typography } from "@mui/material"
 import { Resource, Role } from "@/services/types";
 import { EnhancedTable, TypedColumn } from "@/components";
 import { CacheResource } from "@/context/cacheKey";
-import { RenderRoleLabel } from "@/components/table-labels";
+import { RenderCountLabel, RenderRoleLabel } from "@/components/table-labels";
 import { RolesFilterForm } from ".";
 import { useStore } from "@/hooks";
 import { INITIAL_PAGINATION } from "@/context/store";
@@ -14,6 +14,12 @@ const columns: TypedColumn<Role>[] = [
     align: "left",
     name: "Name",
     render: ({ value }) => <RenderRoleLabel role={value} />
+  },
+  {
+    id: "permissions",
+    align: "left",
+    name: "Permissions",
+    render: ({ value }) => value._count ? <RenderCountLabel _count={value._count} /> : null
   },
   {
     id: "createdAt",

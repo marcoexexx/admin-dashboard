@@ -1,6 +1,7 @@
 import { Box, Grid, TextField } from "@mui/material";
 import { MuiButton } from "@/components/ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { PermissionMultiInputField } from "@/components/input-fields";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
 import { useParams } from "react-router-dom";
@@ -21,6 +22,9 @@ export function UpdateRoleForm() {
   // Queries
   const roleQuery = useGetRole({
     id: roleId,
+    include: {
+      permissions: true
+    }
   })
 
   // Mutations
@@ -35,7 +39,10 @@ export function UpdateRoleForm() {
   })
 
   useEffect(() => {
-    if (roleQuery.isSuccess && role && roleFetchStatus === "idle") methods.setValue("name", role.name)
+    if (roleQuery.isSuccess && role && roleFetchStatus === "idle") {
+      methods.setValue("name", role.name)
+      methods.setValue("permissions", role.permissions?.map(p => p.id) || [])
+    }
   }, [roleQuery.isSuccess, roleFetchStatus])
 
 
@@ -55,13 +62,19 @@ export function UpdateRoleForm() {
         <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
           <Grid item xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField 
-                fullWidth 
-                {...register("name")} 
-                label="Name" 
-                error={!!errors.name} 
-                helperText={!!errors.name ? errors.name.message : ""} 
+              <TextField
+                fullWidth
+                {...register("name")}
+                label="Name"
+                error={!!errors.name}
+                helperText={!!errors.name ? errors.name.message : ""}
               />
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <PermissionMultiInputField updateField />
             </Box>
           </Grid>
 

@@ -6,11 +6,12 @@ import { uploadExcel } from "../upload/excelUpload";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { createMultiPermissionsHandler, createPermissionHandler, deleteMultiPermissionsHandler, deletePermissionHandler, getPermissionsHandler, updatePermissionHandler } from "../controllers/permission.controller";
 import { createPermissionSchema, deleteMultiPermissionsSchema, getPermissionSchema, updatePermissionSchema } from "../schemas/permission.schema";
+import { sudo } from "../middleware/sudo";
 
 
 const router = Router()
 
-router.use(deserializeUser, requiredUser, checkBlockedUser)
+router.use(deserializeUser, requiredUser, sudo, checkBlockedUser)
 
 
 router.route("/")

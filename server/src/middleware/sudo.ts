@@ -13,7 +13,7 @@ export function sudo(
     // @ts-ignore  for mocha testing
     const user = checkUser(req.user).ok_or_throw()
 
-    if (user.isSuperuser) return next(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))
+    if (!user.isSuperuser) return next(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))
 
     next()
   } catch (err) {
