@@ -40,6 +40,7 @@ const updateProductSchema = object({
   isPending: boolean().default(false),
   status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
+  images: string().array(),
   itemCode: string().nullable().optional(),
 })
 

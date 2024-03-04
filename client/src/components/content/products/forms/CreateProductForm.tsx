@@ -4,7 +4,7 @@ import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
 import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
-import { BrandInputField, CatgoryMultiInputField, EditorInputField, SpecificationInputField } from "@/components/input-fields";
+import { BrandInputField, CatgoryMultiInputField, EditorInputField, ImageMultiInputField, SpecificationInputField } from "@/components/input-fields";
 import { PriceUnit, ProductStatus, ProductStockStatus } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,6 +41,7 @@ const createProductSchema = object({
   isPending: boolean().default(false),
   status: z.nativeEnum(ProductStatus).default("Draft"),
 
+  images: string().array(),
   itemCode: string().nullable().optional(),
 })
 
@@ -182,6 +183,12 @@ export function CreateProductForm() {
             </Box>
           </Grid>
 
+          <Grid item xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <ImageMultiInputField />
+            </Box>
+          </Grid>
+
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField
@@ -200,7 +207,19 @@ export function CreateProductForm() {
                 ))}
               </TextField>
               <BrandInputField />
-              <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
+            </Box>
+          </Grid>
+
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField
+                fullWidth
+                type="number"
+                {...register("quantity", { valueAsNumber: true })} 
+                label="Quantity" 
+                error={!!errors.quantity} 
+                helperText={!!errors.quantity ? errors.quantity.message : ""} 
+              />
               <TextField
                 fullWidth
                 type="number"
@@ -208,13 +227,10 @@ export function CreateProductForm() {
                 inputProps={{
                   step: "0.01"
                 }}
-                label="Discount" error={!!errors.discount} helperText={!!errors.discount ? errors.discount.message : ""} />
-            </Box>
-          </Grid>
-
-          <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              {/* Image upload */}
+                label="Discount"
+                error={!!errors.discount}
+                helperText={!!errors.discount ? errors.discount.message : ""} 
+              />
             </Box>
           </Grid>
 

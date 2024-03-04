@@ -4,7 +4,7 @@ import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 import { checkUser } from '../services/checkUser';
 import { Request, Response, NextFunction } from 'express'
-import { CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, UpdateProductInput, UploadImagesProductInput } from '../schemas/product.schema';
+import { CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, UpdateProductInput } from '../schemas/product.schema';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { LifeCycleProductConcrate, LifeCycleState } from '../utils/auth/life-cycle-state';
 import { OperationAction, ProductStatus } from '@prisma/client';
@@ -182,7 +182,8 @@ export async function createProductHandler(
       quantity,
       discount,
       isDiscountItem,
-      status
+      status,
+      images
     } = req.body;
 
     // @ts-ignore  for mocha testing
@@ -219,6 +220,7 @@ export async function createProductHandler(
           }))
         },
         quantity,
+        images,
         discount,
         isDiscountItem,
         creatorId: sessionUser.id
@@ -434,7 +436,9 @@ export async function updateProductHandler(
       discount,
       isDiscountItem,
       status,
-      quantity
+      quantity,
+      images,
+      itemCode,
     } = req.body
 
     const originalProductState = (await service.tryFindUnique({
@@ -502,6 +506,8 @@ export async function updateProductHandler(
             update: {}
           }))
         },
+        itemCode,
+        images
       }
     })).ok_or_throw()
 
@@ -516,39 +522,40 @@ export async function updateProductHandler(
 }
 
 
-export async function uploadImagesProductHandler(
-  req: Request<GetProductInput, {}, UploadImagesProductInput>,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { productId } = req.params
-    const { images } = req.body
+// // FEAT: Upload image
+// export async function uploadImagesProductHandler(
+//   req: Request<GetProductInput, {}, UploadImagesProductInput>,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   try {
+//     const { productId } = req.params
+//     const { images } = req.body
 
-    const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
-    _isAccess.ok_or_throw()
+//     const sessionUser = checkUser(req?.user).ok_or_throw()
+//     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+//     _isAccess.ok_or_throw()
 
-    const product = (await service.tryUpdate({
-      where: {
-        id: productId
-      },
-      data: {
-        images: {
-          push: images,
-        }
-      }
-    })).ok_or_throw()
+//     const product = (await service.tryUpdate({
+//       where: {
+//         id: productId
+//       },
+//       data: {
+//         images: {
+//           push: images,
+//         }
+//       }
+//     })).ok_or_throw()
 
-    // Create Audit log
-    const _auditLog = await service.audit(sessionUser)
-    _auditLog.ok_or_throw()
+//     // Create Audit log
+//     const _auditLog = await service.audit(sessionUser)
+//     _auditLog.ok_or_throw()
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ product }))
-  } catch (err) {
-    next(err)
-  }
-}
+//     res.status(StatusCode.OK).json(HttpDataResponse({ product }))
+//   } catch (err) {
+//     next(err)
+//   }
+// }
 
 
 // TODO: Remove

@@ -60,6 +60,7 @@ export const createProductSchema = object({
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
     itemCode: string().nullable().optional(),
+    images: string().array()
   })
 })
 
@@ -107,11 +108,12 @@ export const createMultiProductsSchema = object({
 })
 
 
-export const uploadImagesProductSchema = object({
-  body: object({
-    images: string().array(),
-  })
-})
+// // FEAT: Upload image
+// export const uploadImagesProductSchema = object({
+//   body: object({
+//     images: string().array(),
+//   })
+// })
 
 
 export const updateProductSchema = object({
@@ -139,6 +141,7 @@ export const updateProductSchema = object({
     quantity: number().min(0),
 
     itemCode: string().nullable().optional(),
+    images: string().array()
   })
 })
 
@@ -149,5 +152,5 @@ export type CreateProductInput = z.infer<typeof createProductSchema>["body"]
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
 export type CreateMultiProductsInput = z.infer<typeof createMultiProductsSchema>["body"]
 export type DeleteMultiProductsInput = z.infer<typeof deleteMultiProductsSchema>["body"]
-export type UploadImagesProductInput = z.infer<typeof uploadImagesProductSchema>["body"]
+// export type UploadImagesProductInput = z.infer<typeof uploadImagesProductSchema>["body"]
 export type LikeProductByUserInput = z.infer<typeof likeProductByUserSchema>

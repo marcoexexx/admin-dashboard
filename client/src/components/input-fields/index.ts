@@ -11,6 +11,7 @@ export * from './TownshipByRegionInputField'
 export * from './RegionInputField'
 export * from './AddressInputField'
 export * from './PickupAddressInputField'
+export * from './ImageMultiInputField'
 
 // TODO: Necessary Components
 export * from './_ColorsInputField'
