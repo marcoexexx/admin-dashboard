@@ -1,27 +1,26 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 import Result, { Err, Ok } from "@/libs/result";
 
-import { CacheKey, CacheResource } from "@/context/cacheKey";
-import { BrandApiService } from "@/services/brandsApi";
-import { BrandWhereInput } from "@/context/brand";
 import { useQuery } from "@tanstack/react-query";
+import { PermisssionApiService } from "@/services/permissionsApi";
+import { CacheKey, CacheResource } from "@/context/cacheKey";
+import { PermissionWhereInput } from "@/context/permission";
 
 
-const apiService = BrandApiService.new()
+const apiService = PermisssionApiService.new()
 
-
-export function useGetBrand({
+export function useGetPermission({
   id,
   include,
 }: {
   id: string | undefined,
-  include?: BrandWhereInput["include"]
+  include?: PermissionWhereInput["include"]
 }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: [CacheResource.Brand, { id, include }] as CacheKey<"brands">["detail"],
+    queryKey: [CacheResource.Permission, { id, include }] as CacheKey<"permissions">["detail"],
     queryFn: args => apiService.find(args, { filter: { id }, include }),
-    select: data => data?.brand
+    select: data => data?.permission
   })
 
 

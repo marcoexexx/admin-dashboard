@@ -1,18 +1,17 @@
 import Result, { Err, Ok } from "@/libs/result"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 
-import { CacheResource } from "@/context/cacheKey"
-import { BrandApiService } from "@/services/brandsApi"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
+import { CacheResource } from "@/context/cacheKey"
+import { PermisssionApiService } from "@/services/permissionsApi"
 
 
-const apiService = BrandApiService.new()
+const apiService = PermisssionApiService.new()
 
-
-export function useDeleteMultiBrands() {
+export function useDeleteMultiPermissions() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
@@ -29,13 +28,13 @@ export function useDeleteMultiBrands() {
     onSuccess() {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: "Success delete multi brands.",
+          message: "Success delete multi permissions.",
           severity: "success"
         }
       })
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: [CacheResource.Brand]
+        queryKey: [CacheResource.Permission]
       })
       playSoundEffect("success")
     }

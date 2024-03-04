@@ -1,37 +1,37 @@
 import Result, { Err, Ok } from "@/libs/result"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
 
-import { CacheResource } from "@/context/cacheKey"
-import { BrandApiService } from "@/services/brandsApi"
 import { useMutation } from "@tanstack/react-query"
 import { useStore } from ".."
 import { playSoundEffect } from "@/libs/playSound"
 import { queryClient } from "@/components"
 import { useNavigate } from "react-router-dom"
+import { CacheResource } from "@/context/cacheKey"
+import { PermisssionApiService } from "@/services/permissionsApi"
 
 
-const apiService = BrandApiService.new()
+const apiService = PermisssionApiService.new()
 
 
-export function useCreateBrand() {
+export function useCreatePermission() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/brands"
+  const from = "/permissions"
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.create>) => apiService.create(...args),
     onSuccess: () => {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: "Success created a new brand.",
+          message: "Success created a new permission.",
           severity: "success"
         }
       })
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
-        queryKey: [CacheResource.Brand]
+        queryKey: [CacheResource.Permission]
       })
       playSoundEffect("success")
     },
