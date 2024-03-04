@@ -71,21 +71,21 @@ export function SpecificationInputField() {
           <Controller
             control={control}
             name={`${PREFIX}.${idx}.name`}
-            render={({ field }) => <TextField
+            render={({ field, fieldState }) => <TextField
               {...field}
               label="specification name"
-              error={false}
-              helperText=""
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
             />}
           />
           <Controller
             control={control}
             name={`${PREFIX}.${idx}.value`}
-            render={({ field }) => <TextField
+            render={({ field, fieldState }) => <TextField
               {...field}
               label="specification value"
-              error={false}
-              helperText=""
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
             />}
           />
 

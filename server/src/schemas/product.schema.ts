@@ -36,8 +36,8 @@ export const createProductSchema = object({
     title: string({ required_error: "Title is required" })
       .min(1).max(128),
     specification: object({
-      name: string({ required_error: "Specification name is required" }),
-      value: string({ required_error: "Specification value is required" }),
+      name: string({ required_error: "Specification name is required" }).min(1),
+      value: string({ required_error: "Specification value is required" }).min(1),
     }).array(),
     overview: string().max(5000).optional(),
     description: string().max(5000).optional(),
@@ -125,8 +125,8 @@ export const updateProductSchema = object({
       .min(1).max(128),
     title: string({ required_error: "Title is required" }),
     specification: object({
-      name: string({ required_error: "Specification name is required" }),
-      value: string({ required_error: "Specification value is required" }),
+      name: string({ required_error: "Specification name is required" }).min(1),
+      value: string({ required_error: "Specification value is required" }).min(1),
     }).array().default([]),
     discount: number().max(100).default(0),
     overview: string().min(0).max(5000).optional(),
