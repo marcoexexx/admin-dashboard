@@ -61,7 +61,8 @@ export function ImageMultiInputField(props: ImageMultiInputFieldProps) {
           inputValue={text.replace(",", "")}
           renderTags={(values, _props, _owner) => {
             return values.map(value => {
-              return <Chip key={value} avatar={<Avatar alt="image" src={value} />} label={value.split(".").slice(-2, -1)[0].slice(0, 30)} />
+              const label = value.split(".").slice(-2, -1)[0].slice(0, 30).split("/").splice(-1)[0]
+              return <Chip key={value} avatar={<Avatar alt="image" src={value} />} label={label} />
             })
           }}
           renderOption={(props, option) => (

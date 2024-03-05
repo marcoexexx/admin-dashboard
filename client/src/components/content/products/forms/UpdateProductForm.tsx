@@ -1,6 +1,6 @@
 import { Alert, Box, FormControlLabel, Grid, InputAdornment, MenuItem, OutlinedInput, Switch, TextField } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { BrandInputField, CatgoryMultiInputField, EditorInputField, SpecificationInputField } from "@/components/input-fields";
+import { BrandInputField, CatgoryMultiInputField, EditorInputField, ImageMultiInputField, SpecificationInputField } from "@/components/input-fields";
 import { SuspenseLoader, queryClient } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { FormModal } from "@/components/forms";
@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { useGetProduct, useUpdateProduct } from "@/hooks/product";
 import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
 import { useParams } from "react-router-dom";
+import { productStockStatusLabel } from "@/components/table-labels";
 
 
 const updateProductSchema = object({
@@ -40,7 +41,7 @@ const updateProductSchema = object({
   isPending: boolean().default(false),
   status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
-  images: string().array(),
+  images: string().array().default([]),
   itemCode: string().nullable().optional(),
 })
 
@@ -227,6 +228,12 @@ export function UpdateProductForm() {
             </Box>
           </Grid>
 
+          <Grid item xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <ImageMultiInputField />
+            </Box>
+          </Grid>
+
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
               <TextField
@@ -240,12 +247,24 @@ export function UpdateProductForm() {
               >
                 {(Object.keys(ProductStockStatus) as ProductStockStatus[]).map(status => (
                   <MenuItem key={status} value={status}>
-                    {status}
+                    {productStockStatusLabel[status]}
                   </MenuItem>
                 ))}
               </TextField>
               <BrandInputField updateField />
-              <TextField fullWidth type="number" {...register("quantity", { valueAsNumber: true })} label="Quantity" error={!!errors.quantity} helperText={!!errors.quantity ? errors.quantity.message : ""} />
+            </Box>
+          </Grid>
+
+          <Grid item md={6} xs={12}>
+            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+              <TextField
+                fullWidth 
+                type="number" 
+                {...register("quantity", { valueAsNumber: true })} 
+                label="Quantity" 
+                error={!!errors.quantity}
+                helperText={!!errors.quantity ? errors.quantity.message : ""}
+              />
               <TextField
                 fullWidth
                 type="number"
@@ -253,9 +272,12 @@ export function UpdateProductForm() {
                 inputProps={{
                   step: "0.01"
                 }}
-                label="Discount" error={!!errors.discount} helperText={!!errors.discount ? errors.discount.message : ""} />
-            </Box>
-          </Grid>
+                label="Discount" 
+                error={!!errors.discount}
+                helperText={!!errors.discount ? errors.discount.message : ""} 
+              />
+              </Box>
+            </Grid>
 
           <Grid item md={6} xs={12}>
             <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>

@@ -2,9 +2,9 @@ import { Product, ProductStockStatus } from "@/services/types"
 import { Typography } from "@mui/material"
 
 
-const labels: Record<ProductStockStatus, string> = {
+export const productStockStatusLabel: Record<ProductStockStatus, string> = {
   [ProductStockStatus.Available]: "Available",
-  [ProductStockStatus.OutOfStock]: "Outn of stock",
+  [ProductStockStatus.OutOfStock]: "Out of stock",
   [ProductStockStatus.AskForStock]: "Ask for stock",
   [ProductStockStatus.Discontinued]: "Discontinued"
 }
@@ -13,5 +13,5 @@ const labels: Record<ProductStockStatus, string> = {
 export function RenderProductStockStatus({ product }: { product: Product }) {
   // const label = _.snakeCase(product.instockStatus)
 
-  return <Typography>{labels[product.instockStatus]}</Typography>
+  return <Typography>{productStockStatusLabel[product.instockStatus]}</Typography>
 }
