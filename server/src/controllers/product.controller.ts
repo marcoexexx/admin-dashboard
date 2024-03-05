@@ -458,6 +458,19 @@ export async function updateProductHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
     _isAccess.ok_or_throw()
 
+    // TODO: remove delete specification manually
+    const _deleteProductSpecifications = await service.tryUpdate({
+      where: { id: productId },
+      data: {
+        specification: {
+          deleteMany: {
+            productId
+          }
+        }
+      }
+    })
+    _deleteProductSpecifications.ok_or_throw()
+
     const product = (await service.tryUpdate({
       where: { id: productId },
       data: {
@@ -508,7 +521,7 @@ export async function updateProductHandler(
         },
         itemCode,
         images
-      }
+      },
     })).ok_or_throw()
 
     // Create Audit log
