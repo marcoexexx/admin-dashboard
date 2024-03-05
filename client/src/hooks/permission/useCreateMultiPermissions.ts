@@ -24,6 +24,7 @@ export function useCreateMultiPermissions() {
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiPermissions() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Permission]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

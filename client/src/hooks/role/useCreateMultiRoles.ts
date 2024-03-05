@@ -24,6 +24,7 @@ export function useCreateMultiRoles() {
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiRoles() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Role]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

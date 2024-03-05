@@ -24,6 +24,7 @@ export function useCreateMultiBrands() {
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiBrands() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Brand]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

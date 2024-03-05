@@ -24,6 +24,7 @@ export function useCreateMultiRegions() {
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiRegions() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Region]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

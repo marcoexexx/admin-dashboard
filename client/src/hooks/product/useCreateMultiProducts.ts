@@ -24,6 +24,7 @@ export function useCreateMultiProducts() {
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiProducts() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Product]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

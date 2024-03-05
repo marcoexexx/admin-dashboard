@@ -37,7 +37,7 @@ const updateProductSchema = object({
   dealerPrice: number().min(0).optional(),
   marketPrice: number().min(0).optional(),
   priceUnit: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
-  quantity: number().min(0),
+  quantity: number().min(0).optional(),
   isPending: boolean().default(false),
   status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 

@@ -22,6 +22,7 @@ export function useCreateMultiCoupons() {
         message: `failed: ${err.response.data.message}`,
         severity: "error"
       } })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -33,6 +34,7 @@ export function useCreateMultiCoupons() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Coupon]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

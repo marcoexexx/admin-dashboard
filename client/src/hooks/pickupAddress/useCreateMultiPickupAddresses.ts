@@ -24,6 +24,7 @@ export function useCreateMultiPickupAddresses() {
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiPickupAddresses() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.PickupAddress]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })
