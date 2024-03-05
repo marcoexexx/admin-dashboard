@@ -60,7 +60,7 @@ export const createProductSchema = object({
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
     itemCode: string().nullable().optional(),
-    images: string().array()
+    images: string().array().default([])
   })
 })
 
@@ -141,7 +141,7 @@ export const updateProductSchema = object({
     quantity: number().min(0),
 
     itemCode: string().nullable().optional(),
-    images: string().array()
+    images: string().array().default([])
   })
 })
 

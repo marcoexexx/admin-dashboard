@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { useCreateProduct } from "@/hooks/product";
 import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
 import { tryParseInt } from "@/libs/result/std";
+import { productStockStatusLabel } from "@/components/table-labels";
 
 
 const createProductSchema = object({
@@ -41,7 +42,7 @@ const createProductSchema = object({
   isPending: boolean().default(false),
   status: z.nativeEnum(ProductStatus).default("Draft"),
 
-  images: string().array(),
+  images: string().array().default([]),
   itemCode: string().nullable().optional(),
 })
 
@@ -202,7 +203,7 @@ export function CreateProductForm() {
               >
                 {(Object.keys(ProductStockStatus) as ProductStockStatus[]).map(status => (
                   <MenuItem key={status} value={status}>
-                    {status}
+                    {productStockStatusLabel[status]}
                   </MenuItem>
                 ))}
               </TextField>
