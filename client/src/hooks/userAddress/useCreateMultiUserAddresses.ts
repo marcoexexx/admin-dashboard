@@ -24,6 +24,7 @@ export function useCreateMultiUserAddresses() {
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiUserAddresses() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.UserAddress]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

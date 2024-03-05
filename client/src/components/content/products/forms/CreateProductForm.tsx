@@ -38,7 +38,7 @@ const createProductSchema = object({
   salesCategory: object({}).array().default([]),
   discount: number().max(100).default(0),
   isDiscountItem: boolean().default(false),
-  quantity: number().min(0),
+  quantity: number().min(0).optional(),
   isPending: boolean().default(false),
   status: z.nativeEnum(ProductStatus).default("Draft"),
 

@@ -458,7 +458,6 @@ export async function updateProductHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
     _isAccess.ok_or_throw()
 
-    // TODO: remove delete specification manually
     const _deleteProductSpecifications = await service.tryUpdate({
       where: { id: productId },
       data: {

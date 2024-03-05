@@ -207,6 +207,8 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
   const handleOnImport = (data: Row[]) => {
     if (!onMultiCreate) return unimplementedFeature()
 
+    dispatch({ type: "OPEN_BACKDROP" })
+
     convertToExcel(data, "Brands")
       .then(excelBuffer => onMultiCreate(excelBuffer))
       .catch(err => dispatch({

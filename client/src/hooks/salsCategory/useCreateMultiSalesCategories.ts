@@ -24,6 +24,7 @@ export function useCreateMultiSalesCategories() {
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiSalesCategories() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.SalesCategory]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

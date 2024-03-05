@@ -24,6 +24,7 @@ export function useCreateMultiExchanges() {
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiExchanges() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Exchange]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

@@ -24,6 +24,7 @@ export function useCreateMultiTownships() {
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiTownships() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Township]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

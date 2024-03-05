@@ -56,7 +56,7 @@ export const createProductSchema = object({
       salesCategory: string(), // by id
       discount: number().max(100).default(0)
     }).array(),
-    quantity: number().min(0),
+    quantity: number().nullable().optional(),
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
     itemCode: string().nullable().optional(),
@@ -90,7 +90,7 @@ export const createMultiProductsSchema = object({
     priceUnit: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
     discount: number().max(100).default(0),
     isDiscountItem: boolean().default(false),
-    quantity: number().min(0),
+    quantity: number().min(0).optional(),
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
     "brand.name": string({ required_error: "Brand is required" })
@@ -138,7 +138,7 @@ export const updateProductSchema = object({
     marketPrice: number().min(0).optional(),
     priceUnit: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
-    quantity: number().min(0),
+    quantity: number().nullable().optional(),
 
     itemCode: string().nullable().optional(),
     images: string().array().default([])
