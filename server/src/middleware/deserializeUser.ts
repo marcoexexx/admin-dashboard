@@ -41,6 +41,7 @@ export async function safeDeserializeUser(
       },
       include: {
         shopownerProvider: true,
+        cart: true,
         role: {
           include: {
             permissions: true
@@ -86,6 +87,7 @@ export async function deserializeUser(
         id: tryJSONParse(session).expect(`Failed json parse for session id`).id
       },
       include: {
+        cart: true,
         role: {
           include: {
             permissions: true

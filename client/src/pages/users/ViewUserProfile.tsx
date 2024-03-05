@@ -14,14 +14,14 @@ import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
 const appName = getConfig("appName")
 
-function ViewUserWrapper({ username }: { username: string | undefined }) {
+function ViewDetailWrapper({ username }: { username: string | undefined }) {
   usePermission({ action: OperationAction.Read, resource: Resource.User }).ok_or_throw()
 
   return <UserProfile username={username} />
 }
 
 
-export default function ViewUser() {
+export default function ViewPage() {
   const { username } = useParams()
 
   const navigate = useNavigate()
@@ -74,7 +74,7 @@ export default function ViewUser() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ViewUserWrapper username={username }/>
+                <ViewDetailWrapper username={username }/>
               </Suspense>
             </ErrorBoundary>
 

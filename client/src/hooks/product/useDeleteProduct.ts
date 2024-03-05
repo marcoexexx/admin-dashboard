@@ -37,6 +37,9 @@ export function useDeleteProduct() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Product]
       })
+      queryClient.invalidateQueries({
+        queryKey: [CacheResource.Cart]
+      })
       playSoundEffect("success")
     }
   })

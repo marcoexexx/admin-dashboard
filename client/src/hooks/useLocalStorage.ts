@@ -1,5 +1,5 @@
 type LocalStorageKey = 
-  | "CARTS"
+  | "CART"
   | "PICKUP_FORM"
   | "CHECKOUT_FORM_ACTIVE_STEP"
 

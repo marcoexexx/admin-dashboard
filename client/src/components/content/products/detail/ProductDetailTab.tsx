@@ -3,12 +3,14 @@ import isBetween from "dayjs/plugin/isBetween"
 
 import { Box, Card, CardActions, CardMedia, Divider, IconButton, Tooltip, Typography, styled } from "@mui/material"
 import { MuiButton, Text } from '@/components/ui'
-import { OrderItem, Product } from "@/services/types";
+import { Product } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
+import { CreateCartOrderItemInput } from "@/components/cart/CartsTable";
 import { memoize } from "lodash";
-import { useLocalStorage, useStore } from "@/hooks";
+import { useStore } from "@/hooks";
 import { queryClient } from "@/components";
 import { useLikeProduct, useUnLikeProduct } from "@/hooks/product";
+import { useAddToCart, useGetCart } from "@/hooks/cart";
 
 import ProductRelationshipTable from "./ProductRelationshipTable";
 import ProductSpecificationTable from "./ProductSpecificationTable"
@@ -50,57 +52,36 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
 
   const { state, dispatch } = useStore()
 
-  const { set, get } = useLocalStorage()
+  const { try_data } = useGetCart()
 
+  const { mutate: addToCart, isPending: cartIsPending } = useAddToCart()
   const { mutate: likeProduct, isPending: likeIsPending } = useLikeProduct()
   const { mutate: unLikeProduct, isPending: unLikeIsPending } = useUnLikeProduct()
 
+  const itemsInCart = try_data.ok_or_throw()?.orderItems || []
+
+
   const handleAddToCart = () => {
-    const initialQuality = 1
-
     const { productDiscountAmount } = calculateProductDiscount(product)
-
-    const originalTotalPrice = initialQuality * product.price
+    const initialQuality = 1
     const totalPrice = initialQuality * productDiscountAmount
 
-    const item: OrderItem = {
-      id: crypto.randomUUID(),  // For unique item, not necessary for api
-      product,
+    const item: CreateCartOrderItemInput = {
       productId: product.id,
-      price: product.price,
       quantity: initialQuality,
-      originalTotalPrice,
+      price: product.price,
       totalPrice,
-      saving: originalTotalPrice - totalPrice,
-
-      createdAt: new Date(),
-      updatedAt: new Date(),
     }
 
-    const cart = get<OrderItem[]>("CARTS") || []
-    const idx = cart.findIndex(i => i.productId === item.productId)
-
-    if (idx !== -1) {
-      const originalTotalPrice = (cart[idx].quantity + 1) * cart[idx].price
-      const totalPrice = (cart[idx].quantity + 1) * productDiscountAmount
-
-      cart[idx] = {
-        ...item,
-        quantity: cart[idx].quantity + 1,
-        originalTotalPrice,
-        totalPrice,
-        saving: originalTotalPrice - totalPrice,
-      }
-    } else {
-      cart.push(item)
+    // INFO: check quantity if beyound the limit, just open modal
+    const itemInCartIdx = itemsInCart.findIndex(item => item.productId === product.id && product.quantity <= item.quantity)
+    if (itemInCartIdx !== -1) {
+      return dispatch({ type: "OPEN_MODAL_FORM", payload: "cart" })
     }
 
-    set("CARTS", cart)
-
-    dispatch({
-      type: "OPEN_MODAL_FORM",
-      payload: "cart"
-    })
+    // TODO: add useLocalStorage for guest user
+    addToCart(item)
+    return
   }
 
   const likedTotal = product._count.likedUsers
@@ -213,6 +194,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
             startIcon={<ShoppingCartIcon />}
             variant="outlined"
             onClick={handleAddToCart}
+            loading={cartIsPending}
           >
             Add
           </MuiButton>

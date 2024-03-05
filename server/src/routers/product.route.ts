@@ -2,9 +2,8 @@ import { Router } from "express";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createMultiProductsHandler, createProductHandler, deleteMultiProductHandler, deleteProductHandler, deleteProductSaleCategoryHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, updateProductSalesCategoryHandler, uploadImagesProductHandler } from "../controllers/product.controller";
-import { createProductSchema, deleteMultiProductsSchema, getProductSaleCategorySchema, getProductSchema, likeProductByUserSchema, updateProductSchema, uploadImagesProductSchema } from "../schemas/product.schema";
-import { resizeProductImages, uploadProductImage } from "../upload/multiUpload";
+import { createMultiProductsHandler, createProductHandler, deleteMultiProductHandler, deleteProductHandler, deleteProductSaleCategoryHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, updateProductSalesCategoryHandler } from "../controllers/product.controller";
+import { createProductSchema, deleteMultiProductsSchema, getProductSaleCategorySchema, getProductSchema, likeProductByUserSchema, updateProductSchema } from "../schemas/product.schema";
 import { uploadExcel } from "../upload/excelUpload";
 import { createSaleCategoryForProductHandler, getSalesCategoriesInProductHandler } from "../controllers/salesCategory.controller";
 import { createProductSalesCategorySchema, updateProductSaleCategorySchema } from "../schemas/salesCategory.schema";
@@ -124,17 +123,18 @@ router.route("/unlike/:productId")
   )
 
 
-router.route("/upload/:productId")
-  .post(
-    deserializeUser, 
-    requiredUser, 
-    checkBlockedUser,
-    uploadProductImage,
-    resizeProductImages,
-    validate(getProductSchema),
-    validate(uploadImagesProductSchema),
-    uploadImagesProductHandler
-  )
+// // FEAT: Upload image
+// router.route("/upload/:productId")
+//   .post(
+//     deserializeUser, 
+//     requiredUser, 
+//     checkBlockedUser,
+//     uploadProductImage,
+//     resizeProductImages,
+//     validate(getProductSchema),
+//     validate(uploadImagesProductSchema),
+//     uploadImagesProductHandler
+//   )
 
 
 export default router

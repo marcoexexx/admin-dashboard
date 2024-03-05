@@ -48,11 +48,11 @@ interface SalesCategoriesListTableProps {
   isLoading?: boolean
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManySalesCategories: (buf: ArrayBuffer) => void
+  onCreateMany: (buf: ArrayBuffer) => void
 }
 
 export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
-  const { salesCategoiries, count, isLoading, onCreateManySalesCategories, onDelete, onMultiDelete } = props
+  const { salesCategoiries, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
   const { state: { salesCategoryFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -81,7 +81,7 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
         columns={columns}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
-        onMultiCreate={onCreateManySalesCategories}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

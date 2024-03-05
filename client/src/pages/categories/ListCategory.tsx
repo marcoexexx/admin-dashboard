@@ -16,7 +16,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 
-function ListCategoryWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.Category }).ok_or_throw()
 
   return <CategoriesList />
@@ -24,7 +24,7 @@ function ListCategoryWrapper() {
 }
 
 
-export default function ListCategory() {
+export default function ListPage() {
   const navigate = useNavigate()
 
   const isAllowedCreateCategory = usePermission({
@@ -74,7 +74,7 @@ export default function ListCategory() {
 
             <ErrorBoundary>
               <Suspense>
-                <ListCategoryWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

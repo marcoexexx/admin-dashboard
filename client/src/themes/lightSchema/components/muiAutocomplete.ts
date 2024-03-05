@@ -2,6 +2,10 @@ import { colors } from "@/themes/lightSchema";
 import { ComponentCustomizedStyle } from "../types";
 
 export const MuiAutocomplete: ComponentCustomizedStyle["MuiAutocomplete"] = {
+  defaultProps: {
+    filterSelectedOptions: true
+  },
+
   styleOverrides: {
     tag: {
       margin: 1

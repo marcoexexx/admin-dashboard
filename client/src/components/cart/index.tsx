@@ -1,30 +1,27 @@
 import { Container, Grid, Typography } from "@mui/material"
 import { CartsTable } from "./CartsTable"
-import { OrderItem } from "@/services/types"
 import { MuiButton } from "../ui"
 import { useNavigate } from "react-router-dom"
-import { useStore } from "@/hooks"
+import { useLocalStorage, useStore } from "@/hooks"
+import { useGetCart } from "@/hooks/cart"
+import { CreateOrderInput } from "../content/orders/forms"
 
 
-interface CartsProps {
-  orderItems: OrderItem[]
-}
+export function Carts() {
+  const { dispatch } = useStore()
 
-
-export function Carts(props: CartsProps) {
-  const { orderItems } = props
-
-  const { dispatch, state: {disableCheckOut: invalidCart} } = useStore()
-
-  const disableCheckOut = invalidCart || !orderItems.length
+  const { try_data, isLoading } = useGetCart()
+  const { get } = useLocalStorage()
 
   const navigate = useNavigate()
 
+  const itemsCount = try_data.ok_or_throw()?.orderItems?.length
+  const disableCheckout = !itemsCount || !!get<CreateOrderInput>("PICKUP_FORM")?.createdPotentialOrderId
+
+
   const handleNavigate = () => {
-    if (!disableCheckOut) {
-      dispatch({ type: "CLOSE_MODAL_FORM", payload: "cart" })
-      navigate("/checkout")
-    }
+    dispatch({ type: "CLOSE_MODAL_FORM", payload: "cart" })
+    navigate("/checkout")
   }
 
 
@@ -33,11 +30,11 @@ export function Carts(props: CartsProps) {
       <Grid container justifyContent="space-between" alignItems="center" rowGap={3}>
         <Grid item xs={12}>
           <Typography variant="h3" component="h3" gutterBottom>Shopping carts</Typography>
-          <CartsTable carts={orderItems} />
+          <CartsTable />
         </Grid>
 
         <Grid item xs={6}>
-          <MuiButton disabled={disableCheckOut} onClick={handleNavigate}>Checkout</MuiButton>
+          <MuiButton onClick={handleNavigate} loading={isLoading} disabled={disableCheckout}>Checkout</MuiButton>
         </Grid>
       </Grid>
     </Container>

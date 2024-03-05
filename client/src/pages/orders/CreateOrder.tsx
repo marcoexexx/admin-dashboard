@@ -15,7 +15,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 
-function CreateOrderWrapper() {
+function CreateFormWrapper() {
   usePermission({ action: OperationAction.Create, resource: Resource.Order }).ok_or_throw()
   
   return <Card>
@@ -26,7 +26,7 @@ function CreateOrderWrapper() {
 }
 
 
-export default function CreateOrder() {
+export default function CreatePage() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -66,7 +66,7 @@ export default function CreateOrder() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <CreateOrderWrapper />
+                <CreateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

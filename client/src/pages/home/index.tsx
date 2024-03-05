@@ -9,7 +9,7 @@ import getConfig from "@/libs/getConfig"
 
 const appName = getConfig("appName")
 
-export default function Home() {
+export default function HomePage() {
   const { state: {user} } = useStore()
   const theme = useTheme()
 

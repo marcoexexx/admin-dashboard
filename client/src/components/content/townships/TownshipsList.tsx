@@ -46,7 +46,7 @@ export function TownshipsList() {
       isLoading={isLoading}
       townships={townships.results}
       count={townships.count}
-      onCreateManyTownships={handleCreateManyTownships}
+      onCreateMany={handleCreateManyTownships}
       onDelete={handleDeleteTownship}
       onMultiDelete={handleDeleteMultiTownships}
     />

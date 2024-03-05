@@ -4,7 +4,7 @@ import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { uploadExcel } from "../upload/excelUpload";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
-import { createMultiRolesHandler, createRoleHandler, deleteMultiRolesHandler, getRolesHandler, updateRoleHandler } from "../controllers/role.controller";
+import { createMultiRolesHandler, createRoleHandler, deleteMultiRolesHandler, getRoleHandler, getRolesHandler, updateRoleHandler } from "../controllers/role.controller";
 import { createRoleSchema, deleteMultiRolesSchema, getRoleSchema, updateRoleSchema } from "../schemas/role.schema";
 
 
@@ -40,7 +40,7 @@ router.post("/excel-upload",
 router.route("/detail/:roleId")
   .get(
     validate(getRoleSchema),
-    getRolesHandler
+    getRoleHandler
   )
   .patch(
     validate(updateRoleSchema), 

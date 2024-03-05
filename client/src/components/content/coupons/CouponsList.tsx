@@ -47,7 +47,7 @@ export function CouponsList() {
       coupons={data.results}
       count={data.count}
       isLoading={couponsQuery.isLoading}
-      onCreateManyCoupons={handleCreateManyCoupons}
+      onCreateMany={handleCreateManyCoupons}
       onDelete={handleDeleteCoupon}
       onMultiDelete={handleDeleteMultiCoupons}
     />

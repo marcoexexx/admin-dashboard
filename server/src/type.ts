@@ -7,7 +7,8 @@ export type UserWithRole = Prisma.UserGetPayload<{
       include: { 
         permissions: true 
       } 
-    }
+    },
+    cart: true
   }
 }>
 

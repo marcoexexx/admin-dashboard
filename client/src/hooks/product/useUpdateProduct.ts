@@ -42,6 +42,9 @@ export function useUpdateProduct() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Product]
       })
+      queryClient.invalidateQueries({
+        queryKey: [CacheResource.Cart]
+      })
       playSoundEffect("success")
     }
   })

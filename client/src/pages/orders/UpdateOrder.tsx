@@ -15,7 +15,7 @@ import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 const appName = getConfig("appName")
 
 
-function UpdateOrderWrapper() {
+function UpdateFormWrapper() {
   usePermission({ action: OperationAction.Update, resource: Resource.Order }).ok_or_throw()
   
   return <Card>
@@ -26,7 +26,7 @@ function UpdateOrderWrapper() {
 }
 
 
-export default function UpdateOrder() {
+export default function UpdatePage() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -67,7 +67,7 @@ export default function UpdateOrder() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <UpdateOrderWrapper />
+                <UpdateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

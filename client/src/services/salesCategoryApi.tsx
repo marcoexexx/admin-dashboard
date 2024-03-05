@@ -97,7 +97,7 @@ export class SalesCategoryApiService extends BaseApiService<SalesCategoryWhereIn
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`
 
-    const { data } = await authApi.delete(url, { data: { brandIds: ids } })
+    const { data } = await authApi.delete(url, { data: { salesCategoryIds: ids } })
     return data
   }
 

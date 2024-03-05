@@ -10,13 +10,7 @@ export type OrderAddressType = typeof OrderAddressType[keyof typeof OrderAddress
 
 
 export const createOrderSchema = object({
-  orderItems: object({
-    price: number().min(0),
-    quantity: number(),
-    productId: string(),
-    totalPrice: number().min(0),
-    saving: number()
-  }).array(),
+  orderItems: string().array(),
   status: z.nativeEnum(OrderStatus).default(OrderStatus.Pending),
   deliveryAddressId: string().optional(),
   totalPrice: number().min(0),

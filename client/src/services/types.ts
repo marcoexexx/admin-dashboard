@@ -21,6 +21,7 @@ export const Resource = {
   Coupon: "Coupon",
   Exchange: "Exchange",
   Order: "Order",
+  OrderItem: "OrderItem",
   PickupAddress: "PickupAddress",
   PotentialOrder: "PotentialOrder",
   Product: "Product",
@@ -93,6 +94,18 @@ export const OperationAction = {
 } as const
 export type OperationAction = typeof OperationAction[keyof typeof OperationAction]
 
+
+export type Cart = {
+  id: string,
+  label?: string,
+
+  user?: User,
+  userId?: string,
+  orderItems?: OrderItem[],
+
+  createdAt: string | Date,
+  updatedAt: string | Date
+}
 
 export type Coupon = {
   id: string
@@ -253,6 +266,10 @@ export type Role = {
   // relationship
   permissions?: Permission[]
   users?: User[]
+  _count?: {
+    users?: boolean,
+    permissions?: boolean
+  },
 
   createdAt: string | Date
   updatedAt: string | Date
@@ -299,6 +316,7 @@ export type User = {
   addresses?: Address[]
   pickupAddresses?: PickupAddress[]
   orders?: Order[]
+  cart?: Cart
 
   // relationship (MM)
   blockedUsers: {

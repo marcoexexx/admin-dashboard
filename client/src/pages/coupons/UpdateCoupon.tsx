@@ -15,7 +15,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 
-function UpdateCouponWrapper() {
+function UpdateFormWrapper() {
   usePermission({ action: OperationAction.Update, resource: Resource.Coupon }).ok_or_throw()
   
   return <Card>
@@ -26,7 +26,7 @@ function UpdateCouponWrapper() {
 }
 
 
-export default function UpdateCoupon() {
+export default function UpdatePage() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -67,7 +67,7 @@ export default function UpdateCoupon() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <UpdateCouponWrapper />
+                <UpdateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

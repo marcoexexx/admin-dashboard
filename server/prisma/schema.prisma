@@ -35,6 +35,7 @@ enum Resource {
   Coupon
   Exchange
   Order
+  OrderItem
   PickupAddress
   PotentialOrder
   Product
@@ -481,7 +482,7 @@ model OrderItem {
   totalPrice         Float
   saving             Float
   quantity           Int
-  product            Product         @relation(fields: [productId], references: [id])
+  product            Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId          String          @db.ObjectId
   order              Order?          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId            String?         @db.ObjectId
@@ -492,6 +493,8 @@ model OrderItem {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId], name: "cartId_productId")
 }
 
 model TownshipFees {

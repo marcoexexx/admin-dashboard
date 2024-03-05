@@ -1,7 +1,7 @@
 import { Box, Card, Divider, TablePagination, Typography, Theme, Select, MenuItem, useTheme, SelectChangeEvent } from "@mui/material"
 import { EnhancedTable, TypedColumn } from "@/components";
 import { ProductdsFilterForm } from ".";
-import { RenderBrandLabel, RenderCategoryLabel, RenderProductLabel, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
+import { RenderBrandLabel, RenderCategoryLabel, RenderProductDiscountLabel, RenderProductLabel, RenderProductStockStatus, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
 import { Product, ProductStatus, Resource } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
@@ -64,7 +64,7 @@ const columns: TypedColumn<Product>[] = [
     id: "instockStatus",
     align: "right",
     name: "InstockStatus",
-    render: ({ value }) => <Typography>{value.instockStatus}</Typography>
+    render: ({ value }) => <RenderProductStockStatus product={value} />
   },
   {
     id: "priceUnit",
@@ -76,7 +76,7 @@ const columns: TypedColumn<Product>[] = [
     id: "discount",
     align: "right",
     name: "Discount",
-    render: ({ value }) => <Typography>{value.discount} %</Typography>
+    render: ({ value }) => <RenderProductDiscountLabel product={value} />
   },
   {
     id: "isDiscountItem",
@@ -100,11 +100,11 @@ interface ProductsListTableProps {
   onDelete: (id: string) => void
   onStatusChange: (product: Product, status: ProductStatus) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyProducts: (data: ArrayBuffer) => void
+  onCreateMany: (data: ArrayBuffer) => void
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
-  const { products, count, isLoading, onDelete, onMultiDelete, onCreateManyProducts, onStatusChange } = props
+  const { products, count, isLoading, onDelete, onMultiDelete, onCreateMany, onStatusChange } = props
   const { state: { productFilter: { pagination } }, dispatch } = useStore()
 
   const theme = useTheme()
@@ -199,7 +199,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
         columns={columnsWithEditableStatus}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
-        onMultiCreate={onCreateManyProducts}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

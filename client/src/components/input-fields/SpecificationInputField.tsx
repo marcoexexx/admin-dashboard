@@ -1,6 +1,9 @@
-import { Box, TextField, Typography, styled } from "@mui/material";
+import { Box, IconButton, TextField, Typography, styled } from "@mui/material";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { MuiButton } from "@/components/ui";
+
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { useState } from "react";
 
 
 const FormWrapper = styled(Box)(({theme}) => ({
@@ -22,35 +25,67 @@ export function SpecificationInputField() {
   const { 
     fields: specificationFields,
     append: specificationAppend,
-    remove: specificationRemove
+    remove: specificationRemove,
+    swap
   } = useFieldArray({
     control,
     name: PREFIX,
   })
 
+  const [draggable, setDraggable] = useState(false)
+  const [draggedIdx, setDraggedIdx] = useState<number | undefined>(undefined)
+
+  const handleDragStart = (idx: number) => (_evt: React.DragEvent<HTMLDivElement>) => {
+    setDraggedIdx(idx)
+  }
+
+  const handleDragOver = (idx: number) => (evt: React.DragEvent<HTMLDivElement>) => {
+    evt.preventDefault()
+    if (draggedIdx) swap(draggedIdx, idx)
+  }
+
+  const handleOnDrop = (evt: React.DragEvent<HTMLDivElement>) => {
+    evt.preventDefault()
+  }
+
+
   return (
     <>
       {specificationFields.map((specificationField, idx) => (
-        <FormWrapper key={specificationField.id}>
-          <FormTitle>Specifications</FormTitle>
+        <FormWrapper 
+          draggable={draggable} 
+          onDragStart={handleDragStart(idx)}
+          onDragOver={handleDragOver(idx)}
+          onDrop={handleOnDrop}
+          key={specificationField.id}
+        >
+          <Box display="flex" justifyContent="space-between" margin={1}>
+            <FormTitle>Specifications</FormTitle>
+            <IconButton 
+              onFocus={() => setDraggable(true)}
+              onBlur={() => setDraggable(false)}
+            >
+              <DragIndicatorIcon />
+            </IconButton>
+          </Box>
           <Controller
             control={control}
             name={`${PREFIX}.${idx}.name`}
-            render={({ field }) => <TextField
+            render={({ field, fieldState }) => <TextField
               {...field}
               label="specification name"
-              error={false}
-              helperText=""
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
             />}
           />
           <Controller
             control={control}
             name={`${PREFIX}.${idx}.value`}
-            render={({ field }) => <TextField
+            render={({ field, fieldState }) => <TextField
               {...field}
               label="specification value"
-              error={false}
-              helperText=""
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
             />}
           />
 

@@ -1,14 +1,30 @@
 import { OrderItem } from "@/services/types"
 import { Alert, Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
-import { RenderImageLabel, RenderProductLabelFetch, RenderQuantityButtons } from "../table-labels"
+import { RenderImageLabel, RenderProductLabel, RenderQuantityButtons } from "../table-labels"
 import { CreateOrderInput } from "../content/orders/forms"
 import { TypedColumn } from ".."
-import { useLocalStorage, useStore } from "@/hooks"
-import { useState } from "react"
+import { useLocalStorage } from "@/hooks"
 import { numberFormat } from "@/libs/numberFormat"
+import { number, object, string, z } from "zod"
 import { calculateProductDiscount } from "../content/products/detail/ProductDetailTab"
+import { useGetCart, useRemoveCartItem, useUpdateCartOrderItem } from "@/hooks/cart"
 
-import AppError from "@/libs/exceptions"
+
+const createCartOrderItemSchema = object({
+  price: number(),
+  quantity: number(),
+  productId: string(),
+  totalPrice: number().min(0),
+})
+export type CreateCartOrderItemInput = z.infer<typeof createCartOrderItemSchema>
+
+const updateCartOrderItemSchema = object({
+  price: number(),
+  quantity: number(),
+  totalPrice: number().min(0),
+})
+export type UpdateCartOrderItemInput = z.infer<typeof updateCartOrderItemSchema>
+
 
 const columns: TypedColumn<OrderItem & { discount: number, image: string }>[] = [
   {
@@ -42,26 +58,23 @@ const columns: TypedColumn<OrderItem & { discount: number, image: string }>[] = 
     render: () => null
   },
   {
-    id: "totalPrice",  // TODO: need manual
+    id: "totalPrice",
     align: "right",
     name: "Total price",
     render: () => null
   },
 ]
 
-interface CartsTableProps {
-  carts: OrderItem[],
-}
 
+export function CartsTable() {
+  const { get } = useLocalStorage()
 
-export function CartsTable(props: CartsTableProps) {
-  const { carts } = props
-  const { dispatch } = useStore()
-  const { set, get } = useLocalStorage()
+  const { try_data } = useGetCart()
+  const { mutate: removeItem } = useRemoveCartItem()
+  const { mutate: updateCartOrderItem } = useUpdateCartOrderItem()
 
-  const [orderCarts, setOrderCarts] = useState(carts)
+  const orderCarts = try_data.ok_or_throw()?.orderItems || []
 
-  // TODO: Memo
   const totalAmount = orderCarts.reduce((total, item) => total + item.totalPrice, 0)
   const totalSaving = orderCarts.reduce((total, item) => total + item.saving, 0)
   const originalTotalPrice = orderCarts.reduce((total, item) => total + item.originalTotalPrice, 0)
@@ -70,60 +83,40 @@ export function CartsTable(props: CartsTableProps) {
 
 
   const handleOnIncrement = (item: OrderItem) => {
-    if (item.product && item.quantity < item.product?.quantity) {
-      const payload = orderCarts
-        .map(cart => {
-          const { productDiscountAmount } = calculateProductDiscount(cart.product)
+    if (!item.product || item.product.quantity <= item.quantity) return
+    const quantity = (item.quantity + 1)
+    const totalPrice = (quantity * calculateProductDiscount(item.product).productDiscountAmount || 0)
 
-          const originalTotalPrice = (cart.quantity + 1) * cart.price
-          const totalPrice = (cart.quantity + 1) * productDiscountAmount
-
-          if (cart.id === item.id) return {
-            ...cart,
-            quantity: cart.quantity + 1,
-            originalTotalPrice,
-            totalPrice,
-            saving: originalTotalPrice - totalPrice,
-          }
-
-          return cart
-        })
-        .filter(cart => 0 < cart.quantity)
-
-      set("CARTS", payload)
-      setOrderCarts(payload)
-    }
+    updateCartOrderItem({
+      id: item.id,
+      payload: {
+        ...item,
+        price: item.product.price,
+        quantity,
+        totalPrice
+      }
+    })
   }
 
   const handleOnDecrement = (item: OrderItem) => {
-    const payload = orderCarts
-      .map(cart => {
-        const { productDiscountAmount } = calculateProductDiscount(cart.product)
+    if (!item.product) return
+    const quantity = (item.quantity - 1)
+    const totalPrice = (quantity * calculateProductDiscount(item.product).productDiscountAmount || 0)
 
-        const originalTotalPrice = (cart.quantity - 1) * cart.price
-        const totalPrice = (cart.quantity - 1) * productDiscountAmount
-
-        if (cart.id === item.id) return {
-          ...cart,
-          quantity: cart.quantity - 1,
-          originalTotalPrice,
-          totalPrice,
-          saving: originalTotalPrice - totalPrice,
-        }
-
-        return cart
-      })
-      .filter(cart => 0 < cart.quantity)
-
-    set("CARTS", payload)
-    setOrderCarts(payload)
+    updateCartOrderItem({
+      id: item.id,
+      payload: {
+        ...item,
+        price: item.product.price,
+        quantity,
+        totalPrice
+      }
+    })
   }
 
-  const handleProductFetchOnError = (_err: AppError) => {
-    dispatch({ type: "DISABLE_CHECKOUT" })
+  const handleOnRemove = (item: OrderItem) => {
+    removeItem(item.id)
   }
-
-  const handleProductFetchOnSuccess = () => dispatch({ type: "ENABLE_CHECKOUT" })
 
 
   return (
@@ -159,8 +152,8 @@ export function CartsTable(props: CartsTableProps) {
                       >
                         {col.id === "image" && <RenderImageLabel src={row.product?.images[0] || "/default.png"} alt={row.product?.title || "product"} />}
                         {col.id === "discount" && row.product && `${productDiscountPercent} %`}
-                        {col.id === "product" && row.product && <RenderProductLabelFetch product={row.product} onError={handleProductFetchOnError} onSuccess={handleProductFetchOnSuccess} />}
-                        {col.id === "quantity" && <RenderQuantityButtons disabled={isCreatedPotentialOrder} item={row} onIncrement={handleOnIncrement} onDecrement={handleOnDecrement} />}
+                        {col.id === "product" && row.product && <RenderProductLabel product={row.product} />}
+                        {col.id === "quantity" && <RenderQuantityButtons disabled={isCreatedPotentialOrder} item={row} onIncrement={handleOnIncrement} onDecrement={handleOnDecrement} onRemove={handleOnRemove} />}
                         {col.id === "price" && numberFormat(row.price)}
                         {col.id === "totalPrice" && numberFormat(row.originalTotalPrice)}
                       </Typography>

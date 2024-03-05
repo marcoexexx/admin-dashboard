@@ -90,7 +90,7 @@ export class PotentialOrderApiService extends BaseApiService<PotentialOrderWhere
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`
 
-    const { data } = await authApi.delete(url, { data: { brandIds: ids } })
+    const { data } = await authApi.delete(url, { data: { potentialOrderIds: ids } })
     return data
   }
 

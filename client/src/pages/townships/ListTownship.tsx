@@ -16,14 +16,14 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 
-function ListTownshipWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.Township }).ok_or_throw()
 
   return <TownshipsList />
 }
 
 
-export default function ListTownship() {
+export default function ListPage() {
   const navigate = useNavigate()
 
 
@@ -73,7 +73,7 @@ export default function ListTownship() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ListTownshipWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

@@ -29,11 +29,11 @@ interface CategoriesListTableProps {
   isLoading?: boolean
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyCategories: (buf: ArrayBuffer) => void
+  onCreateMany: (buf: ArrayBuffer) => void
 }
 
 export function CategoriesListTable(props: CategoriesListTableProps) {
-  const { categories, count, isLoading, onCreateManyCategories, onDelete, onMultiDelete } = props
+  const { categories, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
   const { state: { categoryFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -62,7 +62,7 @@ export function CategoriesListTable(props: CategoriesListTableProps) {
         columns={columns}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
-        onMultiCreate={onCreateManyCategories}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

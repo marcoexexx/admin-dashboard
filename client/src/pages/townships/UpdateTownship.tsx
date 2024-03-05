@@ -15,7 +15,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 
-function UpdateTownshipWrapper() {
+function UpdateFormWrapper() {
   usePermission({ action: OperationAction.Update, resource: Resource.Township }).ok_or_throw()
 
   return <Card>
@@ -26,7 +26,7 @@ function UpdateTownshipWrapper() {
 }
 
 
-export default function UpdateTownship() {
+export default function UpdatePage() {
   const navigate = useNavigate()
 
 
@@ -68,7 +68,7 @@ export default function UpdateTownship() {
             
             <ErrorBoundary>
               <Suspense>
-                <UpdateTownshipWrapper />
+                <UpdateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

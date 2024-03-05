@@ -14,7 +14,7 @@ import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 const appName = getConfig("appName")
 
-function CreateRegionWrapper() {
+function CreateFormWrapper() {
   usePermission({ action: OperationAction.Create, resource: Resource.Region }).ok_or_throw()
 
   return <Card>
@@ -25,8 +25,7 @@ function CreateRegionWrapper() {
 }
 
 
-export default function CreateRegion() {
-  
+export default function CreatePage() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -66,7 +65,7 @@ export default function CreateRegion() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <CreateRegionWrapper />
+                <CreateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

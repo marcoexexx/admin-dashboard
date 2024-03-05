@@ -15,7 +15,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 const appName = getConfig("appName")
 
 
-function CreateBrandWrapper() {
+function CreateFromWrapper() {
   usePermission({ action: OperationAction.Create, resource: Resource.Brand }).ok_or_throw()
 
   return <Card>
@@ -27,7 +27,7 @@ function CreateBrandWrapper() {
 }
 
 
-export default function CreateBrand() {
+export default function CreatePage() {
   
   const navigate = useNavigate()
 
@@ -68,7 +68,7 @@ export default function CreateBrand() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <CreateBrandWrapper />
+                <CreateFromWrapper />
               </Suspense>
             </ErrorBoundary>
 

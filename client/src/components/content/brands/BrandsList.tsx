@@ -45,7 +45,7 @@ export function BrandsList() {
       isLoading={brandsQuery.isLoading}
       brands={data.results}
       count={data.count}
-      onCreateManyBrands={handleCreateManyBrands}
+      onCreateMany={handleCreateManyBrands}
       onDelete={handleDeleteBrand}
       onMultiDelete={handleDeleteMultiBrands}
     />

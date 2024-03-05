@@ -14,7 +14,7 @@ import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 const appName = getConfig("appName")
 
-function CreatePickupAddressWrapper() {
+function CreateFormWrapper() {
   usePermission({ action: OperationAction.Create, resource: Resource.PickupAddress }).ok_or_throw()
 
   return <Card>
@@ -25,7 +25,7 @@ function CreatePickupAddressWrapper() {
 }
 
 
-export default function CreatePickupAddress() {
+export default function CreatePage() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -64,7 +64,7 @@ export default function CreatePickupAddress() {
           <Grid item xs={12} md={8}>
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <CreatePickupAddressWrapper />
+                <CreateFormWrapper />
               </Suspense>
             </ErrorBoundary>
           </Grid>

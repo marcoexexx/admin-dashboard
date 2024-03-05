@@ -14,7 +14,7 @@ import getConfig from '@/libs/getConfig';
 
 const appName = getConfig("appName")
 
-function UpdateRegionWrapper() {
+function UpdateFormWrapper() {
   usePermission({ action: OperationAction.Update, resource: Resource.Region }).ok_or_throw()
 
   return  <Card>
@@ -25,7 +25,7 @@ function UpdateRegionWrapper() {
 }
 
 
-export default function UpdateRegion() {
+export default function UpdatePage() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -66,7 +66,7 @@ export default function UpdateRegion() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <UpdateRegionWrapper />
+                <UpdateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

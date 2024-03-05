@@ -14,7 +14,7 @@ import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 const appName = getConfig("appName")
 
-function CreateProductWrapper() {
+function CreateFormWrapper() {
   usePermission({ action: OperationAction.Create, resource: Resource.SalesCategory }).ok_or_throw()
 
   return  <Card>
@@ -25,7 +25,7 @@ function CreateProductWrapper() {
 }
 
 
-export default function CreateProduct() {
+export default function CreatePage() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -73,7 +73,7 @@ export default function CreateProduct() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <CreateProductWrapper />
+                <CreateFormWrapper />
               </Suspense>
             </ErrorBoundary>
 

@@ -1,4 +1,5 @@
 import { Pagination, User, WhereInput } from "@/services/types"
+import { CartWhereInput } from "../cart"
 
 
 export type UserWhereInput = {
@@ -6,6 +7,9 @@ export type UserWhereInput = {
   pagination?: Pagination,
   include?: {
     _count?: boolean,
+    cart?: {
+      include?: CartWhereInput["include"]
+    } | boolean,
     reviews?: boolean,
     potentialOrders?: boolean,
     orders?: boolean,

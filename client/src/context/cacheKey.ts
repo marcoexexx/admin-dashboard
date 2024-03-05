@@ -15,10 +15,13 @@ export const CacheResource = {
   Region: "regions",
   SalesCategory: "sales-categories",
   Township: "townships",
-  UserAddress: "user-addresses",
+  UserAddress: "addresses",
   User: "users",
   AuthUser: "authUser",
-  Dashboard: "dashboard"
+  Dashboard: "dashboard",
+  Role: "roles",
+  Permission: "permissions",
+  Cart: "cart"
 } as const
 export type CacheResource = typeof CacheResource[keyof typeof CacheResource]
 

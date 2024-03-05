@@ -40,11 +40,11 @@ interface ExchangesListTableProps {
   onDelete: (id: string) => void
   isLoading?: boolean
   onMultiDelete: (ids: string[]) => void
-  onCreateManyExchanges: (buf: ArrayBuffer) => void
+  onCreateMany: (buf: ArrayBuffer) => void
 }
 
 export function ExchangesListTable(props: ExchangesListTableProps) {
-  const { exchanges, count, isLoading, onCreateManyExchanges, onDelete, onMultiDelete } = props
+  const { exchanges, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
   const { state: { exchangeFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -73,7 +73,7 @@ export function ExchangesListTable(props: ExchangesListTableProps) {
         columns={columns}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
-        onMultiCreate={onCreateManyExchanges}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

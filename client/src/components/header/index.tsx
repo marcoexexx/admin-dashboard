@@ -1,7 +1,6 @@
-import { useLocalStorage, useStore } from "@/hooks"
+import { useStore } from "@/hooks"
 import { FormModal } from "../forms";
 import { Carts } from "../cart";
-import { OrderItem } from "@/services/types";
 import { Box, Divider, IconButton, Stack, Tooltip, alpha, lighten, styled } from "@mui/material"
 
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
@@ -45,15 +44,9 @@ export default function Header() {
   const { state, dispatch } = useStore()
   const { slidebar, modalForm } = state
 
-  const { get } = useLocalStorage();
-
-  const carts = get<OrderItem[]>("CARTS") || []
-
-
   const onClickToggleSlidebarHandler = (_: React.MouseEvent<HTMLButtonElement>) => {
     dispatch({ type: "TOGGLE_SLIDEBAR" })
   }
-
 
   return (
     <MainContent display="flex" alignItems="center">
@@ -80,7 +73,7 @@ export default function Header() {
 
       {modalForm.field === "cart"
         ? <FormModal maxWidth="lg" field='cart' title='Carts'>
-          <Carts orderItems={carts} />
+          <Carts />
         </FormModal>
         : null}
     </MainContent>

@@ -30,11 +30,11 @@ interface RegionsListTableProps {
   count: number
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyRegions: (buf: ArrayBuffer) => void
+  onCreateMany: (buf: ArrayBuffer) => void
 }
 
 export function RegionsListTable(props: RegionsListTableProps) {
-  const { regions, count, isLoading, onCreateManyRegions, onDelete, onMultiDelete } = props
+  const { regions, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
   const { state: { regionFilter:{pagination} }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -63,7 +63,7 @@ export function RegionsListTable(props: RegionsListTableProps) {
         columns={columns}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
-        onMultiCreate={onCreateManyRegions}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

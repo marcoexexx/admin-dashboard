@@ -36,8 +36,8 @@ export const createProductSchema = object({
     title: string({ required_error: "Title is required" })
       .min(1).max(128),
     specification: object({
-      name: string({ required_error: "Specification name is required" }),
-      value: string({ required_error: "Specification value is required" }),
+      name: string({ required_error: "Specification name is required" }).min(1),
+      value: string({ required_error: "Specification value is required" }).min(1),
     }).array(),
     overview: string().max(5000).optional(),
     description: string().max(5000).optional(),
@@ -60,6 +60,7 @@ export const createProductSchema = object({
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
     itemCode: string().nullable().optional(),
+    images: string().array()
   })
 })
 
@@ -107,11 +108,12 @@ export const createMultiProductsSchema = object({
 })
 
 
-export const uploadImagesProductSchema = object({
-  body: object({
-    images: string().array(),
-  })
-})
+// // FEAT: Upload image
+// export const uploadImagesProductSchema = object({
+//   body: object({
+//     images: string().array(),
+//   })
+// })
 
 
 export const updateProductSchema = object({
@@ -123,8 +125,8 @@ export const updateProductSchema = object({
       .min(1).max(128),
     title: string({ required_error: "Title is required" }),
     specification: object({
-      name: string({ required_error: "Specification name is required" }),
-      value: string({ required_error: "Specification value is required" }),
+      name: string({ required_error: "Specification name is required" }).min(1),
+      value: string({ required_error: "Specification value is required" }).min(1),
     }).array().default([]),
     discount: number().max(100).default(0),
     overview: string().min(0).max(5000).optional(),
@@ -136,8 +138,10 @@ export const updateProductSchema = object({
     marketPrice: number().min(0).optional(),
     priceUnit: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
+    quantity: number().min(0),
 
     itemCode: string().nullable().optional(),
+    images: string().array()
   })
 })
 
@@ -148,5 +152,5 @@ export type CreateProductInput = z.infer<typeof createProductSchema>["body"]
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
 export type CreateMultiProductsInput = z.infer<typeof createMultiProductsSchema>["body"]
 export type DeleteMultiProductsInput = z.infer<typeof deleteMultiProductsSchema>["body"]
-export type UploadImagesProductInput = z.infer<typeof uploadImagesProductSchema>["body"]
+// export type UploadImagesProductInput = z.infer<typeof uploadImagesProductSchema>["body"]
 export type LikeProductByUserInput = z.infer<typeof likeProductByUserSchema>

@@ -6,6 +6,8 @@ import { useLocalStorage, useStore } from "@/hooks";
 import { useGetUserAddress } from "@/hooks/userAddress";
 import { useCreatePotentialOrder, useDeletePotentialOrder } from "@/hooks/potentialOrder";
 import { useCreateOrder } from "@/hooks/order";
+import { useDeleteCart, useGetCart } from '@/hooks/cart';
+import { AddressType, PotentialOrderStatus } from '@/services/types';
 import { Box, Checkbox, Link, Grid, Step, StepConnector, StepIconProps, StepLabel, Stepper, Typography, FormGroup, FormControlLabel, Alert, Hidden, Divider, stepConnectorClasses, styled } from "@mui/material"
 import { MuiButton } from "@/components/ui";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
@@ -14,7 +16,6 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { CreateOrderInput, createOrderSchema } from "@/components/content/orders/forms";
 import { FormModal } from "@/components/forms";
 import { CreateUserAddressForm } from "@/components/content/user-addresses/forms";
-import { OrderItem } from "@/services/types";
 import { PaymentMethodStep } from "./PaymentMethod";
 import { CreatePotentialOrderInput } from "@/components/content/potential-orders/forms";
 import { CheckoutOrderConfirmation } from "./CheckoutOrderConfirmation";
@@ -106,7 +107,7 @@ function RenderStepper({ activeStepIdx }: { activeStepIdx: number }) {
  * totalPrice is total price of order                   := totalAmount + deliveryFee
  */
 export function CheckoutForm() {
-  const { state: { modalForm } } = useStore()
+  const { state: { modalForm, user: me } } = useStore()
 
   const [activeStepIdx, setActiveStepIdx] = useState(0)
   const [isConfirmed, setIsConfirmed] = useState(false)
@@ -115,7 +116,9 @@ export function CheckoutForm() {
 
   const navigate = useNavigate()
 
-  const cartItems = get<OrderItem[]>("CARTS") || []
+  const { try_data } = useGetCart()
+
+  const cartItems = try_data.ok_or_throw()?.orderItems || []
   const values = get<CreateOrderInput>("PICKUP_FORM")
 
 
@@ -133,6 +136,7 @@ export function CheckoutForm() {
 
   // Mutations
   const deletePotentialOrderMutation = useDeletePotentialOrder()
+  const deleteCartMutation = useDeleteCart()
   const createOrderMutation = useCreateOrder()
   const createPotentialOrderMutation = useCreatePotentialOrder()
 
@@ -147,8 +151,9 @@ export function CheckoutForm() {
       set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1)
       // Remove potential order
       const createdPotentialOrderId = getValues("createdPotentialOrderId")
-      console.log("Delete potential:", createdPotentialOrderId)
       if (createdPotentialOrderId) deletePotentialOrderMutation.mutate(createdPotentialOrderId)
+      // Remove cart
+      if (me?.cart?.id) deleteCartMutation.mutate(me.cart.id)
     }
   }, [createOrderMutation.isSuccess])
 
@@ -179,7 +184,7 @@ export function CheckoutForm() {
     const activeStepIdxFromLocalStorage = get<number>("CHECKOUT_FORM_ACTIVE_STEP") || 0
     setActiveStepIdx(activeStepIdxFromLocalStorage)
 
-    if (Array.isArray(cartItems) && cartItems.length) setValue("orderItems", cartItems.filter((cart) => !!cart.productId))
+    if (Array.isArray(cartItems) && cartItems.length) setValue("orderItems", cartItems.filter(item => !!item.productId).map(item => item.id))
     if (values) {
       if (values.pickupAddressId) setValue("pickupAddressId", values.pickupAddressId)
       if (values.deliveryAddressId) setValue("deliveryAddressId", values.deliveryAddressId)
@@ -250,7 +255,7 @@ export function CheckoutForm() {
         orderItems: value.orderItems,
         billingAddressId: value.billingAddressId,
         paymentMethodProvider: value.paymentMethodProvider,
-        status: "Processing",
+        status: PotentialOrderStatus.Processing,
         totalPrice: totalAmount,
         addressType: value.addressType
       }
@@ -258,8 +263,8 @@ export function CheckoutForm() {
       if (deliveryFee && deliveryFee.township) payload.totalPrice = deliveryFee.township.fees + totalAmount
 
       // check address type and add their address data
-      if (value.addressType === "Delivery") payload.deliveryAddressId = value.deliveryAddressId
-      else if (value.addressType === "Pickup") payload.pickupAddressId = value.pickupAddressId
+      if (value.addressType === AddressType.Delivery) payload.deliveryAddressId = value.deliveryAddressId
+      else if (value.addressType === AddressType.Pickup) payload.pickupAddressId = value.pickupAddressId
 
       createPotentialOrderMutation.mutate(payload)
     }
@@ -285,7 +290,6 @@ export function CheckoutForm() {
 
   const handleGoHome = () => {
     remove("PICKUP_FORM")
-    remove("CARTS")
     remove("CHECKOUT_FORM_ACTIVE_STEP")
 
     navigate("/home")
@@ -360,8 +364,8 @@ export function CheckoutForm() {
         </Grid>
       </Hidden>
 
-      {modalForm.field === "create-user-addresse"
-        ? <FormModal field='create-user-addresse' title='Create new address'>
+      {modalForm.field === "create-addresse"
+        ? <FormModal field='create-addresse' title='Create new address'>
           <CreateUserAddressForm />
         </FormModal>
         : null}

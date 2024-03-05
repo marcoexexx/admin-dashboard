@@ -33,7 +33,8 @@ export async function getMeHandler(
       accessLogs,
       auditLogs,
       createdProducts,
-      pickupAddresses
+      pickupAddresses,
+      cart
     } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
@@ -44,6 +45,7 @@ export async function getMeHandler(
       },
       include: {
         _count,
+        cart,
         reviews,
         potentialOrders,
         orders,
@@ -160,6 +162,7 @@ export async function getUsersHandler(
       pickupAddresses,
       blockedUsers,
       blockedByUsers,
+      cart
     } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
@@ -175,6 +178,7 @@ export async function getUsersHandler(
         where: { id, name, email, username },
         include: {
           _count,
+          cart,
           reviews,
           potentialOrders,
           orders,

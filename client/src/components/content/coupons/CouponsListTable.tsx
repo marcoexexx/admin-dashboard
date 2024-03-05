@@ -48,11 +48,11 @@ interface CouponsListTableProps {
   isLoading?: boolean
   onDelete: (id: string) => void
   onMultiDelete: (ids: string[]) => void
-  onCreateManyCoupons: (buf: ArrayBuffer) => void
+  onCreateMany: (buf: ArrayBuffer) => void
 }
 
 export function CouponsListTable(props: CouponsListTableProps) {
-  const { coupons, count, isLoading, onCreateManyCoupons, onDelete, onMultiDelete } = props
+  const { coupons, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
   const { state: { couponFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -81,7 +81,7 @@ export function CouponsListTable(props: CouponsListTableProps) {
         columns={columns}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
-        onMultiCreate={onCreateManyCoupons}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

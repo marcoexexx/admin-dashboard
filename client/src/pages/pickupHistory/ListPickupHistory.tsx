@@ -16,14 +16,14 @@ import getConfig from "@/libs/getConfig";
 const appName = getConfig("appName")
 
 
-function ListPickupHistoryWrapper() {
+function ListWrapper() {
   usePermission({ action: OperationAction.Read, resource: Resource.PickupAddress }).ok_or_throw()
 
   return <PickupAddressList />
 }
 
 
-export default function ListPickupHistory() {
+export default function ListPage() {
   const navigate = useNavigate()
 
   const isAllowedCreatePickupAddress = usePermission({
@@ -72,7 +72,7 @@ export default function ListPickupHistory() {
 
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
-                <ListPickupHistoryWrapper />
+                <ListWrapper />
               </Suspense>
             </ErrorBoundary>
 

@@ -37,10 +37,11 @@ interface PickupAddressListTableProps {
   pickupAddresses: PickupAddress[]
   isLoading?: boolean
   count: number
+  onDelete: (id: string) => void
 }
 
 export function PickupAddressListTable(props: PickupAddressListTableProps) {
-  const { pickupAddresses, count, isLoading } = props
+  const { pickupAddresses, count, isLoading, onDelete } = props
 
   return (
     <Card>
@@ -52,6 +53,7 @@ export function PickupAddressListTable(props: PickupAddressListTableProps) {
         resource={Resource.PickupAddress}
         isLoading={isLoading}
         columns={columns}
+        onSingleDelete={onDelete}
       />
 
       <Divider />

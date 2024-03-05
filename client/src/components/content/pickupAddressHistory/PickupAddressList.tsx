@@ -2,7 +2,7 @@ import { Card } from "@mui/material";
 import { SuspenseLoader } from "@/components";
 import { PickupAddressListTable } from ".";
 import { useStore } from "@/hooks";
-import { useGetPickupAddresses } from "@/hooks/pickupAddress";
+import { useDeletePickupAddress, useGetPickupAddresses } from "@/hooks/pickupAddress";
 import { INITIAL_PAGINATION } from "@/context/store";
 
 
@@ -13,8 +13,13 @@ export function PickupAddressList() {
     filter: pickupAddressFilter.where,
     pagination: pickupAddressFilter.pagination || INITIAL_PAGINATION,
   })
+  const { mutate: deletePickupAddress } = useDeletePickupAddress()
 
   const pickupAddresses = try_data.ok_or_throw()?.results
+
+  function handleDeletePickupAddress(id: string) {
+    deletePickupAddress(id)
+  }
 
   if (isLoading) return <SuspenseLoader />
 
@@ -24,6 +29,7 @@ export function PickupAddressList() {
       isLoading={isLoading}
       pickupAddresses={pickupAddresses || []}
       count={pickupAddresses?.length || 0}
+      onDelete={handleDeletePickupAddress}
     />
   </Card>
 }
