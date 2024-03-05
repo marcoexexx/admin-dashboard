@@ -1,8 +1,8 @@
 import { GenericResponse, HttpListResponse, HttpResponse, Pagination, Permission, QueryOptionArgs } from "./types";
 import { BaseApiService } from "./baseApiService";
 import { CacheResource } from "@/context/cacheKey";
-import { authApi } from "./authApi";
 import { PermissionWhereInput } from "@/context/permission";
+import { authApi } from "./authApi";
 
 
 export class PermisssionApiService extends BaseApiService<PermissionWhereInput, Permission> {
@@ -58,7 +58,7 @@ export class PermisssionApiService extends BaseApiService<PermissionWhereInput, 
   }
 
 
-  async create(payload: CreatePermissionInput): Promise<GenericResponse<Permission, "permission">> {
+  async create(payload: /* CreatePermissionInput */ any): Promise<GenericResponse<Permission, "permission">> {
     const url = `/${this.repo}`
 
     const { data } = await authApi.post(url, payload)
@@ -66,7 +66,7 @@ export class PermisssionApiService extends BaseApiService<PermissionWhereInput, 
   }
 
 
-  async update(arg: { id: string; payload: UpdatePermissionInput }): Promise<GenericResponse<Permission, "permission">> {
+  async update(arg: { id: string; payload: /* UpdatePermissionInput */ any }): Promise<GenericResponse<Permission, "permission">> {
     const { id, payload } = arg
     const url = `/${this.repo}/detail/${id}`
 
