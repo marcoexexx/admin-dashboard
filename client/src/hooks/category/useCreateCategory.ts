@@ -35,10 +35,10 @@ export function useCreateCategory() {
       })
       playSoundEffect("success")
     },
-    onError: () => {
+    onError: (err: any) => {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: "failed created a new category.",
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })

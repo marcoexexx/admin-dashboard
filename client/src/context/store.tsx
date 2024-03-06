@@ -20,6 +20,7 @@ import { CacheResource } from "./cacheKey"
 import { ChangeOrderPageActions, ChangeOrderPageSizeActions, ChangePotentialOrderPageActions, ChangePotentialOrderPageSizeActions, OrderFilterActions, OrderWhereInput, PotentialOrderFilterActions, PotentialOrderWhereInput } from "./order"
 import { AllModalFormCloseActions, CloseBackdropActions, DisableCheckOutActions, EnableCheckOutActions, LocalActions, ModalFormCloseActions, ModalFormOpenActions, OpenBackdropActions, SlidebarCloseActions, SlidebarOpenActions, SlidebarToggleActions, ThemeActions, ToastCloseActions, ToastOpenActions, ToggleBackdropActions, UserActions } from "./actions"
 import { ChangeRolePageActions, ChangeRolePageSizeActions, RoleFilterActions, RoleWhereInput } from "./role"
+import { ChangePermissionPageActions, ChangePermissionPageSizeActions, PermissionFilterActions, PermissionWhereInput } from "./permission"
 
 
 const INITIAL_LIST_PAGE_LIMIT = 10
@@ -61,6 +62,7 @@ export type Store = {
   backdrop: boolean
   local: Local
   roleFilter: RoleWhereInput,
+  permissionFilter: PermissionWhereInput,
   accessLogFilter: AccessLogWhereInput,
   auditLogFilter: AuditLogWhereInput,
   orderFilter: OrderWhereInput,
@@ -110,6 +112,7 @@ type Action =
   | UserFilterActions | ChangeUserPageActions | ChangeUserPageSizeActions
   | UserAddressFilterActions | ChangeUserAddressPageActions | ChangeUserAddressPageSizeActions
   | RoleFilterActions | ChangeRolePageActions | ChangeRolePageSizeActions
+  | PermissionFilterActions | ChangePermissionPageActions | ChangePermissionPageSizeActions
 
   | ModalFormOpenActions
   | ModalFormCloseActions
@@ -138,6 +141,9 @@ const initialState: Store = {
   modalForm: {
     field: "*",
     state: false
+  },
+  permissionFilter: {
+    pagination: INITIAL_PAGINATION
   },
   roleFilter: {
     pagination: INITIAL_PAGINATION
@@ -292,6 +298,37 @@ const stateReducer = (state: Store, action: Action): Store => {
           ...state.userFilter,
           pagination: {
             page: state.userFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
+    }
+
+    case "SET_PERMISSION_FILTER": {
+      return {
+        ...state, permissionFilter: {
+          ...state.permissionFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_PERMISSION_PAGE": {
+      return {
+        ...state, permissionFilter: {
+          ...state.permissionFilter,
+          pagination: {
+            pageSize: state.permissionFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_PERMISSION_PAGE_SIZE": {
+      return {
+        ...state, permissionFilter: {
+          ...state.permissionFilter,
+          pagination: {
+            page: state.permissionFilter.pagination?.page || INITIAL_PAGINATION.page,
             pageSize: action.payload
           }
         }

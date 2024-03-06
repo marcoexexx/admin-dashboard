@@ -43,14 +43,15 @@ const columns: TypedColumn<Address>[] = [
 
 interface UserAddressesListTableProps {
   userAddresses: Address[]
-  isLoading?: boolean
   count: number
-  onDelete: (id: string) => void
-  onMultiDelete: (ids: string[]) => void
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function UserAddressesListTable(props: UserAddressesListTableProps) {
-  const { userAddresses, count, isLoading, onDelete, onMultiDelete } = props
+  const { userAddresses, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props
   const { state: { userAddressFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -78,6 +79,7 @@ export function UserAddressesListTable(props: UserAddressesListTableProps) {
         columns={columns}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

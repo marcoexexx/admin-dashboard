@@ -27,9 +27,9 @@ interface CategoriesListTableProps {
   categories: Category[]
   count: number
   isLoading?: boolean
-  onDelete: (id: string) => void
-  onMultiDelete: (ids: string[]) => void
-  onCreateMany: (buf: ArrayBuffer) => void
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function CategoriesListTable(props: CategoriesListTableProps) {

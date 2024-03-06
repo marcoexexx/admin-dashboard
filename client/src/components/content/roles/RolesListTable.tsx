@@ -32,11 +32,11 @@ const columns: TypedColumn<Role>[] = [
 
 interface RolesListTableProps {
   roles: Role[]
-  isLoading?: boolean
   count: number
-  onDelete: (id: string) => void
-  onMultiDelete: (ids: string[]) => void
-  onCreateMany: (buf: ArrayBuffer) => void
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function RolesListTable(props: RolesListTableProps) {

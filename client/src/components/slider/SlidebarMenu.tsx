@@ -23,6 +23,7 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
 
 const DotWrapper = styled(Box)(({theme}) => ({
@@ -180,7 +181,7 @@ type SlideMenue =
 
 
 export default function SlidebarMenu() {
-  const { dispatch } = useStore()
+  const { state, dispatch } = useStore()
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -684,6 +685,47 @@ export default function SlidebarMenu() {
                   </ListItem>
                 </List>
               </Collapse>
+
+              {state.user?.isSuperuser
+              ? <>
+                {/* Permisison Menues */}
+                <ListItem component="div">
+                  <MuiButton
+                    onClick={handleToggleExpandMenu(CacheResource.Permission)}
+                    startIcon={<RemoveCircleIcon />}
+                    endIcon={getStateCurrentExpandMenu(CacheResource.Permission)
+                      ? <ExpandLessIcon />
+                      : <ExpandMoreIcon />
+                    }
+                  >
+                    Permissions
+                  </MuiButton>
+                </ListItem>
+
+                <Collapse in={getStateCurrentExpandMenu(CacheResource.Permission)}>
+                  <List component="div" disablePadding>
+                    <ListItem component="div">
+                      <MuiButton
+                        className={clsx({"active": currentMenu === "/permissions" })}
+                        onClick={handleOpenMenu("/permissions")}
+                      >
+                        <DotWrapper />
+                        List
+                      </MuiButton>
+                    </ListItem>
+                    <ListItem component="div">
+                      <MuiButton
+                        className={clsx({"active": currentMenu === "/permissions/create" })}
+                        onClick={handleOpenMenu("/permissions/create")}
+                      >
+                        <DotWrapper />
+                        Create
+                      </MuiButton>
+                    </ListItem>
+                  </List>
+                </Collapse>
+              </>
+              : null}
 
             </List>
           </SubMenuWrapper>

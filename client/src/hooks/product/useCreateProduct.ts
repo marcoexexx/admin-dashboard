@@ -35,10 +35,10 @@ export function useCreateProduct() {
       })
       playSoundEffect("success")
     },
-    onError: () => {
+    onError: (err: any) => {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: "failed created a new product.",
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })

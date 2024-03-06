@@ -44,14 +44,15 @@ const columns: TypedColumn<User>[] = [
 
 interface UsersListTableProps {
   users: User[]
-  isLoading?: boolean
   count: number
-  // onDelete: (id: string) => void
-  // onMultiDelete: (ids: string[]) => void
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function UsersListTable(props: UsersListTableProps) {
-  const { users, count, isLoading } = props
+  const { users, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props
   const { state: { brandFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -78,8 +79,9 @@ export function UsersListTable(props: UsersListTableProps) {
         resource={Resource.User}
         isLoading={isLoading}
         columns={columns}
-      // onSingleDelete={onDelete}
-      // onMultiDelete={onMultiDelete}
+        onSingleDelete={onDelete}
+        onMultiDelete={onMultiDelete}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

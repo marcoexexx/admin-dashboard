@@ -37,10 +37,10 @@ const columns: TypedColumn<Exchange>[] = [
 interface ExchangesListTableProps {
   exchanges: Exchange[]
   count: number
-  onDelete: (id: string) => void
   isLoading?: boolean
-  onMultiDelete: (ids: string[]) => void
-  onCreateMany: (buf: ArrayBuffer) => void
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function ExchangesListTable(props: ExchangesListTableProps) {

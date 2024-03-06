@@ -20,7 +20,7 @@ export function useCreateMultiPermissions() {
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })
@@ -28,6 +28,7 @@ export function useCreateMultiPermissions() {
       playSoundEffect("error")
     },
     onSuccess() {
+      console.log("success")
       dispatch({
         type: "OPEN_TOAST", payload: {
           message: "Success created new permissions.",

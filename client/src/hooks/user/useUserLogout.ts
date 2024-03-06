@@ -23,7 +23,15 @@ export function useUserLogout() {
           severity: "success"
         }
       })
-    }
+    },
+    onError(err: any) {
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
+          severity: "error"
+        }
+      })
+    },
   })
 
   const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError

@@ -24,6 +24,11 @@ const ListRolePage = Loader(lazy(() => import("@/pages/roles/ListRole")))
 const CreateRolePage = Loader(lazy(() => import("@/pages/roles/CreateRole")))
 const UpdateRolePage = Loader(lazy(() => import("@/pages/roles/UpdateRole")))
 
+// permissions
+const ListPermissionPage = Loader(lazy(() => import("@/pages/permissions/ListPermission")))
+const CreatePermissionPage = Loader(lazy(() => import("@/pages/permissions/CreatePermission")))
+const UpdatePermissionPage = Loader(lazy(() => import("@/pages/permissions/UpdatePermission")))
+
 // potential-orders
 const ListPotentialOrderPage = Loader(lazy(() => import("@/pages/potentialOrders/ListPotentialOrder")))
 const CreatePotentialOrderPage = Loader(lazy(() => import("@/pages/potentialOrders/CreatePotentialOrder")))
@@ -195,6 +200,34 @@ const routes = createBrowserRouter([
                   {
                     path: "update/:roleId",
                     Component: UpdateRolePage
+                  }
+                ]
+              },
+            ]
+          },
+
+          /// PERMISSIONS ROUTES
+          {
+            path: "permissions",
+            children: [
+              {
+                path: "",
+                Component: ListPermissionPage
+              },
+              {
+                path: "list",
+                element: <Navigate to="/permissions" />
+              },
+              {
+                path: "",
+                children: [
+                  {
+                    path: "create",
+                    Component: CreatePermissionPage
+                  },
+                  {
+                    path: "update/:permisisonId",
+                    Component: UpdatePermissionPage
                   }
                 ]
               },

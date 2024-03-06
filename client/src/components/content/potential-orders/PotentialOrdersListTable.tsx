@@ -70,14 +70,15 @@ const columns: TypedColumn<PotentialOrder>[] = [
 
 interface PotentialOrdersListTableProps {
   potentialOrders: PotentialOrder[]
-  isLoading?: boolean
   count: number
-  onDelete: (id: string) => void
-  onMultiDelete: (ids: string[]) => void
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
-  const { potentialOrders, count, isLoading, onDelete, onMultiDelete } = props
+  const { potentialOrders, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props
   const { state: { potentialOrderFilter: { pagination } }, dispatch } = useStore()
 
   const theme = useTheme()
@@ -136,6 +137,7 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
         columns={columnsWithEditableStatus}
         onSingleDelete={onDelete}
         onMultiDelete={onMultiDelete}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

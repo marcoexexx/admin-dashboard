@@ -40,12 +40,15 @@ const columns = [...typedCols, ...dynamicCols]
 
 interface AuditLogsListTableProps {
   auditLogs: AuditLog[]
-  isLoading?: boolean
   count: number
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function AuditLogsListTable(props: AuditLogsListTableProps) {
-  const { auditLogs, count, isLoading } = props
+  const { auditLogs, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props
   const { state: { auditLogFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -73,6 +76,9 @@ export function AuditLogsListTable(props: AuditLogsListTableProps) {
         resource={Resource.AuditLog}
         isLoading={isLoading}
         columns={columns}
+        onSingleDelete={onDelete}
+        onMultiDelete={onMultiDelete}
+        onMultiCreate={onCreateMany}
       />
 
       <Box p={2}>

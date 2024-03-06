@@ -33,7 +33,8 @@ export function useCreatePotentialOrder() {
     onError: (err: any) => {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err?.response?.data?.error?.map((err: any) => err?.message)}::${err?.response?.data?.message}`,
+          // message: `failed: ${err?.response?.data?.error?.map((err: any) => err?.message)}::${err?.response?.data?.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })

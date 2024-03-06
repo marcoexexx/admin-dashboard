@@ -26,11 +26,11 @@ const columns: TypedColumn<Brand>[] = [
 
 interface BrandsListTableProps {
   brands: Brand[]
-  isLoading?: boolean
   count: number
-  onDelete: (id: string) => void
-  onMultiDelete: (ids: string[]) => void
-  onCreateMany: (buf: ArrayBuffer) => void
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function BrandsListTable(props: BrandsListTableProps) {
