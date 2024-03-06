@@ -1,17 +1,24 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Autocomplete, AutocompleteInputChangeReason, Avatar, Chip, TextField } from "@mui/material"
 import { Controller, useFormContext } from "react-hook-form"
 
 
-interface ImageMultiInputFieldProps { }
+interface ImageMultiInputFieldProps {}
 
 export function ImageMultiInputField(props: ImageMultiInputFieldProps) {
   const { } = props
-  const { control, setValue } = useFormContext<{ images: string[] }>()
+  const { control, setValue, getValues } = useFormContext<{ images: string[] }>()
 
   const [images, setImages] = useState<string[]>([])
   const [selectedImages, setSelectedImages] = useState<string[]>([])
   const [text, setText] = useState<string>('')
+
+
+  useEffect(() => {
+    const defaultImages = getValues("images") || []
+    setSelectedImages(defaultImages)
+  }, [])
+
 
   const handleOnChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = evt.target
@@ -61,7 +68,7 @@ export function ImageMultiInputField(props: ImageMultiInputFieldProps) {
           inputValue={text.replace(",", "")}
           renderTags={(values, _props, _owner) => {
             return values.map(value => {
-              const label = value.split(".").slice(-2, -1)[0].slice(0, 30).split("/").splice(-1)[0]
+              const label = `${value.split("//")[0]}//...`
               return <Chip key={value} avatar={<Avatar alt="image" src={value} />} label={label} />
             })
           }}

@@ -118,6 +118,7 @@ export function UpdateProductForm() {
         methods.setValue(key, value ? value : undefined)
       })
       if (product.brandId) methods.setValue("brandId", product.brandId)
+      if (product.images) methods.setValue("images", product.images)
     }
   }, [productQuery.isSuccess, productFetchStatus])
 
