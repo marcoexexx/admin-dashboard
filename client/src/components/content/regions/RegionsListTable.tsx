@@ -26,11 +26,11 @@ const columns: TypedColumn<Region>[] = [
 
 interface RegionsListTableProps {
   regions: Region[]
-  isLoading?: boolean
   count: number
-  onDelete: (id: string) => void
-  onMultiDelete: (ids: string[]) => void
-  onCreateMany: (buf: ArrayBuffer) => void
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function RegionsListTable(props: RegionsListTableProps) {

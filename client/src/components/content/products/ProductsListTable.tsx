@@ -101,12 +101,12 @@ const columns: TypedColumn<Product>[] = [
 
 interface ProductsListTableProps {
   products: Product[]
+  count: number
   isLoading?: boolean
-  count: number,
-  onDelete: (id: string) => void
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
   onStatusChange: (product: Product, status: ProductStatus) => void
-  onMultiDelete: (ids: string[]) => void
-  onCreateMany: (data: ArrayBuffer) => void
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {

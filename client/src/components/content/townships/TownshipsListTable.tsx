@@ -33,11 +33,11 @@ const columns: TypedColumn<TownshipFees>[] = [
 
 interface TownshipsListTableProps {
   townships: TownshipFees[]
-  isLoading?: boolean
   count: number
-  onDelete: (id: string) => void
-  onMultiDelete: (ids: string[]) => void
-  onCreateMany: (buf: ArrayBuffer) => void
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function TownshipsListTable(props: TownshipsListTableProps) {
