@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { createBlockUserHandler, getUserByUsernameHandler, getUserHandler, getUsersHandler, removeBlockedUserHandler } from "../controllers/user.controller";
+import { changeRoleUserHandler, createBlockUserHandler, getUserByUsernameHandler, getUserHandler, getUsersHandler, removeBlockedUserHandler } from "../controllers/user.controller";
 import { getUserByUsernameSchema, getUserSchema, updateUserSchema } from "../schemas/user.schema";
 import { validate } from "../middleware/validate";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
+import { sudo } from "../middleware/sudo";
 
 
 const router = Router()
@@ -31,13 +32,12 @@ router.route("/detail/:userId")
     getUserHandler
   )
 
-// router.route("/change-role/:userId")
-//   .patch(
-//     onlyAdminUser,
-//     permissionUser("update", userPermission),
-//     validate(updateUserSchema.changeUserRole),
-//     changeUserRoleHandler,
-//   )
+router.route("/change-role/:userId")
+  .patch(
+    sudo,
+    validate(updateUserSchema.changeUserRole),
+    changeRoleUserHandler,
+  )
 
 router.route("/block-user")
   .patch(

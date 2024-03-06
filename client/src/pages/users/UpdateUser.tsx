@@ -4,6 +4,7 @@ import { PageTitle, SuspenseLoader } from "@/components";
 import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Link } from 'react-router-dom'
 import { OperationAction, Resource } from '@/services/types';
+import { ChangeRoleUserForm } from '@/components/content/users/forms';
 import { usePermission } from '@/hooks';
 
 import getConfig from "@/libs/getConfig";
@@ -18,7 +19,7 @@ function UpdateFormWrapper() {
 
   return  <Card>
     <CardContent>
-      Not supported yet!
+      <ChangeRoleUserForm />
     </CardContent>
   </Card>
 }
@@ -43,7 +44,7 @@ export default function UpdateForm() {
           </Grid>
 
           <Grid item xs={10}>
-            <Typography variant="h3" component="h3" gutterBottom>Update a user</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>Change Role</Typography>
             <Typography variant="subtitle2" gutterBottom>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
             </Typography>

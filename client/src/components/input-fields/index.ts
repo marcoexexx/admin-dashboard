@@ -12,6 +12,7 @@ export * from './RegionInputField'
 export * from './AddressInputField'
 export * from './PickupAddressInputField'
 export * from './ImageMultiInputField'
+export * from './RoleInputField'
 export * from './PermissionMultiInputfield'
 
 // TODO: Necessary Components
