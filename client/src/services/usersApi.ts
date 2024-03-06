@@ -7,6 +7,7 @@ import { UserWhereInput } from "@/context/user";
 import { UploadProfilePictureInput } from "@/components/image-uploader";
 
 import { authApi } from "./authApi";
+import { UpdateUserInput } from "@/components/content/users/forms";
 
 
 export class UserApiService extends BaseApiService<UserWhereInput, User> {
@@ -165,5 +166,14 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
       },
     })
     return res.data
+  }
+
+
+  async changeRoleUser(arg: { id: string; payload: UpdateUserInput }): Promise<GenericResponse<User, "user">> {
+    const { id, payload } = arg
+    const url = `/${this.repo}/change-role/${id}`
+
+    const { data } = await authApi.patch(url, payload)
+    return data
   }
 }

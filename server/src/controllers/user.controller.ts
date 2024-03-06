@@ -2,7 +2,7 @@ import AppError, { StatusCode } from "../utils/appError";
 
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
-import { CreateBlockUserInput, GetUserByUsernameInput, GetUserInput, RemoveBlockedUserInput, UploadImageUserInput } from "../schemas/user.schema";
+import { ChangeRoleUserInput, CreateBlockUserInput, GetUserByUsernameInput, GetUserInput, RemoveBlockedUserInput, UploadImageUserInput } from "../schemas/user.schema";
 import { UserService } from "../services/user";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
@@ -323,6 +323,39 @@ export async function uploadImageProfileHandler(
         image
       }
     })).ok_or_throw()
+
+    res.status(StatusCode.OK).json(HttpDataResponse({ user }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function changeRoleUserHandler(
+  req: Request<ChangeRoleUserInput["params"], {}, ChangeRoleUserInput["body"]>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { userId } = req.params
+    const { roleId } = req.body
+
+    const sessionUser = checkUser(req?.user).ok_or_throw()
+    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
+    _isAccess.ok_or_throw()
+
+    const user = (await service.tryUpdate({
+      where: {
+        id: userId
+      }, 
+      data: { 
+        roleId
+      } 
+    })).ok_or_throw()
+
+    // Create audit log
+    const _auditLog = await service.audit(sessionUser)
+    _auditLog.ok_or_throw()
 
     res.status(StatusCode.OK).json(HttpDataResponse({ user }))
   } catch (err) {

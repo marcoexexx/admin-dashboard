@@ -444,7 +444,7 @@ const routes = createBrowserRouter([
                 element: <Navigate to="/users" />
               },
               {
-                path: "change-role/:userId",
+                path: "update/:userId",
                 children: [
                   {
                     path: "",
