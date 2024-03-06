@@ -7,10 +7,11 @@ import { Request, Response, NextFunction } from 'express'
 import { CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, UpdateProductInput } from '../schemas/product.schema';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { LifeCycleProductConcrate, LifeCycleState } from '../utils/auth/life-cycle-state';
-import { OperationAction, ProductStatus } from '@prisma/client';
+import { OperationAction, Prisma, ProductStatus } from '@prisma/client';
 import { ProductService } from '../services/productService';
 import { ProductSalesCategoryService } from '../services/productSalesCategory';
 import { UpdateProductSaleCategoryInput } from '../schemas/salesCategory.schema';
+import { db } from '../utils/db';
 
 
 const service = ProductService.new()
@@ -446,7 +447,12 @@ export async function updateProductHandler(
         id: productId,
       },
       select: {
-        status: true
+        status: true,
+        creator: {
+          select: {
+            shopownerProviderId: true
+          }
+        }
       }
     })).ok_or_throw()
     if (!originalProductState) return next(AppError.new(StatusCode.NotFound, `Product ${productId} not found.`))
@@ -457,6 +463,10 @@ export async function updateProductHandler(
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
     _isAccess.ok_or_throw()
+
+    // @ts-ignore
+    if (sessionUser.shopownerProviderId !== originalProductState.creator?.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Could not update it's not own your shopowner`))
+    if (!sessionUser.isSuperuser && productState === ProductStatus.Published) return next(AppError.new(StatusCode.BadRequest, `You do not have permission to access this resource.`))
 
     const _deleteProductSpecifications = await service.tryUpdate({
       where: { id: productId },

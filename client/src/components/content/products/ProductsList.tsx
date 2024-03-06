@@ -9,7 +9,7 @@ import { INITIAL_PAGINATION } from "@/context/store";
 
 
 export function ProductsList() {
-  const { state: { productFilter } } = useStore()
+  const { state: { productFilter }, dispatch } = useStore()
 
   // Queries
   const productsQuery = useGetProducts({
@@ -55,6 +55,8 @@ export function ProductsList() {
   }
 
   function handleChangeStatusProduct(product: Product, status: ProductStatus) {
+    dispatch({ type: "OPEN_BACKDROP" })
+
     statusChangeProductMutation.mutate({
       id: product.id, payload: {
         ...product,
