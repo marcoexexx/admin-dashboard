@@ -11,12 +11,13 @@ import { PasswordInputField } from "@/components/input-fields"
 import { LoadingButton } from "@mui/lab"
 import AccountCircleIcon from "@mui/icons-material/AccountCircle"
 import { playSoundEffect } from "@/libs/playSound"
+import { useEffect } from "react"
 
 const registerUserSchema = object({
   name: string({ required_error: "Username is required" })
     .min(1)
     .max(128),
-  email: string({ required_error: "Email is required"})
+  email: string({ required_error: "Email is required" })
     .email(),
   password: string({ required_error: "Password id required" })
     .regex(
@@ -42,19 +43,23 @@ export function RegisterForm() {
   const { mutate, isPending } = useMutation({
     mutationFn: registerUserFn,
     onSuccess: (data) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success create an acount: check your email",
-        severity: "success"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: "Success create an acount: check your email",
+          severity: "success"
+        }
+      })
       if (import.meta.env.MODE === "development") console.log({ _devOnly: { redirectUrl: data.redirectUrl } })
       navigate(from)
       playSoundEffect("success")
     },
     onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: `failed: ${err.response.data.message}`,
+          severity: "error"
+        }
+      })
       playSoundEffect("error")
     },
   })
@@ -63,7 +68,13 @@ export function RegisterForm() {
     resolver: zodResolver(registerUserSchema)
   })
 
-  const { handleSubmit, register, formState: { errors } } = methods
+  const { handleSubmit, register, setFocus, formState: { errors } } = methods
+
+
+  useEffect(() => {
+    setFocus("email")
+  }, [setFocus])
+
 
   const onSubmit: SubmitHandler<RegisterUserInput> = (value) => {
     mutate(value)
@@ -77,8 +88,8 @@ export function RegisterForm() {
         <PasswordInputField fieldName="password" />
         <PasswordInputField fieldName="passwordConfirm" />
 
-        <LoadingButton 
-          variant="contained" 
+        <LoadingButton
+          variant="contained"
           fullWidth
           type="submit"
           loading={isPending}
