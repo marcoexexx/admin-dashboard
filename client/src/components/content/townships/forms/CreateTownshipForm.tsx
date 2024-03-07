@@ -16,7 +16,7 @@ const createTownshipSchema = object({
 export type CreateTownshipInput = z.infer<typeof createTownshipSchema>
 
 export function CreateTownshipForm() {
-  const { mutate: createTownship } = useCreateTownship()
+  const { mutate: createTownship, isPending } = useCreateTownship()
 
   const methods = useForm<CreateTownshipInput>({
     resolver: zodResolver(createTownshipSchema)
@@ -62,7 +62,7 @@ export function CreateTownshipForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Create</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={isPending}>Create</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

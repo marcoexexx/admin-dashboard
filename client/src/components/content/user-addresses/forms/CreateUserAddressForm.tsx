@@ -28,7 +28,7 @@ export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>
 export function CreateUserAddressForm() {
   const { state: { modalForm, user } } = useStore()
 
-  const { mutate: createUserAddress } = useCreateUserAddress()
+  const { mutate: createUserAddress, isPending } = useCreateUserAddress()
 
   const methods = useForm<CreateUserAddressInput>({
     resolver: zodResolver(createUserAddressSchema)
@@ -113,7 +113,7 @@ export function CreateUserAddressForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Create</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={isPending}>Create</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

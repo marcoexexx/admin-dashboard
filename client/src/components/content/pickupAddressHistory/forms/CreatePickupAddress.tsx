@@ -24,7 +24,7 @@ export type CreatePickupAddressInput = z.infer<typeof createPickupAddressSchema>
 export function CreatePickupAddressForm() {
   const { state: { modalForm, user } } = useStore()
 
-  const { mutate: createPickupAddress } = useCreatePickupAddress()
+  const { mutate: createPickupAddress, isPending } = useCreatePickupAddress()
 
   const methods = useForm<CreatePickupAddressInput>({
     resolver: zodResolver(createPickupAddressSchema)
@@ -92,7 +92,7 @@ export function CreatePickupAddressForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Create</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={isPending}>Create</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

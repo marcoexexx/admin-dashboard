@@ -32,8 +32,8 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
   const createProductSalesCategoryMutation = useCreateProductSalesCategory()
   const updateProductSalesCategoryMutation = useUpdateProductSalesCategory()
 
-  const { mutate: createSalesCategory } = createProductSalesCategoryMutation
-  const { mutate: updateSalesCategory } = updateProductSalesCategoryMutation
+  const { mutate: createSalesCategory, isPending: isPendingCreateSalsCategory } = createProductSalesCategoryMutation
+  const { mutate: updateSalesCategory, isPending: isPendingCreateProductSalesCategory } = updateProductSalesCategoryMutation
 
   const { isSuccess } = useCombineQuerys(createProductSalesCategoryMutation, updateProductSalesCategoryMutation)
 
@@ -91,7 +91,7 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
         />
 
         <Box>
-          <MuiButton variant="contained" type="submit">{!!defaultValues ? "Update" : "Create"}</MuiButton>
+          <MuiButton loading={isPendingCreateSalsCategory || isPendingCreateProductSalesCategory} variant="contained" type="submit">{!!defaultValues ? "Update" : "Create"}</MuiButton>
         </Box>
       </Box>
     </FormProvider>

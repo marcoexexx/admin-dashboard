@@ -22,7 +22,7 @@ export type CreateRegionInput = z.infer<typeof createRegionSchema>
 export function CreateRegionForm() {
   const { state: { modalForm } } = useStore()
 
-  const { mutate: createRegion } = useCreateRegion()
+  const { mutate: createRegion, isPending } = useCreateRegion()
 
   const methods = useForm<CreateRegionInput>({
     resolver: zodResolver(createRegionSchema)
@@ -57,7 +57,7 @@ export function CreateRegionForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Create</MuiButton>
+            <MuiButton variant="contained" loading={isPending} type="submit">Create</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

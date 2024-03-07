@@ -23,7 +23,7 @@ export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>
 export function CreateSalesCategoryForm() {
   const { dispatch } = useStore()
 
-  const { mutate: createSalesCategory } = useCreateSalesCategory()
+  const { mutate: createSalesCategory, isPending } = useCreateSalesCategory()
 
   const methods = useForm<CreateSalesCategoryInput>({
     resolver: zodResolver(createSalesCategorySchema)
@@ -68,7 +68,7 @@ export function CreateSalesCategoryForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit">Create</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={isPending}>Create</MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

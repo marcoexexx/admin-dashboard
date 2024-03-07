@@ -33,7 +33,7 @@ export function UpdateSalesCategoryForm() {
   const { salesCategoryId } = useParams()
 
   const { try_data, isSuccess, fetchStatus } = useGetSalesCategory({ id: salesCategoryId })
-  const { mutate: updateSalesCategory } = useUpdateSalesCategory()
+  const { mutate: updateSalesCategory, isPending } = useUpdateSalesCategory()
 
   const salesCategory = try_data.ok_or_throw()
 
@@ -88,7 +88,7 @@ export function UpdateSalesCategoryForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit">Create</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={isPending}>Save</MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

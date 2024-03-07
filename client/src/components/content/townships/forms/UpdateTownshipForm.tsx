@@ -20,7 +20,7 @@ export function UpdateTownshipForm() {
   const { townshipId } = useParams()
 
   const { try_data, isSuccess, fetchStatus } = useGetTownship({ id: townshipId })
-  const { mutate: updateTownship } = useUpdateTownship()
+  const { mutate: updateTownship, isPending } = useUpdateTownship()
 
   const township = try_data.ok_or_throw()
 
@@ -77,7 +77,7 @@ export function UpdateTownshipForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Save</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={isPending}>Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

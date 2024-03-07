@@ -26,7 +26,7 @@ export function UpdateUserAddressForm() {
   const { userAddressId } = useParams()
 
   const { try_data, isSuccess, fetchStatus } = useGetUserAddress({ id: userAddressId })
-  const { mutate: updateUserAddress } = useUpdateUserAddress()
+  const { mutate: updateUserAddress, isPending } = useUpdateUserAddress()
 
   const userAddress = try_data.ok_or_throw()?.userAddress
 
@@ -126,7 +126,7 @@ export function UpdateUserAddressForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Save</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={isPending}>Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

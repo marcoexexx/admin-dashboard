@@ -26,7 +26,7 @@ export function UpdateRegionForm() {
   const { regionId } = useParams()
 
   const { try_data, isSuccess, fetchStatus } = useGetRegion({ id: regionId })
-  const { mutate: updateRegion } = useUpdateRegion()
+  const { mutate: updateRegion, isPending } = useUpdateRegion()
 
   const region = try_data.ok_or_throw()
 
@@ -73,7 +73,7 @@ export function UpdateRegionForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit">Save</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={isPending}>Save</MuiButton>
           </Grid>
         </Grid>
       </FormProvider>
