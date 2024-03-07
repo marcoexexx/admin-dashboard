@@ -239,7 +239,7 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
       : <CardContent>
         <EnhancedTableActions
           refreshKey={refreshKey}
-          onImport={handleOnImport}
+          onImport={onMultiCreate ? handleOnImport : undefined}
           onExport={handleOnExport}
           renderFilterForm={renderFilterForm}
           resource={resource}

@@ -62,10 +62,11 @@ export const veriffyEmailSchema = object({
 
 // Update by `superuser`
 export const updateUserSchema = {
-  changeUserRole: object({
+  update: object({
     ...params,
     body: object({
-      roleId: string({ required_error: "Role Id is required."})
+      roleId: string().optional(),
+      shopownerProviderId: string().optional()
     })
   }),
   createBlockUser: object({
@@ -109,16 +110,25 @@ export const updateSelfUserSchema = {
 }
 
 
+export const resendEmailVerificationSchema = object({
+  body: object({
+    id: string({ required_error: "User id is required."}).min(24).max(24),
+    code: string({ required_error: "Code is required." }).min(64).max(64)
+  })
+})
+
+
 export type CreateUserInput = z.infer<typeof createUserSchema>["body"]
 export type LoginUserInput = z.infer<typeof loginUserSchema>["body"]
 export type GetUserInput = z.infer<typeof getUserSchema>["params"]
 export type GetUserByUsernameInput = z.infer<typeof getUserByUsernameSchema>["params"]
 export type UploadImageUserInput = z.infer<typeof uploadImageProfileSchema>["body"]
 export type VerificationEmailInput = z.infer<typeof veriffyEmailSchema>["params"]
+export type ResendEmailVerificationInput = z.infer<typeof resendEmailVerificationSchema>["body"]
 
 export type CreateBlockUserInput = z.infer<typeof updateUserSchema["createBlockUser"]>
 export type RemoveBlockedUserInput = z.infer<typeof updateUserSchema["removeBlockdUser"]>
-export type ChangeRoleUserInput = z.infer<typeof updateUserSchema["changeUserRole"]>
+export type UpdateUserInput = z.infer<typeof updateUserSchema["update"]>
 
 export type ChangeEmailInput = z.infer<typeof updateSelfUserSchema["changeEmail"]>
 export type ChangePasswordInput = z.infer<typeof updateSelfUserSchema["changePassword"]>

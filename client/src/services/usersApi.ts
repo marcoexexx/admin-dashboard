@@ -1,13 +1,11 @@
-import AppError, { AppErrorKind } from "@/libs/exceptions";
-
-import { GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, User } from "./types";
+import { GenericResponse, HttpListResponse, Pagination, QueryOptionArgs, User } from "./types";
 import { BaseApiService } from "./baseApiService";
 import { CacheResource } from "@/context/cacheKey";
 import { UserWhereInput } from "@/context/user";
 import { UploadProfilePictureInput } from "@/components/image-uploader";
+import { UpdateUserInput } from "@/components/content/users/forms";
 
 import { authApi } from "./authApi";
-import { UpdateUserInput } from "@/components/content/users/forms";
 
 
 export class UserApiService extends BaseApiService<UserWhereInput, User> {
@@ -80,46 +78,6 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
   }
 
 
-  /**
-  * Not Support yet!
-  */
-  async create(_payload: any): Promise<GenericResponse<User, "user">> {
-    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`))
-  }
-
-
-  /**
-  * Not Support yet!
-  */
-  async uploadExcel(_buf: ArrayBuffer): Promise<HttpListResponse<User>> {
-    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`))
-  }
-
-
-  /**
-  * Not Support yet!
-  */
-  async update(_arg: { id: string; payload: any }): Promise<GenericResponse<User, "user">> {
-    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`))
-  }
-
-
-  /**
-  * Not Support yet!
-  */
-  async deleteMany(_ids: string[]): Promise<HttpResponse> {
-    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`))
-  }
-
-
-  /**
-  * Not Support yet!
-  */
-  async delete(_id: string): Promise<GenericResponse<User, "user">> {
-    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`))
-  }
-
-
   async block({ userId, remark }: { userId: string, remark?: string }): Promise<GenericResponse<User, "user">> {
     const url = `/${this.repo}/block-user`
 
@@ -169,9 +127,9 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
   }
 
 
-  async changeRoleUser(arg: { id: string; payload: UpdateUserInput }): Promise<GenericResponse<User, "user">> {
+  async update(arg: { id: string; payload: UpdateUserInput }): Promise<GenericResponse<User, "user">> {
     const { id, payload } = arg
-    const url = `/${this.repo}/change-role/${id}`
+    const url = `/${this.repo}/detail/${id}`
 
     const { data } = await authApi.patch(url, payload)
     return data

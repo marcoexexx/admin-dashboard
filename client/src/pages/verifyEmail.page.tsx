@@ -1,11 +1,9 @@
 import { Box, Container, Typography, styled } from "@mui/material"
-import { LoadingButton } from "@mui/lab"
+import { MuiButton } from "@/components/ui"
 import { useEffect } from "react"
-import { useVerifyEmail } from "@/hooks"
+import { useLocalStorage, useVerifyEmail } from "@/hooks"
 import { useNavigate, useParams } from "react-router-dom"
-
-import WarningIcon from '@mui/icons-material/Warning';
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
+import { useResendEmail } from "@/hooks/useResendEmail"
 
 
 const MainContent = styled(Box)(() => ({
@@ -19,22 +17,26 @@ const MainContent = styled(Box)(() => ({
 
 export default function VerifyEmail() {
   const { verifyEmailCode } = useParams()
+  const { get, remove } = useLocalStorage()
+
+  const { error, isSuccess } = useVerifyEmail({ verifyEmailCode })
+  const { mutate: resend, isPending } = useResendEmail()
 
   const navigate = useNavigate()
 
-  const { isError, refetch, error, isLoading, isSuccess } = useVerifyEmail({ verifyEmailCode })
-
   useEffect(() => {
-    if (isSuccess) navigate("/")
+    if (isSuccess) {
+      navigate("/")
+      remove("VERIFICATION_CODE")
+    }
   }, [isSuccess])
 
-  const handleGoLogin = (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate("/auth/login")
+  const handleResend = () => {
+    const { id, code } = get("VERIFICATION_CODE") as any
+    if (id && code) resend({ id, code })
   }
 
-  const handleRetry = (_: React.MouseEvent<HTMLButtonElement>) => {
-    refetch()
-  }
+  console.error(error)
 
 
   return (
@@ -51,27 +53,9 @@ export default function VerifyEmail() {
         </Box>
       </Container>
 
-      <LoadingButton
-        loading={isLoading}
-        variant="contained"
-        onClick={isError && error 
-          ? handleRetry
-          : handleGoLogin}
-        loadingPosition="start"
-        startIcon={isError && error
-          ? <WarningIcon />
-          : <MarkEmailReadIcon />}
-      >
-        {isLoading
-        ? "Verifiing..."
-        : isError && error
-        ? "Retry"
-        : "Login"}
-      </LoadingButton>
-
-      { isError && error 
-      ? <Typography color="error" fontSize="normal" sx={{ mb: 4 }}>{error.message}: {(error as any)?.response?.data?.message || "unknown error"}</Typography>
-      : null}
+      <MuiButton onClick={handleResend} loading={isPending}>
+        Resend
+      </MuiButton>
     </MainContent>
   )
 }

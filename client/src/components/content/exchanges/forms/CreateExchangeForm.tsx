@@ -22,7 +22,6 @@ const createExchangeSchema = object({
 export type CreateExchangeInput = z.infer<typeof createExchangeSchema>
 
 export function CreateExchangeForm() {
-  // Mutations
   const createExchangeMuttion = useCreateExchange()
 
   const methods = useForm<CreateExchangeInput>({

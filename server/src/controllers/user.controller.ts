@@ -2,7 +2,7 @@ import AppError, { StatusCode } from "../utils/appError";
 
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
-import { ChangeRoleUserInput, CreateBlockUserInput, GetUserByUsernameInput, GetUserInput, RemoveBlockedUserInput, UploadImageUserInput } from "../schemas/user.schema";
+import { UpdateUserInput, CreateBlockUserInput, GetUserByUsernameInput, GetUserInput, RemoveBlockedUserInput, UploadImageUserInput } from "../schemas/user.schema";
 import { UserService } from "../services/user";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
@@ -331,14 +331,14 @@ export async function uploadImageProfileHandler(
 }
 
 
-export async function changeRoleUserHandler(
-  req: Request<ChangeRoleUserInput["params"], {}, ChangeRoleUserInput["body"]>,
+export async function updateRoleUserBySuperuserHandler(
+  req: Request<UpdateUserInput["params"], {}, UpdateUserInput["body"]>,
   res: Response,
   next: NextFunction
 ) {
   try {
     const { userId } = req.params
-    const { roleId } = req.body
+    const { roleId, shopownerProviderId } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
@@ -349,7 +349,8 @@ export async function changeRoleUserHandler(
         id: userId
       }, 
       data: { 
-        roleId
+        roleId,
+        shopownerProviderId
       } 
     })).ok_or_throw()
 

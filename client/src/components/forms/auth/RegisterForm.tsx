@@ -4,7 +4,7 @@ import { Stack } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
 import { object, string, z } from "zod"
-import { useStore } from "@/hooks"
+import { useLocalStorage, useStore } from "@/hooks"
 import { useNavigate } from "react-router-dom"
 import { MuiTextFieldWrapper } from "."
 import { PasswordInputField } from "@/components/input-fields"
@@ -37,12 +37,19 @@ export type RegisterUserInput = z.infer<typeof registerUserSchema>
 
 export function RegisterForm() {
   const { dispatch } = useStore()
+
+  const { set } = useLocalStorage()
+
   const navigate = useNavigate()
-  const from = "/auth/login"
+  const from = `/verify-email/__code__`
 
   const { mutate, isPending } = useMutation({
     mutationFn: registerUserFn,
     onSuccess: (data) => {
+      set("VERIFICATION_CODE", {
+        id: data.user.id,
+        code: data.user.verificationCode
+      })
       dispatch({
         type: "OPEN_TOAST", payload: {
           message: "Success create an acount: check your email",
@@ -72,7 +79,7 @@ export function RegisterForm() {
 
 
   useEffect(() => {
-    setFocus("email")
+    setFocus("name")
   }, [setFocus])
 
 

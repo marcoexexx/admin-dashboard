@@ -1,1 +1,1 @@
-export * from './ChangeRoleUserForm'
+export * from './UpdateUserForm'
