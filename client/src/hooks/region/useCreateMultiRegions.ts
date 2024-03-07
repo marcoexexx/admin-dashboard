@@ -20,10 +20,11 @@ export function useCreateMultiRegions() {
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiRegions() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Region]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

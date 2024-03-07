@@ -4,6 +4,11 @@ const prisma = new PrismaClient()
 
 
 async function main() {
+  await prisma.product.deleteMany({
+    where: {
+      status: "Draft"
+    }
+  })
 }
 
 

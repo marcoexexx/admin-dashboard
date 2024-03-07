@@ -17,7 +17,7 @@ export function useUpdateRegion() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/regions"
+  const from = `/${CacheResource.Region}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
@@ -38,7 +38,7 @@ export function useUpdateRegion() {
     onError: (err: any) => {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })

@@ -1,7 +1,7 @@
 import { Box, Card, Divider, TablePagination, Typography, Theme, Select, MenuItem, useTheme, SelectChangeEvent } from "@mui/material"
 import { EnhancedTable, TypedColumn } from "@/components";
 import { ProductdsFilterForm } from ".";
-import { RenderBrandLabel, RenderCategoryLabel, RenderProductDiscountLabel, RenderProductLabel, RenderProductStockStatus, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
+import { RenderBrandLabel, RenderCategoryLabel, RenderImageLabel, RenderProductDiscountLabel, RenderProductLabel, RenderProductStockStatus, RenderSalesCategoryLabel, RenderUsernameLabel } from "@/components/table-labels";
 import { Product, ProductStatus, Resource } from "@/services/types";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
@@ -30,6 +30,12 @@ const productStatus: {
 
 
 const columns: TypedColumn<Product>[] = [
+  {
+    id: "images",
+    align: "left",
+    name: "Image",
+    render: ({ value }) => <RenderImageLabel src={value.images[0] || "/default.png"} alt={value.title} />
+  },
   {
     id: "title",
     align: "left",
@@ -95,12 +101,12 @@ const columns: TypedColumn<Product>[] = [
 
 interface ProductsListTableProps {
   products: Product[]
+  count: number
   isLoading?: boolean
-  count: number,
-  onDelete: (id: string) => void
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
   onStatusChange: (product: Product, status: ProductStatus) => void
-  onMultiDelete: (ids: string[]) => void
-  onCreateMany: (data: ArrayBuffer) => void
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {

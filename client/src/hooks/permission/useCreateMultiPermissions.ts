@@ -16,17 +16,19 @@ export function useCreateMultiPermissions() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: (buf: ArrayBuffer) => apiService.uploadExcel(buf),
+    mutationFn: (...args: Parameters<typeof apiService.uploadExcel>) => apiService.uploadExcel(...args),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
+      console.log("success")
       dispatch({
         type: "OPEN_TOAST", payload: {
           message: "Success created new permissions.",
@@ -37,6 +39,7 @@ export function useCreateMultiPermissions() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Permission]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

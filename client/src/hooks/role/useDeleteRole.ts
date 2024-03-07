@@ -16,11 +16,11 @@ export function useDeleteRole() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: (id: string) => apiService.delete(id),
+    mutationFn: (...args: Parameters<typeof apiService.delete>) => apiService.delete(...args),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })

@@ -16,11 +16,11 @@ export function useDeleteMultiBrands() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: (ids: string[]) => apiService.deleteMany(ids),
+    mutationFn: (...args: Parameters<typeof apiService.deleteMany>) => apiService.deleteMany(...args),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })

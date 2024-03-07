@@ -17,7 +17,7 @@ export function useUpdateCoupon() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/coupons"
+  const from = `/${CacheResource.Coupon}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
@@ -38,7 +38,7 @@ export function useUpdateCoupon() {
     onError: (err: any) => {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })

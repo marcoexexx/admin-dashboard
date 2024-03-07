@@ -17,7 +17,7 @@ export function useCreateUserAddress() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/addresses"
+  const from = `/${CacheResource.UserAddress}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.create>) => apiService.create(...args),
@@ -38,7 +38,7 @@ export function useCreateUserAddress() {
     onError: (err: any) => {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })

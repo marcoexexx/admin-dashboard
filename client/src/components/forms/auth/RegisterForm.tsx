@@ -4,19 +4,20 @@ import { Stack } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
 import { object, string, z } from "zod"
-import { useStore } from "@/hooks"
+import { useLocalStorage, useStore } from "@/hooks"
 import { useNavigate } from "react-router-dom"
 import { MuiTextFieldWrapper } from "."
 import { PasswordInputField } from "@/components/input-fields"
 import { LoadingButton } from "@mui/lab"
 import AccountCircleIcon from "@mui/icons-material/AccountCircle"
 import { playSoundEffect } from "@/libs/playSound"
+import { useEffect } from "react"
 
 const registerUserSchema = object({
   name: string({ required_error: "Username is required" })
     .min(1)
     .max(128),
-  email: string({ required_error: "Email is required"})
+  email: string({ required_error: "Email is required" })
     .email(),
   password: string({ required_error: "Password id required" })
     .regex(
@@ -36,25 +37,36 @@ export type RegisterUserInput = z.infer<typeof registerUserSchema>
 
 export function RegisterForm() {
   const { dispatch } = useStore()
+
+  const { set } = useLocalStorage()
+
   const navigate = useNavigate()
-  const from = "/auth/login"
+  const from = `/verify-email/__code__`
 
   const { mutate, isPending } = useMutation({
     mutationFn: registerUserFn,
     onSuccess: (data) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success create an acount: check your email",
-        severity: "success"
-      } })
+      set("VERIFICATION_CODE", {
+        id: data.user.id,
+        code: data.user.verificationCode
+      })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: "Success create an acount: check your email",
+          severity: "success"
+        }
+      })
       if (import.meta.env.MODE === "development") console.log({ _devOnly: { redirectUrl: data.redirectUrl } })
       navigate(from)
       playSoundEffect("success")
     },
     onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: `failed: ${err.response.data.message}`,
+          severity: "error"
+        }
+      })
       playSoundEffect("error")
     },
   })
@@ -63,7 +75,13 @@ export function RegisterForm() {
     resolver: zodResolver(registerUserSchema)
   })
 
-  const { handleSubmit, register, formState: { errors } } = methods
+  const { handleSubmit, register, setFocus, formState: { errors } } = methods
+
+
+  useEffect(() => {
+    setFocus("name")
+  }, [setFocus])
+
 
   const onSubmit: SubmitHandler<RegisterUserInput> = (value) => {
     mutate(value)
@@ -77,8 +95,8 @@ export function RegisterForm() {
         <PasswordInputField fieldName="password" />
         <PasswordInputField fieldName="passwordConfirm" />
 
-        <LoadingButton 
-          variant="contained" 
+        <LoadingButton
+          variant="contained"
           fullWidth
           type="submit"
           loading={isPending}

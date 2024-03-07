@@ -46,6 +46,7 @@ enum Resource {
   Role
   Permission
   Cart
+  Shopowner
 }
 
 enum ProductStockStatus {
@@ -338,7 +339,7 @@ model Product {
   status         ProductStatus           @default(Draft)
   priceUnit      PriceUnit               @default(MMK)
   likedUsers     Favorites[]
-  quantity       Int
+  quantity       Int?
   reviews        Review[]
   creator        User?                   @relation("CreatedBy", fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId      String?                 @db.ObjectId

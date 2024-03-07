@@ -15,7 +15,7 @@ import { LoadingButton } from "@mui/lab"
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 
-export const MuiTextFieldWrapper = styled(TextField)(({theme}) => ({
+export const MuiTextFieldWrapper = styled(TextField)(({ theme }) => ({
   '& .MuiOutlinedInput-root': {
     '& fieldset': {
       borderColor: theme.colors.alpha.white[70],
@@ -40,7 +40,7 @@ export const MuiTextFieldWrapper = styled(TextField)(({theme}) => ({
 
 const loginUserSchema = object({
   email: string({ required_error: "Email is required" }).email({ message: "Invalid email." }),
-  password: string({ required_error: "Password is required"})
+  password: string({ required_error: "Password is required" })
     .min(8)
 })
 
@@ -62,18 +62,22 @@ export function LoginForm() {
     mutationFn: loginUserFn,
     // mutationFn: async (_: LoginUserInput) => new Promise(resolve => setTimeout(resolve, 2000)),
     onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success login.",
-        severity: "success"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: "Success login.",
+          severity: "success"
+        }
+      })
       navigate(from)
       playSoundEffect("success")
     },
     onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `Failed login: ${err.response.data.message}`,
-        severity: "error"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: `Failed login: ${err.response.data.message}`,
+          severity: "error"
+        }
+      })
       playSoundEffect("error")
     }
   })
@@ -82,7 +86,13 @@ export function LoginForm() {
     resolver: zodResolver(loginUserSchema)
   })
 
-  const { handleSubmit, register, formState: {errors} } = methods
+  const { handleSubmit, register, setFocus, formState: { errors } } = methods
+
+
+  useEffect(() => {
+    setFocus("email")
+  }, [setFocus])
+
 
   const onSubmit: SubmitHandler<LoginUserInput> = (value) => {
     mutate(value)
@@ -91,11 +101,18 @@ export function LoginForm() {
   return (
     <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={handleSubmit(onSubmit)}>
       <FormProvider {...methods}>
-        <MuiTextFieldWrapper {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
-        <PasswordInputField fieldName="password" />
+        <MuiTextFieldWrapper 
+          {...register("email")} 
+          label="Email" 
+          error={!!errors.email} 
+          helperText={!!errors.email ? errors.email.message : ""} 
+        />
+        <PasswordInputField
+          fieldName="password" 
+        />
 
-        <LoadingButton 
-          variant="contained" 
+        <LoadingButton
+          variant="contained"
           fullWidth
           type="submit"
           loading={isPending}

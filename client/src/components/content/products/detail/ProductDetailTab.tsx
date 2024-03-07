@@ -30,7 +30,7 @@ export const calculateProductDiscount = memoize((product: Product | undefined) =
   const originalProductDiscount = product.discount
   const activeSaleDiscount = product.salesCategory?.find(sale => sale.salesCategory.isActive && dayjs().isBetween(sale.salesCategory.startDate, sale.salesCategory.endDate) && sale.salesCategory.isActive)?.discount
 
-  const productDiscountPercent = activeSaleDiscount ?? originalProductDiscount  // may be 0 due to the active sale discount
+  const productDiscountPercent = activeSaleDiscount ?? originalProductDiscount  // saleDiscount may be 0 due to the active sale discount
   const productDiscountAmount = product.price - (product.price * productDiscountPercent) / 100
 
   return { productDiscountAmount, productDiscountPercent }

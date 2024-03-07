@@ -6,7 +6,7 @@ import logging from "../middleware/logging/logging";
 import AppError, { StatusCode } from "../utils/appError";
 
 import { CookieOptions, NextFunction, Request, Response } from "express";
-import { CreateUserInput, LoginUserInput, VerificationEmailInput } from "../schemas/user.schema";
+import { CreateUserInput, LoginUserInput, ResendEmailVerificationInput, VerificationEmailInput } from "../schemas/user.schema";
 import { HttpDataResponse, HttpResponse } from "../utils/helper";
 import { UserService } from '../services/user';
 import { AccessLogService } from '../services/accessLog';
@@ -14,6 +14,8 @@ import { signToken, verifyJwt } from "../utils/auth/jwt";
 import { generateRandomUsername } from "../utils/generateRandomUsername";
 import { db } from "../utils/db";
 import { getGoogleAuthToken, getGoogleUser } from '../services/OAuth';
+import Email from '../utils/email';
+import { createVerificationCode } from '../utils/createVeriicationCode';
 
 
 const service = UserService.new()
@@ -51,6 +53,44 @@ export async function registerUserHandler(
     const user = (await service.register({ name, email, password })).ok_or_throw()
 
     res.status(StatusCode.Created).json(HttpDataResponse({ user }))
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+export async function resendEmailVerificationCodeHandler(
+  req: Request<{}, {}, ResendEmailVerificationInput>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { code, id } = req.body
+
+    const { hashedVerificationCode, verificationCode } = createVerificationCode()
+
+    const user = (await service.tryUpdate({
+      where: {
+        verificationCode: code,
+        id
+      },
+      data: {
+        verified: false,
+        verificationCode: hashedVerificationCode,
+      }
+    })).ok_or_throw()
+
+    const redirectUrl = `${getConfig('origin')}/verify-email/${verificationCode}`
+
+    try {
+      await new Email(user, redirectUrl).sendVerificationCode()
+
+      return res.status(StatusCode.OK).json(HttpDataResponse({ user }))
+    } catch (err: any) {
+      user.verificationCode = null
+
+      return next(AppError.new(err?.status || StatusCode.InternalServerError, err?.message))
+    }
   } catch (err) {
     next(err)
   }

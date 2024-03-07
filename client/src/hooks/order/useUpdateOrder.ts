@@ -20,7 +20,7 @@ export function useUpdateOrder() {
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: err.response.data.status === 403 ? "warning" : "error"
         }
       })

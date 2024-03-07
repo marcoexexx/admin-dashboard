@@ -25,7 +25,7 @@ export function useUpdateCartOrderItem() {
     onError: (err: any) => {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })

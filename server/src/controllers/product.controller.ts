@@ -77,6 +77,9 @@ export async function getProductsHandler(
           marketPrice,
           status,
           priceUnit,
+          creator: {
+            shopownerProviderId: sessionUser?.isSuperuser ? undefined : sessionUser?.shopownerProviderId
+          }
         },
         include: {
           _count,
@@ -249,9 +252,7 @@ export async function createMultiProductsHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
-
     const excelFile = req.file
-
     if (!excelFile) return res.status(StatusCode.NoContent)
 
     const products = (await service.tryExcelUpload(excelFile, sessionUser)).ok_or_throw()
@@ -366,7 +367,10 @@ export async function deleteProductHandler(
     const product = (await service.tryDelete({
       where: {
         id: productId,
-        status: ProductStatus.Draft
+        status: ProductStatus.Draft,
+        creator: {
+          shopownerProviderId: sessionUser.shopownerProviderId
+        }
       }
     })).ok_or_throw()
 
@@ -398,7 +402,10 @@ export async function deleteMultiProductHandler(
         id: {
           in: productIds
         },
-        status: ProductStatus.Draft
+        status: ProductStatus.Draft,
+        creator: {
+          shopownerProviderId: sessionUser.isSuperuser ? undefined : sessionUser.shopownerProviderId
+        }
       }
     })
     _deleteProducts.ok_or_throw()
@@ -446,7 +453,12 @@ export async function updateProductHandler(
         id: productId,
       },
       select: {
-        status: true
+        status: true,
+        creator: {
+          select: {
+            shopownerProviderId: true
+          }
+        }
       }
     })).ok_or_throw()
     if (!originalProductState) return next(AppError.new(StatusCode.NotFound, `Product ${productId} not found.`))
@@ -458,7 +470,10 @@ export async function updateProductHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
     _isAccess.ok_or_throw()
 
-    // TODO: remove delete specification manually
+    // @ts-ignore
+    if (sessionUser.shopownerProviderId !== originalProductState.creator?.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Could not update it's not own your shopowner`))
+    if (!sessionUser.isSuperuser && productState === ProductStatus.Published) return next(AppError.new(StatusCode.BadRequest, `You do not have permission to access this resource.`))
+
     const _deleteProductSpecifications = await service.tryUpdate({
       where: { id: productId },
       data: {

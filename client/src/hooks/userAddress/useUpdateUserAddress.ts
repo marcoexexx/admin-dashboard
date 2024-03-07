@@ -14,18 +14,20 @@ const apiService = UserAddressApiService.new()
 
 
 export function useUpdateUserAddress() {
-  const { state: {modalForm}, dispatch } = useStore()
+  const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/addresses"
+  const from = `/${CacheResource.UserAddress}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
     onSuccess: () => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success updated a user address.",
-        severity: "success"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: "Success updated a user address.",
+          severity: "success"
+        }
+      })
       if (modalForm.field === "*") navigate(from)
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
       queryClient.invalidateQueries({
@@ -34,16 +36,18 @@ export function useUpdateUserAddress() {
       playSoundEffect("success")
     },
     onError: (err: any) => {
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: `failed: ${err.response.data.message}`,
-        severity: "error"
-      } })
+      dispatch({
+        type: "OPEN_TOAST", payload: {
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
+          severity: "error"
+        }
+      })
       playSoundEffect("error")
     },
   })
 
   const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message)) 
+    ? Err(AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message))
     : Ok(mutation.data)
 
   return {

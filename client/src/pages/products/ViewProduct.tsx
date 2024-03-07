@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { usePermission } from "@/hooks";
 
 import ErrorBoundary from "@/components/ErrorBoundary";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
 
@@ -62,7 +62,7 @@ export default function ViewDetailPage() {
               <MuiButton
                 sx={{ mt: { xs: 2, md: 0 } }}
                 variant="contained"
-                startIcon={<AddTwoToneIcon fontSize="small" />}
+                startIcon={<EditTwoToneIcon fontSize="small" />}
                 onClick={handleUpdate}
               >Update product</MuiButton>
             </Grid>

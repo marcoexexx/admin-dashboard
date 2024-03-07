@@ -78,11 +78,12 @@ const columns: TypedColumn<Order>[] = [
 
 interface OrdersListTableProps {
   orders: Order[]
-  isLoading?: boolean
   count: number
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
   onStatusChange: (order: Order, status: OrderStatus) => void
-  onDelete: (id: string) => void
-  onMultiDelete: (ids: string[]) => void
 }
 
 export function OrdersListTable(props: OrdersListTableProps) {

@@ -30,12 +30,15 @@ const columns: TypedColumn<AccessLog>[] = [
 
 interface AccessLogsListTableProps {
   accessLogs: AccessLog[]
-  isLoading?: boolean
   count: number
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function AccessLogsListTable(props: AccessLogsListTableProps) {
-  const { accessLogs, count, isLoading } = props
+  const { accessLogs, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props
   const { state: { accessLogFilter: { pagination } }, dispatch } = useStore()
 
   const handleChangePagination = (_: any, page: number) => {
@@ -63,6 +66,9 @@ export function AccessLogsListTable(props: AccessLogsListTableProps) {
         resource={Resource.AccessLog}
         isLoading={isLoading}
         columns={columns}
+        onSingleDelete={onDelete}
+        onMultiDelete={onMultiDelete}
+        onMultiCreate={onCreateMany}
       />
 
       <Box p={2}>

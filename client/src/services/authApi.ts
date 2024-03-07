@@ -82,3 +82,9 @@ export async function verifyEmailFn(opt: QueryOptionArgs, verificationCode: stri
   const res = await authApi.get<HttpResponse>(`auth/verifyEmail/${verificationCode}`, opt);
   return res.data
 }
+
+
+export async function resendVerifyEmailFn(payload: { id: string, code: string }) {
+  const res = await authApi.post<UserResponse>(`auth/verifyEmail/resend`, payload);
+  return res.data
+}

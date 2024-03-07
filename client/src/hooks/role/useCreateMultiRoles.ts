@@ -16,14 +16,15 @@ export function useCreateMultiRoles() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: (buf: ArrayBuffer) => apiService.uploadExcel(buf),
+    mutationFn: (...args: Parameters<typeof apiService.uploadExcel>) => apiService.uploadExcel(...args),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {
-          message: `failed: ${err.response.data.message}`,
+          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
           severity: "error"
         }
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("error")
     },
     onSuccess() {
@@ -37,6 +38,7 @@ export function useCreateMultiRoles() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Role]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

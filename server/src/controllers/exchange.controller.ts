@@ -1,12 +1,13 @@
 import { convertNumericStrings } from "../utils/convertNumber";
 import { checkUser } from "../services/checkUser";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
 import { CreateExchangeInput, DeleteMultiExchangesInput, GetExchangeInput, UpdateExchangeInput } from "../schemas/exchange.schema";
 import { ExchangeService } from "../services/exchange";
-import AppError, { StatusCode } from "../utils/appError";
 import { OperationAction } from "@prisma/client";
-import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+
+import AppError, { StatusCode } from "../utils/appError";
 
 
 const service = ExchangeService.new()
@@ -43,6 +44,7 @@ export async function getExchangesHandler(
             gte: startDate
           },
           rate,
+          shopownerProviderId: sessionUser?.isSuperuser ? undefined : (sessionUser?.shopownerProviderId || undefined)
         },
         orderBy,
         include: {
@@ -101,9 +103,12 @@ export async function updateExchangeHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
     _isAccess.ok_or_throw()
 
+    if (!sessionUser.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
+
     const exchange = (await service.tryUpdate({
       where: {
-        id: exchangeId
+        id: exchangeId,
+        shopownerProviderId: sessionUser.shopownerProviderId
       },
       data: {
         to,
@@ -136,7 +141,7 @@ export async function createExchangeHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
-    if (!sessionUser.shopownerProvider) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
+    if (!sessionUser.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
 
     const exchange = (await service.tryCreate({
       data: {
@@ -145,9 +150,8 @@ export async function createExchangeHandler(
         to,
         rate,
         shopowner: {
-          create: {
-            name: sessionUser.shopownerProvider.name,
-            id: sessionUser.shopownerProvider.id
+          connect: {
+            id: sessionUser.shopownerProviderId
           }
         }
       }

@@ -35,13 +35,15 @@ const columns: TypedColumn<PickupAddress>[] = [
 
 interface PickupAddressListTableProps {
   pickupAddresses: PickupAddress[]
-  isLoading?: boolean
   count: number
-  onDelete: (id: string) => void
+  isLoading?: boolean
+  onDelete?: (id: string) => void
+  onMultiDelete?: (ids: string[]) => void
+  onCreateMany?: (buf: ArrayBuffer) => void
 }
 
 export function PickupAddressListTable(props: PickupAddressListTableProps) {
-  const { pickupAddresses, count, isLoading, onDelete } = props
+  const { pickupAddresses, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props
 
   return (
     <Card>
@@ -54,6 +56,8 @@ export function PickupAddressListTable(props: PickupAddressListTableProps) {
         isLoading={isLoading}
         columns={columns}
         onSingleDelete={onDelete}
+        onMultiDelete={onMultiDelete}
+        onMultiCreate={onCreateMany}
       />
 
       <Divider />

@@ -22,6 +22,7 @@ import cookieParser from 'cookie-parser'
 import redisClient from './utils/connectRedis'
 
 import authRouter from './routers/auth.route'
+import shopownerRouter from './routers/shopowner.route'
 import meRouter from './routers/me.route'
 import exchangeRouter from './routers/exchange.route'
 import couponRouter from './routers/coupon.route'
@@ -124,6 +125,7 @@ app.get("/healthcheck", async (_: Request, res: Response, next: NextFunction) =>
 app.use("/api/v1/generate-pk", generatePkRouter)
 
 app.use("/api/v1/auth", authRouter)
+app.use("/api/v1/shopowners", shopownerRouter)
 app.use("/api/v1/orders", orderRouter)
 app.use("/api/v1/potential-orders", potentialOrderRouter)
 app.use("/api/v1/me", meRouter)

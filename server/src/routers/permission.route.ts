@@ -4,7 +4,7 @@ import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { uploadExcel } from "../upload/excelUpload";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
-import { createMultiPermissionsHandler, createPermissionHandler, deleteMultiPermissionsHandler, deletePermissionHandler, getPermissionsHandler, updatePermissionHandler } from "../controllers/permission.controller";
+import { createMultiPermissionsHandler, createPermissionHandler, deleteMultiPermissionsHandler, deletePermissionHandler, getPermissionHandler, getPermissionsHandler, updatePermissionHandler } from "../controllers/permission.controller";
 import { createPermissionSchema, deleteMultiPermissionsSchema, getPermissionSchema, updatePermissionSchema } from "../schemas/permission.schema";
 import { sudo } from "../middleware/sudo";
 
@@ -41,7 +41,7 @@ router.post("/excel-upload",
 router.route("/detail/:permissionId")
   .get(
     validate(getPermissionSchema),
-    getPermissionsHandler
+    getPermissionHandler
   )
   .patch(
     validate(updatePermissionSchema), 

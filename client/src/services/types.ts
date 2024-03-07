@@ -31,7 +31,8 @@ export const Resource = {
   UserAddress: "UserAddress",
   Role: "Role",
   Permission: "Permission",
-  Cart: "Cart"
+  Cart: "Cart",
+  Shopowner: "Shopowner"
 } as const
 export type Resource = typeof Resource[keyof typeof Resource]
 
