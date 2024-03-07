@@ -25,7 +25,7 @@ export async function getCartHandler(
     const { _count, orderItems } = convertStringToBoolean(query.include) ?? {}
 
     const sessionUser = checkUser(req?.user).ok()
-    const _isAccess = await userService.checkPermissions(sessionUser, OperationAction.Read)
+    const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Read)
     _isAccess.ok_or_throw()
 
     const cart = (await userService.tryFindUnique({
@@ -62,12 +62,11 @@ export async function createCartOrderItemHandler(
     const { quantity, productId, price, totalPrice } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _isAccess = await userService.checkPermissions(sessionUser, OperationAction.Create)
+    const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
     // Create or update item if same product in cart
     const upsertItem = async (cartId: string) => {
-
       return (await orderItemService.tryUpsert({
         where: {
           cartId_productId: {
@@ -146,7 +145,7 @@ export async function updateCartOrderItemHandler(
     const { quantity, price, totalPrice } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _isAccess = await userService.checkPermissions(sessionUser, OperationAction.Create)
+    const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Update)
     _isAccess.ok_or_throw()
 
     const orderItem = (await orderItemService.tryUpdate({
@@ -182,7 +181,7 @@ export async function deleteCartHandler(
     const { cartId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _isAccess = await userService.checkPermissions(sessionUser, OperationAction.Delete)
+    const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
     const cart = (await userService.tryCleanCart({ where: { id: cartId } })).ok_or_throw()
@@ -207,7 +206,7 @@ export async function deleteCartOrderItemHandler(
     const { orderItemId } = req.params
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
-    const _isAccess = await userService.checkPermissions(sessionUser, OperationAction.Delete)
+    const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
     const orderItem = (await userService.tryRemoveSingleOrderItem({ where: { id: orderItemId } })).ok_or_throw()

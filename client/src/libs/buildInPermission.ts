@@ -49,6 +49,14 @@ export const guestUserAccessResources: Pick<Permission, "action" | "resource">[]
     resource: Resource.PickupAddress,
     action: OperationAction.Create
   },
+  {
+    resource: Resource.PickupAddress,
+    action: OperationAction.Update
+  },
+  {
+    resource: Resource.PickupAddress,
+    action: OperationAction.Delete
+  },
 
   // PotentialOrder
   {
@@ -79,6 +87,58 @@ export const guestUserAccessResources: Pick<Permission, "action" | "resource">[]
   },
 
   // UserAddress
+  {
+    resource: Resource.UserAddress,
+    action: OperationAction.Create
+  },
+  {
+    resource: Resource.UserAddress,
+    action: OperationAction.Read
+  },
+  {
+    resource: Resource.UserAddress,
+    action: OperationAction.Update
+  },
+  {
+    resource: Resource.UserAddress,
+    action: OperationAction.Delete
+  },
+
+  // Cart
+  {
+    resource: Resource.Cart,
+    action: OperationAction.Read
+  },
+  {
+    resource: Resource.Cart,
+    action: OperationAction.Create
+  },
+  {
+    resource: Resource.Cart,
+    action: OperationAction.Update
+  },
+  {
+    resource: Resource.Cart,
+    action: OperationAction.Delete
+  },
+
+  // Cart
+  {
+    resource: Resource.OrderItem,
+    action: OperationAction.Read
+  },
+  {
+    resource: Resource.OrderItem,
+    action: OperationAction.Create
+  },
+  {
+    resource: Resource.OrderItem,
+    action: OperationAction.Update
+  },
+  {
+    resource: Resource.OrderItem,
+    action: OperationAction.Delete
+  },
 ]
 
 
@@ -185,3 +245,4 @@ export const shopownerAccessResources: Pick<Permission, "action" | "resource">[]
 
   // UserAddress
 ]
+
