@@ -7,11 +7,10 @@ import { Request, Response, NextFunction } from 'express'
 import { CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, UpdateProductInput } from '../schemas/product.schema';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
 import { LifeCycleProductConcrate, LifeCycleState } from '../utils/auth/life-cycle-state';
-import { OperationAction, Prisma, ProductStatus } from '@prisma/client';
+import { OperationAction, ProductStatus } from '@prisma/client';
 import { ProductService } from '../services/productService';
 import { ProductSalesCategoryService } from '../services/productSalesCategory';
 import { UpdateProductSaleCategoryInput } from '../schemas/salesCategory.schema';
-import { db } from '../utils/db';
 
 
 const service = ProductService.new()
@@ -367,7 +366,10 @@ export async function deleteProductHandler(
     const product = (await service.tryDelete({
       where: {
         id: productId,
-        status: ProductStatus.Draft
+        status: ProductStatus.Draft,
+        creator: {
+          shopownerProviderId: sessionUser.shopownerProviderId
+        }
       }
     })).ok_or_throw()
 
@@ -399,7 +401,10 @@ export async function deleteMultiProductHandler(
         id: {
           in: productIds
         },
-        status: ProductStatus.Draft
+        status: ProductStatus.Draft,
+        creator: {
+          shopownerProviderId: sessionUser.shopownerProviderId
+        }
       }
     })
     _deleteProducts.ok_or_throw()

@@ -34,7 +34,8 @@ const deleteSingleRowKeys: Record<Resource, ModalFormField> = {
   [Resource.Region]: "delete-region",
   [Resource.SalesCategory]: "delete-sales-category",
   [Resource.Township]: "delete-township",
-  [Resource.UserAddress]: "delete-addresse"
+  [Resource.UserAddress]: "delete-addresse",
+  [Resource.Shopowner]: "delete-shopowner",
 }
 
 const deleteMultiRowKeys: Record<Resource, ModalFormField> = {
@@ -57,7 +58,8 @@ const deleteMultiRowKeys: Record<Resource, ModalFormField> = {
   [Resource.Region]: "delete-regions-multi",
   [Resource.SalesCategory]: "delete-sales-categories-multi",
   [Resource.Township]: "delete-townships-multi",
-  [Resource.UserAddress]: "delete-addresses-multi"
+  [Resource.UserAddress]: "delete-addresses-multi",
+  [Resource.Shopowner]: "delete-shopowners-multi",
 }
 
 

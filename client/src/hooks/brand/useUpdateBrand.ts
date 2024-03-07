@@ -17,7 +17,7 @@ export function useUpdateBrand() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/brands"
+  const from = `/${CacheResource.Brand}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),

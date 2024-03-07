@@ -5,6 +5,7 @@ import { useUserLogout } from "@/hooks/user"
 import { useGetCart } from "@/hooks/cart"
 
 import { Avatar, Badge, Box, Button, Divider, Hidden, List, ListItemButton, ListItemIcon, ListItemText, Popover, Skeleton, Typography, lighten, styled } from "@mui/material"
+import { CacheResource } from "@/context/cacheKey"
 import { MuiButton } from "@/components/ui"
 
 import SecurityIcon from '@mui/icons-material/Security';
@@ -171,7 +172,7 @@ export default function HeaderUserBox() {
             <ListItemText primary="My Profile" />
           </ListItemButton>
 
-          <ListItemButton onClick={handleNavigate("/pickup-address-history")}>
+          <ListItemButton onClick={handleNavigate(`/${CacheResource.PickupAddress}`)}>
             <ListItemIcon>
               <MapIcon fontSize="small" />
             </ListItemIcon>
@@ -199,7 +200,7 @@ export default function HeaderUserBox() {
             <ListItemText primary="Wishlist" />
           </ListItemButton>
 
-          <ListItemButton onClick={handleNavigate("/access-logs")}>
+          <ListItemButton onClick={handleNavigate(`/${CacheResource.AccessLog}`)}>
             <ListItemIcon>
               <SecurityIcon fontSize="small" />
             </ListItemIcon>

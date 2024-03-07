@@ -17,7 +17,7 @@ export function useCreateUserAddress() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/addresses"
+  const from = `/${CacheResource.UserAddress}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.create>) => apiService.create(...args),

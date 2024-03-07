@@ -17,7 +17,7 @@ export function useCreateBrand() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/brands"
+  const from = `/${CacheResource.Brand}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.create>) => apiService.create(...args),

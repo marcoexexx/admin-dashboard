@@ -17,7 +17,7 @@ export function useUpdatePickupAddress() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/pickup-address-history"
+  const from = `/${CacheResource.PickupAddress}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),

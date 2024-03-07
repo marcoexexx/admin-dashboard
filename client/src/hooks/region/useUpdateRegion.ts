@@ -17,7 +17,7 @@ export function useUpdateRegion() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/regions"
+  const from = `/${CacheResource.Region}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
