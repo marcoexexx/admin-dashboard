@@ -17,7 +17,7 @@ export function useUpdatePermission() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/permissions"
+  const from = `/${CacheResource.Permission}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),

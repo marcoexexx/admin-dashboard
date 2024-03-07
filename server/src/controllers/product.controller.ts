@@ -366,7 +366,10 @@ export async function deleteProductHandler(
     const product = (await service.tryDelete({
       where: {
         id: productId,
-        status: ProductStatus.Draft
+        status: ProductStatus.Draft,
+        creator: {
+          shopownerProviderId: sessionUser.shopownerProviderId
+        }
       }
     })).ok_or_throw()
 
@@ -398,7 +401,10 @@ export async function deleteMultiProductHandler(
         id: {
           in: productIds
         },
-        status: ProductStatus.Draft
+        status: ProductStatus.Draft,
+        creator: {
+          shopownerProviderId: sessionUser.shopownerProviderId
+        }
       }
     })
     _deleteProducts.ok_or_throw()
@@ -446,7 +452,12 @@ export async function updateProductHandler(
         id: productId,
       },
       select: {
-        status: true
+        status: true,
+        creator: {
+          select: {
+            shopownerProviderId: true
+          }
+        }
       }
     })).ok_or_throw()
     if (!originalProductState) return next(AppError.new(StatusCode.NotFound, `Product ${productId} not found.`))
@@ -457,6 +468,10 @@ export async function updateProductHandler(
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
     _isAccess.ok_or_throw()
+
+    // @ts-ignore
+    if (sessionUser.shopownerProviderId !== originalProductState.creator?.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Could not update it's not own your shopowner`))
+    if (!sessionUser.isSuperuser && productState === ProductStatus.Published) return next(AppError.new(StatusCode.BadRequest, `You do not have permission to access this resource.`))
 
     const _deleteProductSpecifications = await service.tryUpdate({
       where: { id: productId },

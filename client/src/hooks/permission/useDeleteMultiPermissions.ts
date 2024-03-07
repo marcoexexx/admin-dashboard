@@ -15,7 +15,7 @@ export function useDeleteMultiPermissions() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: (ids: string[]) => apiService.deleteMany(ids),
+    mutationFn: (...args: Parameters<typeof apiService.deleteMany>) => apiService.deleteMany(...args),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {

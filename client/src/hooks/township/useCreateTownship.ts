@@ -17,7 +17,7 @@ export function useCreateTownship() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/townships"
+  const from = `/${CacheResource.Township}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.create>) => apiService.create(...args),

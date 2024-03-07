@@ -46,6 +46,7 @@ enum Resource {
   Role
   Permission
   Cart
+  Shopowner
 }
 
 enum ProductStockStatus {

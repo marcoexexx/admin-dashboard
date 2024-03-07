@@ -46,7 +46,7 @@ export class ExchangeService extends MetaAppService implements AppService {
   async tryFindManyWithCount(...args: [{ pagination: Pagination; }, ...Parameters<typeof this.repository.findMany>]): Promise<
     Result<[number, Awaited<ReturnType<typeof this.repository.findMany>>], AppError>
   > {
-    const [{pagination}, arg] = args
+    const [{ pagination }, arg] = args
     const { page = 1, pageSize = 10 } = pagination
     const offset = (page - 1) * pageSize
 
@@ -187,24 +187,33 @@ export class ExchangeService extends MetaAppService implements AppService {
 
     const opts = async (exchange: CreateMultiExchangesInput[number]) => {
       const result = (await opt({
-      where: { 
-        id: exchange.id
-      },
-      create: { 
-        id: exchange.id,
-        to: exchange.to,
-        from: exchange.from,
-        rate: exchange.rate,
-        date: exchange.date,
-        shopownerProviderId: exchange["shopownerProvider.name"]
-      },
-      update: { 
-        to: exchange.to,
-        from: exchange.from,
-        rate: exchange.rate,
-        date: exchange.date,
-        updatedAt: new Date() 
-      }
+        where: {
+          id: exchange.id
+        },
+        create: {
+          id: exchange.id,
+          to: exchange.to,
+          from: exchange.from,
+          rate: exchange.rate,
+          date: exchange.date,
+          shopowner: {
+            connectOrCreate: {
+              where: {
+                name: exchange["shopownerProvider.name"],
+              },
+              create: {
+                name: exchange["shopownerProvider.name"]
+              }
+            }
+          },
+        },
+        update: {
+          to: exchange.to,
+          from: exchange.from,
+          rate: exchange.rate,
+          date: exchange.date,
+          updatedAt: new Date()
+        }
       })).map_err(convertPrismaErrorToAppError)
       return result.ok_or_throw()
     }

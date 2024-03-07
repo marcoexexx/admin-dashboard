@@ -17,7 +17,7 @@ export function useUpdateExchange() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/exchanges"
+  const from = `/${CacheResource.Exchange}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),

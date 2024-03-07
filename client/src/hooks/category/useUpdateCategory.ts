@@ -17,7 +17,7 @@ export function useUpdateCategory() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/categories"
+  const from = `/${CacheResource.Category}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),

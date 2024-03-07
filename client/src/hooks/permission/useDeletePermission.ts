@@ -15,7 +15,7 @@ export function useDeletePermission() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: (id: string) => apiService.delete(id),
+    mutationFn: (...args: Parameters<typeof apiService.delete>) => apiService.delete(...args),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {

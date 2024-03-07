@@ -2,12 +2,13 @@ import { Box, Grid, TextField } from "@mui/material";
 import { MuiButton } from "@/components/ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { PermissionMultiInputField } from "@/components/input-fields";
+import { FormModal } from "@/components/forms";
+import { CreatePermissionForm } from "../../permissions/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, z } from "zod";
 import { useEffect } from "react";
 import { useCreateRole } from "@/hooks/role";
 import { useStore } from "@/hooks";
-import { FormModal } from "@/components/forms";
 
 
 const createRoleSchema = object({
@@ -66,8 +67,7 @@ export function CreateRoleForm() {
 
       {modalForm.field === "create-permission"
         ? <FormModal field='create-permission' title='Create new permission'>
-          {/* <CreateBrandForm /> */}
-          Not impl yet!
+          <CreatePermissionForm />
         </FormModal>
         : null}
     </>

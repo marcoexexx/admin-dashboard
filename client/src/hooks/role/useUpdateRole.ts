@@ -17,7 +17,7 @@ export function useUpdateRole() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/roles"
+  const from = `/${CacheResource.Role}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),

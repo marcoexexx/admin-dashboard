@@ -1,5 +1,6 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { BaseLayout, SlidebarLayout } from "@/layouts";
+import { CacheResource } from "@/context/cacheKey";
 import { lazy } from "react";
 import { meProfileLoader } from "@/pages/me/ManagementUserProfile";
 
@@ -18,6 +19,11 @@ const CreatePickupAddressHistoryPage = Loader(lazy(() => import("@/pages/pickupH
 // Status
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")))
 const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.page")))
+
+// shopowner
+const ListShopownerPage = Loader(lazy(() => import("@/pages/shopowners/ListShopowner")))
+const CreateShopownerPage = Loader(lazy(() => import("@/pages/shopowners/CreateShopowner")))
+const UpdateShopownerPage = Loader(lazy(() => import("@/pages/shopowners/UpdateShopowner")))
 
 // roles
 const ListRolePage = Loader(lazy(() => import("@/pages/roles/ListRole")))
@@ -140,7 +146,7 @@ const routes = createBrowserRouter([
 
           /// PICKUP ADDRESS
           {
-            path: "pickup-address-history",
+            path: CacheResource.PickupAddress,
             children: [
               {
                 path: "",
@@ -148,7 +154,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/pickup-address-history" />
+                element: <Navigate to={`/${CacheResource.PickupAddress}`} />
               },
               {
                 path: "",
@@ -168,19 +174,19 @@ const routes = createBrowserRouter([
 
           /// ACCESS LOGS
           {
-            path: "access-logs",
+            path: CacheResource.AccessLog,
             Component: ListAccessLogPage
           },
 
           /// AUDIT LOGS
           {
-            path: "audit-logs",
+            path: CacheResource.AuditLog,
             Component: ListAuditLogPage
           },
 
           /// ROLES ROUTES
           {
-            path: "roles",
+            path: CacheResource.Role,
             children: [
               {
                 path: "",
@@ -188,7 +194,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/roles" />
+                element: <Navigate to={`/${CacheResource.Role}`} />
               },
               {
                 path: "",
@@ -206,9 +212,37 @@ const routes = createBrowserRouter([
             ]
           },
 
+          /// SHOPOWNERS ROUTES
+          {
+            path: CacheResource.Shopowner,
+            children: [
+              {
+                path: "",
+                Component: ListShopownerPage
+              },
+              {
+                path: "list",
+                element: <Navigate to={`/${CacheResource.Shopowner}`} />
+              },
+              {
+                path: "",
+                children: [
+                  {
+                    path: "create",
+                    Component: CreateShopownerPage
+                  },
+                  {
+                    path: "update/:shopownerId",
+                    Component: UpdateShopownerPage
+                  }
+                ]
+              },
+            ]
+          },
+
           /// PERMISSIONS ROUTES
           {
-            path: "permissions",
+            path: CacheResource.Permission,
             children: [
               {
                 path: "",
@@ -216,7 +250,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/permissions" />
+                element: <Navigate to={`/${CacheResource.Permission}`} />
               },
               {
                 path: "",
@@ -236,7 +270,7 @@ const routes = createBrowserRouter([
 
           /// POTENTIAL ORDERS ROUTES
           {
-            path: "potential-orders",
+            path: CacheResource.PotentialOrder,
             children: [
               {
                 path: "",
@@ -244,7 +278,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/potential-orders" />
+                element: <Navigate to={`/${CacheResource.PotentialOrder}`} />
               },
               {
                 path: "",
@@ -264,7 +298,7 @@ const routes = createBrowserRouter([
 
           /// USER ADDRESS ROUTES
           {
-            path: "addresses",
+            path: CacheResource.UserAddress,
             children: [
               {
                 path: "",
@@ -272,7 +306,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/addresses" />
+                element: <Navigate to={`/${CacheResource.UserAddress}`} />
               },
               {
                 path: "",
@@ -292,7 +326,7 @@ const routes = createBrowserRouter([
 
           /// TOWNSHIPS ROUTES
           {
-            path: "townships",
+            path: CacheResource.Township,
             children: [
               {
                 path: "",
@@ -300,7 +334,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/townships" />
+                element: <Navigate to={`/${CacheResource.Township}`} />
               },
               {
                 path: "",
@@ -320,7 +354,7 @@ const routes = createBrowserRouter([
 
           /// REGIONS ROUTES
           {
-            path: "regions",
+            path: CacheResource.Region,
             children: [
               {
                 path: "",
@@ -328,7 +362,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/regions" />
+                element: <Navigate to={`/${CacheResource.Region}`} />
               },
               {
                 path: "",
@@ -348,7 +382,7 @@ const routes = createBrowserRouter([
 
           /// ORDERS ROUTES
           {
-            path: "orders",
+            path: CacheResource.Order,
             children: [
               {
                 path: "",
@@ -356,7 +390,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/orders" />
+                element: <Navigate to={`/${CacheResource.Order}`} />
               },
               {
                 path: "",
@@ -376,7 +410,7 @@ const routes = createBrowserRouter([
 
           /// COUPONS ROUTES
           {
-            path: "coupons",
+            path: CacheResource.Coupon,
             children: [
               {
                 path: "",
@@ -384,7 +418,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/coupons" />
+                element: <Navigate to={`/${CacheResource.Coupon}`} />
               },
               {
                 path: "",
@@ -404,7 +438,7 @@ const routes = createBrowserRouter([
 
           /// EXCHANGES ROUTES
           {
-            path: "exchanges",
+            path: CacheResource.Exchange,
             children: [
               {
                 path: "",
@@ -412,7 +446,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/exchanges" />
+                element: <Navigate to={`/${CacheResource.Exchange}`} />
               },
               {
                 path: "",
@@ -433,7 +467,7 @@ const routes = createBrowserRouter([
 
           /// USER ROUTES
           {
-            path: "users",
+            path: CacheResource.User,
             children: [
               {
                 path: "",
@@ -441,7 +475,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/users" />
+                element: <Navigate to={`/${CacheResource.User}`} />
               },
               {
                 path: "update/:userId",
@@ -458,7 +492,7 @@ const routes = createBrowserRouter([
 
           /// BRAND ROUTES
           {
-            path: "brands",
+            path: CacheResource.Brand,
             children: [
               {
                 path: "",
@@ -466,7 +500,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/brands" />
+                element: <Navigate to={`/${CacheResource.Brand}`} />
               },
               {
                 path: "",
@@ -486,7 +520,7 @@ const routes = createBrowserRouter([
 
           /// SALES-CATEGORY ROUTES
           {
-            path: "sales-categories",
+            path: CacheResource.SalesCategory,
             children: [
               {
                 path: "",
@@ -494,7 +528,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/sales-categories" />
+                element: <Navigate to={`${CacheResource.SalesCategory}`} />
               },
               {
                 path: "",
@@ -514,7 +548,7 @@ const routes = createBrowserRouter([
 
           /// CATEGORY ROUTES
           {
-            path: "categories",
+            path: CacheResource.Category,
             children: [
               {
                 path: "",
@@ -522,7 +556,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/categories" />
+                element: <Navigate to={`/${CacheResource.Category}`} />
               },
               {
                 path: "",
@@ -542,7 +576,7 @@ const routes = createBrowserRouter([
 
           /// PRODUCT ROUTES
           {
-            path: "products",
+            path: CacheResource.Product,
             children: [
               {
                 path: "",
@@ -550,7 +584,7 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to="/products" />
+                element: <Navigate to={`/${CacheResource.Product}`} />
               },
               {
                 path: "detail/:productId",

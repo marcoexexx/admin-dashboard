@@ -17,11 +17,12 @@ export function useUpdateProduct() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/products"
+  const from = `/${CacheResource.Product}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
     onError(err: any) {
+      dispatch({ type: "CLOSE_BACKDROP" })
       dispatch({
         type: "OPEN_TOAST", payload: {
           message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
@@ -45,6 +46,7 @@ export function useUpdateProduct() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Cart]
       })
+      dispatch({ type: "CLOSE_BACKDROP" })
       playSoundEffect("success")
     }
   })

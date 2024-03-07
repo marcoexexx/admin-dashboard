@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { LinkLabel } from ".."
 import { Resource } from "@/services/types"
+import { CacheResource } from "@/context/cacheKey"
 
 
 export function RenderResourceItemLabel({resource, id}: {resource: Resource, id: string}) {
@@ -10,96 +11,102 @@ export function RenderResourceItemLabel({resource, id}: {resource: Resource, id:
     switch (resource) {
 
       case Resource.AccessLog: {
-        navigate("/access-logs/" + id)
+        navigate(`${CacheResource.AccessLog}/detail/${id}`)
         return
       }
 
       case Resource.AuditLog: {
-        navigate("/audit-logs/" + id)
+        navigate(`${CacheResource.AuditLog}/detail/${id}`)
         return
       }
 
       case Resource.User: {
-        navigate("/users/detail/" + id)
+        navigate(`${CacheResource.User}/detail/${id}`)
         return
       }
 
       case Resource.Brand: {
-        navigate("/brands/detail/" + id)
+        navigate(`${CacheResource.Brand}/detail/${id}`)
         return
       }
 
       case Resource.Category: {
-        navigate("/categories/detail/" + id)
+        navigate(`${CacheResource.Category}/detail/${id}`)
         return
       }
 
       case Resource.Coupon: {
-        navigate("/coupons/detail/" + id)
+        navigate(`${CacheResource.Coupon}/detail/${id}`)
         return
       }
 
       case Resource.Exchange: {
-        navigate("/exchanges/detail/" + id)
+        navigate(`${CacheResource.Exchange}/detail/${id}`)
         return
       }
 
       case Resource.Order: {
-        navigate("/orders/detail/" + id)
+        navigate(`${CacheResource.Order}/detail/${id}`)
         return
       }
 
       case Resource.OrderItem: {
+        // navigate(`${CacheResource.OrderItem}/detail/${id}`)  // Not reachable
         return
       }
 
       case Resource.PickupAddress: {
-        navigate("/pickup-addresses/detail/" + id)
+        navigate(`${CacheResource.PickupAddress}/detail/${id}`)
         return
       }
 
       case Resource.PotentialOrder: {
-        navigate("/potential-orders/detail/" + id)
+        navigate(`${CacheResource.PotentialOrder}/detail/${id}`)
         return 
       }
 
       case Resource.Product: {
-        navigate("/products/detail/" + id)
+        navigate(`${CacheResource.Product}/detail/${id}`)
         return
       }
 
       case Resource.Region: {
-        navigate("/regions/detail/" + id)
+        navigate(`${CacheResource.Region}/detail/${id}`)
         return
       }
 
       case Resource.SalesCategory: {
-        navigate("/sales-categories/detail/" + id)
+        navigate(`${CacheResource.SalesCategory}/detail/${id}`)
         return
       }
 
       case Resource.Township: {
-        navigate("/townships/detail/" + id)
+        navigate(`${CacheResource.Township}/detail/${id}`)
         return
       }
 
       case Resource.UserAddress: {
-        navigate("/addresses/detail/" + id)
+        navigate(`${CacheResource.UserAddress}/detail/${id}`)
         return
       }
 
       case Resource.Role: {
-        navigate("/roles/detail/" + id)
+        navigate(`${CacheResource.Role}/detail/${id}`)
         return
       }
 
       case Resource.Permission: {
-        navigate("/permissions/detail/" + id)
+        navigate(`${CacheResource.Permission}/detail/${id}`)
         return
       }
 
       case Resource.Cart: {
-        navigate("/cart/detail/" + id)
+        navigate(`${CacheResource.Cart}/detail/${id}`)
+        return
+      }
+
+      case Resource.Shopowner: {
+        navigate(`${CacheResource.Shopowner}/detail/${id}`)
         return
       }
 

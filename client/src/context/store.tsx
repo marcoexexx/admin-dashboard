@@ -21,6 +21,7 @@ import { ChangeOrderPageActions, ChangeOrderPageSizeActions, ChangePotentialOrde
 import { AllModalFormCloseActions, CloseBackdropActions, DisableCheckOutActions, EnableCheckOutActions, LocalActions, ModalFormCloseActions, ModalFormOpenActions, OpenBackdropActions, SlidebarCloseActions, SlidebarOpenActions, SlidebarToggleActions, ThemeActions, ToastCloseActions, ToastOpenActions, ToggleBackdropActions, UserActions } from "./actions"
 import { ChangeRolePageActions, ChangeRolePageSizeActions, RoleFilterActions, RoleWhereInput } from "./role"
 import { ChangePermissionPageActions, ChangePermissionPageSizeActions, PermissionFilterActions, PermissionWhereInput } from "./permission"
+import { ChangeShopownerProviderPageActions, ChangeShopownerProviderPageSizeActions, ShopownerProviderFilterActions, ShopownerProviderWhereInput } from "./shopowner"
 
 
 const INITIAL_LIST_PAGE_LIMIT = 10
@@ -63,6 +64,7 @@ export type Store = {
   local: Local
   roleFilter: RoleWhereInput,
   permissionFilter: PermissionWhereInput,
+  shopownerFilter: ShopownerProviderWhereInput,
   accessLogFilter: AccessLogWhereInput,
   auditLogFilter: AuditLogWhereInput,
   orderFilter: OrderWhereInput,
@@ -113,6 +115,7 @@ type Action =
   | UserAddressFilterActions | ChangeUserAddressPageActions | ChangeUserAddressPageSizeActions
   | RoleFilterActions | ChangeRolePageActions | ChangeRolePageSizeActions
   | PermissionFilterActions | ChangePermissionPageActions | ChangePermissionPageSizeActions
+  | ShopownerProviderFilterActions | ChangeShopownerProviderPageActions | ChangeShopownerProviderPageSizeActions
 
   | ModalFormOpenActions
   | ModalFormCloseActions
@@ -141,6 +144,9 @@ const initialState: Store = {
   modalForm: {
     field: "*",
     state: false
+  },
+  shopownerFilter: {
+    pagination: INITIAL_PAGINATION
   },
   permissionFilter: {
     pagination: INITIAL_PAGINATION
@@ -298,6 +304,37 @@ const stateReducer = (state: Store, action: Action): Store => {
           ...state.userFilter,
           pagination: {
             page: state.userFilter.pagination?.page || INITIAL_PAGINATION.page,
+            pageSize: action.payload
+          }
+        }
+      }
+    }
+
+    case "SET_SHOPOWNER_FILTER": {
+      return {
+        ...state, shopownerFilter: {
+          ...state.shopownerFilter,
+          ...action.payload
+        }
+      }
+    }
+    case "SET_SHOPOWNER_PAGE": {
+      return {
+        ...state, shopownerFilter: {
+          ...state.shopownerFilter,
+          pagination: {
+            pageSize: state.shopownerFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            page: action.payload
+          }
+        }
+      }
+    }
+    case "SET_SHOPOWNER_PAGE_SIZE": {
+      return {
+        ...state, shopownerFilter: {
+          ...state.shopownerFilter,
+          pagination: {
+            page: state.shopownerFilter.pagination?.page || INITIAL_PAGINATION.page,
             pageSize: action.payload
           }
         }

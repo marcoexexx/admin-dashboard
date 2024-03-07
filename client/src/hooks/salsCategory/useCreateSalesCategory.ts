@@ -17,7 +17,7 @@ export function useCreateSalesCategory() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/sales-categories"
+  const from = `/${CacheResource.SalesCategory}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.create>) => apiService.create(...args),

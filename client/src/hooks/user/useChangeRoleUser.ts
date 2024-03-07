@@ -17,7 +17,7 @@ export function useChangeRoleUser() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
-  const from = "/users"
+  const from = `/${CacheResource.User}`
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.changeRoleUser>) => apiService.changeRoleUser(...args),

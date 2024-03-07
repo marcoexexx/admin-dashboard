@@ -21,7 +21,9 @@ export const CacheResource = {
   Dashboard: "dashboard",
   Role: "roles",
   Permission: "permissions",
-  Cart: "cart"
+  Cart: "cart",
+  Shopowner: "shopowners",
+  OrderItem: "order-items" // api not provided yet
 } as const
 export type CacheResource = typeof CacheResource[keyof typeof CacheResource]
 

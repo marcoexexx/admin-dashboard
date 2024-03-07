@@ -16,7 +16,7 @@ export function useCreateMultiPermissions() {
   const { dispatch } = useStore()
 
   const mutation = useMutation({
-    mutationFn: (buf: ArrayBuffer) => apiService.uploadExcel(buf),
+    mutationFn: (...args: Parameters<typeof apiService.uploadExcel>) => apiService.uploadExcel(...args),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST", payload: {
