@@ -16,7 +16,7 @@ export class CouponApiService extends BaseApiService<CouponWhereInput, Coupon> {
   }
 
 
-  async findManys(
+  async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: CouponWhereInput["where"];
