@@ -13,14 +13,14 @@ import { UserApiService } from "@/services/usersApi"
 const apiService = UserApiService.new()
 
 
-export function useChangeRoleUser() {
+export function useUpdateUser() {
   const { state: { modalForm }, dispatch } = useStore()
 
   const navigate = useNavigate()
   const from = `/${CacheResource.User}`
 
   const mutation = useMutation({
-    mutationFn: (...args: Parameters<typeof apiService.changeRoleUser>) => apiService.changeRoleUser(...args),
+    mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
     onSuccess: () => {
       dispatch({
         type: "OPEN_TOAST", payload: {

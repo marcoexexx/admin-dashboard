@@ -44,6 +44,7 @@ export async function getExchangesHandler(
             gte: startDate
           },
           rate,
+          shopownerProviderId: sessionUser?.isSuperuser ? undefined : (sessionUser?.shopownerProviderId || undefined)
         },
         orderBy,
         include: {
@@ -140,7 +141,7 @@ export async function createExchangeHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
-    if (!sessionUser.shopownerProvider) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
+    if (!sessionUser.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
 
     const exchange = (await service.tryCreate({
       data: {
@@ -149,9 +150,8 @@ export async function createExchangeHandler(
         to,
         rate,
         shopowner: {
-          create: {
-            name: sessionUser.shopownerProvider.name,
-            id: sessionUser.shopownerProvider.id
+          connect: {
+            id: sessionUser.shopownerProviderId
           }
         }
       }

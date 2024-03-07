@@ -77,6 +77,9 @@ export async function getProductsHandler(
           marketPrice,
           status,
           priceUnit,
+          creator: {
+            shopownerProviderId: sessionUser?.isSuperuser ? undefined : sessionUser?.shopownerProviderId
+          }
         },
         include: {
           _count,
@@ -249,9 +252,7 @@ export async function createMultiProductsHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
-
     const excelFile = req.file
-
     if (!excelFile) return res.status(StatusCode.NoContent)
 
     const products = (await service.tryExcelUpload(excelFile, sessionUser)).ok_or_throw()
@@ -403,7 +404,7 @@ export async function deleteMultiProductHandler(
         },
         status: ProductStatus.Draft,
         creator: {
-          shopownerProviderId: sessionUser.shopownerProviderId
+          shopownerProviderId: sessionUser.isSuperuser ? undefined : sessionUser.shopownerProviderId
         }
       }
     })

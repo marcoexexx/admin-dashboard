@@ -1,6 +1,6 @@
-import { usePermission } from "@/hooks";
 import { useRef, useState } from "react";
 import { queryClient } from "@/components";
+import { usePermission } from "@/hooks/usePermission";
 import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Popover, Tooltip, Typography, styled } from "@mui/material";
 import { OperationAction, Resource } from "@/services/types";
 
@@ -13,7 +13,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import * as XLSX from 'xlsx'
 
 
-const MenuActionBox = styled(Box)(({theme}) => ({
+const MenuActionBox = styled(Box)(({ theme }) => ({
   background: theme.colors.alpha.black[5],
   padding: theme.spacing(2)
 }))
@@ -21,7 +21,7 @@ const MenuActionBox = styled(Box)(({theme}) => ({
 
 interface EnhancedTableActionsProps {
   onExport: () => void
-  onImport: (data: any) => void
+  onImport?: (data: any) => void
   renderFilterForm?: React.ReactElement
   resource: Resource
   refreshKey: any
@@ -32,13 +32,15 @@ export function EnhancedTableActions(props: EnhancedTableActionsProps) {
 
   const ref = useRef<HTMLButtonElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  
+
   const [isOpen, setIsOpen] = useState(false)
 
-  const isAllowedImport = usePermission({
-    action: OperationAction.Create,
-    resource
-  }).is_ok()
+  const isAllowedImport = onImport
+    ? usePermission({
+      action: OperationAction.Create,
+      resource
+    }).is_ok()
+    : false
 
   const handleOpen = () => {
     setIsOpen(true)
@@ -54,6 +56,7 @@ export function EnhancedTableActions(props: EnhancedTableActionsProps) {
   }
 
   const handleChangeImportExcel = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (!onImport) return
     const file = (evt.target.files)?.[0]
     if (!file) return
     const reader = new FileReader()
@@ -130,11 +133,11 @@ export function EnhancedTableActions(props: EnhancedTableActionsProps) {
             </ListItemButton>
 
             {isAllowedImport
-            ? <ListItemButton onClick={handleImportExcel}>
+              ? <ListItemButton onClick={handleImportExcel}>
                 <ListItemIcon>
                   <ImportIcon fontSize="small" />
                 </ListItemIcon>
-                <input 
+                <input
                   type="file"
                   style={{
                     display: "none"
@@ -145,7 +148,7 @@ export function EnhancedTableActions(props: EnhancedTableActionsProps) {
                 />
                 <ListItemText primary="Import" />
               </ListItemButton>
-            : null}
+              : null}
           </List>
         </MenuActionBox>
       </Popover>

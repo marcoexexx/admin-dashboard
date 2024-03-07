@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { changeRoleUserHandler, createBlockUserHandler, getUserByUsernameHandler, getUserHandler, getUsersHandler, removeBlockedUserHandler } from "../controllers/user.controller";
+import { createBlockUserHandler, getUserByUsernameHandler, getUserHandler, getUsersHandler, removeBlockedUserHandler, updateRoleUserBySuperuserHandler } from "../controllers/user.controller";
 import { getUserByUsernameSchema, getUserSchema, updateUserSchema } from "../schemas/user.schema";
 import { validate } from "../middleware/validate";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
@@ -31,13 +31,12 @@ router.route("/detail/:userId")
     validate(getUserSchema),
     getUserHandler
   )
-
-router.route("/change-role/:userId")
   .patch(
     sudo,
-    validate(updateUserSchema.changeUserRole),
-    changeRoleUserHandler,
+    validate(updateUserSchema.update),
+    updateRoleUserBySuperuserHandler,
   )
+
 
 router.route("/block-user")
   .patch(

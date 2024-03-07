@@ -198,7 +198,10 @@ export class ProductService extends MetaAppService implements AppService {
       const result = (await opt({
         where: { 
           id: product.id,
-          status: ProductStatus.Draft
+          status: ProductStatus.Draft,
+          creator: {
+            shopownerProviderId: uploadBy.isSuperuser ? undefined : uploadBy.shopownerProviderId
+          }
         },
         create: { 
           id: product.id,
@@ -260,6 +263,7 @@ export class ProductService extends MetaAppService implements AppService {
           },
         },
         update: { 
+          title: product.title,
           price: product.price,
           discount: product.discount,
           isDiscountItem: product.isDiscountItem,
