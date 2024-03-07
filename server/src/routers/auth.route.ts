@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validate } from "../middleware/validate";
-import { createUserSchema, loginUserSchema, veriffyEmailSchema } from "../schemas/user.schema";
-import { googleOAuthHandler, loginUserHandler, logoutHandler, refreshTokenHandler, registerUserHandler, verificationEmailHandler } from "../controllers/auth.controller";
+import { createUserSchema, loginUserSchema, resendEmailVerificationSchema, veriffyEmailSchema } from "../schemas/user.schema";
+import { googleOAuthHandler, loginUserHandler, logoutHandler, refreshTokenHandler, registerUserHandler, resendEmailVerificationCodeHandler, verificationEmailHandler } from "../controllers/auth.controller";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import getConfig from "../utils/getConfig";
@@ -31,6 +31,13 @@ router.route("/register")
   .post(
     validate(createUserSchema),
     registerUserHandler
+  )
+
+
+router.route("/verifyEmail/resend")
+  .post(
+    validate(resendEmailVerificationSchema),
+    resendEmailVerificationCodeHandler
   )
 
 router.route("/verifyEmail/:verificationCode")

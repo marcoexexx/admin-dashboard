@@ -110,12 +110,21 @@ export const updateSelfUserSchema = {
 }
 
 
+export const resendEmailVerificationSchema = object({
+  body: object({
+    id: string({ required_error: "User id is required."}).min(24).max(24),
+    code: string({ required_error: "Code is required." }).min(64).max(64)
+  })
+})
+
+
 export type CreateUserInput = z.infer<typeof createUserSchema>["body"]
 export type LoginUserInput = z.infer<typeof loginUserSchema>["body"]
 export type GetUserInput = z.infer<typeof getUserSchema>["params"]
 export type GetUserByUsernameInput = z.infer<typeof getUserByUsernameSchema>["params"]
 export type UploadImageUserInput = z.infer<typeof uploadImageProfileSchema>["body"]
 export type VerificationEmailInput = z.infer<typeof veriffyEmailSchema>["params"]
+export type ResendEmailVerificationInput = z.infer<typeof resendEmailVerificationSchema>["body"]
 
 export type CreateBlockUserInput = z.infer<typeof updateUserSchema["createBlockUser"]>
 export type RemoveBlockedUserInput = z.infer<typeof updateUserSchema["removeBlockdUser"]>

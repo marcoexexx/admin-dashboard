@@ -7,7 +7,7 @@ import { verifyEmailFn } from "@/services/authApi";
 
 export function useVerifyEmail({ verifyEmailCode }: { verifyEmailCode: string | undefined }) {
   const query = useQuery({
-    enabled: !!verifyEmailCode,
+    enabled: !!verifyEmailCode && verifyEmailCode !== "__code__",
     queryKey: ["verify-email-code"],
     queryFn: args => verifyEmailFn(args, verifyEmailCode)
   })
