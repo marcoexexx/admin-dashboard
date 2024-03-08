@@ -369,7 +369,7 @@ export async function deleteProductHandler(
         id: productId,
         status: ProductStatus.Draft,
         creator: {
-          shopownerProviderId: sessionUser.shopownerProviderId
+          shopownerProviderId: sessionUser.isSuperuser ? undefined : sessionUser.shopownerProviderId
         }
       }
     })).ok_or_throw()

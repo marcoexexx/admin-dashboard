@@ -221,11 +221,13 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
   const handleMultiDelete = (ids: string[]) => () => {
     if (!onMultiDelete) return unimplementedFeature()
     onMultiDelete(ids)
+    dispatch({ type: "CLOSE_MODAL_FORM", payload: deleteMultiRowKeys[resource] })
   }
 
   const handleSingleDelete = (id: string) => () => {
     if (!onSingleDelete) return unimplementedFeature()
     onSingleDelete(id)
+    dispatch({ type: "CLOSE_MODAL_FORM", payload: deleteSingleRowKeys[resource] })
   }
 
   const handleCloseModal = () => {
@@ -237,7 +239,7 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
   }
 
   const handleOnImportAction = (data: Row[]) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "excel-brands" })
+    dispatch({ type: "OPEN_MODAL_FORM", payload: excelUploadRowKeys[resource] })
     tableStateDispatch({ type: "SET_UPLOAD_DATA", payload: data })
   }
 
@@ -245,6 +247,7 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
     if (!onMultiCreate) return unimplementedFeature()
 
     dispatch({ type: "OPEN_BACKDROP" })
+    dispatch({ type: "CLOSE_MODAL_FORM", payload: excelUploadRowKeys[resource] })
 
     convertToExcel(uploadData, resource)
       .then(excelBuffer => onMultiCreate(excelBuffer))

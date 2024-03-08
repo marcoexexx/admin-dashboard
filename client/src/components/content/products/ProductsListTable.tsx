@@ -200,7 +200,7 @@ export function ProductsListTable(props: ProductsListTableProps) {
         refreshKey={[CacheResource.Product]}
         renderFilterForm={<ProductdsFilterForm />}
         rows={products}
-        resource={Resource.Brand}
+        resource={Resource.Product}
         isLoading={isLoading}
         columns={columnsWithEditableStatus}
         onSingleDelete={onDelete}
