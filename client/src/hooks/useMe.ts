@@ -17,7 +17,7 @@ export function useMe({ enabled = true, include }: { enabled?: boolean, include?
     }),
     select: (data: UserResponse) => data.user,
 
-    staleTime: 1000
+    staleTime: 500
   })
 
   const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
