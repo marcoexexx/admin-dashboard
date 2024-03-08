@@ -14,6 +14,30 @@ import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 
 
+const excelUploadRowKeys: Record<Resource, ModalFormField> = {
+  [Resource.Role]: "excel-roles",
+  [Resource.Permission]: "excel-cart",
+  [Resource.Cart]: "excel-cart",
+  [Resource.OrderItem]: "excel-order-items",
+
+  [Resource.AccessLog]: "excel-access-logs",
+  [Resource.AuditLog]: "excel-audit-logs",
+  [Resource.User]: "excel-users",
+  [Resource.PickupAddress]: "excel-pickup-addresses",
+  [Resource.Brand]: "excel-brands",
+  [Resource.Category]: "excel-categories",
+  [Resource.Coupon]: "excel-coupons",
+  [Resource.Exchange]: "excel-exchanges",
+  [Resource.Order]: "excel-orders",
+  [Resource.PotentialOrder]: "excel-potential-orders",
+  [Resource.Product]: "excel-products",
+  [Resource.Region]: "excel-regions",
+  [Resource.SalesCategory]: "excel-sales-categories",
+  [Resource.Township]: "excel-townships",
+  [Resource.UserAddress]: "excel-addresses",
+  [Resource.Shopowner]: "excel-shopowners",
+}
+
 const deleteSingleRowKeys: Record<Resource, ModalFormField> = {
   [Resource.Role]: "*",
   [Resource.Permission]: "*",
@@ -80,7 +104,8 @@ export type DynamicColumn<T extends object> = {
 
 const initState = {
   selectedRows: [] as string[],
-  singleDeleteRow: undefined as string | undefined
+  singleDeleteRow: undefined as string | undefined,
+  uploadData: undefined as any
 }
 type TableState = typeof initState
 
@@ -89,6 +114,7 @@ type TableAction =
   | { type: "SINGLE_SELECT", payload: string }
   | { type: "SINGLE_UNSELECT", payload: string }
   | { type: "SET_DELETE_ROW", payload: string }
+  | { type: "SET_UPLOAD_DATA", payload: any }
 
 
 const reducer = (state: typeof initState, action: TableAction): TableState => {
@@ -107,6 +133,10 @@ const reducer = (state: typeof initState, action: TableAction): TableState => {
 
     case "SET_DELETE_ROW": {
       return { ...state, singleDeleteRow: action.payload }
+    }
+
+    case "SET_UPLOAD_DATA": {
+      return { ...state, uploadData: action.payload }
     }
 
     default: {
@@ -137,7 +167,7 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
 
   const { state: { modalForm, user }, dispatch } = useStore()
   const { isLoading, resource, rows, columns: cols, onSingleDelete, onMultiDelete, onMultiCreate, renderFilterForm, refreshKey, hideCheckbox, hideTopActions } = props
-  const { selectedRows, singleDeleteRow } = state
+  const { selectedRows, singleDeleteRow, uploadData } = state
 
   const isSelectedAllRows = rows.length === selectedRows.length
   const isSelectedSomeRows = selectedRows.length > 0 &&
@@ -206,12 +236,17 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
     exportToExcel(rows.filter(row => selectedRows.includes(row.id)), resource)
   }
 
-  const handleOnImport = (data: Row[]) => {
+  const handleOnImportAction = (data: Row[]) => {
+    dispatch({ type: "OPEN_MODAL_FORM", payload: "excel-brands" })
+    tableStateDispatch({ type: "SET_UPLOAD_DATA", payload: data })
+  }
+
+  const handleOnImport = () => {
     if (!onMultiCreate) return unimplementedFeature()
 
     dispatch({ type: "OPEN_BACKDROP" })
 
-    convertToExcel(data, "Brands")
+    convertToExcel(uploadData, resource)
       .then(excelBuffer => onMultiCreate(excelBuffer))
       .catch(err => dispatch({
         type: "OPEN_TOAST",
@@ -239,7 +274,7 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
       : <CardContent>
         <EnhancedTableActions
           refreshKey={refreshKey}
-          onImport={onMultiCreate ? handleOnImport : undefined}
+          onImport={onMultiCreate ? handleOnImportAction : undefined}
           onExport={handleOnExport}
           renderFilterForm={renderFilterForm}
           resource={resource}
@@ -355,6 +390,23 @@ export function EnhancedTable<Row extends { id: string }>(props: EnhancedTablePr
           </Box>
           <Box display="flex" flexDirection="row" gap={1}>
             <MuiButton variant="contained" color="error" onClick={handleSingleDelete(singleDeleteRow)}>Delete</MuiButton>
+            <MuiButton variant="outlined" onClick={handleCloseModal}>Cancel</MuiButton>
+          </Box>
+        </Box>
+      </FormModal>
+      : null}
+
+    {modalForm.field === excelUploadRowKeys[resource]
+      ? <FormModal
+        field={excelUploadRowKeys[resource]}
+        title="Excel upload"
+      >
+        <Box display="flex" flexDirection="column" gap={2} alignItems="end">
+          <Box>
+            <Typography>Are you sure want to upload, This may update or create rows</Typography>
+          </Box>
+          <Box display="flex" flexDirection="row" gap={1}>
+            <MuiButton variant="contained" color="error" onClick={handleOnImport}>Upload</MuiButton>
             <MuiButton variant="outlined" onClick={handleCloseModal}>Cancel</MuiButton>
           </Box>
         </Box>
