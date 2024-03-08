@@ -10,6 +10,7 @@ import { db } from "../../utils/db";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
 import { generateRandomUsername } from '../../utils/generateRandomUsername';
 import { createVerificationCode } from '../../utils/createVeriicationCode';
+import { guestUserAccessResources } from '../../type';
 
 
 /**
@@ -47,6 +48,20 @@ export class UserService extends MetaAppService implements AppService {
       password: hashedPassword,
       verified: false,
       isSuperuser,
+      role: {
+        connectOrCreate: {
+          where: { name: "Customer" },
+          create: {
+            name: "Customer",
+            remark: "Build-in role",
+            permissions: {
+              createMany: {
+                data: [...guestUserAccessResources]
+              }
+            }
+          }
+        }
+      },
       reward: {
         create: {
           points: 0,

@@ -7,6 +7,7 @@ namespace NodeJS {
     NODE_ENV: "production" | "development" | "test",
     LOG_LEVEL: "log" | "info" | "debug" | "warn" | "error",
     ORIGIN: string,
+    WEBSITE_ORIGIN: string,
 
     DATABASE_URL: string,
     REDIS_URL: string,

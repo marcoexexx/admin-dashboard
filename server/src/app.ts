@@ -72,7 +72,7 @@ app.set('views', `${__dirname}/views`)
 /* Middlewares */
 // CORS
 app.use(cors({
-  origin: getConfig("origin"),
+  origin: [getConfig("origin"), getConfig("websiteOrigin")],
   credentials: true,
 }))
 
