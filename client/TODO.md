@@ -10,27 +10,8 @@
 
 
 # TODO
- - ## IMPORTANT
- - [ ] product all publish by superadmin only
- - [ ] product all remove sale and add sale by excel or table action button
-
- - [ ] orderBy
- - [ ] pickup address :: read(all, detail), delete(all, detail) :: client UI
- - [ ] nested model form
  - [ ] item code
  - [ ] check filter forms
- - [ ] editor text input-fields :: border
-
- - [ ] product optional field bugs
-
- - [ ] user detail :: relation
-
- - ## NORMAL
- - [ ] filter -> specs products
-
- - [ ] image upload
- - [ ] product image append -> [ + ] in product detail view
- - [ ] product image form -> multi image with create form
 
  ## DONE
  - [x] exchange -> exchanges
