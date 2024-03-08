@@ -16,10 +16,11 @@ const InnerPaper = styled(Paper)(() => ({
 
 
 interface ShopownerInputFieldProps {
-  updateField?: boolean
+  updateField?: boolean,
+  disabled?: boolean
 }
 
-export function ShopownerInputField({ updateField = false }: ShopownerInputFieldProps) {
+export function ShopownerInputField({ updateField = false, disabled = false }: ShopownerInputFieldProps) {
   const { control, setValue, getValues } = useFormContext<{ shopownerProviderId: string }>()
   const [selectedShopowner, setSelectedShopowner] = useState<ShopownerProvider | null>(null)
   const [isOpenOptions, setIsOpenOptions] = useState(false)
@@ -65,7 +66,7 @@ export function ShopownerInputField({ updateField = false }: ShopownerInputField
 
   if (isError) return <Autocomplete
     options={[]}
-    disabled
+    disabled={disabled}
     renderInput={params => <TextField
       {...params}
       error={true}
@@ -83,6 +84,7 @@ export function ShopownerInputField({ updateField = false }: ShopownerInputField
       render={({ field, fieldState }) => (
         <Autocomplete
           {...field}
+          disabled={disabled}
           open={isOpenOptions}
           onOpen={() => setIsOpenOptions(true)}
           onClose={handleOnCloseOptions}

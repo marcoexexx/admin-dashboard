@@ -479,6 +479,9 @@ export type Exchange = {
   rate: number
   date: Date | string
 
+  shopowner?: ShopownerProvider
+  shopownerProviderId?: string
+
   createdAt: string | Date
   updatedAt: string | Date
 }

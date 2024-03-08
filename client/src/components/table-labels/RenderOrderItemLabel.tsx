@@ -3,7 +3,7 @@ import { LinkLabel } from "..";
 import { useNavigate } from "react-router-dom";
 
 
-export function RenderOrderItemLabel({orderItem}: {orderItem: OrderItem}) {
+export function RenderOrderItemLabel({ orderItem }: { orderItem: OrderItem }) {
   const navigate = useNavigate()
   // const to = "/brands/detail/" + brand.id
   const to = "#order-items"

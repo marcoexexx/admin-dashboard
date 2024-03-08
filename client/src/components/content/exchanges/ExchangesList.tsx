@@ -13,6 +13,9 @@ export function ExchangesList() {
   const exchangesQuery = useGetExchanges({
     filter: exchangeFilter.where,
     pagination: exchangeFilter.pagination || INITIAL_PAGINATION,
+    include: {
+      shopowner: true
+    }
   })
 
   // Mutations

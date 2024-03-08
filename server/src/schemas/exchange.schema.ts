@@ -14,7 +14,8 @@ export const createExchangeSchema = object({
     to: z.nativeEnum(PriceUnit).default(PriceUnit.USD),
     rate: number({ required_error: "rate is required" })
       .min(0),
-    date: string({ required_error: "Date field is required" })
+    date: string({ required_error: "Date field is required" }),
+    shopownerProviderId: string({ required_error: "shopownerProviderId is required." })
   }).refine(data => data.from !== data.to, {
     path: ["to"],
     message: "to and from must different"
@@ -28,7 +29,8 @@ export const updateExchangeSchema = object({
     to: z.nativeEnum(PriceUnit).default(PriceUnit.USD),
     rate: number({ required_error: "rate is required" })
       .min(0),
-    date: string({ required_error: "Date field is required" })
+    date: string({ required_error: "Date field is required" }),
+    shopownerProviderId: string({ required_error: "shopownerProviderId is required." })
   }).refine(data => data.from !== data.to, {
     path: ["to"],
     message: "to and from must different"

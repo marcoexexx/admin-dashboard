@@ -4,7 +4,7 @@ import { Resource } from "@/services/types"
 import { CacheResource } from "@/context/cacheKey"
 
 
-export function RenderResourceItemLabel({resource, id}: {resource: Resource, id: string}) {
+export function RenderResourceItemLabel({ resource, id }: { resource: Resource, id: string }) {
   const navigate = useNavigate()
 
   const handleNavigate = () => {
@@ -62,7 +62,7 @@ export function RenderResourceItemLabel({resource, id}: {resource: Resource, id:
 
       case Resource.PotentialOrder: {
         navigate(`${CacheResource.PotentialOrder}/detail/${id}`)
-        return 
+        return
       }
 
       case Resource.Product: {

@@ -1,5 +1,5 @@
 import { Box, Card, Divider, TablePagination, Typography } from "@mui/material"
-import { RenderToggleBlockUserButton, RenderUsernameLabel } from "@/components/table-labels";
+import { RenderShopownerLabel, RenderToggleBlockUserButton, RenderUsernameLabel } from "@/components/table-labels";
 import { Resource, User } from "@/services/types";
 import { UsersFilterForm } from ".";
 import { EnhancedTable, TypedColumn } from "@/components";
@@ -31,7 +31,7 @@ const columns: TypedColumn<User>[] = [
     id: "shopownerProvider",
     align: "right",
     name: "Shopowner",
-    render: ({ value }) => <Typography>{value.shopownerProvider?.name}</Typography>
+    render: ({ value }) => value.shopownerProvider ? <RenderShopownerLabel shopowner={value.shopownerProvider} /> : null
   },
   {
     id: "blockedUsers",

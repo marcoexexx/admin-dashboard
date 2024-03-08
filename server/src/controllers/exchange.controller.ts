@@ -97,7 +97,7 @@ export async function updateExchangeHandler(
 ) {
   try {
     const { exchangeId } = req.params
-    const { to, from, rate, date } = req.body
+    const { to, from, rate, date, shopownerProviderId } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
@@ -108,7 +108,7 @@ export async function updateExchangeHandler(
     const exchange = (await service.tryUpdate({
       where: {
         id: exchangeId,
-        shopownerProviderId: sessionUser.shopownerProviderId
+        shopownerProviderId
       },
       data: {
         to,
@@ -135,13 +135,13 @@ export async function createExchangeHandler(
   next: NextFunction
 ) {
   try {
-    const { from, to, rate, date } = req.body
+    const { from, to, rate, date, shopownerProviderId } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
     _isAccess.ok_or_throw()
 
-    if (!sessionUser.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
+    if (!sessionUser.shopownerProviderId && !sessionUser.isSuperuser) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
 
     const exchange = (await service.tryCreate({
       data: {
@@ -151,7 +151,7 @@ export async function createExchangeHandler(
         rate,
         shopowner: {
           connect: {
-            id: sessionUser.shopownerProviderId
+            id: shopownerProviderId
           }
         }
       }
@@ -207,7 +207,7 @@ export async function deleteExchangeHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    if (!sessionUser.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
+    if (!sessionUser.shopownerProviderId || !sessionUser.isSuperuser) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
 
     const exchange = (await service.tryDelete({
       where: {
@@ -239,7 +239,7 @@ export async function deleteMultiExchangesHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
     _isAccess.ok_or_throw()
 
-    if (!sessionUser.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
+    if (!sessionUser.shopownerProviderId || !sessionUser.isSuperuser) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`))
 
     const _tryDeleteExchanges = await service.tryDeleteMany({
       where: {

@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom"
 import { LinkLabel } from "@/components";
 import { Category } from "@/services/types";
+import { CacheResource } from "@/context/cacheKey";
 
-export function RenderCategoryLabel({category}: {category: Category}) {
+
+export function RenderCategoryLabel({ category }: { category: Category }) {
   const navigate = useNavigate()
-  const to = "/categories/detail/" + category.id
+  const to = `/${CacheResource.Category}/detail/${category.id}`
 
   const handleNavigate = () => {
     navigate(to)

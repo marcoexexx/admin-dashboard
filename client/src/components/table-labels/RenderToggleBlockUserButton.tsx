@@ -4,7 +4,7 @@ import { useBlockUser } from "@/hooks/user/useBlockUser";
 import { Typography } from "@mui/material";
 import { useUnblockUser } from "@/hooks/user";
 
-export function RenderToggleBlockUserButton({user, me}: {user: User, me: User}) {
+export function RenderToggleBlockUserButton({ user, me }: { user: User, me: User }) {
 
   const blocked = user.blockedUsers.find(u => u.blockedById === me.id)
 
@@ -19,7 +19,7 @@ export function RenderToggleBlockUserButton({user, me}: {user: User, me: User}) 
 
   if (user.id === me.id) return <Typography>Self</Typography>
 
-  return <MuiButton 
+  return <MuiButton
     color={blocked ? "primary" : "error"}
     onClick={handleToggleBlock}
     loading={blockUserMutation.isPending}

@@ -16,7 +16,8 @@ const updateExchangeSchema = object({
   to: z.nativeEnum(PriceUnit).default(PriceUnit.USD),
   rate: number({ required_error: "rate is required" })
     .min(0),
-  date: z.any()
+  date: z.any(),
+  shopownerProviderId: z.string({ required_error: "shopownerProviderId is required." })
 }).refine(data => data.from !== data.to, {
   path: ["to"],
   message: "to and from must different"

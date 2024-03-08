@@ -5,6 +5,7 @@ import { ExchangesFilterForm } from ".";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
 import { INITIAL_PAGINATION } from "@/context/store";
+import { RenderShopownerLabel } from "@/components/table-labels";
 
 
 const columns: TypedColumn<Exchange>[] = [
@@ -31,6 +32,12 @@ const columns: TypedColumn<Exchange>[] = [
     align: "right",
     name: "Date",
     render: ({ value }) => <Typography>{new Date(value.date).toUTCString()}</Typography>
+  },
+  {
+    id: "shopowner",
+    align: "right",
+    name: "Shopowner",
+    render: ({ value }) => value.shopowner ? <RenderShopownerLabel shopowner={value.shopowner} /> : null
   },
 ]
 
