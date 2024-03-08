@@ -26,6 +26,12 @@ export const guestUserAccessResources: Pick<Permission, "action" | "resource">[]
 
   // User
 
+  // Shopowner
+  {
+    resource: Resource.Shopowner,
+    action: OperationAction.Read
+  },
+
   // Brand
   {
     resource: Resource.Brand,
