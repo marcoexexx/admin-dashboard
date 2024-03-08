@@ -46,7 +46,7 @@ export class RegionService extends MetaAppService implements AppService {
   async tryFindManyWithCount(...args: [{ pagination: Pagination; }, ...Parameters<typeof this.repository.findMany>]): Promise<
     Result<[number, Awaited<ReturnType<typeof this.repository.findMany>>], AppError>
   > {
-    const [{pagination}, arg] = args
+    const [{ pagination }, arg] = args
     const { page = 1, pageSize = 10 } = pagination
     const offset = (page - 1) * pageSize
 
@@ -185,10 +185,12 @@ export class RegionService extends MetaAppService implements AppService {
 
     const opt = as_result_async(this.repository.upsert)
 
-    const opts = async (brand: CreateMultiRegionsInput[number]) => {
+    const opts = async (region: CreateMultiRegionsInput[number]) => {
       const result = (await opt({
-        where: { name: brand.name },
-        create: { name: brand.name },
+        where: { name: region.name },
+        create: {
+          name: region.name,
+        },
         update: { updatedAt: new Date() }
       })).map_err(convertPrismaErrorToAppError)
       return result.ok_or_throw()

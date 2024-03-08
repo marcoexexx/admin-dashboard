@@ -12,7 +12,6 @@ import { useGetPermission, useUpdatePermission } from "@/hooks/permission";
 const updatePermissionSchema = object({
   action: z.nativeEnum(OperationAction, { required_error: "actin is required." }),
   resource: z.nativeEnum(Resource, { required_error: "resource is required." }),
-  roleId: string({ required_error: "role id is required." })
 })
 
 export type UpdatePermissionInput = z.infer<typeof updatePermissionSchema>

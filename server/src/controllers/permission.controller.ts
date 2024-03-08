@@ -116,7 +116,7 @@ export async function createPermissionHandler(
   next: NextFunction
 ) {
   try {
-    const { action, resource, roleId } = req.body
+    const { action, resource } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
@@ -126,7 +126,6 @@ export async function createPermissionHandler(
       data: {
         action,
         resource,
-        roleId
       } 
     })).ok_or_throw()
 
@@ -209,7 +208,7 @@ export async function updatePermissionHandler(
 ) {
   try {
     const { permissionId } = req.params
-    const { resource, action, roleId } = req.body
+    const { resource, action } = req.body
 
     const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
@@ -222,7 +221,6 @@ export async function updatePermissionHandler(
       data: {
         action,
         resource,
-        roleId
       }
     })).ok_or_throw()
 

@@ -116,8 +116,8 @@ model Permission {
   id       String          @id @default(auto()) @map("_id") @db.ObjectId
   action   OperationAction
   resource Resource
-  role     Role            @relation(fields: [roleId], references: [id])
-  roleId   String          @db.ObjectId
+  role     Role?           @relation(fields: [roleId], references: [id])
+  roleId   String?         @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

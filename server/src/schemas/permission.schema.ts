@@ -12,7 +12,6 @@ export const createPermissionSchema = object({
   body: object({
     action: nativeEnum(OperationAction, { required_error: "actin is required." }),
     resource: nativeEnum(Resource, { required_error: "resource is required." }),
-    roleId: string({ required_error: "role id is required." })
   })
 })
 
@@ -21,7 +20,6 @@ export const createMultiPermissionsSchema = object({
     id: string({ required_error: "id is required." }),
     action: nativeEnum(OperationAction, { required_error: "actin is required." }),
     resource: nativeEnum(Resource, { required_error: "resource is required." }),
-    roleId: string({ required_error: "role id is required." })
   }).array()
 })
 
@@ -34,7 +32,6 @@ export const updatePermissionSchema = object({
   body: object({
     action: nativeEnum(OperationAction, { required_error: "actin is required." }),
     resource: nativeEnum(Resource, { required_error: "resource is required." }),
-    roleId: string({ required_error: "role id is required." })
   })
 })
 

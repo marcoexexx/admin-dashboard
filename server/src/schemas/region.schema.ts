@@ -26,7 +26,7 @@ export const updateRegionSchema = object({
 export const createMultiRegionsSchema = object({
   body: object({
     name: string({ required_error: "Region name is required" }),
-    townships: string().array().default([])
+    // townships: string().optional() // Split by "\n"
   }).array()
 })
 
