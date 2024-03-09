@@ -1,3 +1,10 @@
+/**
+ * Enum representing the status of a product.
+ * - `Draft`: The product is in draft status.
+ * - `Pending`: The product is pending approval.
+ * - `Published`: The product is published and available.
+ * @enum
+ */
 export const ProductStatus = {
   Draft: "Draft",
   Pending: "Pending",
@@ -5,6 +12,13 @@ export const ProductStatus = {
 } as const
 export type ProductStatus = typeof ProductStatus[keyof typeof ProductStatus]
 
+/**
+ * Enum defining authentication providers.
+ * - `Local`: Represents authentication using local credentials.
+ * - `Google`: Represents authentication using google credentials.
+ * - `Facebook`: Represents authentication using facebook credentials.
+ * @enum
+ */
 export const AuthProvider = {
   Local: "Local",
   Google: "Google",
@@ -12,6 +26,10 @@ export const AuthProvider = {
 } as const
 export type AuthProvider = typeof AuthProvider[keyof typeof AuthProvider]
 
+/**
+ * Enum defining various resource types.
+ * @enum
+ */
 export const Resource = {
   AccessLog: "AccessLog",
   AuditLog: "AuditLog",
@@ -36,6 +54,9 @@ export const Resource = {
 } as const
 export type Resource = typeof Resource[keyof typeof Resource]
 
+/**
+ * @enum
+ */
 export const ProductStockStatus = {
   Available: "Available",
   OutOfStock: "OutOfStock",
@@ -44,6 +65,9 @@ export const ProductStockStatus = {
 } as const
 export type ProductStockStatus = typeof ProductStockStatus[keyof typeof ProductStockStatus]
 
+/**
+ * @enum
+ */
 export const PriceUnit = {
   MMK: "MMK",
   USD: "USD",
@@ -53,6 +77,9 @@ export const PriceUnit = {
 } as const
 export type PriceUnit = typeof PriceUnit[keyof typeof PriceUnit]
 
+/**
+ * @enum
+ */
 export const PaymentMethodProvider = {
   Cash: "Cash",
   AYAPay: "AYAPay",
@@ -65,12 +92,18 @@ export const PaymentMethodProvider = {
 } as const
 export type PaymentMethodProvider = typeof PaymentMethodProvider[keyof typeof PaymentMethodProvider]
 
+/**
+ * @enum
+ */
 export const AddressType = {
   Delivery: "Delivery",
   Pickup: "Pickup"
 } as const
 export type AddressType = typeof AddressType[keyof typeof AddressType]
 
+/**
+ * @enum
+ */
 export const OrderStatus = {
   Pending: "Pending",
   Processing: "Processing",
@@ -80,6 +113,9 @@ export const OrderStatus = {
 } as const
 export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus]
 
+/**
+ * @enum
+ */
 export const PotentialOrderStatus = {
   Processing: "Processing",
   Confimed: "Confimed",
@@ -87,6 +123,9 @@ export const PotentialOrderStatus = {
 } as const
 export type PotentialOrderStatus = typeof PotentialOrderStatus[keyof typeof PotentialOrderStatus]
 
+/**
+ * @enum
+ */
 export const OperationAction = {
   Create: "Create",
   Read: "Read",
