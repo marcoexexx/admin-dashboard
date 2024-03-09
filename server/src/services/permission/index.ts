@@ -191,7 +191,6 @@ export class PermissionService extends MetaAppService implements AppService {
         create: {
           action: perm.action,
           resource: perm.resource,
-          roleId: perm.roleId
         },
         update: { updatedAt: new Date() }
       })).map_err(convertPrismaErrorToAppError)

@@ -131,7 +131,10 @@ export function CheckoutForm() {
 
   // Queries
   const deliveryFeeQuery = useGetUserAddress({
-    id: getValues("deliveryAddressId")
+    id: getValues("deliveryAddressId"),
+    include: {
+      township: true
+    }
   })
 
   // Mutations
