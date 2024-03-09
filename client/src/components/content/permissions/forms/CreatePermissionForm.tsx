@@ -1,11 +1,11 @@
 import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { MuiButton } from "@/components/ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { OperationAction, Resource } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { object, string, z } from "zod";
+import { object, z } from "zod";
 import { useEffect } from "react";
 import { useCreatePermission } from "@/hooks/permission";
-import { OperationAction, Resource } from "@/services/types";
 
 
 const createPermissionSchema = object({

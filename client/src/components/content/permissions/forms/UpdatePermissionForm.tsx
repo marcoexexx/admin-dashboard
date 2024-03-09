@@ -3,7 +3,7 @@ import { MuiButton } from "@/components/ui";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { OperationAction, Resource } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { object, string, z } from "zod";
+import { object, z } from "zod";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useGetPermission, useUpdatePermission } from "@/hooks/permission";
