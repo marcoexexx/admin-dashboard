@@ -164,7 +164,6 @@ app.use(
   }
 )
 
-const host = getConfig("host") || "localhost";
 const port = getConfig("port") || 8000;
 
 if (require.main === module) {
@@ -181,7 +180,7 @@ if (require.main === module) {
   const server = (isHttps ? httpsServer : app)
     .listen(port, () => {
       logging.info(`a ${getConfig("nodeEnv")} deplyoment.`)
-      logging.log("🚀 Server is running on", `${isHttps ? "https" : "http"}://${host}:${port}`)
+      logging.log("🚀 Server is running on", `${isHttps ? "https" : "http"}://0.0.0.0:${port}`)
     })
 
   process.on("SIGINT", () => {
