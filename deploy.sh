@@ -3,7 +3,7 @@ export NVM_DIR="$HOME/.nvm"
 
  cd admin-dashboard
 
-git pull origin main
+git pull origin rangoon
 
 # server
 cd server
@@ -23,3 +23,7 @@ pnpm install
 echo "[ BUILD ] building client...\n"
 pnpm run build
 
+
+cd ../doc
+echo "[ GENERATE ] generate documation...\n"
+pnpm run gen
