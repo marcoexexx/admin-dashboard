@@ -103,7 +103,7 @@ export const createMultiProductsSchema = object({
     "sales.discount": number().optional(),
     "sales.description": string().optional(),
 
-    itemCode: string().nullable().optional(),
+    itemCode: string({ required_error: "itemCode is required." }),
   }).array()
 })
 
@@ -140,7 +140,7 @@ export const updateProductSchema = object({
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
     quantity: number().nullable().optional(),
 
-    itemCode: string().nullable().optional(),
+    itemCode: string({ required_error: "itemCode is required." }),
     images: string().array().default([])
   })
 })

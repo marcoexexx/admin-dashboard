@@ -6,6 +6,7 @@ import { uploadExcel } from "../upload/excelUpload";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { createMultiRolesHandler, createRoleHandler, deleteMultiRolesHandler, getRoleHandler, getRolesHandler, updateRoleHandler } from "../controllers/role.controller";
 import { createRoleSchema, deleteMultiRolesSchema, getRoleSchema, updateRoleSchema } from "../schemas/role.schema";
+import { sudo } from "../middleware/sudo";
 
 
 const router = Router()
@@ -25,6 +26,7 @@ router.route("/")
 
 router.route("/multi")
   .delete(
+    sudo,
     validate(deleteMultiRolesSchema),
     deleteMultiRolesHandler
   )
@@ -32,6 +34,7 @@ router.route("/multi")
 
 // Upload Routes
 router.post("/excel-upload",
+  sudo,
   uploadExcel,
   createMultiRolesHandler
 )
@@ -43,10 +46,12 @@ router.route("/detail/:roleId")
     getRoleHandler
   )
   .patch(
+    sudo,
     validate(updateRoleSchema), 
     updateRoleHandler
   )
   .delete(
+    sudo,
     validate(getRoleSchema),
     deleteMultiRolesHandler
   )

@@ -1,5 +1,4 @@
 import { useStore } from "."
-import { guestUserAccessResources, shopownerAccessResources } from "@/libs/buildInPermission"
 
 import Result, { Err, Ok } from "@/libs/result"
 import AppError, { AppErrorKind } from "@/libs/exceptions"
@@ -20,11 +19,6 @@ export function usePermission({
   const { state: { user } } = useStore()
 
   if (user?.isSuperuser) return Ok(undefined)
-
-  if (user?.shopownerProviderId) {
-    const isAllowed = [...guestUserAccessResources, ...shopownerAccessResources]?.some(perm => perm.action === action && perm.resource === resource)
-    if (isAllowed) return Ok(undefined)
-  }
 
   const isAllowed = user?.role?.permissions?.some(perm => perm.action === action && perm.resource === resource)
   if (isAllowed) return Ok(undefined)

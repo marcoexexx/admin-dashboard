@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
-import { OperationAction, PrismaClient, Resource } from "@prisma/client"
-import { guestUserAccessResources } from './type';
+import { PrismaClient } from "@prisma/client"
+import { customerUserAccessResources, guestUserAccessResources, shopownerAccessResources } from './type';
+import _ from 'lodash';
 
 const prisma = new PrismaClient()
 
@@ -8,6 +9,17 @@ const prisma = new PrismaClient()
 async function getHashedPassword(password: string) {
   const hashedPassword = await bcrypt.hash(password, 12);
   return  hashedPassword
+}
+
+
+async function permissionsSeed() {
+  const data = _.uniqWith([...guestUserAccessResources, ...customerUserAccessResources, ...shopownerAccessResources], _.isEqual)
+
+  const permission = await prisma.permission.createMany({
+    data
+  })
+
+  console.log("Creatred build-in permissions", permission.count)
 }
 
 
@@ -20,15 +32,43 @@ async function rolesSeed() {
       name: "Customer",
       remark: "Build-in role",
       permissions: {
-        createMany: {
-          data: [...guestUserAccessResources]
-        }
+        connect: customerUserAccessResources.map(({ action, resource }) => ({
+          action_resource: { action, resource }
+        }))
       }
     },
-    update: {}
+    update: {
+      permissions: {
+        connect: customerUserAccessResources.map(({ action, resource }) => ({
+          action_resource: { action, resource }
+        }))
+      }
+    }
+  })
+  const shopowneRole = await prisma.role.upsert({
+    where: {
+      name: "Shopowner"
+    },
+    create: {
+      name: "Shopowner",
+      remark: "Build-in role",
+      permissions: {
+        connect: shopownerAccessResources.map(({ action, resource }) => ({
+          action_resource: { action, resource }
+        }))
+      }
+    },
+    update: {
+      permissions: {
+        connect: shopownerAccessResources.map(({ action, resource }) => ({
+          action_resource: { action, resource }
+        }))
+      }
+    }
   })
 
   console.log(`Created: ${customerRole.name}`)
+  console.log(`Created: ${shopowneRole.name}`)
 }
 
 
@@ -101,7 +141,7 @@ async function usersSeed() {
       },
       role: {
         connect: {
-          name: "Customer"
+          name: "Shopowner"
         }
       },
       shopownerProvider: {
@@ -146,6 +186,7 @@ async function usersSeed() {
 
 
 async function main() {
+  await permissionsSeed()
   await rolesSeed()
   await shopownersSeed()
   await usersSeed()

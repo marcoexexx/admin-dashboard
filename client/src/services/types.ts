@@ -449,7 +449,7 @@ export type Product = {
   status: ProductStatus
   priceUnit: PriceUnit
   quantity: number
-  itemCode?: string
+  itemCode: string
   discount: number
   isDiscountItem: boolean
 

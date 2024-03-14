@@ -42,7 +42,7 @@ const updateProductSchema = object({
   status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
   images: string().array().default([]),
-  itemCode: string().nullable().optional(),
+  itemCode: string({ required_error: "itemCode is required." }),
 })
 
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
@@ -119,6 +119,7 @@ export function UpdateProductForm() {
       })
       if (product.brandId) methods.setValue("brandId", product.brandId)
       if (product.images) methods.setValue("images", product.images)
+      methods.setValue("itemCode", product.itemCode)
     }
   }, [productQuery.isSuccess, productFetchStatus])
 

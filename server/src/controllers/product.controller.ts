@@ -3,6 +3,7 @@ import AppError, { StatusCode } from '../utils/appError';
 import { convertNumericStrings } from '../utils/convertNumber';
 import { convertStringToBoolean } from '../utils/convertStringToBoolean';
 import { checkUser } from '../services/checkUser';
+import { generateLabel } from '../utils/generateCouponLabel';
 import { Request, Response, NextFunction } from 'express'
 import { CreateProductInput, DeleteMultiProductsInput, GetProductInput, GetProductSaleCategoryInput, LikeProductByUserInput, UpdateProductInput } from '../schemas/product.schema';
 import { HttpDataResponse, HttpListResponse, HttpResponse } from '../utils/helper';
@@ -204,6 +205,7 @@ export async function createProductHandler(
         },
         overview,
         instockStatus,
+        itemCode: generateLabel("Rangoon"),
         description,
         dealerPrice,
         marketPrice,

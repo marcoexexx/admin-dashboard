@@ -11,7 +11,7 @@ import { sudo } from "../middleware/sudo";
 
 const router = Router()
 
-router.use(deserializeUser, requiredUser, sudo, checkBlockedUser)
+router.use(deserializeUser, requiredUser, checkBlockedUser)
 
 
 router.route("/")
@@ -26,6 +26,7 @@ router.route("/")
 
 router.route("/multi")
   .delete(
+    sudo,
     validate(deleteMultiShopownersSchema),
     deleteMultiShopownersHandler
   )
@@ -33,6 +34,7 @@ router.route("/multi")
 
 // Upload Routes
 router.post("/excel-upload",
+  sudo,
   uploadExcel,
   createMultiShopownersHandler
 )
@@ -44,14 +46,15 @@ router.route("/detail/:shopownerId")
     getShopownerHandler
   )
   .patch(
+    sudo,
     validate(updateShopownerSchema), 
     updateShopownerHandler
   )
   .delete(
+    sudo,
     validate(getShopownerSchema),
     deleteShopownerHandler
   )
 
 
 export default router 
-

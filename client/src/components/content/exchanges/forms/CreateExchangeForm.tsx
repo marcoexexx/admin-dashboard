@@ -107,7 +107,7 @@ export function CreateExchangeForm() {
 
         <Grid item xs={12}>
           <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-            <ShopownerInputField disabled={disabledShopownerField} />
+            <ShopownerInputField updateField disabled={disabledShopownerField} />
           </Box>
         </Grid>
 

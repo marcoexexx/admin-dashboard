@@ -52,12 +52,8 @@ export class MetaAppService {
 
     if (user.isSuperuser) return Ok(true)
 
-    if (user.shopownerProviderId !== null) {
-      const isAccess = [...guestUserAccessResources, ...shopownerAccessResources]?.some(perm => perm.resource === this.resource && perm.action === action)
-      if (isAccess) return Ok(true)
-    }
-
     const isAccess = user.role?.permissions.some(perm => perm.resource === this.resource && perm.action === action)
+    console.log({ isAccess, perms: user.role?.permissions.map(p => `${p.action}::${p.resource}`) })
     if (!isAccess) return Err(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))
 
     // If does not role, return false

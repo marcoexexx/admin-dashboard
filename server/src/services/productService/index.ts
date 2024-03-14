@@ -205,6 +205,7 @@ export class ProductService extends MetaAppService implements AppService {
         },
         create: { 
           id: product.id,
+          itemCode: product.itemCode,
           title: product.title,
           overview: product.overview,
           instockStatus: product.instockStatus,

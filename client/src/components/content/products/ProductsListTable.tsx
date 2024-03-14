@@ -46,7 +46,10 @@ const columns: TypedColumn<Product>[] = [
     id: "price",
     align: "right",
     name: "Price",
-    render: ({ value }) => <Typography>{numberFormat(value.price)}</Typography>
+    render: ({ value }) => <Box display="flex" flexDirection="column">
+      <Typography sx={{ textDecoration: value.isDiscountItem ? "line-through" : null }}>{numberFormat(value.marketPrice)}</Typography>
+      {value.isDiscountItem ? <Typography>{numberFormat(value.price)}</Typography> : null}
+    </Box>
   },
   {
     id: "brand",

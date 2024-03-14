@@ -16,7 +16,7 @@ export function ProductsList() {
     filter: productFilter.where,
     pagination: productFilter.pagination || INITIAL_PAGINATION,
     include: {
-      specification: false,
+      specification: true,
       brand: true,
       categories: {
         include: {

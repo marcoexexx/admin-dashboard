@@ -1,4 +1,5 @@
 import { OperationAction, Permission, Prisma, Resource } from "@prisma/client"
+import _ from "lodash"
 
 export type UserWithRole = Prisma.UserGetPayload<{
   include: {
@@ -12,255 +13,94 @@ export type UserWithRole = Prisma.UserGetPayload<{
   }
 }>
 
-// There are access allowed, even does not have role permission
-export const guestUserAccessResources: Pick<Permission, "action" | "resource">[] = [
-  // Products
-  {
-    resource: Resource.Product,
-    action: OperationAction.Read
-  },
 
-  // AccessLog
+function createResourcesPermission(accessResource: Record<Resource, OperationAction[] | "*" | "!">) {
+  const perms: Pick<Permission, "action" | "resource">[] = []
 
-  // AuditLog
+  _.forEach(accessResource, (value, key) => {
+    if (value !== "!" && value !== "*") {
+      for (const action of value) {
+        perms.push({ action, resource: key as Resource })
+      }
+    } else if (value === "*") {
+      perms.push({ action: OperationAction.Create, resource: key as Resource })
+      perms.push({ action: OperationAction.Read, resource: key as Resource })
+      perms.push({ action: OperationAction.Update, resource: key as Resource })
+      perms.push({ action: OperationAction.Delete, resource: key as Resource })
+    }
+  })
 
-  // User
-
-  // Shopowner
-  {
-    resource: Resource.Shopowner,
-    action: OperationAction.Read
-  },
-
-  // Brand
-  {
-    resource: Resource.Brand,
-    action: OperationAction.Read
-  },
-
-  // Category
-  {
-    resource: Resource.Category,
-    action: OperationAction.Read
-  },
-
-  // Coupon
-
-  // Exchange
-
-  // Order
-  {
-    resource: Resource.Order,
-    action: OperationAction.Read
-  },
-  {
-    resource: Resource.Order,
-    action: OperationAction.Create
-  },
-
-  // PickupAddress
-  {
-    resource: Resource.PickupAddress,
-    action: OperationAction.Read
-  },
-  {
-    resource: Resource.PickupAddress,
-    action: OperationAction.Create
-  },
-  {
-    resource: Resource.PickupAddress,
-    action: OperationAction.Update
-  },
-  {
-    resource: Resource.PickupAddress,
-    action: OperationAction.Delete
-  },
-
-  // PotentialOrder
-  {
-    resource: Resource.PotentialOrder,
-    action: OperationAction.Read
-  },
-  {
-    resource: Resource.PotentialOrder,
-    action: OperationAction.Create
-  },
-
-  // Region
-  {
-    resource: Resource.Region,
-    action: OperationAction.Read
-  },
-
-  // SalesCategory
-  {
-    resource: Resource.SalesCategory,
-    action: OperationAction.Read
-  },
-
-  // Township
-  {
-    resource: Resource.Township,
-    action: OperationAction.Read
-  },
-
-  // UserAddress
-  {
-    resource: Resource.UserAddress,
-    action: OperationAction.Create
-  },
-  {
-    resource: Resource.UserAddress,
-    action: OperationAction.Read
-  },
-  {
-    resource: Resource.UserAddress,
-    action: OperationAction.Update
-  },
-  {
-    resource: Resource.UserAddress,
-    action: OperationAction.Delete
-  },
-
-  // Cart
-  {
-    resource: Resource.Cart,
-    action: OperationAction.Read
-  },
-  {
-    resource: Resource.Cart,
-    action: OperationAction.Create
-  },
-  {
-    resource: Resource.Cart,
-    action: OperationAction.Update
-  },
-  {
-    resource: Resource.Cart,
-    action: OperationAction.Delete
-  },
-
-  // Cart
-  {
-    resource: Resource.OrderItem,
-    action: OperationAction.Read
-  },
-  {
-    resource: Resource.OrderItem,
-    action: OperationAction.Create
-  },
-  {
-    resource: Resource.OrderItem,
-    action: OperationAction.Update
-  },
-  {
-    resource: Resource.OrderItem,
-    action: OperationAction.Delete
-  },
-]
-
+  return perms
+}
 
 // There are access allowed, even does not have role permission
-export const shopownerAccessResources: Pick<Permission, "action" | "resource">[] = [
-  {
-    resource: Resource.Product,
-    action: OperationAction.Create
-  },
-  {
-    resource: Resource.Product,
-    action: OperationAction.Update
-  },
+export const guestUserAccessResources = createResourcesPermission({
+  [Resource.Product]: [OperationAction.Read],
+  [Resource.Role]: [OperationAction.Read],
+  [Resource.Brand]: [OperationAction.Read],
+  [Resource.Order]: [OperationAction.Create, OperationAction.Read],
+  [Resource.Coupon]:[OperationAction.Read],
+  [Resource.Region]: [OperationAction.Read],
+  [Resource.AuditLog]: [OperationAction.Read],
+  [Resource.Category]: [OperationAction.Read],
+  [Resource.Exchange]: [OperationAction.Read],
+  [Resource.Township]: [OperationAction.Read],
+  [Resource.OrderItem]: [OperationAction.Create, OperationAction.Read],
+  [Resource.UserAddress]: [OperationAction.Create, OperationAction.Read],
+  [Resource.PickupAddress]: [OperationAction.Create, OperationAction.Read],
+  [Resource.SalesCategory]: [OperationAction.Read],
+  [Resource.PotentialOrder]: [OperationAction.Create, OperationAction.Read],
+  [Resource.Permission]: "!",
+  [Resource.Shopowner]: "!",
+  [Resource.AccessLog]: "!",
+  [Resource.User]: "!",
+  [Resource.Cart]: "*",
+})
 
-  // AccessLog
-  {
-    resource: Resource.AccessLog,
-    action: OperationAction.Read
-  },
 
-  // AuditLog
-  {
-    resource: Resource.AuditLog,
-    action: OperationAction.Read
-  },
+export const customerUserAccessResources = createResourcesPermission({
+  [Resource.Product]: [OperationAction.Read],
+  [Resource.Role]: [OperationAction.Read],
+  [Resource.Brand]: [OperationAction.Read],
+  [Resource.Order]: [OperationAction.Create, OperationAction.Read],
+  [Resource.Coupon]:[OperationAction.Read],
+  [Resource.Region]: [OperationAction.Read],
+  [Resource.AuditLog]: [OperationAction.Read],
+  [Resource.Category]: [OperationAction.Read],
+  [Resource.Exchange]: [OperationAction.Read],
+  [Resource.Township]: [OperationAction.Read],
+  [Resource.OrderItem]: [OperationAction.Create, OperationAction.Read],
+  [Resource.UserAddress]: [OperationAction.Create, OperationAction.Read],
+  [Resource.PickupAddress]: [OperationAction.Create, OperationAction.Read],
+  [Resource.SalesCategory]: [OperationAction.Read],
+  [Resource.PotentialOrder]: [OperationAction.Create, OperationAction.Read],
+  [Resource.Permission]: "!",
+  [Resource.Shopowner]: "!",
+  [Resource.AccessLog]: [OperationAction.Create, OperationAction.Read],
+  [Resource.User]: [OperationAction.Read],
+  [Resource.Cart]: [OperationAction.Create, OperationAction.Read],
+})
 
-  // User
 
-  // Brand
-  {
-    resource: Resource.Brand,
-    action: OperationAction.Create
-  },
-  {
-    resource: Resource.Brand,
-    action: OperationAction.Update
-  },
-
-  // Category
-  {
-    resource: Resource.Category,
-    action: OperationAction.Create
-  },
-  {
-    resource: Resource.Category,
-    action: OperationAction.Update
-  },
-
-  // Coupon
-  {
-    resource: Resource.Coupon,
-    action: OperationAction.Create
-  },
-  {
-    resource: Resource.Coupon,
-    action: OperationAction.Update
-  },
-
-  // Exchange
-  {
-    resource: Resource.Exchange,
-    action: OperationAction.Read
-  },
-  {
-    resource: Resource.Exchange,
-    action: OperationAction.Create
-  },
-  {
-    resource: Resource.Exchange,
-    action: OperationAction.Update
-  },
-  {
-    resource: Resource.Exchange,
-    action: OperationAction.Delete
-  },
-
-  // Order
-
-  // PickupAddress
-
-  // PotentialOrder
-
-  // Region
-  {
-    resource: Resource.Region,
-    action: OperationAction.Create
-  },
-
-  // SalesCategory
-  {
-    resource: Resource.SalesCategory,
-    action: OperationAction.Create
-  },
-  {
-    resource: Resource.SalesCategory,
-    action: OperationAction.Update
-  },
-
-  // Township
-  {
-    resource: Resource.Township,
-    action: OperationAction.Create
-  },
-
-  // UserAddress
-]
-
+export const shopownerAccessResources = createResourcesPermission({
+  [Resource.Product]: [OperationAction.Create, OperationAction.Read],
+  [Resource.Role]: [OperationAction.Read],
+  [Resource.Brand]: [OperationAction.Read],
+  [Resource.Order]: [OperationAction.Create, OperationAction.Read],
+  [Resource.Coupon]:[OperationAction.Read],
+  [Resource.Region]: [OperationAction.Read],
+  [Resource.AuditLog]: [OperationAction.Read],
+  [Resource.Category]: [OperationAction.Read],
+  [Resource.Exchange]: [OperationAction.Create, OperationAction.Read],
+  [Resource.Township]: [OperationAction.Read],
+  [Resource.OrderItem]: [OperationAction.Create, OperationAction.Read],
+  [Resource.UserAddress]: [OperationAction.Create, OperationAction.Read],
+  [Resource.PickupAddress]: [OperationAction.Create, OperationAction.Read],
+  [Resource.SalesCategory]: [OperationAction.Read],
+  [Resource.PotentialOrder]: [OperationAction.Create, OperationAction.Read],
+  [Resource.Permission]: [OperationAction.Create, OperationAction.Read],
+  [Resource.Shopowner]: [OperationAction.Read],
+  [Resource.AccessLog]: [OperationAction.Create, OperationAction.Read],
+  [Resource.User]: [OperationAction.Read],
+  [Resource.Cart]: [OperationAction.Create, OperationAction.Read],
+})

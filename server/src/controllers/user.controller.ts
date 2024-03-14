@@ -4,10 +4,10 @@ import { NextFunction, Request, Response } from "express";
 import { HttpDataResponse, HttpListResponse } from "../utils/helper";
 import { UpdateUserInput, CreateBlockUserInput, GetUserByUsernameInput, GetUserInput, RemoveBlockedUserInput, UploadImageUserInput } from "../schemas/user.schema";
 import { UserService } from "../services/user";
+import { OperationAction } from "@prisma/client";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { checkUser } from "../services/checkUser";
-import { OperationAction } from "@prisma/client";
 
 
 const service = UserService.new()
@@ -166,7 +166,7 @@ export async function getUsersHandler(
     } = convertStringToBoolean(query.include) ?? {}
     const orderBy = query.orderBy ?? {}
 
-    const sessionUser = checkUser(req?.user).ok()
+    const sessionUser = checkUser(req?.user).ok_or_throw()
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
     _isAccess.ok_or_throw()
 
@@ -175,7 +175,23 @@ export async function getUsersHandler(
         pagination: { page, pageSize }
       },
       {
-        where: { id, name, email, username },
+        where: { 
+          id, 
+          name, 
+          email, 
+          username,
+          ...sessionUser.isSuperuser 
+            ? {
+              shopownerProviderId: undefined
+            } 
+            : {
+              isSuperuser: false,
+              OR: [
+                { shopownerProviderId: { isSet: false } },
+                { shopownerProviderId: { isSet: true, equals: sessionUser.shopownerProviderId } },
+              ]
+            },
+        },
         include: {
           _count,
           cart,
@@ -346,7 +362,18 @@ export async function updateRoleUserBySuperuserHandler(
 
     const user = (await service.tryUpdate({
       where: {
-        id: userId
+        id: userId,
+        ...sessionUser.isSuperuser 
+          ? {
+            shopownerProviderId: undefined
+          } 
+          : {
+            isSuperuser: false,
+            OR: [
+              { shopownerProviderId: { isSet: false } },
+              { shopownerProviderId: { isSet: true, equals: sessionUser.shopownerProviderId } },
+            ]
+          },
       }, 
       data: { 
         roleId,
