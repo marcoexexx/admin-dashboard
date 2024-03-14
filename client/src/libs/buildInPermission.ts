@@ -89,6 +89,6 @@ export const shopownerAccessResources = createResourcesPermission({
   [Resource.Permission]: [OperationAction.Create, OperationAction.Read],
   [Resource.Shopowner]: [OperationAction.Read],
   [Resource.AccessLog]: [OperationAction.Create, OperationAction.Read],
-  [Resource.User]: [OperationAction.Read],
+  [Resource.User]: [OperationAction.Read, OperationAction.Update],
   [Resource.Cart]: [OperationAction.Create, OperationAction.Read],
 })
