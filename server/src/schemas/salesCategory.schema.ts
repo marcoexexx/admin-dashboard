@@ -1,11 +1,10 @@
 import { boolean, number, object, string, z } from "zod";
 
-
 const params = {
   params: object({
-    salesCategoryId: string({ required_error: "Category Id is required" })
-  })
-}
+    salesCategoryId: string({ required_error: "Category Id is required" }),
+  }),
+};
 
 export const createSalesCategorySchema = object({
   body: object({
@@ -14,29 +13,27 @@ export const createSalesCategorySchema = object({
     endDate: string({ required_error: "endDate is required" }),
     isActive: boolean().default(true),
     description: string().optional(),
-  })
-})
+  }),
+});
 
 export const createProductSalesCategorySchema = object({
   params: object({
-    productId: string()
+    productId: string(),
   }),
   body: object({
     salesCategoryId: string(),
-    discount: number().max(100).default(0)
-  })
-})
-
+    discount: number().max(100).default(0),
+  }),
+});
 
 export const updateProductSaleCategorySchema = object({
   params: object({
-    productSaleCategoryId: string()
+    productSaleCategoryId: string(),
   }),
   body: object({
-    discount: number()
-  })
-})
-
+    discount: number(),
+  }),
+});
 
 export const createMultiSalesCategoriesSchema = object({
   body: object({
@@ -46,12 +43,12 @@ export const createMultiSalesCategoriesSchema = object({
     endDate: string({ required_error: "endDate is required" }),
     isActive: boolean().default(true),
     description: string().optional(),
-  }).array()
-})
+  }).array(),
+});
 
 export const getSalesCategorySchema = object({
-  ...params
-})
+  ...params,
+});
 
 export const updateSalesCategorySchema = object({
   ...params,
@@ -61,20 +58,19 @@ export const updateSalesCategorySchema = object({
     endDate: string({ required_error: "endDate is required" }),
     isActive: boolean().default(true),
     description: string().optional(),
-  })
-})
+  }),
+});
 
 export const deleteMultiSalesCategoriesSchema = object({
   body: object({
-    salesCategoryIds: string().array()
-  })
-})
+    salesCategoryIds: string().array(),
+  }),
+});
 
-
-export type GetSalesCategoryInput = z.infer<typeof getSalesCategorySchema>
-export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>["body"]
-export type CreateMultiSalesCategoriesInput = z.infer<typeof createMultiSalesCategoriesSchema>["body"]
-export type CreateProductSalesCategoryInput = z.infer<typeof createProductSalesCategorySchema>
-export type DeleteMultiSalesCategoriesInput = z.infer<typeof deleteMultiSalesCategoriesSchema>["body"]
-export type UpdateSalesCategoryInput = z.infer<typeof updateSalesCategorySchema>
-export type UpdateProductSaleCategoryInput = z.infer<typeof updateProductSaleCategorySchema>
+export type GetSalesCategoryInput = z.infer<typeof getSalesCategorySchema>;
+export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>["body"];
+export type CreateMultiSalesCategoriesInput = z.infer<typeof createMultiSalesCategoriesSchema>["body"];
+export type CreateProductSalesCategoryInput = z.infer<typeof createProductSalesCategorySchema>;
+export type DeleteMultiSalesCategoriesInput = z.infer<typeof deleteMultiSalesCategoriesSchema>["body"];
+export type UpdateSalesCategoryInput = z.infer<typeof updateSalesCategorySchema>;
+export type UpdateProductSaleCategoryInput = z.infer<typeof updateProductSaleCategorySchema>;

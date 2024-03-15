@@ -12,7 +12,7 @@ export const config = {
   // },
 
   mongoConfig: {
-    url: process.env.DATABASE_URL
+    url: process.env.DATABASE_URL,
   },
 
   redisUrl: process.env.REDIS_URL,
@@ -27,7 +27,7 @@ export const config = {
   googleOAuth: {
     clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
     clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-    redirect: process.env.GOOGLE_OAUTH_REDIRECT
+    redirect: process.env.GOOGLE_OAUTH_REDIRECT,
   },
 
   mockData: {
@@ -35,13 +35,13 @@ export const config = {
     authUserToken: process.env.AUTH_USER_TOKEN,
     adminUserId: process.env.TEST_ADMIN_USER_ID,
     userId: process.env.TEST_USER_ID,
-    productId: process.env.TEST_PRODUCT_ID
+    productId: process.env.TEST_PRODUCT_ID,
   },
 
   smtp: {
     host: process.env.EMAIL_HOST,
     pass: process.env.EMAIL_PASS,
     port: process.env.EMAIL_PORT,
-    user: process.env.EMAIL_USER
+    user: process.env.EMAIL_USER,
   },
-}
+};

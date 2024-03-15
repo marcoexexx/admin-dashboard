@@ -19,7 +19,7 @@ interface ShopownerInputFieldProps {
 }
 
 export function ShopownerInputField({ updateField = false, disabled = false }: ShopownerInputFieldProps) {
-  const { control, setValue, getValues } = useFormContext<{ shopownerProviderId: string; }>();
+  const { control, setValue, getValues } = useFormContext<{ shopownerProviderId: string | null; }>();
   const [selectedShopowner, setSelectedShopowner] = useState<ShopownerProvider | null>(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
@@ -49,10 +49,9 @@ export function ShopownerInputField({ updateField = false, disabled = false }: S
   }, [defaultShopowner]);
 
   const handleShopownerChange = (_: React.SyntheticEvent, value: ShopownerProvider | null) => {
-    if (value) {
-      setSelectedShopowner(value);
-      setValue("shopownerProviderId", value.id);
-    }
+    setSelectedShopowner(value);
+    if (value !== null) setValue("shopownerProviderId", value.id);
+    else setValue("shopownerProviderId", null);
   };
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {

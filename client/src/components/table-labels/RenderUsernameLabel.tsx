@@ -14,7 +14,7 @@ export function RenderUsernameLabel({ user, me }: { user: User; me: User; }) {
 
   return (
     <LinkLabel onClick={handleNavigate}>
-      {user.name}
+      {user.name} {user.isSuperuser ? "(Superuser)" : null}
     </LinkLabel>
   );
 }

@@ -1,20 +1,20 @@
 import { FormModal } from "@/components/forms";
 import { RoleInputField, ShopownerInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
-import { CreateRoleForm } from "../../roles/forms";
-import { CreateShopownerForm } from "../../shopowners/forms";
-import { Box, Grid } from "@mui/material";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useStore } from "@/hooks";
 import { useGetUser, useUpdateUser } from "@/hooks/user";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Box, Grid } from "@mui/material";
 import { useEffect } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { object, string, z } from "zod";
+import { CreateRoleForm } from "../../roles/forms";
+import { CreateShopownerForm } from "../../shopowners/forms";
 
 const updateUserSchema = object({
-  roleId: string().optional(),
-  shopownerProviderId: string().optional(),
+  roleId: string().nullable().optional(),
+  shopownerProviderId: string().nullable().optional(),
 });
 
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;

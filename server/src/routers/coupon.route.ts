@@ -1,55 +1,59 @@
 import { Router } from "express";
+import {
+  createCouponHandler,
+  createMultiCouponsHandler,
+  deleteCouponHandler,
+  deleteMultiCouponsHandler,
+  getCouponHandler,
+  getCouponsHandler,
+  updateCouponHandler,
+} from "../controllers/coupon.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createCouponHandler, createMultiCouponsHandler, deleteCouponHandler, deleteMultiCouponsHandler, getCouponHandler, getCouponsHandler, updateCouponHandler } from "../controllers/coupon.controller";
-import { createCouponSchema, deleteMultiCouponsSchema, getCouponSchema, updateCouponSchema } from "../schemas/coupon.schema";
+import {
+  createCouponSchema,
+  deleteMultiCouponsSchema,
+  getCouponSchema,
+  updateCouponSchema,
+} from "../schemas/coupon.schema";
 import { uploadExcel } from "../upload/excelUpload";
-import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
+const router = Router();
 
-const router = Router()
-
-router.use(deserializeUser, requiredUser, checkBlockedUser)
-
+router.use(deserializeUser, requiredUser, checkBlockedUser);
 
 router.route("/")
   .get(
-    getCouponsHandler
+    getCouponsHandler,
   )
   .post(
     validate(createCouponSchema),
-    createCouponHandler
-  )
-
+    createCouponHandler,
+  );
 
 router.route("/multi")
   .delete(
     validate(deleteMultiCouponsSchema),
-    deleteMultiCouponsHandler
-  )
-
+    deleteMultiCouponsHandler,
+  );
 
 // Upload Routes
-router.post("/excel-upload",
-  uploadExcel,
-  createMultiCouponsHandler
-)
-
+router.post("/excel-upload", uploadExcel, createMultiCouponsHandler);
 
 router.route("/detail/:couponId")
   .get(
     validate(getCouponSchema),
-    getCouponHandler
+    getCouponHandler,
   )
   .patch(
-    validate(updateCouponSchema), 
-    updateCouponHandler
+    validate(updateCouponSchema),
+    updateCouponHandler,
   )
   .delete(
     validate(getCouponSchema),
-    deleteCouponHandler
-  )
+    deleteCouponHandler,
+  );
 
-
-export default router 
+export default router;

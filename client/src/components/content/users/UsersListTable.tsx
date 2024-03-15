@@ -16,7 +16,7 @@ const columns: TypedColumn<User>[] = [
   },
   {
     id: "email",
-    align: "right",
+    align: "left",
     name: "Email",
     render: ({ value }) => <Typography>{value.email}</Typography>,
   },

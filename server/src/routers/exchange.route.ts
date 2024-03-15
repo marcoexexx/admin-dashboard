@@ -1,15 +1,26 @@
 import { Router } from "express";
+import {
+  createExchangeHandler,
+  createMultiExchangesHandler,
+  deleteExchangeHandler,
+  deleteMultiExchangesHandler,
+  getExchangeHandler,
+  getExchangesHandler,
+  updateExchangeHandler,
+} from "../controllers/exchange.controller";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createExchangeSchema, deleteMultiExchangesSchema, getExchangeSchema, updateExchangeSchema } from "../schemas/exchange.schema";
-import { createExchangeHandler, createMultiExchangesHandler, deleteExchangeHandler, deleteMultiExchangesHandler, getExchangeHandler, getExchangesHandler, updateExchangeHandler } from "../controllers/exchange.controller";
+import {
+  createExchangeSchema,
+  deleteMultiExchangesSchema,
+  getExchangeSchema,
+  updateExchangeSchema,
+} from "../schemas/exchange.schema";
 import { uploadExcel } from "../upload/excelUpload";
 
-
-const router = Router()
-router.use(deserializeUser, requiredUser)
-
+const router = Router();
+router.use(deserializeUser, requiredUser);
 
 router.route("")
   .get(
@@ -17,37 +28,30 @@ router.route("")
   )
   .post(
     validate(createExchangeSchema),
-    createExchangeHandler
-  )
-
+    createExchangeHandler,
+  );
 
 router.route("/multi")
   .delete(
     validate(deleteMultiExchangesSchema),
-    deleteMultiExchangesHandler
-  )
-
+    deleteMultiExchangesHandler,
+  );
 
 // Upload Routes
-router.post("/excel-upload",
-  uploadExcel,
-  createMultiExchangesHandler
-)
-
+router.post("/excel-upload", uploadExcel, createMultiExchangesHandler);
 
 router.route("/detail/:exchangeId")
   .get(
     validate(getExchangeSchema),
-    getExchangeHandler
+    getExchangeHandler,
   )
   .patch(
-    validate(updateExchangeSchema), 
-    updateExchangeHandler
+    validate(updateExchangeSchema),
+    updateExchangeHandler,
   )
   .delete(
     validate(getExchangeSchema),
-    deleteExchangeHandler
-  )
+    deleteExchangeHandler,
+  );
 
-
-export default router
+export default router;

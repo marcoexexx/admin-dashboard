@@ -1,4 +1,4 @@
-import { ToString } from "./result"
+import { ToString } from "./result";
 
 export const StatusCode = {
   Continue: 100, // Continue
@@ -34,27 +34,26 @@ export const StatusCode = {
   BadGateway: 502, // Bad Gateway
   ServiceUnavailable: 503, // Service Unavailable
   GatewayTimeout: 504, // Gateway Timeout
-  InsufficientStorage: 507 // Insufficient Storage
-} as const
-export type StatusCode = typeof StatusCode[keyof typeof StatusCode]
-
+  InsufficientStorage: 507, // Insufficient Storage
+} as const;
+export type StatusCode = typeof StatusCode[keyof typeof StatusCode];
 
 export default class AppError extends Error implements ToString {
-  isOperational: boolean
+  isOperational: boolean;
 
   constructor(public status: StatusCode, message: string) {
-    super(message)
-    this.name = "AppError"
-    this.isOperational = true
+    super(message);
+    this.name = "AppError";
+    this.isOperational = true;
 
-    Error.captureStackTrace(this, this.constructor)
+    Error.captureStackTrace(this, this.constructor);
   }
 
   static new(status: StatusCode = StatusCode.InternalServerError, message: string = "Unknown error") {
-    return new AppError(status, message)
+    return new AppError(status, message);
   }
 
   toString(): string {
-    return `${this.message}: ${this.status}`
+    return `${this.message}: ${this.status}`;
   }
 }

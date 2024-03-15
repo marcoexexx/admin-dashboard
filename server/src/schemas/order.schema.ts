@@ -1,13 +1,11 @@
 import { AddressType, OrderStatus, PaymentMethodProvider } from "@prisma/client";
 import { number, object, string, z } from "zod";
 
-
 const params = {
   params: object({
-    orderId: string({ required_error: "Order Id is required" })
-  })
-}
-
+    orderId: string({ required_error: "Order Id is required" }),
+  }),
+};
 
 export const createOrderSchema = object({
   body: object({
@@ -19,18 +17,15 @@ export const createOrderSchema = object({
     billingAddressId: string({ required_error: "billingAddressId is required" }),
     paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
     addressType: z.nativeEnum(AddressType),
-    remark: string().optional()
-  })
-})
-
+    remark: string().optional(),
+  }),
+});
 
 // WARN: Excel upload currently not support!
 
-
 export const getOrderSchema = object({
-  ...params
-})
-
+  ...params,
+});
 
 // INFO: Could not update their order items, when created
 export const updateOrderSchema = object({
@@ -43,20 +38,17 @@ export const updateOrderSchema = object({
     billingAddressId: string({ required_error: "billingAddressId is required" }),
     paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
     addressType: z.nativeEnum(AddressType),
-    remark: string().optional()
-  })
-})
-
+    remark: string().optional(),
+  }),
+});
 
 export const deleteMultiOrdersSchema = object({
   body: object({
-    orderIds: string().array()
-  })
-})
+    orderIds: string().array(),
+  }),
+});
 
-
-export type GetOrderInput = z.infer<typeof getOrderSchema>
-export type CreateOrderInput = z.infer<typeof createOrderSchema>["body"]
-export type DeleteMultiOrdersInput = z.infer<typeof deleteMultiOrdersSchema>["body"]
-export type UpdateOrderInput = z.infer<typeof updateOrderSchema>
-
+export type GetOrderInput = z.infer<typeof getOrderSchema>;
+export type CreateOrderInput = z.infer<typeof createOrderSchema>["body"];
+export type DeleteMultiOrdersInput = z.infer<typeof deleteMultiOrdersSchema>["body"];
+export type UpdateOrderInput = z.infer<typeof updateOrderSchema>;

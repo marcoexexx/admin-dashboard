@@ -1,15 +1,26 @@
 import { Router } from "express";
-import { createMultiSalesCategoriesHandler, createSalesCategoryHandler, deleteMultiSalesCategoriesHandler, deleteSalesCategoryHandler, getSalesCategoriesHandler, getSalesCategoryHandler, updateSalesCategoryHandler } from "../controllers/salesCategory.controller";
+import {
+  createMultiSalesCategoriesHandler,
+  createSalesCategoryHandler,
+  deleteMultiSalesCategoriesHandler,
+  deleteSalesCategoryHandler,
+  getSalesCategoriesHandler,
+  getSalesCategoryHandler,
+  updateSalesCategoryHandler,
+} from "../controllers/salesCategory.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createSalesCategorySchema, deleteMultiSalesCategoriesSchema, getSalesCategorySchema, updateSalesCategorySchema } from "../schemas/salesCategory.schema";
+import {
+  createSalesCategorySchema,
+  deleteMultiSalesCategoriesSchema,
+  getSalesCategorySchema,
+  updateSalesCategorySchema,
+} from "../schemas/salesCategory.schema";
 import { uploadExcel } from "../upload/excelUpload";
-import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
-
-const router = Router()
-
+const router = Router();
 
 router.route("")
   .get(
@@ -20,9 +31,8 @@ router.route("")
     requiredUser,
     checkBlockedUser,
     validate(createSalesCategorySchema),
-    createSalesCategoryHandler
-  )
-
+    createSalesCategoryHandler,
+  );
 
 router.route("/multi")
   .delete(
@@ -30,39 +40,37 @@ router.route("/multi")
     requiredUser,
     checkBlockedUser,
     validate(deleteMultiSalesCategoriesSchema),
-    deleteMultiSalesCategoriesHandler
-  )
-
+    deleteMultiSalesCategoriesHandler,
+  );
 
 // Upload Routes
-router.post("/excel-upload",
+router.post(
+  "/excel-upload",
   deserializeUser,
   requiredUser,
   checkBlockedUser,
   uploadExcel,
-  createMultiSalesCategoriesHandler
-)
-
+  createMultiSalesCategoriesHandler,
+);
 
 router.route("/detail/:salesCategoryId")
   .get(
     validate(getSalesCategorySchema),
-    getSalesCategoryHandler
+    getSalesCategoryHandler,
   )
   .patch(
-    deserializeUser, 
-    requiredUser, 
+    deserializeUser,
+    requiredUser,
     checkBlockedUser,
-    validate(updateSalesCategorySchema), 
-    updateSalesCategoryHandler
+    validate(updateSalesCategorySchema),
+    updateSalesCategoryHandler,
   )
   .delete(
     deserializeUser,
     requiredUser,
     checkBlockedUser,
     validate(getSalesCategorySchema),
-    deleteSalesCategoryHandler
-  )
+    deleteSalesCategoryHandler,
+  );
 
-
-export default router
+export default router;

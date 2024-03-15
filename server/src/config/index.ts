@@ -1,4 +1,4 @@
-export * from './custom-env'
+export * from "./custom-env";
 
 export default {
   appName: "Rangoon" as const,
@@ -6,9 +6,9 @@ export default {
 
   hideBanner: true,
 
-  accessTokenExpiresIn: 60 * 60 * 1,        //  1 hour: in seconds
-  refreshTokenExpiresIn: 60 * 60 * 24 * 7,  //  in seconds
-  redisCacheExpiresIn: 60 * 60 * 24 * 7,    //  in seconds
+  accessTokenExpiresIn: 60 * 60 * 1, //  1 hour: in seconds
+  refreshTokenExpiresIn: 60 * 60 * 24 * 7, //  in seconds
+  redisCacheExpiresIn: 60 * 60 * 24 * 7, //  in seconds
 
-  dbProvider: "mongodb" as "mongodb" | "postgresql"
-}
+  dbProvider: "mongodb" as "mongodb" | "postgresql",
+};

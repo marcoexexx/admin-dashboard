@@ -1,30 +1,49 @@
 import { Router } from "express";
+import {
+  createMultiProductsHandler,
+  createProductHandler,
+  deleteMultiProductHandler,
+  deleteProductHandler,
+  deleteProductSaleCategoryHandler,
+  getProductHandler,
+  getProductsHandler,
+  likeProductByUserHandler,
+  unLikeProductByUserHandler,
+  updateProductHandler,
+  updateProductSalesCategoryHandler,
+} from "../controllers/product.controller";
+import {
+  createSaleCategoryForProductHandler,
+  getSalesCategoriesInProductHandler,
+} from "../controllers/salesCategory.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createMultiProductsHandler, createProductHandler, deleteMultiProductHandler, deleteProductHandler, deleteProductSaleCategoryHandler, getProductHandler, getProductsHandler, likeProductByUserHandler, unLikeProductByUserHandler, updateProductHandler, updateProductSalesCategoryHandler } from "../controllers/product.controller";
-import { createProductSchema, deleteMultiProductsSchema, getProductSaleCategorySchema, getProductSchema, likeProductByUserSchema, updateProductSchema } from "../schemas/product.schema";
-import { uploadExcel } from "../upload/excelUpload";
-import { createSaleCategoryForProductHandler, getSalesCategoriesInProductHandler } from "../controllers/salesCategory.controller";
+import {
+  createProductSchema,
+  deleteMultiProductsSchema,
+  getProductSaleCategorySchema,
+  getProductSchema,
+  likeProductByUserSchema,
+  updateProductSchema,
+} from "../schemas/product.schema";
 import { createProductSalesCategorySchema, updateProductSaleCategorySchema } from "../schemas/salesCategory.schema";
-import { checkBlockedUser } from "../middleware/checkBlockedUser";
+import { uploadExcel } from "../upload/excelUpload";
 
-
-const router = Router()
-
+const router = Router();
 
 router.route("")
   .get(
-    getProductsHandler
+    getProductsHandler,
   )
   .post(
-    deserializeUser, 
-    requiredUser, 
+    deserializeUser,
+    requiredUser,
     checkBlockedUser,
-    validate(createProductSchema), 
-    createProductHandler
-  )
-
+    validate(createProductSchema),
+    createProductHandler,
+  );
 
 router.route("/multi")
   .delete(
@@ -33,101 +52,88 @@ router.route("/multi")
     checkBlockedUser,
     validate(deleteMultiProductsSchema),
     deleteMultiProductHandler,
-  )
-
+  );
 
 // Upload Routes
-router.post("/excel-upload",
-  deserializeUser,
-  requiredUser,
-  checkBlockedUser,
-  uploadExcel,
-  createMultiProductsHandler,
-)
-
+router.post("/excel-upload", deserializeUser, requiredUser, checkBlockedUser, uploadExcel, createMultiProductsHandler);
 
 router.route("/detail/:productId")
   .get(
-    validate(getProductSchema), 
-    getProductHandler
+    validate(getProductSchema),
+    getProductHandler,
   )
   .delete(
-    deserializeUser, 
-    requiredUser, 
+    deserializeUser,
+    requiredUser,
     checkBlockedUser,
-    validate(getProductSchema), 
-    deleteProductHandler
+    validate(getProductSchema),
+    deleteProductHandler,
   )
   .patch(
-    deserializeUser, 
-    requiredUser, 
+    deserializeUser,
+    requiredUser,
     checkBlockedUser,
-    validate(updateProductSchema), 
-    updateProductHandler
-  )
-
+    validate(updateProductSchema),
+    updateProductHandler,
+  );
 
 router.route("/detail/:productId/sales")
   .get(
-    getSalesCategoriesInProductHandler
+    getSalesCategoriesInProductHandler,
   )
   .post(
-    deserializeUser, 
-    requiredUser, 
+    deserializeUser,
+    requiredUser,
     checkBlockedUser,
     validate(createProductSalesCategorySchema),
-    createSaleCategoryForProductHandler
-  )
-
+    createSaleCategoryForProductHandler,
+  );
 
 router.route("/detail/:productId/sales/detail/:productSaleCategoryId")
   // .get(
-  //   validate(getProductSchema), 
+  //   validate(getProductSchema),
   //   getProductHandler
   // )
   .delete(
-    deserializeUser, 
-    requiredUser, 
+    deserializeUser,
+    requiredUser,
     checkBlockedUser,
-    validate(getProductSaleCategorySchema), 
-    deleteProductSaleCategoryHandler
+    validate(getProductSaleCategorySchema),
+    deleteProductSaleCategoryHandler,
   )
   .patch(
-    deserializeUser, 
-    requiredUser, 
+    deserializeUser,
+    requiredUser,
     checkBlockedUser,
-    validate(updateProductSaleCategorySchema), 
-    updateProductSalesCategoryHandler
-  )
-
+    validate(updateProductSaleCategorySchema),
+    updateProductSalesCategoryHandler,
+  );
 
 router.route("/like/:productId")
   .patch(
-    deserializeUser, 
-    requiredUser, 
+    deserializeUser,
+    requiredUser,
     checkBlockedUser,
     // permissionUser("update", productPermission),   /* Should not access update permission!! */
-    validate(likeProductByUserSchema), 
-    likeProductByUserHandler
-  )
-
+    validate(likeProductByUserSchema),
+    likeProductByUserHandler,
+  );
 
 router.route("/unlike/:productId")
   .patch(
-    deserializeUser, 
-    requiredUser, 
+    deserializeUser,
+    requiredUser,
     checkBlockedUser,
     // permissionUser("update", productPermission),   /* Should not access update permission!! */
-    validate(likeProductByUserSchema), 
-    unLikeProductByUserHandler
-  )
-
+    validate(likeProductByUserSchema),
+    unLikeProductByUserHandler,
+  );
 
 // // FEAT: Upload image
 // router.route("/upload/:productId")
 //   .post(
-//     deserializeUser, 
-//     requiredUser, 
+//     deserializeUser,
+//     requiredUser,
 //     checkBlockedUser,
 //     uploadProductImage,
 //     resizeProductImages,
@@ -136,5 +142,4 @@ router.route("/unlike/:productId")
 //     uploadImagesProductHandler
 //   )
 
-
-export default router
+export default router;

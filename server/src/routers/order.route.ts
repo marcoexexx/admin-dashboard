@@ -1,33 +1,36 @@
 import { Router } from "express";
+import {
+  createOrderHandler,
+  deleteMultiOrdersHandler,
+  deleteOrderHandler,
+  getOrderHandler,
+  getOrdersHandler,
+  updateOrderHandler,
+} from "../controllers/order.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createOrderHandler, deleteMultiOrdersHandler, deleteOrderHandler, getOrderHandler, getOrdersHandler, updateOrderHandler } from "../controllers/order.controller";
 import { createOrderSchema, deleteMultiOrdersSchema, getOrderSchema, updateOrderSchema } from "../schemas/order.schema";
-import { checkBlockedUser } from "../middleware/checkBlockedUser";
 
+const router = Router();
 
-const router = Router()
-
-router.use(deserializeUser, requiredUser, checkBlockedUser)
-
+router.use(deserializeUser, requiredUser, checkBlockedUser);
 
 router.route("/")
   .get(
-    getOrdersHandler
+    getOrdersHandler,
   )
   .post(
     validate(createOrderSchema),
-    createOrderHandler
-  )
-
+    createOrderHandler,
+  );
 
 router.route("/multi")
   .delete(
     validate(deleteMultiOrdersSchema),
-    deleteMultiOrdersHandler
-  )
-
+    deleteMultiOrdersHandler,
+  );
 
 // // Upload Routes
 // router.post("/excel-upload",
@@ -36,20 +39,18 @@ router.route("/multi")
 //   createMultiCouponsHandler
 // )
 
-
 router.route("/detail/:orderId")
   .get(
     validate(getOrderSchema),
-    getOrderHandler
+    getOrderHandler,
   )
   .patch(
-    validate(updateOrderSchema), 
-    updateOrderHandler
+    validate(updateOrderSchema),
+    updateOrderHandler,
   )
   .delete(
     validate(getOrderSchema),
-    deleteOrderHandler
-  )
+    deleteOrderHandler,
+  );
 
-
-export default router 
+export default router;

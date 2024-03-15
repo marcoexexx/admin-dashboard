@@ -18,7 +18,7 @@ interface RoleInputFieldProps {
 }
 
 export function RoleInputField({ updateField = false }: RoleInputFieldProps) {
-  const { control, setValue, getValues } = useFormContext<{ roleId: string; }>();
+  const { control, setValue, getValues } = useFormContext<{ roleId: string | null; }>();
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
@@ -48,10 +48,9 @@ export function RoleInputField({ updateField = false }: RoleInputFieldProps) {
   }, [defaultRole]);
 
   const handleRoleChange = (_: React.SyntheticEvent, value: Role | null) => {
-    if (value) {
-      setSelectedRole(value);
-      setValue("roleId", value.id);
-    }
+    setSelectedRole(value);
+    if (value !== null) setValue("roleId", value.id);
+    else setValue("roleId", null);
   };
 
   const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {

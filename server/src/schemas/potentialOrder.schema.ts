@@ -1,12 +1,11 @@
 import { AddressType, PaymentMethodProvider, PotentialOrderStatus } from "@prisma/client";
 import { number, object, string, z } from "zod";
 
-
 const params = {
   params: object({
-    potentialOrderId: string({ required_error: "Order Id is required" })
-  })
-}
+    potentialOrderId: string({ required_error: "Order Id is required" }),
+  }),
+};
 
 export const createPotentialOrderSchema = object({
   body: object({
@@ -19,15 +18,15 @@ export const createPotentialOrderSchema = object({
     pickupAddressId: string().optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
     paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
-    remark: string().optional()
-  })
-})
+    remark: string().optional(),
+  }),
+});
 
 // WARN: Excel upload currently not support!
 
 export const getPotentialOrderSchema = object({
-  ...params
-})
+  ...params,
+});
 
 // INFO: Could not update their order items, when created
 export const updatePotentialOrderSchema = object({
@@ -41,18 +40,17 @@ export const updatePotentialOrderSchema = object({
     pickupAddressId: string().optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
     paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
-    remark: string().optional()
-  })
-})
+    remark: string().optional(),
+  }),
+});
 
 export const deleteMultiPotentialOrdersSchema = object({
   body: object({
-    potentialOrderIds: string().array()
-  })
-})
+    potentialOrderIds: string().array(),
+  }),
+});
 
-
-export type GetPotentialOrderInput = z.infer<typeof getPotentialOrderSchema>
-export type CreatePotentialOrderInput = z.infer<typeof createPotentialOrderSchema>["body"]
-export type DeleteMultiPotentialOrdersInput = z.infer<typeof deleteMultiPotentialOrdersSchema>["body"]
-export type UpdatePotentialOrderInput = z.infer<typeof updatePotentialOrderSchema>
+export type GetPotentialOrderInput = z.infer<typeof getPotentialOrderSchema>;
+export type CreatePotentialOrderInput = z.infer<typeof createPotentialOrderSchema>["body"];
+export type DeleteMultiPotentialOrdersInput = z.infer<typeof deleteMultiPotentialOrdersSchema>["body"];
+export type UpdatePotentialOrderInput = z.infer<typeof updatePotentialOrderSchema>;

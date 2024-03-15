@@ -1,27 +1,38 @@
-import { Router } from "express"
-import { deserializeUser } from "../middleware/deserializeUser"
-import { requiredUser } from "../middleware/requiredUser"
-import { createCategoryHandler, createMultiCategoriesHandler, deleteCategoryHandler, deleteMultiCategoriesHandler, getCategoriesHandler, getCategoryHandler, updateCategoryHandler } from "../controllers/category.controller"
-import { validate } from "../middleware/validate"
-import { createCategorySchema, deleteMultiCategoriesSchema, getCategorySchema, updateCategorySchema } from "../schemas/category.schema"
-import { uploadExcel } from "../upload/excelUpload"
-import { checkBlockedUser } from "../middleware/checkBlockedUser"
+import { Router } from "express";
+import {
+  createCategoryHandler,
+  createMultiCategoriesHandler,
+  deleteCategoryHandler,
+  deleteMultiCategoriesHandler,
+  getCategoriesHandler,
+  getCategoryHandler,
+  updateCategoryHandler,
+} from "../controllers/category.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
+import { deserializeUser } from "../middleware/deserializeUser";
+import { requiredUser } from "../middleware/requiredUser";
+import { validate } from "../middleware/validate";
+import {
+  createCategorySchema,
+  deleteMultiCategoriesSchema,
+  getCategorySchema,
+  updateCategorySchema,
+} from "../schemas/category.schema";
+import { uploadExcel } from "../upload/excelUpload";
 
-const router = Router()
-
+const router = Router();
 
 router.route("")
   .get(
-    getCategoriesHandler
+    getCategoriesHandler,
   )
   .post(
     deserializeUser,
     requiredUser,
     checkBlockedUser,
     validate(createCategorySchema),
-    createCategoryHandler
-  )
-
+    createCategoryHandler,
+  );
 
 router.route("/multi")
   .delete(
@@ -29,39 +40,37 @@ router.route("/multi")
     requiredUser,
     checkBlockedUser,
     validate(deleteMultiCategoriesSchema),
-    deleteMultiCategoriesHandler
-  )
-
+    deleteMultiCategoriesHandler,
+  );
 
 // Upload Routes
-router.post("/excel-upload",
+router.post(
+  "/excel-upload",
   deserializeUser,
   requiredUser,
   checkBlockedUser,
   uploadExcel,
-  createMultiCategoriesHandler
-)
-
+  createMultiCategoriesHandler,
+);
 
 router.route("/detail/:categoryId")
   .get(
     validate(getCategorySchema),
-    getCategoryHandler
+    getCategoryHandler,
   )
   .patch(
-    deserializeUser, 
-    requiredUser, 
+    deserializeUser,
+    requiredUser,
     checkBlockedUser,
-    validate(updateCategorySchema), 
-    updateCategoryHandler
+    validate(updateCategorySchema),
+    updateCategoryHandler,
   )
   .delete(
     deserializeUser,
     requiredUser,
     checkBlockedUser,
     validate(getCategorySchema),
-    deleteCategoryHandler
-  )
+    deleteCategoryHandler,
+  );
 
-
-export default router
+export default router;

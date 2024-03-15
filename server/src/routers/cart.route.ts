@@ -1,14 +1,23 @@
 import { Router } from "express";
-import { validate } from "../middleware/validate";
+import {
+  createCartOrderItemHandler,
+  deleteCartHandler,
+  deleteCartOrderItemHandler,
+  getCartHandler,
+  updateCartOrderItemHandler,
+} from "../controllers/cart.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { checkBlockedUser } from "../middleware/checkBlockedUser";
-import { createCartOrderItemSchema, deleteCartOrderItemSchema, getCartSchema, updateCartOrderItemSchema } from "../schemas/cart.schema";
-import { createCartOrderItemHandler, deleteCartHandler, deleteCartOrderItemHandler, getCartHandler, updateCartOrderItemHandler } from "../controllers/cart.controller";
+import { validate } from "../middleware/validate";
+import {
+  createCartOrderItemSchema,
+  deleteCartOrderItemSchema,
+  getCartSchema,
+  updateCartOrderItemSchema,
+} from "../schemas/cart.schema";
 
-
-const router = Router()
-
+const router = Router();
 
 router.route("")
   .post(
@@ -16,33 +25,30 @@ router.route("")
     requiredUser,
     checkBlockedUser,
     validate(createCartOrderItemSchema),
-    createCartOrderItemHandler
-  )
-
+    createCartOrderItemHandler,
+  );
 
 router.route("/detail/:cartId")
   .get(
     validate(getCartSchema),
-    getCartHandler
+    getCartHandler,
   )
   .delete(
     deserializeUser,
     requiredUser,
     checkBlockedUser,
     validate(getCartSchema),
-    deleteCartHandler
-  )
-
+    deleteCartHandler,
+  );
 
 router.route("/orderItems/detail/:orderItemId")
   .patch(
     validate(updateCartOrderItemSchema),
-    updateCartOrderItemHandler
+    updateCartOrderItemHandler,
   )
   .delete(
-    validate(deleteCartOrderItemSchema), 
-    deleteCartOrderItemHandler
-  )
+    validate(deleteCartOrderItemSchema),
+    deleteCartOrderItemHandler,
+  );
 
-
-export default router
+export default router;

@@ -1,42 +1,36 @@
 import { Router } from "express";
+import { getMeHandler, uploadImageCoverHandler, uploadImageProfileHandler } from "../controllers/user.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { getMeHandler, uploadImageCoverHandler, uploadImageProfileHandler } from "../controllers/user.controller";
-import { resizeProfileImage, uploadProfileImage } from "../upload/singleUpload";
 import { validate } from "../middleware/validate";
 import { uploadImageProfileSchema } from "../schemas/user.schema";
-import { checkBlockedUser } from "../middleware/checkBlockedUser";
+import { resizeProfileImage, uploadProfileImage } from "../upload/singleUpload";
 
+const router = Router();
 
-const router = Router()
-
-router.use(deserializeUser, requiredUser, checkBlockedUser)
-
+router.use(deserializeUser, requiredUser, checkBlockedUser);
 
 router.route("/")
-  .get(getMeHandler)
-
+  .get(getMeHandler);
 
 // router
 //   .route("/change-password")
-
 
 router.route("/upload/profile-picture")
   .post(
     uploadProfileImage,
     resizeProfileImage,
     validate(uploadImageProfileSchema),
-    uploadImageProfileHandler
-  )
-
+    uploadImageProfileHandler,
+  );
 
 router.route("/upload/cover-photo")
   .post(
     uploadProfileImage,
     resizeProfileImage,
     validate(uploadImageProfileSchema),
-    uploadImageCoverHandler
-  )
+    uploadImageCoverHandler,
+  );
 
-
-export default router
+export default router;
