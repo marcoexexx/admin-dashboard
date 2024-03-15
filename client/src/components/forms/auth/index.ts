@@ -1,3 +1,3 @@
-export * from './LoginForm'
-export * from './RegisterForm'
-export * from './OAuthForm'
+export * from "./LoginForm";
+export * from "./OAuthForm";
+export * from "./RegisterForm";

@@ -1,3 +1,3 @@
-export * from './UserAddressesFilterForm'
-export * from './UserAddressesList'
-export * from './UserAddressesListTable'
+export * from "./UserAddressesFilterForm";
+export * from "./UserAddressesList";
+export * from "./UserAddressesListTable";

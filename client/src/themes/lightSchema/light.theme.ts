@@ -1,13 +1,59 @@
-import { Components, Theme, createTheme } from '@mui/material'
-import { MuiTextField, MuiAccordion, MuiButton, MuiAvatar, MuiAvatarGroup, MuiBackdrop, MuiButtonBase, MuiCardHeader, MuiChip, MuiCssBaseline, MuiDivider, MuiFormHelperText, MuiIconButton, MuiListItem, MuiListItemAvatar, MuiListItemButton, MuiListItemText, MuiListSubheader, MuiOutlinedInput, MuiPaginationItem, MuiRadio, MuiSelect, MuiStepIcon, MuiStepper, MuiToggleButton, MuiPaper, MuiLink, MuiLinearProgress, MuiSlider, MuiTabs, MuiTableRow, MuiList, MuiTab, MuiMenu, MuiMenuItem, MuiAutocomplete, MuiTablePagination, MuiToolbar, MuiTimelineDot, MuiTimelineConnector, MuiTableCell, MuiAlert, MuiTooltip, MuiTimelineItem, MuiTypography, MuiSwitch } from '@/themes/lightSchema/components'
+import {
+  MuiAccordion,
+  MuiAlert,
+  MuiAutocomplete,
+  MuiAvatar,
+  MuiAvatarGroup,
+  MuiBackdrop,
+  MuiButton,
+  MuiButtonBase,
+  MuiCardHeader,
+  MuiChip,
+  MuiCssBaseline,
+  MuiDivider,
+  MuiFormHelperText,
+  MuiIconButton,
+  MuiLinearProgress,
+  MuiLink,
+  MuiList,
+  MuiListItem,
+  MuiListItemAvatar,
+  MuiListItemButton,
+  MuiListItemText,
+  MuiListSubheader,
+  MuiMenu,
+  MuiMenuItem,
+  MuiOutlinedInput,
+  MuiPaginationItem,
+  MuiPaper,
+  MuiRadio,
+  MuiSelect,
+  MuiSlider,
+  MuiStepIcon,
+  MuiStepper,
+  MuiSwitch,
+  MuiTab,
+  MuiTableCell,
+  MuiTablePagination,
+  MuiTableRow,
+  MuiTabs,
+  MuiTextField,
+  MuiTimelineConnector,
+  MuiTimelineDot,
+  MuiTimelineItem,
+  MuiToggleButton,
+  MuiToolbar,
+  MuiTooltip,
+  MuiTypography,
+} from "@/themes/lightSchema/components";
+import { Components, createTheme, Theme } from "@mui/material";
 
-import { colors, palette, breakpoints, typography } from '@/themes/lightSchema'
-
+import { breakpoints, colors, palette, typography } from "@/themes/lightSchema";
 
 export const components: Components<Omit<Theme, "components">> & {
-  MuiTimelineDot: any,
-  MuiTimelineItem: any,
-  MuiTimelineConnector: any
+  MuiTimelineDot: any;
+  MuiTimelineItem: any;
+  MuiTimelineConnector: any;
 } = {
   MuiTextField,
   MuiBackdrop,
@@ -55,8 +101,7 @@ export const components: Components<Omit<Theme, "components">> & {
   MuiStepper,
   MuiStepIcon,
   MuiTypography,
-}
-
+};
 
 const lightTheme = createTheme({
   colors,
@@ -65,36 +110,36 @@ const lightTheme = createTheme({
   components,
   spacing: 9,
   shape: {
-    borderRadius: 10
+    borderRadius: 10,
   },
   typography,
   shadows: [
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none',
-    'none'
-  ]
-})
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+    "none",
+  ],
+});
 
-export default lightTheme
+export default lightTheme;

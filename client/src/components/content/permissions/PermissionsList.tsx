@@ -1,53 +1,57 @@
-import { Card } from "@mui/material";
 import { SuspenseLoader } from "@/components";
+import { Card } from "@mui/material";
 import { PermissionsListTable } from ".";
 
-import { useStore } from "@/hooks";
-import { useCreateMultiPermissions, useDeletePermission, useDeleteMultiPermissions, useGetPermissions } from "@/hooks/permission";
 import { INITIAL_PAGINATION } from "@/context/store";
-
+import { useStore } from "@/hooks";
+import {
+  useCreateMultiPermissions,
+  useDeleteMultiPermissions,
+  useDeletePermission,
+  useGetPermissions,
+} from "@/hooks/permission";
 
 export function PermissionsList() {
-  const { state: { permissionFilter } } = useStore()
+  const { state: { permissionFilter } } = useStore();
 
   // Queries
   const { try_data, isLoading } = useGetPermissions({
     filter: permissionFilter.where,
     pagination: permissionFilter.pagination || INITIAL_PAGINATION,
-  })
+  });
 
   // Mutations
-  const { mutate: createPermissions } = useCreateMultiPermissions()
-  const { mutate: deletePermission } = useDeletePermission()
-  const { mutate: deletePermissions } = useDeleteMultiPermissions()
+  const { mutate: createPermissions } = useCreateMultiPermissions();
+  const { mutate: deletePermission } = useDeletePermission();
+  const { mutate: deletePermissions } = useDeleteMultiPermissions();
 
   // Extraction
-  const data = try_data.ok_or_throw()
+  const data = try_data.ok_or_throw();
 
   function handleCreateManyPermissions(buf: ArrayBuffer) {
-    createPermissions(buf)
+    createPermissions(buf);
   }
 
   function handleDeletePermission(id: string) {
-    deletePermission(id)
+    deletePermission(id);
   }
 
   function handleDeleteMultiPermissions(ids: string[]) {
-    deletePermissions(ids)
+    deletePermissions(ids);
   }
 
+  if (!data || isLoading) return <SuspenseLoader />;
 
-  if (!data || isLoading) return <SuspenseLoader />
-
-
-  return <Card>
-    <PermissionsListTable
-      isLoading={isLoading}
-      permissions={data.results}
-      count={data.count}
-      onCreateMany={handleCreateManyPermissions}
-      onDelete={handleDeletePermission}
-      onMultiDelete={handleDeleteMultiPermissions}
-    />
-  </Card>
+  return (
+    <Card>
+      <PermissionsListTable
+        isLoading={isLoading}
+        permissions={data.results}
+        count={data.count}
+        onCreateMany={handleCreateManyPermissions}
+        onDelete={handleDeletePermission}
+        onMultiDelete={handleDeleteMultiPermissions}
+      />
+    </Card>
+  );
 }

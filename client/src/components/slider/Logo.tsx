@@ -1,10 +1,9 @@
-import { Box, Typography, styled } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import getConfig from "@/libs/getConfig";
+import { Box, styled, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-
-const appName = getConfig("appName")
-const appLogo = getConfig("appLogo")
+const appName = getConfig("appName");
+const appLogo = getConfig("appLogo");
 
 const MainContent = styled(Box)(({}) => ({
   display: "flex",
@@ -13,24 +12,24 @@ const MainContent = styled(Box)(({}) => ({
   justifyContent: "left",
   gap: 23,
   width: "100%",
-}))
+}));
 
-const LogoLabel = styled(Typography)(({theme}) => ({
+const LogoLabel = styled(Typography)(({ theme }) => ({
   fontSize: theme.typography.pxToRem(23),
-  fontWeight: theme.typography.fontWeightBold
-}))
+  fontWeight: theme.typography.fontWeightBold,
+}));
 
-const Image = styled("img")(({theme}) => ({
+const Image = styled("img")(({ theme }) => ({
   height: theme.spacing(10),
-  cursor: "pointer"
-}))
+  cursor: "pointer",
+}));
 
 export default function Logo() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleOnClickLogo = () => {
-    navigate("/")
-  }
+    navigate("/");
+  };
 
   return (
     <MainContent>
@@ -42,5 +41,5 @@ export default function Logo() {
 
       <LogoLabel>{appName}</LogoLabel>
     </MainContent>
-  )
+  );
 }

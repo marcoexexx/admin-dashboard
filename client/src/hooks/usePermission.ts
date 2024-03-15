@@ -1,9 +1,8 @@
-import { useStore } from "."
+import { useStore } from ".";
 
-import Result, { Err, Ok } from "@/libs/result"
-import AppError, { AppErrorKind } from "@/libs/exceptions"
-import { OperationAction, Resource } from "@/services/types"
-
+import AppError, { AppErrorKind } from "@/libs/exceptions";
+import Result, { Err, Ok } from "@/libs/result";
+import { OperationAction, Resource } from "@/services/types";
 
 /**
  * usePermission(...) -> Result<(), AppError>
@@ -11,17 +10,17 @@ import { OperationAction, Resource } from "@/services/types"
  */
 export function usePermission({
   action,
-  resource
+  resource,
 }: {
-  action: OperationAction,
-  resource: Resource
+  action: OperationAction;
+  resource: Resource;
 }): Result<undefined, AppError> {
-  const { state: { user } } = useStore()
+  const { state: { user } } = useStore();
 
-  if (user?.isSuperuser) return Ok(undefined)
+  if (user?.isSuperuser) return Ok(undefined);
 
-  const isAllowed = user?.role?.permissions?.some(perm => perm.action === action && perm.resource === resource)
-  if (isAllowed) return Ok(undefined)
+  const isAllowed = user?.role?.permissions?.some(perm => perm.action === action && perm.resource === resource);
+  if (isAllowed) return Ok(undefined);
 
-  return Err(AppError.new(AppErrorKind.AccessDeniedError, `Could not access this recouse`))
+  return Err(AppError.new(AppErrorKind.AccessDeniedError, `Could not access this recouse`));
 }

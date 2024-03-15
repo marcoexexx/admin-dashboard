@@ -6,13 +6,12 @@ export const MuiIconButton: ComponentCustomizedStyle["MuiIconButton"] = {
       borderRadius: 8,
       padding: 8,
 
-      '& .MuiTouchRipple-root': {
-        borderRadius: 8
-      }
+      "& .MuiTouchRipple-root": {
+        borderRadius: 8,
+      },
     },
     sizeSmall: {
-      padding: 4
-    }
-  }
-}
-
+      padding: 4,
+    },
+  },
+};

@@ -1,9 +1,9 @@
-export * from './useUserLogout'
+export * from "./useUserLogout";
 
-export * from './useGetUser'
-export * from './useGetUsers'
+export * from "./useGetUser";
+export * from "./useGetUsers";
 
-export * from './useBlockUser'
-export * from './useUnblockUser'
+export * from "./useBlockUser";
+export * from "./useUnblockUser";
 
-export * from './useUpdateUser'
+export * from "./useUpdateUser";

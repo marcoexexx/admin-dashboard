@@ -4,10 +4,9 @@ import { ComponentCustomizedStyle } from "../types";
 export const MuiStepIcon: ComponentCustomizedStyle["MuiStepIcon"] = {
   styleOverrides: {
     root: {
-      '&.MuiStepIcon-completed': {
-        color: colors.success.main
-      }
-    }
-  }
-}
-
+      "&.MuiStepIcon-completed": {
+        color: colors.success.main,
+      },
+    },
+  },
+};

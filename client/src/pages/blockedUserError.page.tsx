@@ -1,5 +1,4 @@
-import { Box } from '@mui/material'
-
+import { Box } from "@mui/material";
 
 export default function BlockedUserErrorPage() {
   return (
@@ -10,12 +9,7 @@ export default function BlockedUserErrorPage() {
 
       <h1>You are blocked</h1>
 
-      <Box component="img" 
-        src='/static/palm-recognition.svg'
-        width={500}
-      />
-
+      <Box component="img" src="/static/palm-recognition.svg" width={500} />
     </div>
-  )
+  );
 }
-

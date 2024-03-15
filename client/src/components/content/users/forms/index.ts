@@ -1,1 +1,1 @@
-export * from './UpdateUserForm'
+export * from "./UpdateUserForm";

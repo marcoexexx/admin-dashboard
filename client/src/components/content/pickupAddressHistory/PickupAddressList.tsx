@@ -1,36 +1,35 @@
-import { Card } from "@mui/material";
 import { SuspenseLoader } from "@/components";
-import { PickupAddressListTable } from ".";
+import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { useDeletePickupAddress, useGetPickupAddresses } from "@/hooks/pickupAddress";
-import { INITIAL_PAGINATION } from "@/context/store";
-
+import { Card } from "@mui/material";
+import { PickupAddressListTable } from ".";
 
 export function PickupAddressList() {
-  const { state: { pickupAddressFilter } } = useStore()
+  const { state: { pickupAddressFilter } } = useStore();
 
   const { try_data, isLoading } = useGetPickupAddresses({
     filter: pickupAddressFilter.where,
     pagination: pickupAddressFilter.pagination || INITIAL_PAGINATION,
-  })
-  const { mutate: deletePickupAddress } = useDeletePickupAddress()
+  });
+  const { mutate: deletePickupAddress } = useDeletePickupAddress();
 
-  const pickupAddresses = try_data.ok_or_throw()?.results
+  const pickupAddresses = try_data.ok_or_throw()?.results;
 
   function handleDeletePickupAddress(id: string) {
-    deletePickupAddress(id)
+    deletePickupAddress(id);
   }
 
-  if (isLoading) return <SuspenseLoader />
+  if (isLoading) return <SuspenseLoader />;
 
-
-  return <Card>
-    <PickupAddressListTable
-      isLoading={isLoading}
-      pickupAddresses={pickupAddresses || []}
-      count={pickupAddresses?.length || 0}
-      onDelete={handleDeletePickupAddress}
-    />
-  </Card>
+  return (
+    <Card>
+      <PickupAddressListTable
+        isLoading={isLoading}
+        pickupAddresses={pickupAddresses || []}
+        count={pickupAddresses?.length || 0}
+        onDelete={handleDeletePickupAddress}
+      />
+    </Card>
+  );
 }
-

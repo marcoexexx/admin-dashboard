@@ -1,17 +1,16 @@
-import { Box, Container, styled } from "@mui/material"
-import { PageBreadcrumbs } from "@/components"
+import { PageBreadcrumbs } from "@/components";
+import { Box, Container, styled } from "@mui/material";
 
-const MainContent = styled(Box)(({theme}) => ({
-  padding: theme.spacing(4)
-}))
-
+const MainContent = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(4),
+}));
 
 interface PageTitleProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function PageTitle(props: PageTitleProps) {
-  const { children } = props
+  const { children } = props;
 
   return (
     <MainContent className="MuiPageTitle-wrapper">
@@ -21,5 +20,5 @@ export function PageTitle(props: PageTitleProps) {
         {children}
       </Container>
     </MainContent>
-  )
+  );
 }

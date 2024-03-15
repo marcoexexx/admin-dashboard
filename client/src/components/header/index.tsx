@@ -1,15 +1,14 @@
-import { useStore } from "@/hooks"
-import { FormModal } from "../forms";
+import { useStore } from "@/hooks";
+import { alpha, Box, Divider, IconButton, lighten, Stack, styled, Tooltip } from "@mui/material";
 import { Carts } from "../cart";
-import { Box, Divider, IconButton, Stack, Tooltip, alpha, lighten, styled } from "@mui/material"
+import { FormModal } from "../forms";
 
-import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
-import CloseTwoToneIcon from '@mui/icons-material/CloseTwoTone';
+import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
+import MenuTwoToneIcon from "@mui/icons-material/MenuTwoTone";
+import ErrorBoundary from "../ErrorBoundary";
+import HeaderButtons from "./HeaderButtons";
 import HeaderMenu from "./HeaderMenu";
 import HeaderUserBox from "./HeaderUserBox";
-import HeaderButtons from "./HeaderButtons";
-import ErrorBoundary from "../ErrorBoundary";
-
 
 const MainContent = styled(Box)(({ theme }) => ({
   height: theme.colors.layout.header.height,
@@ -24,29 +23,35 @@ const MainContent = styled(Box)(({ theme }) => ({
   width: "100%",
   [`@media (min-width: ${theme.breakpoints.values.lg}px)`]: {
     left: theme.colors.layout.sidebar.width,
-    width: "auto"
+    width: "auto",
   },
   boxShadow: theme.palette.mode === "dark"
-    ? `0 1px 0 ${alpha(
-      lighten(theme.colors.primary.main, 0.7),
-      0.15
-    )}, 0px 2px 8px -3px rgba(0, 0, 0, 0.2), 0px 5px 22px -4px rgba(0, 0, 0, .1)`
-    : `0px 2px 8px -3px ${alpha(
-      theme.colors.alpha.black[100],
-      0.2
-    )}, 0px 5px 22px -4px ${alpha(
-      theme.colors.alpha.black[100],
-      0.1
-    )}`
-}))
+    ? `0 1px 0 ${
+      alpha(
+        lighten(theme.colors.primary.main, 0.7),
+        0.15,
+      )
+    }, 0px 2px 8px -3px rgba(0, 0, 0, 0.2), 0px 5px 22px -4px rgba(0, 0, 0, .1)`
+    : `0px 2px 8px -3px ${
+      alpha(
+        theme.colors.alpha.black[100],
+        0.2,
+      )
+    }, 0px 5px 22px -4px ${
+      alpha(
+        theme.colors.alpha.black[100],
+        0.1,
+      )
+    }`,
+}));
 
 export default function Header() {
-  const { state, dispatch } = useStore()
-  const { slidebar, modalForm } = state
+  const { state, dispatch } = useStore();
+  const { slidebar, modalForm } = state;
 
   const onClickToggleSlidebarHandler = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "TOGGLE_SLIDEBAR" })
-  }
+    dispatch({ type: "TOGGLE_SLIDEBAR" });
+  };
 
   return (
     <MainContent display="flex" alignItems="center">
@@ -64,18 +69,19 @@ export default function Header() {
             <IconButton color="primary" onClick={onClickToggleSlidebarHandler}>
               {!slidebar
                 ? <MenuTwoToneIcon fontSize="small" />
-                : <CloseTwoToneIcon fontSize="small" />
-              }
+                : <CloseTwoToneIcon fontSize="small" />}
             </IconButton>
           </Tooltip>
         </Box>
       </Box>
 
       {modalForm.field === "cart"
-        ? <FormModal maxWidth="lg" field='cart' title='Carts'>
-          <Carts />
-        </FormModal>
+        ? (
+          <FormModal maxWidth="lg" field="cart" title="Carts">
+            <Carts />
+          </FormModal>
+        )
         : null}
     </MainContent>
-  )
+  );
 }

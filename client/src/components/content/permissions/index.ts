@@ -1,3 +1,3 @@
-export * from './PermissionsFilterForm'
-export * from './PermissionsList'
-export * from './PermissionsListTable'
+export * from "./PermissionsFilterForm";
+export * from "./PermissionsList";
+export * from "./PermissionsListTable";

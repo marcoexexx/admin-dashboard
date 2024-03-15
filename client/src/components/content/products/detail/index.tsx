@@ -1,70 +1,67 @@
 import { SuspenseLoader } from "@/components";
-import { Grid, Tab, Tabs, styled } from "@mui/material";
+import { useGetProduct } from "@/hooks/product";
+import { Grid, styled, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import ProductDetailTab from "./ProductDetailTab";
 import ProductSalesTab from "./ProductSalesTab";
-import { useGetProduct } from "@/hooks/product";
-
 
 const TabWrapper = styled(Tabs)(() => ({
   ".MuiTabs-scrollableX": {
-    overflowX: "auto !important"
-  }
-}))
+    overflowX: "auto !important",
+  },
+}));
 
-
-type ProductTabs = 
+type ProductTabs =
   | "detail"
-  | "sales"
+  | "sales";
 
-const tabs: { 
-  value: ProductTabs, 
-  label: string 
+const tabs: {
+  value: ProductTabs;
+  label: string;
 }[] = [
   { value: "detail", label: "Detail" },
   { value: "sales", label: "Sales" },
-]
-
+];
 
 interface ViewProductProps {
-  productId: string | undefined
+  productId: string | undefined;
 }
 
 export function ProductDetail(props: ViewProductProps) {
-  const { productId } = props
+  const { productId } = props;
 
-  const [currentTab, setCurrentTab] = useState<ProductTabs>("detail")
+  const [currentTab, setCurrentTab] = useState<ProductTabs>("detail");
 
   // Quries
-  const productQuery = useGetProduct({ id: productId, include: {
-    specification: true,
-    likedUsers: true,
-    brand: true,
-    categories: {
-      include: {
-        category: true
-      }
-    },
-    salesCategory: {
-      include: {
-        salesCategory: true
-      }
-    },
+  const productQuery = useGetProduct({
+    id: productId,
+    include: {
+      specification: true,
+      likedUsers: true,
+      brand: true,
+      categories: {
+        include: {
+          category: true,
+        },
+      },
+      salesCategory: {
+        include: {
+          salesCategory: true,
+        },
+      },
 
-    _count: true
-  }})
+      _count: true,
+    },
+  });
 
   // Extraction
-  const product = productQuery.try_data.ok_or_throw()
-
+  const product = productQuery.try_data.ok_or_throw();
 
   const hgandleTabChange = (_: React.ChangeEvent<{}>, value: ProductTabs) => {
-    setCurrentTab(value as ProductTabs)
-  }
+    setCurrentTab(value as ProductTabs);
+  };
 
-
-  if (!product || productQuery.isLoading) return <SuspenseLoader />
-
+  if (!product || productQuery.isLoading) return <SuspenseLoader />;
 
   return (
     <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
@@ -77,7 +74,7 @@ export function ProductDetail(props: ViewProductProps) {
           indicatorColor="primary"
         >
           {tabs.map(tab => {
-            return <Tab key={tab.value} label={tab.label} value={tab.value} />
+            return <Tab key={tab.value} label={tab.label} value={tab.value} />;
           })}
         </TabWrapper>
       </Grid>
@@ -87,6 +84,5 @@ export function ProductDetail(props: ViewProductProps) {
         {currentTab === "sales" && productId && <ProductSalesTab productId={productId} />}
       </Grid>
     </Grid>
-  )
+  );
 }
-

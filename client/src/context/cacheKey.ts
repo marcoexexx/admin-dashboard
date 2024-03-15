@@ -1,4 +1,4 @@
-import { Pagination } from "@/services/types"
+import { Pagination } from "@/services/types";
 
 export const CacheResource = {
   AccessLog: "access-logs",
@@ -23,12 +23,11 @@ export const CacheResource = {
   Permission: "permissions",
   Cart: "cart",
   Shopowner: "shopowners",
-  OrderItem: "order-items" // api not provided yet
-} as const
-export type CacheResource = typeof CacheResource[keyof typeof CacheResource]
-
+  OrderItem: "order-items", // api not provided yet
+} as const;
+export type CacheResource = typeof CacheResource[keyof typeof CacheResource];
 
 export type CacheKey<T extends CacheResource> = {
-  list: [`${T}`, { filter?: object, pagination?: Pagination, include?: object }],
-  detail: [`${T}`, { id?: string, include?: object }]
-}
+  list: [`${T}`, { filter?: object; pagination?: Pagination; include?: object; }];
+  detail: [`${T}`, { id?: string; include?: object; }];
+};

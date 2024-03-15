@@ -1,45 +1,46 @@
-import { Suspense } from 'react';
-import { Helmet } from 'react-helmet-async'
-import { PageTitle, SuspenseLoader } from "@/components"
-import { Container, Grid, Typography } from "@mui/material"
+import { PageTitle, SuspenseLoader } from "@/components";
 import { SalesCategoriesList } from "@/components/content/sales-categories";
 import { MuiButton } from "@/components/ui";
-import { OperationAction, Resource } from '@/services/types';
-import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
+import { OperationAction, Resource } from "@/services/types";
+import { Container, Grid, Typography } from "@mui/material";
+import { Suspense } from "react";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
 
+import ErrorBoundary from "@/components/ErrorBoundary";
 import getConfig from "@/libs/getConfig";
-import ErrorBoundary from '@/components/ErrorBoundary';
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
 
-
-const appName = getConfig("appName")
+const appName = getConfig("appName");
 
 function ListWrapper() {
-  usePermission({ action: OperationAction.Read, resource: Resource.SalesCategory }).ok_or_throw()
+  usePermission({ action: OperationAction.Read, resource: Resource.SalesCategory }).ok_or_throw();
 
-  return  <SalesCategoriesList />
+  return <SalesCategoriesList />;
 }
 
-
 export default function ListPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const isAllowedCreateSalesCategory = usePermission({
     action: OperationAction.Create,
-    resource: Resource.SalesCategory
-  }).is_ok()
+    resource: Resource.SalesCategory,
+  }).is_ok();
 
   const handleNavigateCreate = () => {
-    navigate("/sales-categories/create")
-  }
-
+    navigate("/sales-categories/create");
+  };
 
   return (
     <>
       <Helmet>
         <title>{appName} | List sales</title>
-        <meta name="description" content="Effortlessly manage your sales data with our intuitive sales table. View, track, and analyze your product sales seamlessly. Stay informed about revenue, quantities sold, and more with our user-friendly interface. Explore the power of efficient sales data management for a clear overview of your business performance."></meta>
+        <meta
+          name="description"
+          content="Effortlessly manage your sales data with our intuitive sales table. View, track, and analyze your product sales seamlessly. Stay informed about revenue, quantities sold, and more with our user-friendly interface. Explore the power of efficient sales data management for a clear overview of your business performance."
+        >
+        </meta>
       </Helmet>
 
       <PageTitle>
@@ -53,32 +54,33 @@ export default function ListPage() {
           </Grid>
 
           {isAllowedCreateSalesCategory
-          ? <Grid item>
-              <MuiButton
-                sx={{ mt: { xs: 2, md: 0 } }}
-                variant="contained"
-                startIcon={<AddTwoToneIcon fontSize="small" />}
-                onClick={handleNavigateCreate}
-              >Create new sale category</MuiButton>
-            </Grid>
-          : null}
-          
+            ? (
+              <Grid item>
+                <MuiButton
+                  sx={{ mt: { xs: 2, md: 0 } }}
+                  variant="contained"
+                  startIcon={<AddTwoToneIcon fontSize="small" />}
+                  onClick={handleNavigateCreate}
+                >
+                  Create new sale category
+                </MuiButton>
+              </Grid>
+            )
+            : null}
         </Grid>
       </PageTitle>
 
       <Container maxWidth="lg">
         <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
           <Grid item xs={12}>
-
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
                 <ListWrapper />
               </Suspense>
             </ErrorBoundary>
-
           </Grid>
         </Grid>
       </Container>
     </>
-  )
+  );
 }

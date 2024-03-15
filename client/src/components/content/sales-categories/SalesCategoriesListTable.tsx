@@ -1,74 +1,71 @@
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material"
-import { RenderCountLabel } from "@/components/table-labels";
 import { EnhancedTable, TypedColumn } from "@/components";
-import { Resource, SalesCategory } from "@/services/types";
+import { RenderCountLabel } from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
-import { SalesCategorysFilterForm } from ".";
-import { useStore } from "@/hooks";
 import { INITIAL_PAGINATION } from "@/context/store";
-
+import { useStore } from "@/hooks";
+import { Resource, SalesCategory } from "@/services/types";
+import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import { SalesCategorysFilterForm } from ".";
 
 const columns: TypedColumn<SalesCategory>[] = [
   {
     id: "name",
     align: "left",
     name: "Name",
-    render: ({ value }) => <Typography>{value.name}</Typography>
+    render: ({ value }) => <Typography>{value.name}</Typography>,
   },
   {
     id: "startDate",
     align: "left",
     name: "Start date",
-    render: ({ value }) => <Typography>{new Date(value.startDate).toUTCString()}</Typography>
+    render: ({ value }) => <Typography>{new Date(value.startDate).toUTCString()}</Typography>,
   },
   {
     id: "endDate",
     align: "left",
     name: "End date",
-    render: ({ value }) => <Typography>{new Date(value.endDate).toUTCString()}</Typography>
+    render: ({ value }) => <Typography>{new Date(value.endDate).toUTCString()}</Typography>,
   },
   {
     id: "isActive",
     align: "left",
     name: "Sttus",
-    render: ({ value }) => <Typography>{value.isActive ? "Active" : "Out of date"}</Typography>
+    render: ({ value }) => <Typography>{value.isActive ? "Active" : "Out of date"}</Typography>,
   },
   {
     id: "_count",
     align: "left",
     name: "Count",
-    render: ({ value }) => <RenderCountLabel _count={value._count} />
-  }
-]
-
+    render: ({ value }) => <RenderCountLabel _count={value._count} />,
+  },
+];
 
 interface SalesCategoriesListTableProps {
-  salesCategoiries: SalesCategory[]
-  count: number
-  isLoading?: boolean
-  onDelete?: (id: string) => void
-  onMultiDelete?: (ids: string[]) => void
-  onCreateMany?: (buf: ArrayBuffer) => void
+  salesCategoiries: SalesCategory[];
+  count: number;
+  isLoading?: boolean;
+  onDelete?: (id: string) => void;
+  onMultiDelete?: (ids: string[]) => void;
+  onCreateMany?: (buf: ArrayBuffer) => void;
 }
 
 export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
-  const { salesCategoiries, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
-  const { state: { salesCategoryFilter: { pagination } }, dispatch } = useStore()
+  const { salesCategoiries, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
+  const { state: { salesCategoryFilter: { pagination } }, dispatch } = useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
       type: "SET_SALES_CATEGORY_PAGE",
-      payload: page += 1
-    })
-  }
+      payload: page += 1,
+    });
+  };
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: "SET_SALES_CATEGORY_PAGE_SIZE",
-      payload: parseInt(evt.target.value, 10)
-    })
-  }
-
+      payload: parseInt(evt.target.value, 10),
+    });
+  };
 
   return (
     <Card>
@@ -100,5 +97,5 @@ export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
         />
       </Box>
     </Card>
-  )
+  );
 }

@@ -1,42 +1,46 @@
-import { Suspense } from 'react';
-import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
 import { CreateSalesCategoryForm } from "@/components/content/sales-categories/forms";
-import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
-import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
-import { useNavigate } from 'react-router-dom'
+import { OperationAction, Resource } from "@/services/types";
+import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { Suspense } from "react";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
 
+import ErrorBoundary from "@/components/ErrorBoundary";
 import getConfig from "@/libs/getConfig";
-import ErrorBoundary from '@/components/ErrorBoundary';
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
-
-const appName = getConfig("appName")
+const appName = getConfig("appName");
 
 function CreateFormWrapper() {
-  usePermission({ action: OperationAction.Create, resource: Resource.SalesCategory }).ok_or_throw()
+  usePermission({ action: OperationAction.Create, resource: Resource.SalesCategory }).ok_or_throw();
 
-  return  <Card>
-    <CardContent>
-      <CreateSalesCategoryForm />
-    </CardContent>
-  </Card>
+  return (
+    <Card>
+      <CardContent>
+        <CreateSalesCategoryForm />
+      </CardContent>
+    </Card>
+  );
 }
 
-
 export default function CreatePage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1)
-  }
+    navigate(-1);
+  };
 
   return (
     <>
       <Helmet>
         <title>{appName} | Create sales for products</title>
-        <meta name="description" content="Launch exciting seasonal sales for your products effortlessly. Create special offers, set discounts, and showcase limited-time deals. Boost your sales and engage customers with our user-friendly platform. Explore now to craft compelling seasonal promotions for your products."></meta>
+        <meta
+          name="description"
+          content="Launch exciting seasonal sales for your products effortlessly. Create special offers, set discounts, and showcase limited-time deals. Boost your sales and engage customers with our user-friendly platform. Explore now to craft compelling seasonal promotions for your products."
+        >
+        </meta>
       </Helmet>
 
       <PageTitle>
@@ -61,25 +65,23 @@ export default function CreatePage() {
 
       <Container maxWidth="lg">
         <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
-        {/*   <Grid item xs={12} md={4}> */}
-        {/*     <Card> */}
-        {/*       <CardContent> */}
-        {/*         <UploadProductImage /> */}
-        {/*       </CardContent> */}
-        {/*     </Card> */}
-        {/*   </Grid> */}
+          {/*   <Grid item xs={12} md={4}> */}
+          {/*     <Card> */}
+          {/*       <CardContent> */}
+          {/*         <UploadProductImage /> */}
+          {/*       </CardContent> */}
+          {/*     </Card> */}
+          {/*   </Grid> */}
 
           <Grid item xs={12} md={8}>
-
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
                 <CreateFormWrapper />
               </Suspense>
             </ErrorBoundary>
-
           </Grid>
         </Grid>
       </Container>
     </>
-  )
+  );
 }

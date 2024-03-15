@@ -1,8 +1,7 @@
 import { Box } from "@mui/material";
 
-import HeaderSearch from "./HeaderSearch";
 import HeaderNotifications from "./HeaderNotifications";
-
+import HeaderSearch from "./HeaderSearch";
 
 export default function HeaderButtons() {
   return (
@@ -12,5 +11,5 @@ export default function HeaderButtons() {
         <HeaderNotifications />
       </Box>
     </Box>
-  )
+  );
 }

@@ -1,53 +1,57 @@
-import { Card } from "@mui/material";
 import { SuspenseLoader } from "@/components";
 import { ShopownersListTable } from "@/components/content/shopowners";
+import { Card } from "@mui/material";
 
-import { useStore } from "@/hooks";
-import { useCreateMultiShopowners, useDeleteMultiShopowners, useDeleteShopowner, useGetShopowners } from "@/hooks/shopowner";
 import { INITIAL_PAGINATION } from "@/context/store";
-
+import { useStore } from "@/hooks";
+import {
+  useCreateMultiShopowners,
+  useDeleteMultiShopowners,
+  useDeleteShopowner,
+  useGetShopowners,
+} from "@/hooks/shopowner";
 
 export function ShopownersList() {
-  const { state: { shopownerFilter } } = useStore()
+  const { state: { shopownerFilter } } = useStore();
 
   // Queries
   const shopownersQuery = useGetShopowners({
     filter: shopownerFilter.where,
     pagination: shopownerFilter.pagination || INITIAL_PAGINATION,
-  })
+  });
 
   // Mutations
-  const createShopownersMutation = useCreateMultiShopowners()
-  const deleteShopownerMutation = useDeleteShopowner()
-  const deleteShopownersMutation = useDeleteMultiShopowners()
+  const createShopownersMutation = useCreateMultiShopowners();
+  const deleteShopownerMutation = useDeleteShopowner();
+  const deleteShopownersMutation = useDeleteMultiShopowners();
 
   // Extraction
-  const data = shopownersQuery.try_data.ok_or_throw()
+  const data = shopownersQuery.try_data.ok_or_throw();
 
   function handleCreateManyShopowners(buf: ArrayBuffer) {
-    createShopownersMutation.mutate(buf)
+    createShopownersMutation.mutate(buf);
   }
 
   function handleDeleteShopowner(id: string) {
-    deleteShopownerMutation.mutate(id)
+    deleteShopownerMutation.mutate(id);
   }
 
   function handleDeleteMultiShopowners(ids: string[]) {
-    deleteShopownersMutation.mutate(ids)
+    deleteShopownersMutation.mutate(ids);
   }
 
+  if (!data || shopownersQuery.isLoading) return <SuspenseLoader />;
 
-  if (!data || shopownersQuery.isLoading) return <SuspenseLoader />
-
-
-  return <Card>
-    <ShopownersListTable
-      isLoading={shopownersQuery.isLoading}
-      shopowners={data.results}
-      count={data.count}
-      onCreateMany={handleCreateManyShopowners}
-      onDelete={handleDeleteShopowner}
-      onMultiDelete={handleDeleteMultiShopowners}
-    />
-  </Card>
+  return (
+    <Card>
+      <ShopownersListTable
+        isLoading={shopownersQuery.isLoading}
+        shopowners={data.results}
+        count={data.count}
+        onCreateMany={handleCreateManyShopowners}
+        onDelete={handleDeleteShopowner}
+        onMultiDelete={handleDeleteMultiShopowners}
+      />
+    </Card>
+  );
 }

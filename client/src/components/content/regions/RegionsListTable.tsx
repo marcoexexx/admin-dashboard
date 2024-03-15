@@ -1,56 +1,55 @@
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material"
-import { RegionsFilterForm } from ".";
-import { RenderTownshipName } from "@/components/table-labels";
 import { EnhancedTable, TypedColumn } from "@/components";
-import { Region, Resource } from "@/services/types";
+import { RenderTownshipName } from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
-import { useStore } from "@/hooks";
 import { INITIAL_PAGINATION } from "@/context/store";
-
+import { useStore } from "@/hooks";
+import { Region, Resource } from "@/services/types";
+import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import { RegionsFilterForm } from ".";
 
 const columns: TypedColumn<Region>[] = [
   {
     id: "name",
     align: "left",
     name: "Name",
-    render: ({ value }) => <Typography>{value.name}</Typography>
+    render: ({ value }) => <Typography>{value.name}</Typography>,
   },
   {
     id: "townships",
     align: "left",
     name: "Townships",
-    render: ({ value }) => <>{value.townships?.map(township => <RenderTownshipName key={township.id} township={township} />)}</>
-  }
-]
-
+    render: ({ value }) => (
+      <>{value.townships?.map(township => <RenderTownshipName key={township.id} township={township} />)}</>
+    ),
+  },
+];
 
 interface RegionsListTableProps {
-  regions: Region[]
-  count: number
-  isLoading?: boolean
-  onDelete?: (id: string) => void
-  onMultiDelete?: (ids: string[]) => void
-  onCreateMany?: (buf: ArrayBuffer) => void
+  regions: Region[];
+  count: number;
+  isLoading?: boolean;
+  onDelete?: (id: string) => void;
+  onMultiDelete?: (ids: string[]) => void;
+  onCreateMany?: (buf: ArrayBuffer) => void;
 }
 
 export function RegionsListTable(props: RegionsListTableProps) {
-  const { regions, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
-  const { state: { regionFilter:{pagination} }, dispatch } = useStore()
+  const { regions, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
+  const { state: { regionFilter: { pagination } }, dispatch } = useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
       type: "SET_REGION_PAGE",
-      payload: page += 1
-    })
-  }
+      payload: page += 1,
+    });
+  };
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: "SET_REGION_PAGE_SIZE",
-      payload: parseInt(evt.target.value, 10)
-    })
-  }
-
+      payload: parseInt(evt.target.value, 10),
+    });
+  };
 
   return (
     <Card>
@@ -82,5 +81,5 @@ export function RegionsListTable(props: RegionsListTableProps) {
         />
       </Box>
     </Card>
-  )
+  );
 }

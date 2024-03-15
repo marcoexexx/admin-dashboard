@@ -1,24 +1,21 @@
-import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { Container, Grid, Typography } from "@mui/material"
+import { PageTitle } from "@/components";
 import { AuditLogsList } from "@/components/content/auditLogs";
-import { Suspense } from "react";
-import { OperationAction, Resource } from '@/services/types';
 import { usePermission } from "@/hooks";
+import { OperationAction, Resource } from "@/services/types";
+import { Container, Grid, Typography } from "@mui/material";
+import { Suspense } from "react";
+import { Helmet } from "react-helmet-async";
 
-import getConfig from "@/libs/getConfig";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import getConfig from "@/libs/getConfig";
 
-
-const appName = getConfig("appName")
-
+const appName = getConfig("appName");
 
 function ListWrapper() {
-  usePermission({ action: OperationAction.Read, resource: Resource.AuditLog }).ok_or_throw()
+  usePermission({ action: OperationAction.Read, resource: Resource.AuditLog }).ok_or_throw();
 
-  return <AuditLogsList />
+  return <AuditLogsList />;
 }
-
 
 export default function ListPage() {
   return (
@@ -43,16 +40,14 @@ export default function ListPage() {
       <Container maxWidth="lg">
         <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
           <Grid item xs={12}>
-
             <ErrorBoundary>
               <Suspense>
                 <ListWrapper />
               </Suspense>
             </ErrorBoundary>
-
           </Grid>
         </Grid>
       </Container>
     </>
-  )
+  );
 }

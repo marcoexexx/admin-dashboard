@@ -1,2 +1,2 @@
-export * from './ProfileCover'
-export * from './RecentActivity'
+export * from "./ProfileCover";
+export * from "./RecentActivity";

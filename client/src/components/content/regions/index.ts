@@ -1,3 +1,3 @@
-export * from './RegionsList'
-export * from './RegionsListTable'
-export * from './RegionsFilterForm'
+export * from "./RegionsFilterForm";
+export * from "./RegionsList";
+export * from "./RegionsListTable";

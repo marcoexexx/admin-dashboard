@@ -2,11 +2,10 @@ import React from "react";
 
 import { MuiButton } from "@/components/ui";
 
-
 export default function InvalidAuthSessionPage() {
   const handleLogin = (_: React.MouseEvent<HTMLButtonElement>) => {
-    window.location.href = "/auth/login"
-  }
+    window.location.href = "/auth/login";
+  };
 
   return (
     <div>
@@ -24,6 +23,5 @@ export default function InvalidAuthSessionPage() {
         <MuiButton onClick={handleLogin}>Login</MuiButton>
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,63 +1,60 @@
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material"
 import { EnhancedTable, TypedColumn } from "@/components";
 import { RenderRegionLabel } from "@/components/table-labels";
-import { Resource, TownshipFees } from "@/services/types";
-import { TownshipsFilterForm } from ".";
 import { CacheResource } from "@/context/cacheKey";
+import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { numberFormat } from "@/libs/numberFormat";
-import { INITIAL_PAGINATION } from "@/context/store";
-
+import { Resource, TownshipFees } from "@/services/types";
+import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import { TownshipsFilterForm } from ".";
 
 const columns: TypedColumn<TownshipFees>[] = [
   {
     id: "name",
     align: "left",
     name: "Name",
-    render: ({ value }) => <Typography>{value.name}</Typography>
+    render: ({ value }) => <Typography>{value.name}</Typography>,
   },
   {
     id: "fees",
     align: "left",
     name: "Fees",
-    render: ({ value }) => <Typography>{numberFormat(value.fees)}</Typography>
+    render: ({ value }) => <Typography>{numberFormat(value.fees)}</Typography>,
   },
   {
     id: "region",
     align: "left",
     name: "Region",
-    render: ({ value }) => value.region ? <RenderRegionLabel region={value.region} /> : null
-  }
-]
-
+    render: ({ value }) => value.region ? <RenderRegionLabel region={value.region} /> : null,
+  },
+];
 
 interface TownshipsListTableProps {
-  townships: TownshipFees[]
-  count: number
-  isLoading?: boolean
-  onDelete?: (id: string) => void
-  onMultiDelete?: (ids: string[]) => void
-  onCreateMany?: (buf: ArrayBuffer) => void
+  townships: TownshipFees[];
+  count: number;
+  isLoading?: boolean;
+  onDelete?: (id: string) => void;
+  onMultiDelete?: (ids: string[]) => void;
+  onCreateMany?: (buf: ArrayBuffer) => void;
 }
 
 export function TownshipsListTable(props: TownshipsListTableProps) {
-  const { townships, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
-  const { state: { townshipFilter: { pagination } }, dispatch } = useStore()
+  const { townships, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
+  const { state: { townshipFilter: { pagination } }, dispatch } = useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
       type: "SET_TOWNSHIP_PAGE",
-      payload: page += 1
-    })
-  }
+      payload: page += 1,
+    });
+  };
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: "SET_TOWNSHIP_PAGE_SIZE",
-      payload: parseInt(evt.target.value, 10)
-    })
-  }
-
+      payload: parseInt(evt.target.value, 10),
+    });
+  };
 
   return (
     <Card>
@@ -89,5 +86,5 @@ export function TownshipsListTable(props: TownshipsListTableProps) {
         />
       </Box>
     </Card>
-  )
+  );
 }

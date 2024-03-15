@@ -1,8 +1,7 @@
-import { Avatar, Card, CardActionArea, CardContent, Tooltip, styled } from "@mui/material";
 import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
+import { Avatar, Card, CardActionArea, CardContent, styled, Tooltip } from "@mui/material";
 
-
-const CardAddAction = styled(Card)(({theme}) => ({
+const CardAddAction = styled(Card)(({ theme }) => ({
   border: `${theme.colors.primary.main} dashed 1px`,
   height: "100%",
   color: theme.colors.primary.main,
@@ -12,31 +11,31 @@ const CardAddAction = styled(Card)(({theme}) => ({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    display: "flex"
+    display: "flex",
   },
 
   ".MuiTouchRipple-root": {
-    opacity: .2
+    opacity: .2,
   },
 
   "&:hover": {
-    borderColor: theme.colors.alpha.black[70]
-  }
-}))
+    borderColor: theme.colors.alpha.black[70],
+  },
+}));
 
-const AvatarAddWrapper = styled(Avatar)(({theme}) => ({
+const AvatarAddWrapper = styled(Avatar)(({ theme }) => ({
   background: theme.colors.alpha.black[10],
   color: theme.colors.primary.main,
   width: theme.spacing(8),
   height: theme.spacing(8),
-}))
+}));
 
 interface AddDashboardCardProps {
-  onClickAdd: () => void
+  onClickAdd: () => void;
 }
 
 export function AddDashboardCard(props: AddDashboardCardProps) {
-  const { onClickAdd }  = props
+  const { onClickAdd } = props;
 
   return (
     <Tooltip arrow title="Click to add new" onClick={onClickAdd}>
@@ -50,5 +49,5 @@ export function AddDashboardCard(props: AddDashboardCardProps) {
         </CardActionArea>
       </CardAddAction>
     </Tooltip>
-  )
+  );
 }

@@ -1,1 +1,1 @@
-export * from './useGetAccessLogs'
+export * from "./useGetAccessLogs";

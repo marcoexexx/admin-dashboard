@@ -1,10 +1,10 @@
-export * from './useGetTownships'
-export * from './useGetTownship'
+export * from "./useGetTownship";
+export * from "./useGetTownships";
 
-export * from './useCreateTownship'
-export * from './useCreateMultiTownships'
+export * from "./useCreateMultiTownships";
+export * from "./useCreateTownship";
 
-export * from './useDeleteTownship'
-export * from './useDeleteMultiTownships'
+export * from "./useDeleteMultiTownships";
+export * from "./useDeleteTownship";
 
-export * from './useUpdateTownship'
+export * from "./useUpdateTownship";

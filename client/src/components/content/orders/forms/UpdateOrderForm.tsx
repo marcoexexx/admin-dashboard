@@ -1,7 +1,6 @@
 import { OrderStatus, PaymentMethodProvider } from "@/services/types";
-import { OrderAddressType } from ".";
 import { number, object, string, z } from "zod";
-
+import { OrderAddressType } from ".";
 
 const updateOrderSchema = object({
   // orderItems: object({
@@ -18,18 +17,17 @@ const updateOrderSchema = object({
   billingAddressId: string({ required_error: "billingAddressId is required" }),
   paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
   remark: string().optional(),
-  addressType: z.nativeEnum(OrderAddressType, { required_error: "Order address type is required" })
-})
+  addressType: z.nativeEnum(OrderAddressType, { required_error: "Order address type is required" }),
+});
 
-export type UpdateOrderInput = z.infer<typeof updateOrderSchema>
+export type UpdateOrderInput = z.infer<typeof updateOrderSchema>;
 
 export interface UpdateOrderProps {}
-
 
 /**
  * not support yet
  */
 export function UpdateOrderForm(props: UpdateOrderProps) {
-  const {} = props
-  return "not support yet!"
+  const {} = props;
+  return "not support yet!";
 }

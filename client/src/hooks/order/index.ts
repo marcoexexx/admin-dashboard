@@ -1,8 +1,8 @@
-export * from './useCreateOrder'
+export * from "./useCreateOrder";
 
-export * from './useGerOrders'
+export * from "./useGerOrders";
 
-export * from './useDeleteOrder'
-export * from './useDeleteMultiOrders'
+export * from "./useDeleteMultiOrders";
+export * from "./useDeleteOrder";
 
-export * from './useUpdateOrder'
+export * from "./useUpdateOrder";

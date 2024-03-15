@@ -1,7 +1,6 @@
-import { RouterProvider } from 'react-router-dom'
-import { BackdropProvider, Providers, ToastProvider } from "./components"
-import routes from './pages/router'
-
+import { RouterProvider } from "react-router-dom";
+import { BackdropProvider, Providers, ToastProvider } from "./components";
+import routes from "./pages/router";
 
 function App() {
   return (
@@ -10,7 +9,7 @@ function App() {
       <ToastProvider />
       <BackdropProvider />
     </Providers>
-  )
+  );
 }
 
-export default App
+export default App;

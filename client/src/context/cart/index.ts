@@ -1,14 +1,13 @@
-import { Cart, WhereInput } from "@/services/types"
-
+import { Cart, WhereInput } from "@/services/types";
 
 export type CartWhereInput = {
-  where?: WhereInput<Cart>,
+  where?: WhereInput<Cart>;
   include?: {
-    _count?: boolean,
+    _count?: boolean;
     orderItems?: {
       include?: {
-        product?: boolean
-      }
-    } | boolean
-  }
-}
+        product?: boolean;
+      };
+    } | boolean;
+  };
+};

@@ -1,22 +1,20 @@
-import { Suspense } from 'react';
-import { Helmet } from 'react-helmet-async'
 import { PageTitle } from "@/components";
 import { UpdateBrandForm } from "@/components/content/brands/forms";
-import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
-import { OperationAction, Resource } from '@/services/types';
-import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
+import { OperationAction, Resource } from "@/services/types";
+import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { Suspense } from "react";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
 
+import ErrorBoundary from "@/components/ErrorBoundary";
 import getConfig from "@/libs/getConfig";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
-
-const appName = getConfig("appName")
-
+const appName = getConfig("appName");
 
 function UpdateFormWrapper() {
-  usePermission({ action: OperationAction.Update, resource: Resource.Brand }).ok_or_throw()
+  usePermission({ action: OperationAction.Update, resource: Resource.Brand }).ok_or_throw();
 
   return (
     <Card>
@@ -24,23 +22,25 @@ function UpdateFormWrapper() {
         <UpdateBrandForm />
       </CardContent>
     </Card>
-  )
+  );
 }
 
-
 export default function UpdatePage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1)
-  }
-
+    navigate(-1);
+  };
 
   return (
     <>
       <Helmet>
         <title>{appName} | Update brand</title>
-        <meta name="description" content="Effortlessly update and refine your product brand details with our user-friendly brand update page. Seamlessly edit brand names, logos, and other essential information, ensuring your brand identity remains current and compelling. Take control of your brand's image, make instant modifications, and maintain a consistent and polished appearance. Simplify the brand update process with our intuitive tools and keep your business on the cutting edge. Explore the power of effortless brand management today."></meta>
+        <meta
+          name="description"
+          content="Effortlessly update and refine your product brand details with our user-friendly brand update page. Seamlessly edit brand names, logos, and other essential information, ensuring your brand identity remains current and compelling. Take control of your brand's image, make instant modifications, and maintain a consistent and polished appearance. Simplify the brand update process with our intuitive tools and keep your business on the cutting edge. Explore the power of effortless brand management today."
+        >
+        </meta>
       </Helmet>
 
       <PageTitle>
@@ -66,19 +66,14 @@ export default function UpdatePage() {
       <Container maxWidth="lg">
         <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
           <Grid item xs={12} md={8}>
-
             <ErrorBoundary>
               <Suspense>
                 <UpdateFormWrapper />
               </Suspense>
             </ErrorBoundary>
-
           </Grid>
         </Grid>
       </Container>
-      
     </>
-  )
+  );
 }
-
-

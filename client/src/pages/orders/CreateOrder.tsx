@@ -1,37 +1,36 @@
-import { Suspense } from 'react';
-import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
-import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
-import { CreateOrderForm } from '@/components/content/orders/forms';
-import { OperationAction, Resource } from '@/services/types';
+import { CreateOrderForm } from "@/components/content/orders/forms";
 import { usePermission } from "@/hooks";
-import { useNavigate } from 'react-router-dom'
+import { OperationAction, Resource } from "@/services/types";
+import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { Suspense } from "react";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
 
+import ErrorBoundary from "@/components/ErrorBoundary";
 import getConfig from "@/libs/getConfig";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
-
-const appName = getConfig("appName")
-
+const appName = getConfig("appName");
 
 function CreateFormWrapper() {
-  usePermission({ action: OperationAction.Create, resource: Resource.Order }).ok_or_throw()
-  
-  return <Card>
-    <CardContent>
-      <CreateOrderForm />
-    </CardContent>
-  </Card>
+  usePermission({ action: OperationAction.Create, resource: Resource.Order }).ok_or_throw();
+
+  return (
+    <Card>
+      <CardContent>
+        <CreateOrderForm />
+      </CardContent>
+    </Card>
+  );
 }
 
-
 export default function CreatePage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1)
-  }
+    navigate(-1);
+  };
 
   return (
     <>
@@ -63,16 +62,14 @@ export default function CreatePage() {
       <Container maxWidth="lg">
         <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
           <Grid item xs={12} md={8}>
-
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
                 <CreateFormWrapper />
               </Suspense>
             </ErrorBoundary>
-
           </Grid>
         </Grid>
       </Container>
     </>
-  )
+  );
 }

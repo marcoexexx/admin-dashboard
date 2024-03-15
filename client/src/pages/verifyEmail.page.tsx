@@ -1,10 +1,9 @@
-import { Box, Container, Typography, styled } from "@mui/material"
-import { MuiButton } from "@/components/ui"
-import { useEffect } from "react"
-import { useLocalStorage, useVerifyEmail } from "@/hooks"
-import { useNavigate, useParams } from "react-router-dom"
-import { useResendEmail } from "@/hooks/useResendEmail"
-
+import { MuiButton } from "@/components/ui";
+import { useLocalStorage, useVerifyEmail } from "@/hooks";
+import { useResendEmail } from "@/hooks/useResendEmail";
+import { Box, Container, styled, Typography } from "@mui/material";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const MainContent = styled(Box)(() => ({
   height: "100%",
@@ -12,32 +11,31 @@ const MainContent = styled(Box)(() => ({
   overflow: "auto",
   flexDirection: "column",
   alignItems: "center",
-  justifyContent: "center"
-}))
+  justifyContent: "center",
+}));
 
 export default function VerifyEmail() {
-  const { verifyEmailCode } = useParams()
-  const { get, remove } = useLocalStorage()
+  const { verifyEmailCode } = useParams();
+  const { get, remove } = useLocalStorage();
 
-  const { error, isSuccess } = useVerifyEmail({ verifyEmailCode })
-  const { mutate: resend, isPending } = useResendEmail()
+  const { error, isSuccess } = useVerifyEmail({ verifyEmailCode });
+  const { mutate: resend, isPending } = useResendEmail();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/")
-      remove("VERIFICATION_CODE")
+      navigate("/");
+      remove("VERIFICATION_CODE");
     }
-  }, [isSuccess])
+  }, [isSuccess]);
 
   const handleResend = () => {
-    const { id, code } = get("VERIFICATION_CODE") as any
-    if (id && code) resend({ id, code })
-  }
+    const { id, code } = get("VERIFICATION_CODE") as any;
+    if (id && code) resend({ id, code });
+  };
 
-  console.error(error)
-
+  console.error(error);
 
   return (
     <MainContent>
@@ -48,7 +46,8 @@ export default function VerifyEmail() {
             Confirm your email!
           </Typography>
           <Typography variant="h4" color="text.secondary" fontWeight="normal" sx={{ mb: 4 }}>
-            Your account has been successfully registered. To complete the process please check your email for a validation request. 
+            Your account has been successfully registered. To complete the process please check your email for a
+            validation request.
           </Typography>
         </Box>
       </Container>
@@ -57,5 +56,5 @@ export default function VerifyEmail() {
         Resend
       </MuiButton>
     </MainContent>
-  )
+  );
 }

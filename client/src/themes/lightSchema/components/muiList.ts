@@ -1,41 +1,40 @@
 import { colors } from "@/themes/lightSchema";
-import { ComponentCustomizedStyle } from "../types";
 import { alpha } from "@mui/material";
+import { ComponentCustomizedStyle } from "../types";
 
 export const MuiList: ComponentCustomizedStyle["MuiList"] = {
   styleOverrides: {
     root: {
       padding: 0,
 
-      '& .MuiListItem-button': {
-        transition: 'all .2s',
+      "& .MuiListItem-button": {
+        transition: "all .2s",
 
-        '& > .MuiSvgIcon-root': {
-          minWidth: 34
+        "& > .MuiSvgIcon-root": {
+          minWidth: 34,
         },
 
-        '& .MuiTouchRipple-root': {
-          opacity: 0.2
-        }
+        "& .MuiTouchRipple-root": {
+          opacity: 0.2,
+        },
       },
-      '& .MuiListItem-root.MuiButtonBase-root.Mui-selected': {
-        backgroundColor: alpha(colors.primary.lighter, 0.4)
+      "& .MuiListItem-root.MuiButtonBase-root.Mui-selected": {
+        backgroundColor: alpha(colors.primary.lighter, 0.4),
       },
-      '& .MuiMenuItem-root.MuiButtonBase-root:active': {
-        backgroundColor: alpha(colors.primary.lighter, 0.4)
+      "& .MuiMenuItem-root.MuiButtonBase-root:active": {
+        backgroundColor: alpha(colors.primary.lighter, 0.4),
       },
-      '& .MuiMenuItem-root.MuiButtonBase-root .MuiTouchRipple-root': {
-        opacity: 0.2
-      }
+      "& .MuiMenuItem-root.MuiButtonBase-root .MuiTouchRipple-root": {
+        opacity: 0.2,
+      },
     },
     padding: {
-      padding: '12px',
+      padding: "12px",
 
-      '& .MuiListItem-button': {
+      "& .MuiListItem-button": {
         borderRadius: 6,
-        margin: '1px 0'
-      }
-    }
-  }
-}
-
+        margin: "1px 0",
+      },
+    },
+  },
+};

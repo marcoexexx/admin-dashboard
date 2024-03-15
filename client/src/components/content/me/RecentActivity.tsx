@@ -1,34 +1,31 @@
-import { Avatar, Box, Card, CardHeader, Divider, Typography, styled, useTheme } from "@mui/material"
 import { User } from "@/services/types";
+import { Avatar, Box, Card, CardHeader, Divider, styled, Typography, useTheme } from "@mui/material";
 
-import ShoppingBagTwoToneIcon from '@mui/icons-material/ShoppingBagTwoTone';
-import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
-import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
-
+import FavoriteTwoToneIcon from "@mui/icons-material/FavoriteTwoTone";
+import ShoppingBagTwoToneIcon from "@mui/icons-material/ShoppingBagTwoTone";
+import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
 
 const AvatarPrimary = styled(Avatar)(({ theme }) => ({
   background: theme.colors.primary.lighter,
   color: theme.colors.primary.main,
   width: theme.spacing(7),
-  height: theme.spacing(7)
-}))
-
+  height: theme.spacing(7),
+}));
 
 interface RecentActivityProps {
-  user: User
+  user: User;
 }
 
 export function RecentActivity({ user }: RecentActivityProps) {
-  const theme = useTheme()
+  const theme = useTheme();
 
-  const orderTotal = user._count.orders
-  const orderCancelled = user.orders?.filter(order => order.status === "Cancelled").length
+  const orderTotal = user._count.orders;
+  const orderCancelled = user.orders?.filter(order => order.status === "Cancelled").length;
 
-  const favoriteProducts = user._count.favorites
-  const createdProducts = user._count.createdProducts
+  const favoriteProducts = user._count.favorites;
+  const createdProducts = user._count.createdProducts;
 
-  const reviewTotal = user._count.reviews
-
+  const reviewTotal = user._count.reviews;
 
   return (
     <Card>
@@ -127,5 +124,5 @@ export function RecentActivity({ user }: RecentActivityProps) {
         </Box>
       </Box>
     </Card>
-  )
+  );
 }

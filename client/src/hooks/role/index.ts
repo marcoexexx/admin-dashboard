@@ -1,10 +1,10 @@
-export * from './useGetRoles'
-export * from './useGetRole'
+export * from "./useGetRole";
+export * from "./useGetRoles";
 
-export * from './useCreateRole'
-export * from './useCreateMultiRoles'
+export * from "./useCreateMultiRoles";
+export * from "./useCreateRole";
 
-export * from './useDeleteRole'
-export * from './useDeleteMultiRoles'
+export * from "./useDeleteMultiRoles";
+export * from "./useDeleteRole";
 
-export * from './useUpdateRole'
+export * from "./useUpdateRole";

@@ -1,2 +1,2 @@
-export * from './CreatePermissionForm'
-export * from './UpdatePermissionForm'
+export * from "./CreatePermissionForm";
+export * from "./UpdatePermissionForm";

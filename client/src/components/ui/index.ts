@@ -1,3 +1,3 @@
-export * from './MuiButton'
-export * from './MuiLabel'
-export * from './Text'
+export * from "./MuiButton";
+export * from "./MuiLabel";
+export * from "./Text";

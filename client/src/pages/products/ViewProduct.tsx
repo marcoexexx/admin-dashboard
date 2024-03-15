@@ -1,41 +1,39 @@
-import { Suspense } from "react";
-import { PageTitle, SuspenseLoader } from "@/components"
-import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material"
+import { PageTitle, SuspenseLoader } from "@/components";
 import { ProductDetail } from "@/components/content/products/detail";
 import { MuiButton } from "@/components/ui";
-import { OperationAction, Resource } from "@/services/types";
-import { useNavigate, useParams } from 'react-router-dom'
 import { usePermission } from "@/hooks";
+import { OperationAction, Resource } from "@/services/types";
+import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { Suspense } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import ErrorBoundary from "@/components/ErrorBoundary";
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
+import EditTwoToneIcon from "@mui/icons-material/EditTwoTone";
 
+function ViewWrapper({ productId }: { productId: string | undefined; }) {
+  usePermission({ action: OperationAction.Read, resource: Resource.Product }).ok_or_throw();
 
-function ViewWrapper({ productId }: { productId: string | undefined }) {
-  usePermission({ action: OperationAction.Read, resource: Resource.Product }).ok_or_throw()
-
-  return <ProductDetail productId={productId} />
+  return <ProductDetail productId={productId} />;
 }
 
 export default function ViewDetailPage() {
-  const { productId } = useParams()
+  const { productId } = useParams();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const isAllowedUpdateProduct = usePermission({
     action: OperationAction.Update,
-    resource: Resource.Product
-  }).is_ok()
+    resource: Resource.Product,
+  }).is_ok();
 
   const handleBack = (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(-1)
-  }
+    navigate(-1);
+  };
 
   const handleUpdate = (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/products/update/${productId}`)
-  }
-
+    navigate(`/products/update/${productId}`);
+  };
 
   return (
     <>
@@ -58,14 +56,18 @@ export default function ViewDetailPage() {
           </Grid>
 
           {isAllowedUpdateProduct
-            ? <Grid item>
-              <MuiButton
-                sx={{ mt: { xs: 2, md: 0 } }}
-                variant="contained"
-                startIcon={<EditTwoToneIcon fontSize="small" />}
-                onClick={handleUpdate}
-              >Update product</MuiButton>
-            </Grid>
+            ? (
+              <Grid item>
+                <MuiButton
+                  sx={{ mt: { xs: 2, md: 0 } }}
+                  variant="contained"
+                  startIcon={<EditTwoToneIcon fontSize="small" />}
+                  onClick={handleUpdate}
+                >
+                  Update product
+                </MuiButton>
+              </Grid>
+            )
             : null}
         </Grid>
       </PageTitle>
@@ -78,5 +80,5 @@ export default function ViewDetailPage() {
         </ErrorBoundary>
       </Container>
     </>
-  )
+  );
 }

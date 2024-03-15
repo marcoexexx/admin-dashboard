@@ -1,36 +1,35 @@
-import en, { Translations } from './en';
+import en, { Translations } from "./en";
 
-import _get from 'lodash/get';
-import { getStore, setStore } from '@/libs/storage';
-import { strTemplate } from '@/libs/strTemplate';
-
+import { getStore, setStore } from "@/libs/storage";
+import { strTemplate } from "@/libs/strTemplate";
+import _get from "lodash/get";
 
 const LANGUAGE_PREFIX: "language" = "language";
 
 export const countries = {
   en: "English",
-  my: "Myanmar"
-}
+  my: "Myanmar",
+};
 
-export type Local = keyof typeof countries
+export type Local = keyof typeof countries;
 
 export type I18nOptions = {
-  [K: string]: string
-}
+  [K: string]: string;
+};
 
 export type I18n = {
   translations: {
-    [K: string]: Translations
-  }
-  local: Local, // keyof I18n["translations"],
-  t: (key: TxPath, options?: I18nOptions) => string,
-  load: (lang: Local) => void,
-}
+    [K: string]: Translations;
+  };
+  local: Local; // keyof I18n["translations"],
+  t: (key: TxPath, options?: I18nOptions) => string;
+  load: (lang: Local) => void;
+};
 
 export const i18n: I18n = {
   translations: { en },
   local: getStore<keyof typeof countries>(LANGUAGE_PREFIX) || "en",
-  
+
   t(key, options) {
     const localPrefix = this.translations[this.local as keyof I18n["translations"]];
     let msg = _get(localPrefix, key);
@@ -42,17 +41,14 @@ export const i18n: I18n = {
     setStore(LANGUAGE_PREFIX, lang);
     this.local = lang;
   },
-}
+};
 
-
-type RecusiveKeyOfHandleValue<TValue, Text extends string> = TValue extends any[]
-  ? Text
-  : TValue extends object
-    ? `${Text}.${RecusiveKeyOf<TValue>}`
-    : Text
+type RecusiveKeyOfHandleValue<TValue, Text extends string> = TValue extends any[] ? Text
+  : TValue extends object ? `${Text}.${RecusiveKeyOf<TValue>}`
+  : Text;
 
 type RecusiveKeyOf<TObj extends object> = {
-  [TKey in keyof TObj & (string)]: RecusiveKeyOfHandleValue<TObj[TKey], `${TKey}`>
-}[keyof TObj & string]
+  [TKey in keyof TObj & (string)]: RecusiveKeyOfHandleValue<TObj[TKey], `${TKey}`>;
+}[keyof TObj & string];
 
 export type TxPath = RecusiveKeyOf<Translations>;

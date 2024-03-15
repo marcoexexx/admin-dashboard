@@ -1,2 +1,2 @@
-export * from './PickupAddressList'
-export * from './PickupAddressListTable'
+export * from "./PickupAddressList";
+export * from "./PickupAddressListTable";

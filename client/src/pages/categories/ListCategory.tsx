@@ -1,47 +1,46 @@
-import { Suspense } from 'react';
-import { OperationAction, Resource } from '@/services/types';
-import { Helmet } from 'react-helmet-async'
-import { PageTitle } from "@/components"
-import { Container, Grid, Typography } from "@mui/material"
+import { PageTitle } from "@/components";
 import { CategoriesList } from "@/components/content/categories";
 import { MuiButton } from "@/components/ui";
-import { useNavigate } from "react-router-dom";
 import { usePermission } from "@/hooks";
+import { OperationAction, Resource } from "@/services/types";
+import { Container, Grid, Typography } from "@mui/material";
+import { Suspense } from "react";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
 
+import ErrorBoundary from "@/components/ErrorBoundary";
 import getConfig from "@/libs/getConfig";
-import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
 
-
-const appName = getConfig("appName")
-
+const appName = getConfig("appName");
 
 function ListWrapper() {
-  usePermission({ action: OperationAction.Read, resource: Resource.Category }).ok_or_throw()
+  usePermission({ action: OperationAction.Read, resource: Resource.Category }).ok_or_throw();
 
-  return <CategoriesList />
-
+  return <CategoriesList />;
 }
 
-
 export default function ListPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const isAllowedCreateCategory = usePermission({
     action: OperationAction.Create,
-    resource: Resource.Category
-  }).is_ok()
+    resource: Resource.Category,
+  }).is_ok();
 
   const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate("/categories/create")
-  }
-
+    navigate("/categories/create");
+  };
 
   return (
     <>
       <Helmet>
         <title>{appName} | List categories</title>
-        <meta name="description" content="Explore a curated collection of product categories designed to enhance your online shopping experience. Browse through a diverse range of categories that cater to your interests and preferences. Discover a seamless organization of products, making it easy to find what you're looking for. From fashion to electronics, our list of categories provides a comprehensive overview, allowing you to navigate effortlessly and discover"></meta>
+        <meta
+          name="description"
+          content="Explore a curated collection of product categories designed to enhance your online shopping experience. Browse through a diverse range of categories that cater to your interests and preferences. Discover a seamless organization of products, making it easy to find what you're looking for. From fashion to electronics, our list of categories provides a comprehensive overview, allowing you to navigate effortlessly and discover"
+        >
+        </meta>
       </Helmet>
 
       <PageTitle>
@@ -55,33 +54,33 @@ export default function ListPage() {
           </Grid>
 
           {isAllowedCreateCategory
-          ? <Grid item>
-              <MuiButton
-                sx={{ mt: { xs: 2, md: 0 } }}
-                variant="contained"
-                startIcon={<AddTwoToneIcon fontSize="small" />}
-                onClick={handleNavigateCreate}
-              >Create new category</MuiButton>
-            </Grid>
-          : null}
-          
+            ? (
+              <Grid item>
+                <MuiButton
+                  sx={{ mt: { xs: 2, md: 0 } }}
+                  variant="contained"
+                  startIcon={<AddTwoToneIcon fontSize="small" />}
+                  onClick={handleNavigateCreate}
+                >
+                  Create new category
+                </MuiButton>
+              </Grid>
+            )
+            : null}
         </Grid>
       </PageTitle>
 
       <Container maxWidth="lg">
         <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
           <Grid item xs={12}>
-
             <ErrorBoundary>
               <Suspense>
                 <ListWrapper />
               </Suspense>
             </ErrorBoundary>
-
           </Grid>
         </Grid>
       </Container>
-      
     </>
-  )
+  );
 }

@@ -1,16 +1,15 @@
-import { Box, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { MuiButton } from "@/components/ui";
-import { EditorInputField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
 import { FormModal } from "@/components/forms";
+import { EditorInputField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
+import { MuiButton } from "@/components/ui";
+import { useStore } from "@/hooks";
+import { useCreateUserAddress } from "@/hooks/userAddress";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Box, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
+import { useEffect } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { boolean, object, string, z } from "zod";
 import { CreateRegionForm } from "../../regions/forms";
 import { CreateTownshipForm } from "../../townships/forms";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { boolean, object, string, z } from "zod";
-import { useStore } from "@/hooks";
-import { useEffect } from "react";
-import { useCreateUserAddress } from "@/hooks/userAddress";
-
 
 const createUserAddressSchema = object({
   isDefault: boolean().default(false),
@@ -20,40 +19,39 @@ const createUserAddressSchema = object({
   regionId: string({ required_error: "region is required" }),
   townshipFeesId: string({ required_error: "township is required" }),
   fullAddress: string({ required_error: "fullAddress is required" }).min(1).max(128),
-  remark: string().optional()
-})
+  remark: string().optional(),
+});
 
-export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>
+export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>;
 
 export function CreateUserAddressForm() {
-  const { state: { modalForm, user } } = useStore()
+  const { state: { modalForm, user } } = useStore();
 
-  const { mutate: createUserAddress, isPending } = useCreateUserAddress()
+  const { mutate: createUserAddress, isPending } = useCreateUserAddress();
 
   const methods = useForm<CreateUserAddressInput>({
-    resolver: zodResolver(createUserAddressSchema)
-  })
+    resolver: zodResolver(createUserAddressSchema),
+  });
 
   useEffect(() => {
     if (!!user) {
-      methods.setValue("username", user.name)
-      methods.setValue("email", user.email)
+      methods.setValue("username", user.name);
+      methods.setValue("email", user.email);
     }
-  }, [user])
+  }, [user]);
 
-
-  const { handleSubmit, register, formState: { errors } } = methods
+  const { handleSubmit, register, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<CreateUserAddressInput> = (value) => {
-    createUserAddress(value)
-  }
+    createUserAddress(value);
+  };
 
   return (
     <>
       <FormProvider {...methods}>
         <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 fullWidth
                 {...register("username")}
@@ -66,7 +64,7 @@ export function CreateUserAddressForm() {
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 fullWidth
                 {...register("phone")}
@@ -79,7 +77,7 @@ export function CreateUserAddressForm() {
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 fullWidth
                 {...register("email")}
@@ -91,7 +89,7 @@ export function CreateUserAddressForm() {
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 fullWidth
                 {...register("fullAddress")}
@@ -106,9 +104,11 @@ export function CreateUserAddressForm() {
             <EditorInputField fieldName="remark" />
             <FormControlLabel
               label="Set as default address"
-              control={<Switch
-                {...register("isDefault")}
-              />}
+              control={
+                <Switch
+                  {...register("isDefault")}
+                />
+              }
             />
           </Grid>
 
@@ -118,19 +118,21 @@ export function CreateUserAddressForm() {
         </Grid>
       </FormProvider>
 
-
       {modalForm.field === "create-region"
-        ? <FormModal field='create-region' title='Create new region'>
-          <CreateRegionForm />
-        </FormModal>
+        ? (
+          <FormModal field="create-region" title="Create new region">
+            <CreateRegionForm />
+          </FormModal>
+        )
         : null}
 
       {modalForm.field === "create-township"
-        ? <FormModal field='create-township' title='Create new township'>
-          <CreateTownshipForm />
-        </FormModal>
+        ? (
+          <FormModal field="create-township" title="Create new township">
+            <CreateTownshipForm />
+          </FormModal>
+        )
         : null}
     </>
-  )
+  );
 }
-

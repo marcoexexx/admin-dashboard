@@ -3,37 +3,35 @@ import { ComponentCustomizedStyle } from "../types";
 
 export const MuiAutocomplete: ComponentCustomizedStyle["MuiAutocomplete"] = {
   defaultProps: {
-    filterSelectedOptions: true
+    filterSelectedOptions: true,
   },
 
   styleOverrides: {
     tag: {
-      margin: 1
+      margin: 1,
     },
     root: {
-      '.MuiAutocomplete-inputRoot.MuiOutlinedInput-root .MuiAutocomplete-endAdornment':
-        {
-          right: 14
-        }
+      ".MuiAutocomplete-inputRoot.MuiOutlinedInput-root .MuiAutocomplete-endAdornment": {
+        right: 14,
+      },
     },
     clearIndicator: {
       background: colors.error.lighter,
       color: colors.error.main,
       marginRight: 8,
 
-      '&:hover': {
+      "&:hover": {
         background: colors.error.lighter,
-        color: colors.error.dark
-      }
+        color: colors.error.dark,
+      },
     },
     popupIndicator: {
       color: colors.alpha.black[50],
 
-      '&:hover': {
+      "&:hover": {
         background: colors.primary.lighter,
-        color: colors.primary.main
-      }
-    }
-  }
-}
-
+        color: colors.primary.main,
+      },
+    },
+  },
+};

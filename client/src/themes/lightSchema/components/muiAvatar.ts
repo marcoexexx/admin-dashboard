@@ -5,12 +5,11 @@ export const MuiAvatar: ComponentCustomizedStyle["MuiAvatar"] = {
   styleOverrides: {
     root: {
       fontSize: 14,
-      fontWeight: 'bold'
+      fontWeight: "bold",
     },
     colorDefault: {
       background: colors.alpha.black[30],
-      color: colors.alpha.white[100]
-    }
-  }
-}
-
+      color: colors.alpha.white[100],
+    },
+  },
+};

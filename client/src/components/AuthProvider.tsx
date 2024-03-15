@@ -1,41 +1,38 @@
-import { SuspenseLoader } from '.';
-import { useCookies } from 'react-cookie'
 import { useMe, useStore } from "@/hooks";
 import { useEffect } from "react";
+import { useCookies } from "react-cookie";
+import { SuspenseLoader } from ".";
 
-import AppError, { AppErrorKind } from '@/libs/exceptions';
-
+import AppError, { AppErrorKind } from "@/libs/exceptions";
 
 interface AuthProviderProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function AuthProvider(props: AuthProviderProps) {
   const { children } = props;
-  const { dispatch } = useStore()
-  const [cookies] = useCookies(["logged_in"])
+  const { dispatch } = useStore();
+  const [cookies] = useCookies(["logged_in"]);
 
   const meQuery = useMe({
     enabled: !!cookies.logged_in,
     include: {
-      cart: true
-    }
-  })
+      cart: true,
+    },
+  });
 
-  const me = meQuery.try_data.ok_or_throw()
-  const { isSuccess, isLoading } = meQuery
-
+  const me = meQuery.try_data.ok_or_throw();
+  const { isSuccess, isLoading } = meQuery;
 
   useEffect(() => {
-    if (isSuccess) dispatch({ type: "SET_USER", payload: me })
-  }, [isSuccess])
+    if (isSuccess) dispatch({ type: "SET_USER", payload: me });
+  }, [isSuccess]);
 
+  const isAllowedReactDashboard = Boolean(me?.isSuperuser || me?.shopownerProviderId);
 
-  const isAllowedReactDashboard = Boolean(me?.isSuperuser || me?.shopownerProviderId)
+  if (isLoading) return <SuspenseLoader />;
 
-  if (isLoading) return <SuspenseLoader />
+  if (cookies.logged_in && !isAllowedReactDashboard) throw AppError.new(AppErrorKind.PermissionError);
 
-  if (cookies.logged_in && !isAllowedReactDashboard) throw AppError.new(AppErrorKind.PermissionError)
-
-  return children
+  return children;
 }

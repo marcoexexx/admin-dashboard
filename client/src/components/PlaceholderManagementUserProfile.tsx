@@ -1,11 +1,9 @@
 import { Container, Grid, Skeleton, styled } from "@mui/material";
 
-
-const HeaderTitle = styled(Skeleton)(({theme}) => ({
+const HeaderTitle = styled(Skeleton)(({ theme }) => ({
   marginBottom: 3,
-  height: theme.spacing(2)
-}))
-
+  height: theme.spacing(2),
+}));
 
 // TODO
 export function PlaceholderManagementUserProfile() {
@@ -23,5 +21,5 @@ export function PlaceholderManagementUserProfile() {
         </Grid>
       </Grid>
     </Container>
-  )
+  );
 }

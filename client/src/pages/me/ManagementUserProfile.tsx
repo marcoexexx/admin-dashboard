@@ -1,29 +1,29 @@
-import { PlaceholderManagementUserProfile, queryClient } from "@/components"
-import { ProfileCover, RecentActivity } from "@/components/content/me"
-import { Container, Grid } from "@mui/material"
-import { CacheResource } from "@/context/cacheKey"
-import { useMe } from "@/hooks"
-import { getMeFn } from "@/services/authApi"
-
+import { PlaceholderManagementUserProfile, queryClient } from "@/components";
+import { ProfileCover, RecentActivity } from "@/components/content/me";
+import { CacheResource } from "@/context/cacheKey";
+import { useMe } from "@/hooks";
+import { getMeFn } from "@/services/authApi";
+import { Container, Grid } from "@mui/material";
 
 export async function meProfileLoader() {
   return await queryClient.fetchQuery({
     queryKey: [CacheResource.AuthUser, "profile"],
-    queryFn: (args) => getMeFn(args, {
-      include: {
-        _count: true,
-        orders: true,
-        favorites: true,
-        addresses: true,
-        pickupAddresses: {
-          include: {
-            orders: true
-          }
+    queryFn: (args) =>
+      getMeFn(args, {
+        include: {
+          _count: true,
+          orders: true,
+          favorites: true,
+          addresses: true,
+          pickupAddresses: {
+            include: {
+              orders: true,
+            },
+          },
+          reviews: true,
         },
-        reviews: true,
-      }
-    }),
-  })
+      }),
+  });
 }
 
 export default function ManagementUserProfilePage() {
@@ -35,18 +35,16 @@ export default function ManagementUserProfilePage() {
       addresses: true,
       pickupAddresses: {
         include: {
-          orders: true
-        }
+          orders: true,
+        },
       },
       reviews: true,
-    }
-  })
+    },
+  });
 
-  const user = userQuery.try_data.ok_or_throw()
+  const user = userQuery.try_data.ok_or_throw();
 
-
-  if (!user || userQuery.isLoading) return <PlaceholderManagementUserProfile />
-
+  if (!user || userQuery.isLoading) return <PlaceholderManagementUserProfile />;
 
   return (
     <Container sx={{ mt: 3 }} maxWidth="lg">
@@ -64,8 +62,7 @@ export default function ManagementUserProfilePage() {
         <Grid item xs={12} md={4}>
           <RecentActivity user={user} />
         </Grid>
-
       </Grid>
     </Container>
-  )
+  );
 }

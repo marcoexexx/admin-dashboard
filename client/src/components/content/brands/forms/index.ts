@@ -1,2 +1,2 @@
-export * from './CreateBrandForm'
-export * from './UpdateBrandForm'
+export * from "./CreateBrandForm";
+export * from "./UpdateBrandForm";

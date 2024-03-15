@@ -1,3 +1,3 @@
-export * from './ProductsList'
-export * from './ProductsListTable'
-export * from './ProductsFilterForm'
+export * from "./ProductsFilterForm";
+export * from "./ProductsList";
+export * from "./ProductsListTable";

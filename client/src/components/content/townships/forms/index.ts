@@ -1,2 +1,2 @@
-export * from './UpdateTownshipForm'
-export * from './CreateTownshipForm'
+export * from "./CreateTownshipForm";
+export * from "./UpdateTownshipForm";

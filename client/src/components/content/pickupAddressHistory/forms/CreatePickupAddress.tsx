@@ -1,54 +1,53 @@
-import { Box, Grid, TextField } from "@mui/material";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { MuiButton } from "@/components/ui";
-import { DatePickerField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
 import { FormModal } from "@/components/forms";
+import { DatePickerField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
+import { MuiButton } from "@/components/ui";
+import { useStore } from "@/hooks";
+import { useCreatePickupAddress } from "@/hooks/pickupAddress";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Box, Grid, TextField } from "@mui/material";
+import { useEffect } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { object, string, z } from "zod";
 import { CreateRegionForm } from "../../regions/forms";
 import { CreateTownshipForm } from "../../townships/forms";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { object, string, z } from "zod";
-import { useStore } from "@/hooks";
-import { useEffect } from "react";
-import { useCreatePickupAddress } from "@/hooks/pickupAddress";
-
 
 const createPickupAddressSchema = object({
   username: string({ required_error: "" }).min(3).max(1024),
   phone: string().regex(/^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/),
   email: string().email(),
   date: z.any(),
-})
+});
 
-export type CreatePickupAddressInput = z.infer<typeof createPickupAddressSchema>
+export type CreatePickupAddressInput = z.infer<typeof createPickupAddressSchema>;
 
 export function CreatePickupAddressForm() {
-  const { state: { modalForm, user } } = useStore()
+  const { state: { modalForm, user } } = useStore();
 
-  const { mutate: createPickupAddress, isPending } = useCreatePickupAddress()
+  const { mutate: createPickupAddress, isPending } = useCreatePickupAddress();
 
   const methods = useForm<CreatePickupAddressInput>({
-    resolver: zodResolver(createPickupAddressSchema)
-  })
+    resolver: zodResolver(createPickupAddressSchema),
+  });
 
   useEffect(() => {
     if (!!user) {
-      methods.setValue("username", user.name)
-      methods.setValue("email", user.email)
+      methods.setValue("username", user.name);
+      methods.setValue("email", user.email);
     }
-  }, [user])
+  }, [user]);
 
-  const { handleSubmit, register, formState: { errors } } = methods
+  const { handleSubmit, register, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<CreatePickupAddressInput> = (value) => {
-    createPickupAddress(value)
-  }
+    createPickupAddress(value);
+  };
 
   return (
     <>
       <FormProvider {...methods}>
         <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 fullWidth
                 {...register("username")}
@@ -61,7 +60,7 @@ export function CreatePickupAddressForm() {
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 fullWidth
                 {...register("phone")}
@@ -74,13 +73,13 @@ export function CreatePickupAddressForm() {
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <DatePickerField fieldName="date" />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 fullWidth
                 {...register("email")}
@@ -97,20 +96,21 @@ export function CreatePickupAddressForm() {
         </Grid>
       </FormProvider>
 
-
       {modalForm.field === "create-region"
-        ? <FormModal field='create-region' title='Create new region'>
-          <CreateRegionForm />
-        </FormModal>
+        ? (
+          <FormModal field="create-region" title="Create new region">
+            <CreateRegionForm />
+          </FormModal>
+        )
         : null}
 
       {modalForm.field === "create-township"
-        ? <FormModal field='create-township' title='Create new township'>
-          <CreateTownshipForm />
-        </FormModal>
+        ? (
+          <FormModal field="create-township" title="Create new township">
+            <CreateTownshipForm />
+          </FormModal>
+        )
         : null}
     </>
-  )
+  );
 }
-
-

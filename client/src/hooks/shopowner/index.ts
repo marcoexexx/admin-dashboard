@@ -1,10 +1,10 @@
-export * from './useGetShopowners'
-export * from './useGetShopowner'
+export * from "./useGetShopowner";
+export * from "./useGetShopowners";
 
-export * from './useCreateShopowner'
-export * from './useCreateMultiShopowners'
+export * from "./useCreateMultiShopowners";
+export * from "./useCreateShopowner";
 
-export * from './useDeleteShopowner'
-export * from './useDeleteMultiShopowners'
+export * from "./useDeleteMultiShopowners";
+export * from "./useDeleteShopowner";
 
-export * from './useUpdateShopowner'
+export * from "./useUpdateShopowner";

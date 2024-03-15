@@ -1,43 +1,42 @@
-import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { MuiButton } from "@/components/ui";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { useCreatePermission } from "@/hooks/permission";
 import { OperationAction, Resource } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { object, z } from "zod";
+import { Box, Grid, MenuItem, TextField } from "@mui/material";
 import { useEffect } from "react";
-import { useCreatePermission } from "@/hooks/permission";
-
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { object, z } from "zod";
 
 const createPermissionSchema = object({
   action: z.nativeEnum(OperationAction, { required_error: "actin is required." }),
   resource: z.nativeEnum(Resource, { required_error: "resource is required." }),
-})
+});
 
-export type CreatePermissionInput = z.infer<typeof createPermissionSchema>
+export type CreatePermissionInput = z.infer<typeof createPermissionSchema>;
 
 export function CreatePermissionForm() {
-  const { mutate: createPermisison, isPending } = useCreatePermission()
+  const { mutate: createPermisison, isPending } = useCreatePermission();
 
   const methods = useForm<CreatePermissionInput>({
-    resolver: zodResolver(createPermissionSchema)
-  })
+    resolver: zodResolver(createPermissionSchema),
+  });
 
-  const { handleSubmit, setFocus, register, formState: { errors } } = methods
+  const { handleSubmit, setFocus, register, formState: { errors } } = methods;
 
   useEffect(() => {
-    setFocus("action")
-  }, [setFocus])
+    setFocus("action");
+  }, [setFocus]);
 
   const onSubmit: SubmitHandler<CreatePermissionInput> = (value) => {
-    createPermisison(value)
-  }
+    createPermisison(value);
+  };
 
   return (
     <>
       <FormProvider {...methods}>
         <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
           <Grid item xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 {...register("resource")}
                 label="Resource"
@@ -77,6 +76,5 @@ export function CreatePermissionForm() {
         </Grid>
       </FormProvider>
     </>
-  )
+  );
 }
-

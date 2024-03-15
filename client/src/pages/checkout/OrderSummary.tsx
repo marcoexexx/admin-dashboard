@@ -1,48 +1,64 @@
-import { Alert, Badge, Box, Card, CardContent, Chip, Container, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material"
-import { MuiButton } from "@/components/ui"
-import { OrderItem } from "@/services/types"
-import { useMemo } from "react"
-import { useStore } from "@/hooks"
-import { numberFormat } from "@/libs/numberFormat"
-
+import { MuiButton } from "@/components/ui";
+import { useStore } from "@/hooks";
+import { numberFormat } from "@/libs/numberFormat";
+import { OrderItem } from "@/services/types";
+import {
+  Alert,
+  Badge,
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  Container,
+  Divider,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import { useMemo } from "react";
 
 interface OrderSummaryProps {
-  orderItems: OrderItem[]
-  deliveryFee: number | undefined
+  orderItems: OrderItem[];
+  deliveryFee: number | undefined;
 }
 
 /**
  * totalAmount is total price of in all order items     := orderItems.reduce((total, item) => total + item.totalPrice, 0)
  * totalPrice is total price of order                   := totalAmount + deliveryFee
  */
-export function OrderSummary({orderItems, deliveryFee = 0}: OrderSummaryProps) {
-  const { dispatch } = useStore()
+export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps) {
+  const { dispatch } = useStore();
 
-  const itemCount = orderItems.length
+  const itemCount = orderItems.length;
 
-  const totalAmount = useMemo(() => orderItems.reduce((total, item) => {
-    // console.log("re-calculate")
-    return total + item.totalPrice
-  }, 0), [JSON.stringify(orderItems)])
+  const totalAmount = useMemo(() =>
+    orderItems.reduce((total, item) => {
+      // console.log("re-calculate")
+      return total + item.totalPrice;
+    }, 0), [JSON.stringify(orderItems)]);
 
-  const originalTotalPrice = useMemo(() => orderItems.reduce((total, item) => {
-    // console.log("re-calculate")
-    return total + item.originalTotalPrice
-  }, 0), [JSON.stringify(orderItems)])
+  const originalTotalPrice = useMemo(() =>
+    orderItems.reduce((total, item) => {
+      // console.log("re-calculate")
+      return total + item.originalTotalPrice;
+    }, 0), [JSON.stringify(orderItems)]);
 
-  const totalSaving = useMemo(() => orderItems.reduce((total, item) => {
-    // console.log("re-calculate")
-    return total + item.saving
-  }, 0), [JSON.stringify(orderItems)])
+  const totalSaving = useMemo(() =>
+    orderItems.reduce((total, item) => {
+      // console.log("re-calculate")
+      return total + item.saving;
+    }, 0), [JSON.stringify(orderItems)]);
 
-  
   const handleViewItems = () => {
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: "cart"
-    })
-  }
-
+      payload: "cart",
+    });
+  };
 
   return (
     <Container maxWidth="lg">
@@ -57,16 +73,20 @@ export function OrderSummary({orderItems, deliveryFee = 0}: OrderSummaryProps) {
                   <Typography mb={2} variant="h4">Total {itemCount} items</Typography>
                   <Box display="flex" flexDirection="row" gap={1}>
                     {orderItems.slice(0, 3).map((item, idx) => {
-                      if (item.product) return <Badge key={idx} badgeContent={item.quantity} variant="standard" color="primary">
-                        <Box
-                          component="img"
-                          sx={{
-                            height: 54,
-                          }}
-                          alt={item.product.title}
-                          src={item.product.images[0] || "/static/box.svg"}
-                        />
-                      </Badge>
+                      if (item.product) {
+                        return (
+                          <Badge key={idx} badgeContent={item.quantity} variant="standard" color="primary">
+                            <Box
+                              component="img"
+                              sx={{
+                                height: 54,
+                              }}
+                              alt={item.product.title}
+                              src={item.product.images[0] || "/static/box.svg"}
+                            />
+                          </Badge>
+                        );
+                      }
                     })}
                   </Box>
                 </Box>
@@ -92,13 +112,16 @@ export function OrderSummary({orderItems, deliveryFee = 0}: OrderSummaryProps) {
                         </TableCell>
                         <TableCell align="right">
                           <Typography variant="h4">{numberFormat(totalAmount)} Ks</Typography>
-                          <Typography variant="h5" sx={{ textDecoration: "line-through" }}>{numberFormat(originalTotalPrice)} Ks</Typography>
+                          <Typography variant="h5" sx={{ textDecoration: "line-through" }}>
+                            {numberFormat(originalTotalPrice)} Ks
+                          </Typography>
                           <Box display="flex" alignItems="center" gap={1} justifyContent="end">
-                            <Chip 
-                              label="saving" 
+                            <Chip
+                              label="saving"
                               style={{ borderRadius: 5 }}
-                              color="primary" 
-                              size="small" />
+                              color="primary"
+                              size="small"
+                            />
                             <Typography variant="h5">{numberFormat(totalSaving)} Ks</Typography>
                           </Box>
                         </TableCell>
@@ -132,5 +155,5 @@ export function OrderSummary({orderItems, deliveryFee = 0}: OrderSummaryProps) {
         </CardContent>
       </Card>
     </Container>
-  )
+  );
 }
