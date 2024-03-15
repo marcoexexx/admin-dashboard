@@ -21,7 +21,11 @@ export type ProductWhereInput = {
       };
     };
     reviews?: boolean;
-    creator?: boolean;
+    creator?: {
+      include?: {
+        shopownerProvider?: boolean;
+      };
+    } | boolean;
   };
 };
 

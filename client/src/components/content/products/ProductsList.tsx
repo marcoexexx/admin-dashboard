@@ -33,7 +33,11 @@ export function ProductsList() {
           salesCategory: true,
         },
       },
-      creator: true,
+      creator: {
+        include: {
+          shopownerProvider: true,
+        },
+      },
     },
   });
 
@@ -69,6 +73,8 @@ export function ProductsList() {
         description: product.description || undefined,
         status,
         categories: product.categories?.map(x => x.categoryId) || [],
+        dealerPrice: product.dealerPrice ?? undefined,
+        marketPrice: product.marketPrice ?? undefined,
         // TODO: fix type
         // @ts-ignore
         salesCategory: product.salesCategory?.map(({ salesCategoryId, discount }) => ({
