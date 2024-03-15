@@ -57,7 +57,6 @@ export const createProductSchema = object({
     quantity: number().nullable().optional(),
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
-    itemCode: string().nullable().optional(),
     images: string().array().default([]),
   }),
 });
@@ -70,9 +69,7 @@ export const deleteMultiProductsSchema = object({
 
 export const createMultiProductsSchema = object({
   body: object({
-    id: string().optional(), //  id is optional because, dont known new product old product.
     price: number({ required_error: "Price is required " }),
-    // TODO: change field name "brand.name"
     title: string({ required_error: "Title is required" })
       .min(1).max(128),
     specification: string().optional(), //  by splitting "\n"
@@ -87,7 +84,7 @@ export const createMultiProductsSchema = object({
     discount: number().max(100).default(0),
     isDiscountItem: boolean().default(false),
     quantity: number().min(0).optional(),
-    status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
+    itemCode: string({ required_error: "itemCode is required." }),
 
     "brand.name": string({ required_error: "Brand is required" })
       .min(1).max(128),
@@ -98,8 +95,6 @@ export const createMultiProductsSchema = object({
     "sales.isActive": boolean().optional(),
     "sales.discount": number().optional(),
     "sales.description": string().optional(),
-
-    itemCode: string({ required_error: "itemCode is required." }),
   }).array(),
 });
 

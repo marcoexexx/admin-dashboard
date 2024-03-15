@@ -58,7 +58,6 @@ const createProductSchema = object({
   status: z.nativeEnum(ProductStatus).default("Draft"),
 
   images: string().array().default([]),
-  itemCode: string({ required_error: "itemCode is required." }),
 });
 
 export type CreateProductInput = z.infer<typeof createProductSchema>;

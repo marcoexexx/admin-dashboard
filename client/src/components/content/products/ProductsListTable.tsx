@@ -7,7 +7,6 @@ import {
   RenderProductLabel,
   RenderProductStockStatus,
   RenderSalesCategoryLabel,
-  RenderUsernameLabel,
 } from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
@@ -126,8 +125,8 @@ const columns: TypedColumn<Product>[] = [
   {
     id: "creator",
     align: "right",
-    name: "Creator",
-    render: ({ value, me }) => value.creator && me ? <RenderUsernameLabel user={value.creator} me={me} /> : null,
+    name: "Shopowner group",
+    render: ({ value }) => <Typography>{value.creator?.shopownerProvider?.name}</Typography>,
   },
 ];
 

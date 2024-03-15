@@ -474,16 +474,17 @@ export async function updateProductHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
     _isAccess.ok_or_throw();
 
-    // @ts-ignore
-    if (sessionUser.shopownerProviderId !== originalProductState.creator?.shopownerProviderId) {
-      return next(AppError.new(StatusCode.BadRequest, `Could not update it's not own your shopowner`));
-    }
     if (!sessionUser.isSuperuser && productState === ProductStatus.Published) {
       return next(AppError.new(StatusCode.BadRequest, `You do not have permission to access this resource.`));
     }
 
     const _deleteProductSpecifications = await service.tryUpdate({
-      where: { id: productId },
+      where: {
+        id: productId,
+        creator: {
+          shopownerProviderId: sessionUser.isSuperuser ? undefined : sessionUser.shopownerProviderId,
+        },
+      },
       data: {
         specification: {
           deleteMany: {

@@ -201,14 +201,13 @@ export class ProductService extends MetaAppService implements AppService {
 
       const result = (await opt({
         where: {
-          id: product.id,
+          itemCode: product.itemCode,
           status: ProductStatus.Draft,
           creator: {
             shopownerProviderId: uploadBy.isSuperuser ? undefined : uploadBy.shopownerProviderId,
           },
         },
         create: {
-          id: product.id,
           itemCode: product.itemCode,
           title: product.title,
           overview: product.overview,
@@ -217,7 +216,6 @@ export class ProductService extends MetaAppService implements AppService {
           price: product.price,
           dealerPrice: product.dealerPrice,
           marketPrice: product.marketPrice,
-          status: product.status,
           priceUnit: product.priceUnit,
           images: (product?.images || "")?.split("\n").filter(Boolean),
           quantity: product.quantity,
