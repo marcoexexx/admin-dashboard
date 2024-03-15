@@ -32,7 +32,7 @@ router.route("/detail/:userId")
     getUserHandler
   )
   .patch(
-    sudo,
+    // sudo,  // Only shop owner change role
     validate(updateUserSchema.update),
     updateRoleUserBySuperuserHandler,
   )
@@ -40,12 +40,14 @@ router.route("/detail/:userId")
 
 router.route("/block-user")
   .patch(
+    sudo,
     validate(updateUserSchema.createBlockUser),
     createBlockUserHandler,
   )
 
 router.route("/unblock-user/:blockedUserId")
   .patch(
+    sudo,
     validate(updateUserSchema.removeBlockdUser),
     removeBlockedUserHandler,
   )
