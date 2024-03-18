@@ -4,7 +4,11 @@ export type AuditLogWhereInput = {
   where?: WhereInput<AuditLog>;
   pagination?: Pagination;
   include?: {
-    user?: boolean;
+    user?: {
+      include?: {
+        role?: boolean;
+      };
+    } | boolean;
   };
 };
 

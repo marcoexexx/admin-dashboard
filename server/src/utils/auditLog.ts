@@ -1,13 +1,12 @@
 import logging from "../middleware/logging/logging";
-import { AuditLogService } from "../services/auditLog";
 import AppError, { StatusCode } from "./appError";
 import redisClient from "./connectRedis";
 import Result, { Err, Ok } from "./result";
 
 import { AuditLog, OperationAction, Prisma } from "@prisma/client";
+import { db } from "./db";
 
 const THROTTLE_TIME = 60 * 5; // 5 minute
-const service = AuditLogService.new();
 
 // Handle audit logs
 export async function createAuditLog(
@@ -34,11 +33,11 @@ export async function createAuditLog(
     await redisClient.setEx(key, THROTTLE_TIME, "throttle");
   }
 
-  const log = await service.tryCreate({
+  const log = await db.auditLog.create({
     data,
   });
 
   logging.info("Audit log create");
 
-  return log;
+  return Ok(log);
 }

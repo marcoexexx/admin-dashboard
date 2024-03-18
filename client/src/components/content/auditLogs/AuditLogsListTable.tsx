@@ -20,6 +20,12 @@ const typedCols: TypedColumn<AuditLog>[] = [
     render: ({ value }) => <Typography>{value.resource}</Typography>,
   },
   {
+    id: "action",
+    align: "left",
+    name: "Action",
+    render: ({ value }) => <Typography>{value.action}</Typography>,
+  },
+  {
     id: "resourceIds",
     align: "left",
     name: "Resource items",

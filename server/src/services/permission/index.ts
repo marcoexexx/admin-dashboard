@@ -9,6 +9,7 @@ import { db } from "../../utils/db";
 import { parseExcel } from "../../utils/parseExcel";
 import { AppService } from "../type";
 
+const repository = db.permission;
 /**
  * PermissionService class provides methods for managing permission data.
  *
@@ -16,7 +17,16 @@ import { AppService } from "../type";
  * This class implements the AppService interface and is designed to handle operations related to permissions.
  */
 export class PermissionService extends AppService<
-  typeof db.permission
+  typeof repository.count,
+  typeof repository.create,
+  typeof repository.findMany,
+  typeof repository.findUnique,
+  typeof repository.findFirst,
+  typeof repository.update,
+  typeof repository.delete,
+  typeof repository.deleteMany,
+  typeof repository.upsert,
+  typeof repository
 > {
   constructor() {
     super(Resource.Permission, { action: OperationAction.Read, resourceIds: [] }, db.permission);

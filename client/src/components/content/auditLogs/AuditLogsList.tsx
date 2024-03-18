@@ -13,7 +13,11 @@ export function AuditLogsList() {
     filter: auditLogFilter.where,
     pagination: auditLogFilter.pagination || INITIAL_PAGINATION,
     include: {
-      user: true,
+      user: {
+        include: {
+          role: true,
+        },
+      },
     },
   });
 

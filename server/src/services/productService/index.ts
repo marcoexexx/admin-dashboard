@@ -9,6 +9,7 @@ import { db } from "../../utils/db";
 import { parseExcel } from "../../utils/parseExcel";
 import { AppService } from "../type";
 
+const repository = db.product;
 /**
  * ProductService class provides methods for managing product data.
  *
@@ -16,7 +17,16 @@ import { AppService } from "../type";
  * This class implements the AppService interface and is designed to handle operations related to products.
  */
 export class ProductService extends AppService<
-  typeof db.product
+  typeof repository.count,
+  typeof repository.create,
+  typeof repository.findMany,
+  typeof repository.findUnique,
+  typeof repository.findFirst,
+  typeof repository.update,
+  typeof repository.delete,
+  typeof repository.deleteMany,
+  typeof repository.upsert,
+  typeof repository
 > {
   constructor() {
     super(Resource.Product, { action: OperationAction.Read, resourceIds: [] }, db.product);

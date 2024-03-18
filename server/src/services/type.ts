@@ -42,7 +42,8 @@ export abstract class MetaAppService {
       resourceIds: log.resourceIds,
     };
 
-    const auditlog = await createAuditLog(payload);
+    const auditlog = (await createAuditLog(payload))
+      .or_else(err => err.status === StatusCode.NotModified ? Ok(undefined) : Err(err));
     return auditlog;
   }
 
@@ -74,29 +75,36 @@ export abstract class MetaAppService {
   }
 }
 
-type AnyFn = (...args: any[]) => any;
-
-type ServiceGeneric = {
-  count: AnyFn;
-  create: AnyFn;
-  findMany: AnyFn;
-  findUnique: AnyFn;
-  findFirst: AnyFn;
-  update: AnyFn;
-  delete: AnyFn;
-  deleteMany: AnyFn;
-  upsert: AnyFn;
-};
+type AnyFn = (...args: any[]) => Promise<any>;
 
 export abstract class AppService<
-  T extends ServiceGeneric,
+  CountFn extends AnyFn,
+  CreateFn extends AnyFn,
+  FindManyFn extends AnyFn,
+  FindUniqueFn extends AnyFn,
+  FindFirstFn extends AnyFn,
+  UpdateFn extends AnyFn,
+  DeleteFn extends AnyFn,
+  DeleteManyFn extends AnyFn,
+  UpsertFnFn extends AnyFn,
+  Repository extends {
+    count: CountFn;
+    create: CreateFn;
+    findMany: FindManyFn;
+    findUnique: FindUniqueFn;
+    findFirst: FindFirstFn;
+    update: UpdateFn;
+    delete: DeleteFn;
+    deleteMany: DeleteManyFn;
+    upsert: UpsertFnFn;
+  },
 > extends MetaAppService {
   name: string = "AppService";
 
   constructor(
     public resource: Resource,
     public log: { action: OperationAction; resourceIds: string[]; } | undefined,
-    public repository: T,
+    public repository: Repository,
   ) {
     super(resource, log);
   }
@@ -156,6 +164,7 @@ export abstract class AppService<
     const offset = (page - 1) * pageSize;
 
     const opt = as_result_async(this.repository.findMany);
+    // @ts-ignore
     const count = await this.tryCount({ where: arg?.where });
     if (count.is_err()) return Err(count.unwrap_err());
 

@@ -12,6 +12,7 @@ import { db } from "../../utils/db";
 import { generateRandomUsername } from "../../utils/generateRandomUsername";
 import { AppService } from "../type";
 
+const repository = db.user;
 /**
  * UserService class provides methods for managing user data.
  *
@@ -19,7 +20,16 @@ import { AppService } from "../type";
  * This class implements the AppService interface and is designed to handle operations related to user.
  */
 export class UserService extends AppService<
-  typeof db.user
+  typeof repository.count,
+  typeof repository.create,
+  typeof repository.findMany,
+  typeof repository.findUnique,
+  typeof repository.findFirst,
+  typeof repository.update,
+  typeof repository.delete,
+  typeof repository.deleteMany,
+  typeof repository.upsert,
+  typeof repository
 > {
   constructor() {
     super(Resource.User, { action: OperationAction.Read, resourceIds: [] }, db.user);
