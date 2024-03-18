@@ -39,6 +39,7 @@
     "react-dom": "^18.2.0",
     "react-helmet-async": "^2.0.3",
     "react-hook-form": "^7.48.2",
+    "react-material-ui-carousel": "^3.4.2",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.19.0",
     "sort-by": "^1.2.0",

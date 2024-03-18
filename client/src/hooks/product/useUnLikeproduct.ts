@@ -6,16 +6,12 @@ import { CacheResource } from "@/context/cacheKey";
 import { playSoundEffect } from "@/libs/playSound";
 import { ProductApiService } from "@/services/productsApi";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { useStore } from "..";
 
 const apiService = ProductApiService.new();
 
 export function useUnLikeProduct() {
-  const { state: { modalForm }, dispatch } = useStore();
-
-  const navigate = useNavigate();
-  const from = "/products";
+  const { dispatch } = useStore();
 
   const mutation = useMutation({
     mutationFn: (...args: Parameters<typeof apiService.unlike>) => apiService.unlike(...args),
@@ -37,7 +33,6 @@ export function useUnLikeProduct() {
           severity: "success",
         },
       });
-      if (modalForm.field === "*") navigate(from);
       dispatch({ type: "CLOSE_ALL_MODAL_FORM" });
       queryClient.invalidateQueries({
         queryKey: [CacheResource.Product],

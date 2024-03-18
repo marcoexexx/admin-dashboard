@@ -115,7 +115,6 @@ export function SpecificationInputField() {
                 </Tooltip>
                 <Tooltip title="Remove">
                   <IconButton
-                    // onClick={() => specificationRemove(idx)}
                     onClick={handleClickRemoveSpecificationAction(idx)}
                   >
                     <DeleteIcon />

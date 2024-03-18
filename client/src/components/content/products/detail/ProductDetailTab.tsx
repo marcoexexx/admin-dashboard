@@ -1,19 +1,17 @@
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 
-import { queryClient } from "@/components";
 import { CreateCartOrderItemInput } from "@/components/cart/CartsTable";
 import { MuiButton, Text } from "@/components/ui";
-import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
 import { useAddToCart, useGetCart } from "@/hooks/cart";
 import { useLikeProduct, useUnLikeProduct } from "@/hooks/product";
 import { Product } from "@/services/types";
-import { Box, Card, CardActions, CardMedia, Divider, IconButton, styled, Tooltip, Typography } from "@mui/material";
+import { Box, Divider, styled, Typography } from "@mui/material";
 import { memoize } from "lodash";
+import { ProductImages } from "./ProductImages";
 
 import CommentTwoToneIcon from "@mui/icons-material/CommentTwoTone";
-import RefreshIcon from "@mui/icons-material/Refresh";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpAltTwoToneIcon from "@mui/icons-material/ThumbUpOffAlt";
@@ -37,7 +35,7 @@ export const calculateProductDiscount = memoize((product: Product | undefined) =
   return { productDiscountAmount, productDiscountPercent };
 });
 
-const CardActionsWrapper = styled(CardActions)(({ theme }) => ({
+const ActionsWrapper = styled(Box)(({ theme }) => ({
   background: theme.colors.alpha.black[5],
   padding: theme.spacing(3),
 }));
@@ -104,36 +102,42 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       ? true
       : false;
 
-  const handleRefreshList = () => {
-    queryClient.invalidateQueries({
-      queryKey: [CacheResource.Product, { id: product.id }],
-    });
-  };
-
   return (
-    <Card>
-      <CardMedia
-        sx={{ minHeight: 800 }}
-        image={product.images[0] || "/pubic/default.jpg"}
-        title={product.title}
-      />
+    <>
+      <Box
+        display="flex"
+        flexDirection="row"
+        alignItems="start"
+        justifyContent="space-between"
+        gap={10}
+      >
+        <ProductImages images={product.images} />
 
-      <Box display="flex" flexDirection="row" justifyContent="space-between">
-        <Typography variant="h2" sx={{ p: 3 }}>{product.title}</Typography>
-        <Box alignSelf="center">
-          <Tooltip title="Refresh products" arrow sx={{ mr: 2 }}>
-            <IconButton aria-label="refresh button" onClick={handleRefreshList}>
-              <RefreshIcon />
-            </IconButton>
-          </Tooltip>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="start"
+          justifyContent="start"
+          width="70%"
+          gap={2}
+        >
+          <Typography variant="h3" sx={{ py: 3 }}>{product.title}</Typography>
+
+          <Box>
+            <Typography variant="h4" sx={{ py: 1 }}>Description</Typography>
+            <div dangerouslySetInnerHTML={{ __html: product.description }} />
+          </Box>
+
+          <Box>
+            <Typography variant="h4" sx={{ py: 1 }}>Overview</Typography>
+            <div dangerouslySetInnerHTML={{ __html: product.overview }} />
+          </Box>
         </Box>
       </Box>
 
       <Divider />
 
       <Box p={3}>
-        <div dangerouslySetInnerHTML={{ __html: product.description }} />
-
         {product.specification
           ? <ProductSpecificationTable specs={product.specification} />
           : "There is no specifications"}
@@ -159,7 +163,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
 
       <Divider />
 
-      <CardActionsWrapper
+      <ActionsWrapper
         sx={{
           display: {
             sx: "block",
@@ -224,7 +228,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
             reviews •{" "}
           </Typography>
         </Box>
-      </CardActionsWrapper>
-    </Card>
+      </ActionsWrapper>
+    </>
   );
 }
