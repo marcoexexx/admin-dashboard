@@ -114,6 +114,7 @@ type Singular<T> = T extends `${infer Y}ies` ? `${Y}y`
 
 export type ModalFormField =
   | "*"
+  | "delete-specification"
   | "cart"
   | `create-${Singular<CacheResource>}`
   | `delete-${Singular<CacheResource>}`

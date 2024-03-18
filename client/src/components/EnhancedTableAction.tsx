@@ -99,27 +99,30 @@ export function EnhancedTableActions(props: EnhancedTableActionsProps) {
   return (
     <Box display="flex" justifyContent="space-between" alignItems="baseline" flexDirection="row">
       <Accordion sx={{ width: "100%" }}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel-filter-content"
-          id="panel-filter"
-        >
-          <Typography fontSize={20}>Filter</Typography>
-        </AccordionSummary>
+        <Box display="flex" justifyContent="space-between" alignItems="baseline" flexDirection="row">
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel-filter-content"
+            id="panel-filter"
+            sx={{ flexGrow: 1 }}
+          >
+            <Typography fontSize={20}>Filter</Typography>
+          </AccordionSummary>
+
+          <IconButton aria-label="more actions" ref={ref} onClick={handleOpen}>
+            <MoreVertIcon />
+          </IconButton>
+
+          <Tooltip title="Refresh table" arrow>
+            <IconButton aria-label="refresh button" onClick={handleRefreshList}>
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
         <AccordionDetails>
           {renderFilterForm}
         </AccordionDetails>
       </Accordion>
-
-      <IconButton aria-label="more actions" ref={ref} onClick={handleOpen}>
-        <MoreVertIcon />
-      </IconButton>
-
-      <Tooltip title="Refresh table" arrow>
-        <IconButton aria-label="refresh button" onClick={handleRefreshList}>
-          <RefreshIcon />
-        </IconButton>
-      </Tooltip>
 
       <Popover
         anchorEl={ref.current}
