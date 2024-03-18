@@ -9,42 +9,42 @@ export function RenderResourceItemLabel({ resource, id }: { resource: Resource; 
   const handleNavigate = () => {
     switch (resource) {
       case Resource.AccessLog: {
-        navigate(`${CacheResource.AccessLog}/detail/${id}`);
+        navigate(`/${CacheResource.AccessLog}/detail/${id}`);
         return;
       }
 
       case Resource.AuditLog: {
-        navigate(`${CacheResource.AuditLog}/detail/${id}`);
+        navigate(`/${CacheResource.AuditLog}/detail/${id}`);
         return;
       }
 
       case Resource.User: {
-        navigate(`${CacheResource.User}/detail/${id}`);
+        navigate(`/${CacheResource.User}/detail/${id}`);
         return;
       }
 
       case Resource.Brand: {
-        navigate(`${CacheResource.Brand}/detail/${id}`);
+        navigate(`/${CacheResource.Brand}/detail/${id}`);
         return;
       }
 
       case Resource.Category: {
-        navigate(`${CacheResource.Category}/detail/${id}`);
+        navigate(`/${CacheResource.Category}/detail/${id}`);
         return;
       }
 
       case Resource.Coupon: {
-        navigate(`${CacheResource.Coupon}/detail/${id}`);
+        navigate(`/${CacheResource.Coupon}/detail/${id}`);
         return;
       }
 
       case Resource.Exchange: {
-        navigate(`${CacheResource.Exchange}/detail/${id}`);
+        navigate(`/${CacheResource.Exchange}/detail/${id}`);
         return;
       }
 
       case Resource.Order: {
-        navigate(`${CacheResource.Order}/detail/${id}`);
+        navigate(`/${CacheResource.Order}/detail/${id}`);
         return;
       }
 
@@ -54,57 +54,57 @@ export function RenderResourceItemLabel({ resource, id }: { resource: Resource; 
       }
 
       case Resource.PickupAddress: {
-        navigate(`${CacheResource.PickupAddress}/detail/${id}`);
+        navigate(`/${CacheResource.PickupAddress}/detail/${id}`);
         return;
       }
 
       case Resource.PotentialOrder: {
-        navigate(`${CacheResource.PotentialOrder}/detail/${id}`);
+        navigate(`/${CacheResource.PotentialOrder}/detail/${id}`);
         return;
       }
 
       case Resource.Product: {
-        navigate(`${CacheResource.Product}/detail/${id}`);
+        navigate(`/${CacheResource.Product}/detail/${id}`);
         return;
       }
 
       case Resource.Region: {
-        navigate(`${CacheResource.Region}/detail/${id}`);
+        navigate(`/${CacheResource.Region}/detail/${id}`);
         return;
       }
 
       case Resource.SalesCategory: {
-        navigate(`${CacheResource.SalesCategory}/detail/${id}`);
+        navigate(`/${CacheResource.SalesCategory}/detail/${id}`);
         return;
       }
 
       case Resource.Township: {
-        navigate(`${CacheResource.Township}/detail/${id}`);
+        navigate(`/${CacheResource.Township}/detail/${id}`);
         return;
       }
 
       case Resource.UserAddress: {
-        navigate(`${CacheResource.UserAddress}/detail/${id}`);
+        navigate(`/${CacheResource.UserAddress}/detail/${id}`);
         return;
       }
 
       case Resource.Role: {
-        navigate(`${CacheResource.Role}/detail/${id}`);
+        navigate(`/${CacheResource.Role}/detail/${id}`);
         return;
       }
 
       case Resource.Permission: {
-        navigate(`${CacheResource.Permission}/detail/${id}`);
+        navigate(`/${CacheResource.Permission}/detail/${id}`);
         return;
       }
 
       case Resource.Cart: {
-        navigate(`${CacheResource.Cart}/detail/${id}`);
+        navigate(`/${CacheResource.Cart}/detail/${id}`);
         return;
       }
 
       case Resource.Shopowner: {
-        navigate(`${CacheResource.Shopowner}/detail/${id}`);
+        navigate(`/${CacheResource.Shopowner}/detail/${id}`);
         return;
       }
 
