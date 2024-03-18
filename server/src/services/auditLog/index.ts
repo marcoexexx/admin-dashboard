@@ -13,6 +13,7 @@ export class AuditLogService extends AppService<
 > {
   constructor() {
     super(Resource.AuditLog, { action: OperationAction.Read, resourceIds: [] }, db.auditLog);
+    this.name = "AuditLog";
   }
 
   /**

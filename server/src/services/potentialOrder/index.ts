@@ -13,6 +13,7 @@ export class PotentialOrderService extends AppService<
 > {
   constructor() {
     super(Resource.PotentialOrder, { action: OperationAction.Read, resourceIds: [] }, db.potentialOrder);
+    this.name = "PotentialOrder";
   }
 
   /**

@@ -20,6 +20,7 @@ export class CategoryService extends AppService<
 > {
   constructor() {
     super(Resource.Category, { action: OperationAction.Read, resourceIds: [] }, db.category);
+    this.name = "Category";
   }
 
   /**

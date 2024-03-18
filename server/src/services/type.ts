@@ -4,6 +4,7 @@ import { guestUserAccessResources, UserWithRole } from "../type";
 
 import logging from "../middleware/logging/logging";
 import AppError, { StatusCode } from "../utils/appError";
+import { createAuditLog } from "../utils/auditLog";
 import { convertPrismaErrorToAppError } from "../utils/convertPrismaErrorToAppError";
 import Result, { as_result_async, Err, Ok } from "../utils/result";
 
@@ -41,12 +42,8 @@ export abstract class MetaAppService {
       resourceIds: log.resourceIds,
     };
 
-    // const auditlog = (await createAuditLog(payload))
-    //   .or_else(err => err.status === StatusCode.NotModified ? Ok(undefined) : Err(err))
-    const auditlog = Ok(undefined);
-    console.log({ payload });
-
-    return Ok(auditlog.ok_or_throw());
+    const auditlog = await createAuditLog(payload);
+    return auditlog;
   }
 
   /**

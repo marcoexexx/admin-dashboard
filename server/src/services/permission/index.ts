@@ -20,6 +20,7 @@ export class PermissionService extends AppService<
 > {
   constructor() {
     super(Resource.Permission, { action: OperationAction.Read, resourceIds: [] }, db.permission);
+    this.name = "Permission";
   }
 
   /**

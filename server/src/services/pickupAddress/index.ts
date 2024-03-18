@@ -13,6 +13,7 @@ export class PickupAddressService extends AppService<
 > {
   constructor() {
     super(Resource.PickupAddress, { action: OperationAction.Read, resourceIds: [] }, db.pickupAddress);
+    this.name = "PickupAddress";
   }
 
   /**

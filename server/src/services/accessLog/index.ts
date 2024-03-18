@@ -13,6 +13,7 @@ export class AccessLogService extends AppService<
 > {
   constructor() {
     super(Resource.AccessLog, { action: OperationAction.Read, resourceIds: [] }, db.accessLog);
+    this.name = "AccessLog";
   }
 
   /**

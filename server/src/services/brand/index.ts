@@ -20,6 +20,7 @@ export class BrandService extends AppService<
 > {
   constructor() {
     super(Resource.Brand, { action: OperationAction.Read, resourceIds: [] }, db.brand);
+    this.name = "Brand";
   }
 
   /**

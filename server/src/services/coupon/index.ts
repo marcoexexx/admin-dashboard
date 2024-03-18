@@ -20,6 +20,7 @@ export class CouponService extends AppService<
 > {
   constructor() {
     super(Resource.Coupon, { action: OperationAction.Read, resourceIds: [] }, db.coupon);
+    this.name = "Coupon";
   }
 
   /**

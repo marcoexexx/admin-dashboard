@@ -13,6 +13,7 @@ export class OrderItemService extends AppService<
 > {
   constructor() {
     super(Resource.OrderItem, { action: OperationAction.Read, resourceIds: [] }, db.orderItem);
+    this.name = "OrderItem";
   }
 
   /**
