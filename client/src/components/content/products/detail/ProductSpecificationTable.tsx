@@ -37,7 +37,7 @@ export default function ProductSpecificationTable(props: ProductSpecificationTab
 
   return (
     <Box display="flex" flexDirection="column" gap={3}>
-      <Typography variant="h2" fontWeight={700}>Specification</Typography>
+      <Typography variant="h3" fontWeight={700}>Specification</Typography>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="product specification">
           <TableHead>

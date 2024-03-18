@@ -150,7 +150,7 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
       </Box>
 
       <Box p={3}>
-        <Typography variant="h2">Discount and Sales</Typography>
+        <Typography variant="h3">Discount and Sales</Typography>
         <Typography>Original discount: {product.discount}%</Typography>
 
         <Typography>Sales discounts</Typography>
