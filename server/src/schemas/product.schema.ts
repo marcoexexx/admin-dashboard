@@ -57,7 +57,7 @@ export const createProductSchema = object({
     quantity: number().nullable().optional(),
     status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
-    images: string().array().default([]),
+    images: string().startsWith("http").array().default([]),
   }),
 });
 
@@ -130,7 +130,7 @@ export const updateProductSchema = object({
     quantity: number().nullable().optional(),
 
     itemCode: string({ required_error: "itemCode is required." }),
-    images: string().array().default([]),
+    images: string().startsWith("http").array().default([]),
   }),
 });
 

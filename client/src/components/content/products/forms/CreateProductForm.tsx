@@ -57,7 +57,7 @@ const createProductSchema = object({
   isPending: boolean().default(false),
   status: z.nativeEnum(ProductStatus).default("Draft"),
 
-  images: string().array().default([]),
+  images: string().startsWith("http").array().default([]),
 });
 
 export type CreateProductInput = z.infer<typeof createProductSchema>;

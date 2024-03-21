@@ -35,7 +35,13 @@ export function ImageMultiInputField(props: ImageMultiInputFieldProps) {
       setText("");
       setImages(prev => prev.slice(0, -1));
       setSelectedImages(prev => prev.slice(0, -1));
-      setValue("images", [...selectedImages, text]);
+      setValue("images", selectedImages.slice(0, -1));
+      return;
+    }
+
+    if ((evt.metaKey || evt.ctrlKey) && evt.key === "z") {
+      console.log({ selectedImages })
+      console.log(getValues("images"))
       return;
     }
   };

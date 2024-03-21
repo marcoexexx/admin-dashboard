@@ -56,7 +56,7 @@ const updateProductSchema = object({
   isPending: boolean().default(false),
   status: z.nativeEnum(ProductStatus).default(ProductStatus.Draft),
 
-  images: string().array().default([]),
+  images: string().startsWith("http").array().default([]),
   itemCode: string({ required_error: "itemCode is required." }),
 });
 
