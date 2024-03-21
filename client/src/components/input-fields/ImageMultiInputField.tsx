@@ -64,9 +64,9 @@ export function ImageMultiInputField(props: ImageMultiInputFieldProps) {
             getOptionLabel={option => option}
             inputValue={text.replace(",", "")}
             renderTags={(values, _props, _owner) => {
-              return values.map(value => {
+              return values.map((value, idx) => {
                 const label = `${value.split("//")[0]}//...`;
-                return <Chip key={value} avatar={<Avatar alt="image" src={value} />} label={label} />;
+                return <Chip key={value + idx} avatar={<Avatar alt="image" src={value} />} label={label} />;
               });
             }}
             renderOption={(props, option) => (
