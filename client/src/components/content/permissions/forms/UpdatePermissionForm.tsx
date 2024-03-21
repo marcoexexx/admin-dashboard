@@ -1,4 +1,5 @@
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useGetPermission, useUpdatePermission } from "@/hooks/permission";
 import { OperationAction, Resource } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,6 +33,8 @@ export function UpdatePermissionForm() {
   const methods = useForm<UpdatePermissionInput>({
     resolver: zodResolver(updatePermissionSchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (isSuccess && permission && permissionFetchStatus === "idle") {

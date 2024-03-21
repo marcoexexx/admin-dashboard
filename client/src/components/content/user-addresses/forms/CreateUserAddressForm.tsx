@@ -1,7 +1,7 @@
 import { FormModal } from "@/components/forms";
 import { EditorInputField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useCreateUserAddress } from "@/hooks/userAddress";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
@@ -32,6 +32,8 @@ export function CreateUserAddressForm() {
   const methods = useForm<CreateUserAddressInput>({
     resolver: zodResolver(createUserAddressSchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (!!user) {

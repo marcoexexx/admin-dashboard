@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
+import { useBeforeUnloadPage } from "@/hooks";
 
 const updateSalesCategorySchema = object({
   name: string({ required_error: "Sales category name is required" })
@@ -39,6 +40,8 @@ export function UpdateSalesCategoryForm() {
   const methods = useForm<UpdateSalesCategoryInput>({
     resolver: zodResolver(updateSalesCategorySchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (isSuccess && salesCategory && fetchStatus === "idle") {

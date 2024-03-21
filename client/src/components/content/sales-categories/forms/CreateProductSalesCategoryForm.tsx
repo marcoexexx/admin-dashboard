@@ -1,6 +1,6 @@
 import { SalesCategoriesInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
-import { useCombineQuerys, useStore } from "@/hooks";
+import { useBeforeUnloadPage, useCombineQuerys, useStore } from "@/hooks";
 import { useCreateProductSalesCategory, useUpdateProductSalesCategory } from "@/hooks/salsCategory";
 import { ProductSalesCategoriesResponse } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +39,8 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
   const methods = useForm<CreateProductSalesCategoryInput>({
     resolver: zodResolver(createProductSalesCategorySchema),
   });
+
+  useBeforeUnloadPage();
 
   const { handleSubmit, register, formState: { errors }, setValue } = methods;
 

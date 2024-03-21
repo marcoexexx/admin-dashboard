@@ -1,4 +1,5 @@
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useGetCategory, useUpdateCategory } from "@/hooks/category";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -32,6 +33,8 @@ export function UpdateCategoryForm() {
   const methods = useForm<UpdateCategoryInput>({
     resolver: zodResolver(updateCategorySchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (categoryQuery.isSuccess && category && categoryFetchStatus === "idle") methods.setValue("name", category.name);

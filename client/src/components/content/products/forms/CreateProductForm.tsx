@@ -10,7 +10,7 @@ import {
 import { productStockStatusLabel } from "@/components/table-labels";
 import { MuiButton } from "@/components/ui";
 import { CacheResource } from "@/context/cacheKey";
-import { useStore } from "@/hooks";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
 import { useCreateProduct } from "@/hooks/product";
 import { tryParseInt } from "@/libs/result/std";
@@ -68,6 +68,8 @@ export function CreateProductForm() {
   const methods = useForm<CreateProductInput>({
     resolver: zodResolver(createProductSchema),
   });
+
+  useBeforeUnloadPage();
 
   const { handleSubmit, register, formState: { errors } } = methods;
 

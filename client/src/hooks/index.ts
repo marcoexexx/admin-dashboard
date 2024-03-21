@@ -6,3 +6,4 @@ export * from "./useOnlyAdmin";
 export * from "./usePermission";
 export * from "./useStore";
 export * from "./useVerifyEmail";
+export * from "./useBeforeUnloadPage";

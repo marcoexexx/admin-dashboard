@@ -10,7 +10,7 @@ import {
 import { productStockStatusLabel } from "@/components/table-labels";
 import { MuiButton } from "@/components/ui";
 import { CacheResource } from "@/context/cacheKey";
-import { useStore } from "@/hooks";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
 import { useGetProduct, useUpdateProduct } from "@/hooks/product";
 import { PriceUnit, ProductStatus, ProductStockStatus } from "@/services/types";
@@ -86,6 +86,8 @@ export function UpdateProductForm() {
   const methods = useForm<UpdateProductInput>({
     resolver: zodResolver(updateProductSchema),
   });
+
+  useBeforeUnloadPage();
 
   // Quries
   const productQuery = useGetProduct({

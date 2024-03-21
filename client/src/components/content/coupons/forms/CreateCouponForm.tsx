@@ -1,5 +1,6 @@
 import { DatePickerField, ProductInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useCreateCoupon } from "@/hooks/coupon";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -27,6 +28,8 @@ export function CreateCouponForm() {
   const methods = useForm<CreateCouponInput>({
     resolver: zodResolver(createCouponSchema),
   });
+
+  useBeforeUnloadPage();
 
   const { handleSubmit, register, formState: { errors } } = methods;
 

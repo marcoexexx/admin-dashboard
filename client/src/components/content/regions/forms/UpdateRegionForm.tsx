@@ -1,7 +1,7 @@
 import { FormModal } from "@/components/forms";
 import { TownshipMultiInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useGetRegion, useUpdateRegion } from "@/hooks/region";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -32,6 +32,8 @@ export function UpdateRegionForm() {
   const methods = useForm<UpdateRegionInput>({
     resolver: zodResolver(updateRegionSchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (isSuccess && region && fetchStatus === "idle") {

@@ -1,5 +1,6 @@
 import { MuiButton } from "@/components/ui";
 import { useCreateBrand } from "@/hooks/brand";
+import { useBeforeUnloadPage } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
 import { useEffect } from "react";
@@ -19,6 +20,9 @@ export function CreateBrandForm() {
   const methods = useForm<CreateBrandInput>({
     resolver: zodResolver(createBrandSchema),
   });
+
+  useBeforeUnloadPage();
+
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods;
 

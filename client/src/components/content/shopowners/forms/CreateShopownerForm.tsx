@@ -1,5 +1,6 @@
 import { EditorInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useCreateShopowner } from "@/hooks/shopowner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -22,6 +23,8 @@ export function CreateShopownerForm() {
   const methods = useForm<CreateShopownerInput>({
     resolver: zodResolver(createShopownerSchema),
   });
+
+  useBeforeUnloadPage();
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods;
 

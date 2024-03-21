@@ -1,4 +1,5 @@
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useGetTownship, useUpdateTownship } from "@/hooks/township";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -26,6 +27,8 @@ export function UpdateTownshipForm() {
   const methods = useForm<UpdateTownshipInput>({
     resolver: zodResolver(updateTownshipSchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (isSuccess && township && fetchStatus === "idle") {

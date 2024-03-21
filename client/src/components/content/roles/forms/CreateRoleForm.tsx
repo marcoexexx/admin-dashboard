@@ -1,7 +1,7 @@
 import { FormModal } from "@/components/forms";
 import { PermissionMultiInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useCreateRole } from "@/hooks/role";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -25,6 +25,8 @@ export function CreateRoleForm() {
   const methods = useForm<CreateRoleInput>({
     resolver: zodResolver(createRoleSchema),
   });
+
+  useBeforeUnloadPage();
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods;
 

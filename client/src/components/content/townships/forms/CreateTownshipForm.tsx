@@ -1,4 +1,5 @@
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useCreateTownship } from "@/hooks/township";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -20,6 +21,8 @@ export function CreateTownshipForm() {
   const methods = useForm<CreateTownshipInput>({
     resolver: zodResolver(createTownshipSchema),
   });
+
+  useBeforeUnloadPage();
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods;
 

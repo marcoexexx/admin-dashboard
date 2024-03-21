@@ -1,5 +1,6 @@
 import { EditorInputField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useGetUserAddress, useUpdateUserAddress } from "@/hooks/userAddress";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
@@ -32,6 +33,8 @@ export function UpdateUserAddressForm() {
   const methods = useForm<UpdateUserAddressInput>({
     resolver: zodResolver(updateUserAddressSchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (isSuccess && userAddress && fetchStatus === "idle") {

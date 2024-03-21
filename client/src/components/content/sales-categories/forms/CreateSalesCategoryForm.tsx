@@ -1,6 +1,6 @@
 import { DatePickerField, EditorInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useCreateSalesCategory } from "@/hooks/salsCategory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -27,6 +27,8 @@ export function CreateSalesCategoryForm() {
   const methods = useForm<CreateSalesCategoryInput>({
     resolver: zodResolver(createSalesCategorySchema),
   });
+
+  useBeforeUnloadPage();
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods;
 

@@ -1,5 +1,6 @@
 import { DatePickerField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useGetExchange, useUpdateExchange } from "@/hooks/exchange";
 import { PriceUnit } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,6 +42,8 @@ export function UpdateExchangeForm() {
   const methods = useForm<UpdateExchangeInput>({
     resolver: zodResolver(updateExchangeSchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (exchangeQuery.isSuccess && exchange && exchangeFetchStatus === "idle") {

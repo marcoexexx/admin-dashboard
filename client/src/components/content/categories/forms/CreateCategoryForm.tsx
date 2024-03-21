@@ -1,5 +1,5 @@
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useCreateCategory } from "@/hooks/category";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -23,6 +23,8 @@ export function CreateCategoryForm() {
   const methods = useForm<CreateCategoryInput>({
     resolver: zodResolver(createCategorySchema),
   });
+
+  useBeforeUnloadPage();
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods;
 

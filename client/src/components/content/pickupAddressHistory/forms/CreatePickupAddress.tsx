@@ -1,7 +1,7 @@
 import { FormModal } from "@/components/forms";
 import { DatePickerField, RegionInputField, TownshipByRegionInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useCreatePickupAddress } from "@/hooks/pickupAddress";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -28,6 +28,8 @@ export function CreatePickupAddressForm() {
   const methods = useForm<CreatePickupAddressInput>({
     resolver: zodResolver(createPickupAddressSchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (!!user) {

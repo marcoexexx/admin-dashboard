@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { any, boolean, number, object, string, z } from "zod";
 
 import dayjs from "dayjs";
+import { useBeforeUnloadPage } from "@/hooks";
 
 const updateCouponSchema = object({
   points: number({ required_error: "Points is required" })
@@ -47,6 +48,8 @@ export function UpdateCouponForm() {
       expiredDate: dayjs(),
     },
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (couponQuery.isSuccess && coupon && couponFetchStatus === "idle") {

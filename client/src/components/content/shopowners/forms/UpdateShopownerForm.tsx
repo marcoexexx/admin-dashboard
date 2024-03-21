@@ -1,5 +1,6 @@
 import { EditorInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useGetShopowner, useUpdateShopowner } from "@/hooks/shopowner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -35,6 +36,8 @@ export function UpdateShopownerForm() {
   const methods = useForm<UpdateShopownerInput>({
     resolver: zodResolver(updateShopownerSchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (shopownerQuery.isSuccess && shopowner && shopownerFetchStatus === "idle") {

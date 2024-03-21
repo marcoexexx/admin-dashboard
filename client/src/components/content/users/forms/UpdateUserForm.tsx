@@ -1,7 +1,7 @@
 import { FormModal } from "@/components/forms";
 import { RoleInputField, ShopownerInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useGetUser, useUpdateUser } from "@/hooks/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid } from "@mui/material";
@@ -38,6 +38,8 @@ export function UpdateUserForm() {
   const methods = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (userQuery.isSuccess && user && userFetchStatus === "idle") {

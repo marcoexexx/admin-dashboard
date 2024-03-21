@@ -8,7 +8,7 @@ import { CreateTownshipForm } from "@/components/content/townships/forms";
 import { CreateUserAddressForm } from "@/components/content/user-addresses/forms";
 import { FormModal } from "@/components/forms";
 import { MuiButton } from "@/components/ui";
-import { useLocalStorage, useStore } from "@/hooks";
+import { useBeforeUnloadPage, useLocalStorage, useStore } from "@/hooks";
 import { useDeleteCart, useGetCart } from "@/hooks/cart";
 import { useCreateOrder } from "@/hooks/order";
 import { useCreatePotentialOrder, useDeletePotentialOrder } from "@/hooks/potentialOrder";
@@ -137,6 +137,8 @@ export function CheckoutForm() {
     resolver: zodResolver(createOrderSchema),
     reValidateMode: "onChange",
   });
+
+  useBeforeUnloadPage();
 
   const { getValues, handleSubmit, setValue, watch, formState: { errors } } = methods;
 

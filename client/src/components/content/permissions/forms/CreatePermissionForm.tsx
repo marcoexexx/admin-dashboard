@@ -1,4 +1,5 @@
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useCreatePermission } from "@/hooks/permission";
 import { OperationAction, Resource } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,6 +21,8 @@ export function CreatePermissionForm() {
   const methods = useForm<CreatePermissionInput>({
     resolver: zodResolver(createPermissionSchema),
   });
+
+  useBeforeUnloadPage();
 
   const { handleSubmit, setFocus, register, formState: { errors } } = methods;
 

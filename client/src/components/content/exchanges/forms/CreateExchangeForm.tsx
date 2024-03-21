@@ -1,6 +1,6 @@
 import { DatePickerField, ShopownerInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
-import { useStore } from "@/hooks";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useCreateExchange } from "@/hooks/exchange";
 import { PriceUnit } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +31,8 @@ export function CreateExchangeForm() {
   const methods = useForm<CreateExchangeInput>({
     resolver: zodResolver(createExchangeSchema),
   });
+
+  useBeforeUnloadPage();
 
   const { handleSubmit, register, setValue, formState: { errors } } = methods;
 

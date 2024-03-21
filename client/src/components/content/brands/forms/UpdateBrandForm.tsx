@@ -1,4 +1,5 @@
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useGetBrand, useUpdateBrand } from "@/hooks/brand";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -32,6 +33,8 @@ export function UpdateBrandForm() {
   const methods = useForm<UpdateBrandInput>({
     resolver: zodResolver(updateBrandSchema),
   });
+
+  useBeforeUnloadPage();
 
   useEffect(() => {
     if (brandQuery.isSuccess && brand && brandFetchStatus === "idle") methods.setValue("name", brand.name);
