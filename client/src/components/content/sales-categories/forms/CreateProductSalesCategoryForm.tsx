@@ -114,7 +114,6 @@ export function CreateProductSalesCategoryForm(
           {...register("discount", {
             valueAsNumber: true,
           })}
-          focused={!!defaultValues}
           type="number"
           inputProps={{
             step: "0.01",
