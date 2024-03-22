@@ -1,2 +1,2 @@
-export * from './CreateRegionForm'
-export * from './UpdateRegionForm'
+export * from "./CreateRegionForm";
+export * from "./UpdateRegionForm";

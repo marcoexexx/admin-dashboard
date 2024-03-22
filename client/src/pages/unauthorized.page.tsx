@@ -1,11 +1,10 @@
-import { Box, Container, Typography, styled } from "@mui/material"
-import { MuiButton } from "@/components/ui"
-import { CacheResource } from "@/context/cacheKey"
-import { queryClient } from "@/components"
-import { useStore } from "@/hooks"
-import { logoutUserFn } from "@/services/authApi"
-import { useMutation } from "@tanstack/react-query"
-
+import { queryClient } from "@/components";
+import { MuiButton } from "@/components/ui";
+import { CacheResource } from "@/context/cacheKey";
+import { useStore } from "@/hooks";
+import { logoutUserFn } from "@/services/authApi";
+import { Box, Container, styled, Typography } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 
 const MainContent = styled(Box)(() => ({
   height: "100%",
@@ -13,40 +12,52 @@ const MainContent = styled(Box)(() => ({
   overflow: "auto",
   flexDirection: "column",
   alignItems: "center",
-  justifyContent: "center"
-}))
+  justifyContent: "center",
+}));
 
 export default function Unauthorized() {
-  const { dispatch } = useStore()
+  const { dispatch } = useStore();
 
   const { mutate: logout, isPending } = useMutation({
     mutationFn: logoutUserFn,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [CacheResource.AuthUser]
-      })
-      dispatch({ type: "OPEN_TOAST", payload: {
-        message: "Success logout.",
-        severity: "success"
-      } })
-      window.location.href = "/auth/login"
-    }
-  })
+        queryKey: [CacheResource.AuthUser],
+      });
+      dispatch({
+        type: "OPEN_TOAST",
+        payload: {
+          message: "Success logout.",
+          severity: "success",
+        },
+      });
+      window.location.href = "/auth/login";
+    },
+  });
 
   const handleLogout = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "SET_USER", payload: undefined })
-    logout()
-  }
+    dispatch({ type: "SET_USER", payload: undefined });
+    logout();
+  };
 
   return (
     <MainContent>
       <Container maxWidth="md">
         <Box textAlign="center">
-          <img alt="404" height={180} src="/static/concept-of-data-privacy-and-policy.svg" />
+          <img
+            alt="404"
+            height={180}
+            src="/static/concept-of-data-privacy-and-policy.svg"
+          />
           <Typography variant="h2" sx={{ my: 2 }}>
             Access Denied
           </Typography>
-          <Typography variant="h4" color="text.secondary" fontWeight="normal" sx={{ mb: 4 }}>
+          <Typography
+            variant="h4"
+            color="text.secondary"
+            fontWeight="normal"
+            sx={{ mb: 4 }}
+          >
             you currently does not have permission to access this resource.
           </Typography>
         </Box>
@@ -60,5 +71,5 @@ export default function Unauthorized() {
         Sign Out
       </MuiButton>
     </MainContent>
-  )
+  );
 }

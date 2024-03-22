@@ -1,3 +1,3 @@
-export * from './CouponsFilterForm'
-export * from './CouponsList'
-export * from './CouponsListTable'
+export * from "./CouponsFilterForm";
+export * from "./CouponsList";
+export * from "./CouponsListTable";

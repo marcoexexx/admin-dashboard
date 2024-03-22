@@ -1,33 +1,41 @@
 import { Router } from "express";
+import {
+  createPotentialOrderHandler,
+  deleteMultiPotentialOrdersHandler,
+  deletePotentialOrderHandler,
+  getPotentialOrderHandler,
+  getPotentialOrdersHandler,
+  updatePotentialOrderHandler,
+} from "../controllers/potentialOrder.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createPotentialOrderSchema, deleteMultiPotentialOrdersSchema, getPotentialOrderSchema, updatePotentialOrderSchema } from "../schemas/potentialOrder.schema";
-import { createPotentialOrderHandler, deleteMultiPotentialOrdersHandler, deletePotentialOrderHandler, getPotentialOrderHandler, getPotentialOrdersHandler, updatePotentialOrderHandler } from "../controllers/potentialOrder.controller";
-import { checkBlockedUser } from "../middleware/checkBlockedUser";
+import {
+  createPotentialOrderSchema,
+  deleteMultiPotentialOrdersSchema,
+  getPotentialOrderSchema,
+  updatePotentialOrderSchema,
+} from "../schemas/potentialOrder.schema";
 
+const router = Router();
 
-const router = Router()
-
-router.use(deserializeUser, requiredUser, checkBlockedUser)
-
+router.use(deserializeUser, requiredUser, checkBlockedUser);
 
 router.route("/")
   .get(
-    getPotentialOrdersHandler
+    getPotentialOrdersHandler,
   )
   .post(
     validate(createPotentialOrderSchema),
-    createPotentialOrderHandler
-  )
-
+    createPotentialOrderHandler,
+  );
 
 router.route("/multi")
   .delete(
     validate(deleteMultiPotentialOrdersSchema),
-    deleteMultiPotentialOrdersHandler
-  )
-
+    deleteMultiPotentialOrdersHandler,
+  );
 
 // // Upload Routes
 // router.post("/excel-upload",
@@ -36,21 +44,18 @@ router.route("/multi")
 //   createMultiCouponsHandler
 // )
 
-
 router.route("/detail/:potentialOrderId")
   .get(
     validate(getPotentialOrderSchema),
-    getPotentialOrderHandler
+    getPotentialOrderHandler,
   )
   .patch(
-    validate(updatePotentialOrderSchema), 
-    updatePotentialOrderHandler
+    validate(updatePotentialOrderSchema),
+    updatePotentialOrderHandler,
   )
   .delete(
     validate(getPotentialOrderSchema),
-    deletePotentialOrderHandler
-  )
+    deletePotentialOrderHandler,
+  );
 
-
-export default router 
-
+export default router;

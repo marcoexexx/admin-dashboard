@@ -1,45 +1,52 @@
 import clsx from "clsx";
 
-import { MuiButton } from '@/components/ui'
+import { MuiButton } from "@/components/ui";
 import { CacheResource } from "@/context/cacheKey";
-import { Box, Collapse, List, ListItem, ListSubheader, alpha, styled } from "@mui/material"
+import { useStore } from "@/hooks";
+import {
+  alpha,
+  Box,
+  Collapse,
+  List,
+  ListItem,
+  ListSubheader,
+  styled,
+} from "@mui/material";
 import { useState } from "react";
-import { useLocation, useNavigate } from 'react-router-dom'
-import { useStore } from "@/hooks"
+import { useLocation, useNavigate } from "react-router-dom";
 
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import LoyaltyIcon from '@mui/icons-material/Loyalty';
-import PeopleIcon from '@mui/icons-material/People';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
-import GradingIcon from '@mui/icons-material/Grading';
-import SettingsIcon from '@mui/icons-material/Settings';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CategoryIcon from '@mui/icons-material/Category';
-import SellIcon from '@mui/icons-material/Sell';
-import BadgeIcon from '@mui/icons-material/Badge';
-import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
-import LocationCityIcon from '@mui/icons-material/LocationCity';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import Groups3Icon from '@mui/icons-material/Groups3';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import BadgeIcon from "@mui/icons-material/Badge";
+import CategoryIcon from "@mui/icons-material/Category";
+import DesignServicesTwoToneIcon from "@mui/icons-material/DesignServicesTwoTone";
+import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import GradingIcon from "@mui/icons-material/Grading";
+import Groups3Icon from "@mui/icons-material/Groups3";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import LocationCityIcon from "@mui/icons-material/LocationCity";
+import LoyaltyIcon from "@mui/icons-material/Loyalty";
+import PeopleIcon from "@mui/icons-material/People";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import SellIcon from "@mui/icons-material/Sell";
+import SettingsIcon from "@mui/icons-material/Settings";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
-
-const DotWrapper = styled(Box)(({theme}) => ({
+const DotWrapper = styled(Box)(({ theme }) => ({
   padding: 2,
   borderRadius: "100%",
   margin: "0 12px 0 0",
-  background: theme.colors.alpha.trueWhite[50]
-}))
+  background: theme.colors.alpha.trueWhite[50],
+}));
 
-const MenuWrapper = styled(Box)(({theme}) => ({
+const MenuWrapper = styled(Box)(({ theme }) => ({
   ".MuiList-root": {
     padding: theme.spacing(1),
     "& > .MuiList-root": {
-      padding: `0 ${theme.spacing(0)} ${theme.spacing(1)}`
-    }
+      padding: `0 ${theme.spacing(0)} ${theme.spacing(1)}`,
+    },
   },
 
   ".MuiListSubheader-root": {
@@ -48,11 +55,11 @@ const MenuWrapper = styled(Box)(({theme}) => ({
     fontSize: theme.typography.pxToRem(12),
     color: theme.colors.alpha.trueWhite[50],
     padding: theme.spacing(0, 2.5),
-    lineHeight: 1.4
-  }
-}))
+    lineHeight: 1.4,
+  },
+}));
 
-const SubMenuWrapper = styled(Box)(({theme}) => ({
+const SubMenuWrapper = styled(Box)(({ theme }) => ({
   ".MuiList-root": {
     ".MuiListItem-root": {
       padding: "1px 0",
@@ -66,8 +73,8 @@ const SubMenuWrapper = styled(Box)(({theme}) => ({
           fontSize: theme.typography.pxToRem(10),
           fontWeight: "bold",
           textTransform: "uppercase",
-          color: theme.palette.primary.contrastText
-        }
+          color: theme.palette.primary.contrastText,
+        },
       },
 
       ".MuiButton-root": {
@@ -83,21 +90,21 @@ const SubMenuWrapper = styled(Box)(({theme}) => ({
 
           ".MuiSvgIcon-root": {
             fontSize: "inherit",
-            transition: "none"
-          }
+            transition: "none",
+          },
         },
 
         ".MuiButton-startIcon": {
           color: theme.colors.alpha.trueWhite[30],
           fontSize: theme.typography.pxToRem(20),
-          marginRight: theme.spacing(1)
+          marginRight: theme.spacing(1),
         },
 
         ".MuiButton-endIcon": {
           color: theme.colors.alpha.trueWhite[50],
           marginLeft: "auto",
           opacity: .8,
-          fontSize: theme.typography.pxToRem(20)
+          fontSize: theme.typography.pxToRem(20),
         },
 
         "&.active, &:hover": {
@@ -105,17 +112,17 @@ const SubMenuWrapper = styled(Box)(({theme}) => ({
           color: theme.colors.alpha.trueWhite[100],
 
           ".MuiButton-startIcon, .MuiButton-endIcon": {
-            color: theme.colors.alpha.trueWhite[100]
-          }
-        }
+            color: theme.colors.alpha.trueWhite[100],
+          },
+        },
       },
 
       "&.Mui-children": {
         flexDirection: "column",
         ".MuiBadge-root": {
           position: "absolute",
-          right: theme.spacing(7)
-        }
+          right: theme.spacing(7),
+        },
       },
 
       ".MuiCollapse-root": {
@@ -132,92 +139,95 @@ const SubMenuWrapper = styled(Box)(({theme}) => ({
             padding: theme.spacing(0.8, 3),
 
             ".MuiBadge-root": {
-              right: theme.spacing(3.2)
+              right: theme.spacing(3.2),
             },
 
             "&:before": {
               content: "' '",
               background: theme.colors.alpha.trueWhite[100],
               opacity: 0,
-              transition: theme.transitions.create(["transform", "opacity"]),
+              transition: theme.transitions.create([
+                "transform",
+                "opacity",
+              ]),
               width: "6px",
               height: "6px",
               transform: "scale(0)",
               transformOrigin: "center",
               borderRadius: "20px",
-              marginRight: theme.spacing(1.8)
+              marginRight: theme.spacing(1.8),
             },
 
             "&.active, &:hover": {
               "&:before": {
                 transform: "scale(1)",
-                opacity: 1
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}))
+                opacity: 1,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}));
 
 type ExpandMenu = {
-  id: "*" | CacheResource
-  state: boolean
-}
+  id: "*" | CacheResource;
+  state: boolean;
+};
 
-type PageMenu = 
+type PageMenu =
   | "overview"
   | "inventory"
   | "orders"
-  | "settings"
+  | "settings";
 
-type ExculdeWildcard<T extends string> = T extends "*" ? never : T
-type MenuPath<T extends string> = `/${T}`
-type ExpandableMenu<T extends string> = T | `${T}/create`
+type ExculdeWildcard<T extends string> = T extends "*" ? never : T;
+type MenuPath<T extends string> = `/${T}`;
+type ExpandableMenu<T extends string> = T | `${T}/create`;
 
-type SlideMenue = 
+type SlideMenue =
   | MenuPath<PageMenu>
-  | MenuPath<ExpandableMenu<ExculdeWildcard<ExpandMenu["id"]>>>
-
+  | MenuPath<ExpandableMenu<ExculdeWildcard<ExpandMenu["id"]>>>;
 
 export default function SlidebarMenu() {
-  const { state, dispatch } = useStore()
+  const { state, dispatch } = useStore();
 
-  const navigate = useNavigate()
-  const location = useLocation()
-  const currentMenu = location.pathname as SlideMenue ?? "/overview"
+  const navigate = useNavigate();
+  const location = useLocation();
+  const currentMenu = location.pathname as SlideMenue ?? "/overview";
 
   const [isExpandMenu, setIsExpandMenu] = useState<ExpandMenu>({
     id: "*",
-    state: false
-  })
+    state: false,
+  });
 
+  const handleOpenMenu =
+    (menue: SlideMenue) => (_: React.MouseEvent<HTMLButtonElement>) => {
+      navigate(menue);
+      dispatch({
+        type: "CLOSE_SLIDEBAR",
+      });
+    };
 
-  const handleOpenMenu = (menue: SlideMenue) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(menue)
-    dispatch({
-      type: "CLOSE_SLIDEBAR"
-    })
-  }
-
-  const handleToggleExpandMenu = (id: ExpandMenu["id"]) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/${id}`)
-    if (isExpandMenu.id !== id && isExpandMenu.state) {
-      setIsExpandMenu({ id, state: true })
-      return
-    }
-    setIsExpandMenu(prev => ({
-      id,
-      state: !prev.state
-    }))
-  }
+  const handleToggleExpandMenu =
+    (id: ExpandMenu["id"]) => (_: React.MouseEvent<HTMLButtonElement>) => {
+      navigate(`/${id}`);
+      if (isExpandMenu.id !== id && isExpandMenu.state) {
+        setIsExpandMenu({ id, state: true });
+        return;
+      }
+      setIsExpandMenu(prev => ({
+        id,
+        state: !prev.state,
+      }));
+    };
 
   const getStateCurrentExpandMenu = (id: ExpandMenu["id"]) => {
     return isExpandMenu.id === id
       ? isExpandMenu.state
-      : false
-  }
+      : false;
+  };
 
   return (
     <>
@@ -227,7 +237,9 @@ export default function SlidebarMenu() {
             <List component="div">
               <ListItem component="div">
                 <MuiButton
-                  className={clsx({"active": currentMenu === "/overview" })}
+                  className={clsx({
+                    "active": currentMenu === "/overview",
+                  })}
                   onClick={handleOpenMenu("/overview")}
                   startIcon={<DesignServicesTwoToneIcon />}
                 >
@@ -250,7 +262,9 @@ export default function SlidebarMenu() {
             <List component="div">
               <ListItem component="div">
                 <MuiButton
-                  className={clsx({"active": currentMenu === "/inventory" })}
+                  className={clsx({
+                    "active": currentMenu === "/inventory",
+                  })}
                   onClick={handleOpenMenu("/inventory")}
                   startIcon={<InventoryIcon />}
                 >
@@ -259,7 +273,7 @@ export default function SlidebarMenu() {
               </ListItem>
               <ListItem component="div">
                 <MuiButton
-                  className={clsx({"active": currentMenu === "/orders" })}
+                  className={clsx({ "active": currentMenu === "/orders" })}
                   onClick={handleOpenMenu("/orders")}
                   startIcon={<GradingIcon />}
                 >
@@ -268,7 +282,9 @@ export default function SlidebarMenu() {
               </ListItem>
               <ListItem component="div">
                 <MuiButton
-                  className={clsx({"active": currentMenu === "/settings" })}
+                  className={clsx({
+                    "active": currentMenu === "/settings",
+                  })}
                   onClick={handleOpenMenu("/settings")}
                   startIcon={<SettingsIcon />}
                 >
@@ -296,8 +312,7 @@ export default function SlidebarMenu() {
                   startIcon={<ShoppingCartIcon />}
                   endIcon={getStateCurrentExpandMenu("products")
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Products
                 </MuiButton>
@@ -307,7 +322,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/products" })}
+                      className={clsx({
+                        "active": currentMenu === "/products",
+                      })}
                       onClick={handleOpenMenu("/products")}
                     >
                       <DotWrapper />
@@ -316,7 +333,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/products/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/products/create",
+                      })}
                       onClick={handleOpenMenu("/products/create")}
                     >
                       <DotWrapper />
@@ -333,8 +352,7 @@ export default function SlidebarMenu() {
                   startIcon={<GradingIcon />}
                   endIcon={getStateCurrentExpandMenu("potential-orders")
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Potential orders
                 </MuiButton>
@@ -344,7 +362,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/potential-orders" })}
+                      className={clsx({
+                        "active": currentMenu === "/potential-orders",
+                      })}
                       onClick={handleOpenMenu("/potential-orders")}
                     >
                       <DotWrapper />
@@ -353,7 +373,10 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/potential-orders/create" })}
+                      className={clsx({
+                        "active":
+                          currentMenu === "/potential-orders/create",
+                      })}
                       onClick={handleOpenMenu("/potential-orders/create")}
                     >
                       <DotWrapper />
@@ -370,8 +393,7 @@ export default function SlidebarMenu() {
                   startIcon={<DirectionsBusIcon />}
                   endIcon={getStateCurrentExpandMenu("regions")
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Regions
                 </MuiButton>
@@ -381,7 +403,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/regions" })}
+                      className={clsx({
+                        "active": currentMenu === "/regions",
+                      })}
                       onClick={handleOpenMenu("/regions")}
                     >
                       <DotWrapper />
@@ -390,7 +414,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/regions/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/regions/create",
+                      })}
                       onClick={handleOpenMenu("/regions/create")}
                     >
                       <DotWrapper />
@@ -407,8 +433,7 @@ export default function SlidebarMenu() {
                   startIcon={<LocationCityIcon />}
                   endIcon={getStateCurrentExpandMenu("townships")
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Townships
                 </MuiButton>
@@ -418,7 +443,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/townships" })}
+                      className={clsx({
+                        "active": currentMenu === "/townships",
+                      })}
                       onClick={handleOpenMenu("/townships")}
                     >
                       <DotWrapper />
@@ -427,7 +454,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/townships/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/townships/create",
+                      })}
                       onClick={handleOpenMenu("/townships/create")}
                     >
                       <DotWrapper />
@@ -444,8 +473,7 @@ export default function SlidebarMenu() {
                   startIcon={<BadgeIcon />}
                   endIcon={getStateCurrentExpandMenu("coupons")
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Coupons
                 </MuiButton>
@@ -455,7 +483,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/coupons" })}
+                      className={clsx({
+                        "active": currentMenu === "/coupons",
+                      })}
                       onClick={handleOpenMenu("/coupons")}
                     >
                       <DotWrapper />
@@ -464,7 +494,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/coupons/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/coupons/create",
+                      })}
                       onClick={handleOpenMenu("/coupons/create")}
                     >
                       <DotWrapper />
@@ -481,8 +513,7 @@ export default function SlidebarMenu() {
                   startIcon={<AttachMoneyIcon />}
                   endIcon={getStateCurrentExpandMenu("exchanges")
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Exchange
                 </MuiButton>
@@ -492,7 +523,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/exchanges" })}
+                      className={clsx({
+                        "active": currentMenu === "/exchanges",
+                      })}
                       onClick={handleOpenMenu("/exchanges")}
                     >
                       <DotWrapper />
@@ -501,7 +534,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/exchanges/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/exchanges/create",
+                      })}
                       onClick={handleOpenMenu("/exchanges/create")}
                     >
                       <DotWrapper />
@@ -518,8 +553,7 @@ export default function SlidebarMenu() {
                   startIcon={<SellIcon />}
                   endIcon={getStateCurrentExpandMenu("brands")
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Brands
                 </MuiButton>
@@ -529,7 +563,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/brands" })}
+                      className={clsx({
+                        "active": currentMenu === "/brands",
+                      })}
                       onClick={handleOpenMenu("/brands")}
                     >
                       <DotWrapper />
@@ -538,7 +574,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/brands/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/brands/create",
+                      })}
                       onClick={handleOpenMenu("/brands/create")}
                     >
                       <DotWrapper />
@@ -555,8 +593,7 @@ export default function SlidebarMenu() {
                   startIcon={<CategoryIcon />}
                   endIcon={getStateCurrentExpandMenu("categories")
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Categories
                 </MuiButton>
@@ -566,7 +603,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/categories" })}
+                      className={clsx({
+                        "active": currentMenu === "/categories",
+                      })}
                       onClick={handleOpenMenu("/categories")}
                     >
                       <DotWrapper />
@@ -575,7 +614,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/categories/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/categories/create",
+                      })}
                       onClick={handleOpenMenu("/categories/create")}
                     >
                       <DotWrapper />
@@ -592,8 +633,7 @@ export default function SlidebarMenu() {
                   startIcon={<LoyaltyIcon />}
                   endIcon={getStateCurrentExpandMenu("sales-categories")
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Sales categories
                 </MuiButton>
@@ -603,7 +643,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/sales-categories" })}
+                      className={clsx({
+                        "active": currentMenu === "/sales-categories",
+                      })}
                       onClick={handleOpenMenu("/sales-categories")}
                     >
                       <DotWrapper />
@@ -612,7 +654,10 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/sales-categories/create" })}
+                      className={clsx({
+                        "active":
+                          currentMenu === "/sales-categories/create",
+                      })}
                       onClick={handleOpenMenu("/sales-categories/create")}
                     >
                       <DotWrapper />
@@ -629,8 +674,7 @@ export default function SlidebarMenu() {
                   startIcon={<PeopleIcon />}
                   endIcon={getStateCurrentExpandMenu("users")
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Users
                 </MuiButton>
@@ -640,7 +684,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/users" })}
+                      className={clsx({
+                        "active": currentMenu === "/users",
+                      })}
                       onClick={handleOpenMenu("/users")}
                     >
                       <DotWrapper />
@@ -657,8 +703,7 @@ export default function SlidebarMenu() {
                   startIcon={<AdminPanelSettingsIcon />}
                   endIcon={getStateCurrentExpandMenu(CacheResource.Role)
                     ? <ExpandLessIcon />
-                    : <ExpandMoreIcon />
-                  }
+                    : <ExpandMoreIcon />}
                 >
                   Roles
                 </MuiButton>
@@ -668,7 +713,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/roles" })}
+                      className={clsx({
+                        "active": currentMenu === "/roles",
+                      })}
                       onClick={handleOpenMenu("/roles")}
                     >
                       <DotWrapper />
@@ -677,7 +724,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({"active": currentMenu === "/roles/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/roles/create",
+                      })}
                       onClick={handleOpenMenu("/roles/create")}
                     >
                       <DotWrapper />
@@ -688,92 +737,118 @@ export default function SlidebarMenu() {
               </Collapse>
 
               {state.user?.isSuperuser
-              ? <>
-                {/* Permisison Menues */}
-                <ListItem component="div">
-                  <MuiButton
-                    onClick={handleToggleExpandMenu(CacheResource.Permission)}
-                    startIcon={<RemoveCircleIcon />}
-                    endIcon={getStateCurrentExpandMenu(CacheResource.Permission)
-                      ? <ExpandLessIcon />
-                      : <ExpandMoreIcon />
-                    }
-                  >
-                    Permissions
-                  </MuiButton>
-                </ListItem>
+                ? (
+                  <>
+                    {/* Permisison Menues */}
+                    <ListItem component="div">
+                      <MuiButton
+                        onClick={handleToggleExpandMenu(
+                          CacheResource.Permission,
+                        )}
+                        startIcon={<RemoveCircleIcon />}
+                        endIcon={getStateCurrentExpandMenu(
+                            CacheResource.Permission,
+                          )
+                          ? <ExpandLessIcon />
+                          : <ExpandMoreIcon />}
+                      >
+                        Permissions
+                      </MuiButton>
+                    </ListItem>
 
-                <Collapse in={getStateCurrentExpandMenu(CacheResource.Permission)}>
-                  <List component="div" disablePadding>
-                    <ListItem component="div">
-                      <MuiButton
-                        className={clsx({"active": currentMenu === "/permissions" })}
-                        onClick={handleOpenMenu("/permissions")}
-                      >
-                        <DotWrapper />
-                        List
-                      </MuiButton>
-                    </ListItem>
-                    <ListItem component="div">
-                      <MuiButton
-                        className={clsx({"active": currentMenu === "/permissions/create" })}
-                        onClick={handleOpenMenu("/permissions/create")}
-                      >
-                        <DotWrapper />
-                        Create
-                      </MuiButton>
-                    </ListItem>
-                  </List>
-                </Collapse>
-              </>
-              : null}
+                    <Collapse
+                      in={getStateCurrentExpandMenu(
+                        CacheResource.Permission,
+                      )}
+                    >
+                      <List component="div" disablePadding>
+                        <ListItem component="div">
+                          <MuiButton
+                            className={clsx({
+                              "active": currentMenu === "/permissions",
+                            })}
+                            onClick={handleOpenMenu("/permissions")}
+                          >
+                            <DotWrapper />
+                            List
+                          </MuiButton>
+                        </ListItem>
+                        <ListItem component="div">
+                          <MuiButton
+                            className={clsx({
+                              "active":
+                                currentMenu === "/permissions/create",
+                            })}
+                            onClick={handleOpenMenu("/permissions/create")}
+                          >
+                            <DotWrapper />
+                            Create
+                          </MuiButton>
+                        </ListItem>
+                      </List>
+                    </Collapse>
+                  </>
+                )
+                : null}
 
               {state.user?.isSuperuser
-              ? <>
-                {/* Shopowner Menues */}
-                <ListItem component="div">
-                  <MuiButton
-                    onClick={handleToggleExpandMenu(CacheResource.Shopowner)}
-                    startIcon={<Groups3Icon />}
-                    endIcon={getStateCurrentExpandMenu(CacheResource.Shopowner)
-                      ? <ExpandLessIcon />
-                      : <ExpandMoreIcon />
-                    }
-                  >
-                    Shopowners
-                  </MuiButton>
-                </ListItem>
-
-                <Collapse in={getStateCurrentExpandMenu(CacheResource.Shopowner)}>
-                  <List component="div" disablePadding>
+                ? (
+                  <>
+                    {/* Shopowner Menues */}
                     <ListItem component="div">
                       <MuiButton
-                        className={clsx({"active": currentMenu === "/shopowners" })}
-                        onClick={handleOpenMenu("/shopowners")}
+                        onClick={handleToggleExpandMenu(
+                          CacheResource.Shopowner,
+                        )}
+                        startIcon={<Groups3Icon />}
+                        endIcon={getStateCurrentExpandMenu(
+                            CacheResource.Shopowner,
+                          )
+                          ? <ExpandLessIcon />
+                          : <ExpandMoreIcon />}
                       >
-                        <DotWrapper />
-                        List
+                        Shopowners
                       </MuiButton>
                     </ListItem>
-                    <ListItem component="div">
-                      <MuiButton
-                        className={clsx({"active": currentMenu === "/shopowners/create" })}
-                        onClick={handleOpenMenu("/shopowners/create")}
-                      >
-                        <DotWrapper />
-                        Create
-                      </MuiButton>
-                    </ListItem>
-                  </List>
-                </Collapse>
-              </>
-              : null}
 
+                    <Collapse
+                      in={getStateCurrentExpandMenu(
+                        CacheResource.Shopowner,
+                      )}
+                    >
+                      <List component="div" disablePadding>
+                        <ListItem component="div">
+                          <MuiButton
+                            className={clsx({
+                              "active": currentMenu === "/shopowners",
+                            })}
+                            onClick={handleOpenMenu("/shopowners")}
+                          >
+                            <DotWrapper />
+                            List
+                          </MuiButton>
+                        </ListItem>
+                        <ListItem component="div">
+                          <MuiButton
+                            className={clsx({
+                              "active":
+                                currentMenu === "/shopowners/create",
+                            })}
+                            onClick={handleOpenMenu("/shopowners/create")}
+                          >
+                            <DotWrapper />
+                            Create
+                          </MuiButton>
+                        </ListItem>
+                      </List>
+                    </Collapse>
+                  </>
+                )
+                : null}
             </List>
           </SubMenuWrapper>
         </List>
-
       </MenuWrapper>
     </>
-  )
+  );
 }

@@ -1,2 +1,2 @@
-export * from './CreateCategoryForm'
-export * from './UpdateCategoryForm'
+export * from "./CreateCategoryForm";
+export * from "./UpdateCategoryForm";

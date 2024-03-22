@@ -1,15 +1,15 @@
-export * from './useGetSalesCategories'
-export * from './useGetSalesCategory'
+export * from "./useGetSalesCategories";
+export * from "./useGetSalesCategory";
 
-export * from './useCreateSalesCategory'
-export * from './useCreateMultiSalesCategories'
+export * from "./useCreateMultiSalesCategories";
+export * from "./useCreateSalesCategory";
 
-export * from './useDeleteSalesCategory'
-export * from './useDeleteMultiSalesCategories'
+export * from "./useDeleteMultiSalesCategories";
+export * from "./useDeleteSalesCategory";
 
-export * from './useUpdateSalesCategory'
+export * from "./useUpdateSalesCategory";
 
-export * from './useCreateProductSalesCategory'
-export * from './useUpdateProductSalesCategory'
-export * from './useGetProductSalesCategories'
-export * from './useDeleteProductSalesCategory'
+export * from "./useCreateProductSalesCategory";
+export * from "./useDeleteProductSalesCategory";
+export * from "./useGetProductSalesCategories";
+export * from "./useUpdateProductSalesCategory";

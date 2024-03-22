@@ -1,2 +1,2 @@
-export * from './CreateShopownerForm'
-export * from './UpdateShopownerForm'
+export * from "./CreateShopownerForm";
+export * from "./UpdateShopownerForm";

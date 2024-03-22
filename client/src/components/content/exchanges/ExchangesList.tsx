@@ -1,55 +1,60 @@
-import { Card } from "@mui/material";
 import { SuspenseLoader } from "@/components";
-import { ExchangesListTable } from ".";
-import { useStore } from "@/hooks";
-import { useCreateMultiExchanges, useDeleteExchange, useDeleteMultiExchanges, useGetExchanges } from "@/hooks/exchange";
 import { INITIAL_PAGINATION } from "@/context/store";
-
+import { useStore } from "@/hooks";
+import {
+  useCreateMultiExchanges,
+  useDeleteExchange,
+  useDeleteMultiExchanges,
+  useGetExchanges,
+} from "@/hooks/exchange";
+import { Card } from "@mui/material";
+import { ExchangesListTable } from ".";
 
 export function ExchangesList() {
-  const { state: { exchangeFilter } } = useStore()
+  const { state: { exchangeFilter } } = useStore();
 
   // Queries
   const exchangesQuery = useGetExchanges({
     filter: exchangeFilter.where,
     pagination: exchangeFilter.pagination || INITIAL_PAGINATION,
     include: {
-      shopowner: true
-    }
-  })
+      shopowner: true,
+    },
+  });
 
   // Mutations
-  const createExchangesMutation = useCreateMultiExchanges()
-  const deleteExchangeMutation = useDeleteExchange()
-  const deleteExchangesMutation = useDeleteMultiExchanges()
+  const createExchangesMutation = useCreateMultiExchanges();
+  const deleteExchangeMutation = useDeleteExchange();
+  const deleteExchangesMutation = useDeleteMultiExchanges();
 
   // Extraction
-  const data = exchangesQuery.try_data.ok_or_throw()
+  const data = exchangesQuery.try_data.ok_or_throw();
 
   function handleCreateManyExchanges(buf: ArrayBuffer) {
-    createExchangesMutation.mutate(buf)
+    createExchangesMutation.mutate(buf);
   }
 
   function handleDeleteExchange(id: string) {
-    deleteExchangeMutation.mutate(id)
+    deleteExchangeMutation.mutate(id);
   }
 
   function handleDeleteMultiExchanges(ids: string[]) {
-    deleteExchangesMutation.mutate(ids)
+    deleteExchangesMutation.mutate(ids);
   }
 
-
   // TODO: Sekelton table loader
-  if (!data || exchangesQuery.isLoading) return <SuspenseLoader />
+  if (!data || exchangesQuery.isLoading) return <SuspenseLoader />;
 
-  return <Card>
-    <ExchangesListTable
-      exchanges={data.results}
-      count={data.count}
-      isLoading={exchangesQuery.isLoading}
-      onCreateMany={handleCreateManyExchanges}
-      onDelete={handleDeleteExchange}
-      onMultiDelete={handleDeleteMultiExchanges}
-    />
-  </Card>
+  return (
+    <Card>
+      <ExchangesListTable
+        exchanges={data.results}
+        count={data.count}
+        isLoading={exchangesQuery.isLoading}
+        onCreateMany={handleCreateManyExchanges}
+        onDelete={handleDeleteExchange}
+        onMultiDelete={handleDeleteMultiExchanges}
+      />
+    </Card>
+  );
 }

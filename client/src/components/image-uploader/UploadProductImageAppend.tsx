@@ -1,6 +1,3 @@
-
 export function UploadProductImageAppend() {
-  return (
-    <div>UploadProductImageAppend</div>
-  )
+  return <div>UploadProductImageAppend</div>;
 }

@@ -1,45 +1,57 @@
-import { Suspense } from 'react';
-import { Helmet } from 'react-helmet-async'
 import { PageTitle, SuspenseLoader } from "@/components";
 import { CreateBrandForm } from "@/components/content/brands/forms";
-import { Card, CardContent, Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
-import { OperationAction, Resource } from '@/services/types';
-import { useNavigate } from 'react-router-dom'
 import { usePermission } from "@/hooks";
+import { OperationAction, Resource } from "@/services/types";
+import {
+  Card,
+  CardContent,
+  Container,
+  Grid,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { Suspense } from "react";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
 
+import ErrorBoundary from "@/components/ErrorBoundary";
 import getConfig from "@/libs/getConfig";
-import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
-
-const appName = getConfig("appName")
-
+const appName = getConfig("appName");
 
 function CreateFromWrapper() {
-  usePermission({ action: OperationAction.Create, resource: Resource.Brand }).ok_or_throw()
+  usePermission({
+    action: OperationAction.Create,
+    resource: Resource.Brand,
+  }).ok_or_throw();
 
-  return <Card>
-    <CardContent>
-      <CreateBrandForm />
-    </CardContent>
-  </Card>
-
+  return (
+    <Card>
+      <CardContent>
+        <CreateBrandForm />
+      </CardContent>
+    </Card>
+  );
 }
 
-
 export default function CreatePage() {
-  
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1)
-  }
+    navigate(-1);
+  };
 
   return (
     <>
       <Helmet>
         <title>{appName} | Create brand</title>
-        <meta name="description" content="Build a compelling product brand that resonates with your target audience. Our brand creation services help you establish a unique identity, from crafting a memorable brand name to designing a distinctive logo. Create a brand story that connects emotionally with customers, fostering loyalty and trust. Elevate your business with a strong, cohesive brand that sets you apart in the market. Start building your brand today and leave a lasting impression on your audience."></meta>
+        <meta
+          name="description"
+          content="Build a compelling product brand that resonates with your target audience. Our brand creation services help you establish a unique identity, from crafting a memorable brand name to designing a distinctive logo. Create a brand story that connects emotionally with customers, fostering loyalty and trust. Elevate your business with a strong, cohesive brand that sets you apart in the market. Start building your brand today and leave a lasting impression on your audience."
+        >
+        </meta>
       </Helmet>
 
       <PageTitle>
@@ -47,35 +59,45 @@ export default function CreatePage() {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Tooltip arrow placeholder="top" title="go back">
-              <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={handleBack}>
+              <IconButton
+                color="primary"
+                sx={{ p: 2, mr: 2 }}
+                onClick={handleBack}
+              >
                 <ArrowBackTwoToneIcon />
               </IconButton>
             </Tooltip>
           </Grid>
 
           <Grid item xs={10}>
-            <Typography variant="h3" component="h3" gutterBottom>Create a new brand</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>
+              Create a new brand
+            </Typography>
             <Typography variant="subtitle2" gutterBottom>
-              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
+              Lorem ipsum dolor sit amet, qui minim labore adipisicing
+              minim sint cillum sint consectetur cupidatat.
             </Typography>
           </Grid>
         </Grid>
       </PageTitle>
 
       <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="stretch"
+          spacing={3}
+        >
           <Grid item xs={12} md={8}>
-
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>
                 <CreateFromWrapper />
               </Suspense>
             </ErrorBoundary>
-
           </Grid>
         </Grid>
       </Container>
     </>
-  )
+  );
 }
-

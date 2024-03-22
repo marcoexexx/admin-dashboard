@@ -1,11 +1,22 @@
-import { useNavigate } from "react-router-dom";
-import { Avatar, Box, Card, CardMedia, IconButton, Tooltip, Typography, styled } from "@mui/material"
-import { MuiButton } from "@/components/ui"
-import { UploadCoverPhoto, UploadProfilePicture } from "@/components/image-uploader"
+import {
+  UploadCoverPhoto,
+  UploadProfilePicture,
+} from "@/components/image-uploader";
+import { MuiButton } from "@/components/ui";
 import { User } from "@/services/types";
+import {
+  Avatar,
+  Box,
+  Card,
+  CardMedia,
+  IconButton,
+  styled,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone"
-
+import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
 const AvatarWrapper = styled(Card)(({ theme }) => ({
   position: "relative",
@@ -16,8 +27,8 @@ const AvatarWrapper = styled(Card)(({ theme }) => ({
 
   ".MuiAvatar-root": {
     width: theme.spacing(16),
-    height: theme.spacing(16)
-  }
+    height: theme.spacing(16),
+  },
 }));
 
 const ButtonUploadWrapper = styled(Box)(({ theme }) => ({
@@ -37,46 +48,48 @@ const ButtonUploadWrapper = styled(Box)(({ theme }) => ({
     padding: 0,
 
     "&:hover": {
-      background: theme.colors.primary.dark
-    }
-  }
-}))
+      background: theme.colors.primary.dark,
+    },
+  },
+}));
 
 const CardCover = styled(Card)(({ theme }) => ({
   position: "relative",
 
   ".MuiCardMedia-root": {
-    height: theme.spacing(26)
-  }
-}))
+    height: theme.spacing(26),
+  },
+}));
 
 const CardCoverAction = styled(Box)(({ theme }) => ({
   position: "absolute",
   right: theme.spacing(2),
-  bottom: theme.spacing(2)
-}))
-
+  bottom: theme.spacing(2),
+}));
 
 interface ProfileCoverProps {
-  user: User
+  user: User;
 }
 
 export function ProfileCover({ user }: ProfileCoverProps) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleViewAs = () => {
-    navigate(`/profile/detail/${user.username}`)
-  }
+    navigate(`/profile/detail/${user.username}`);
+  };
 
-  const profilePicture = user.image || "/profile_pp.png"
-  const coverPhoto = user.coverImage || "/outdoor.svg"
-
+  const profilePicture = user.image || "/profile_pp.png";
+  const coverPhoto = user.coverImage || "/outdoor.svg";
 
   return (
     <>
       <Box display="flex" mb={3}>
         <Tooltip arrow placement="top" title="Go back">
-          <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={() => navigate(-1)}>
+          <IconButton
+            color="primary"
+            sx={{ p: 2, mr: 2 }}
+            onClick={() => navigate(-1)}
+          >
             <ArrowBackTwoToneIcon />
           </IconButton>
         </Tooltip>
@@ -86,7 +99,8 @@ export function ProfileCover({ user }: ProfileCoverProps) {
             Profile for {user.name}
           </Typography>
           <Typography variant="subtitle2">
-            Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
+            Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
+            sint cillum sint consectetur cupidatat.
           </Typography>
         </Box>
       </Box>
@@ -109,13 +123,30 @@ export function ProfileCover({ user }: ProfileCoverProps) {
         <Typography gutterBottom variant="h4">
           {user.name}
         </Typography>
-        <Typography variant="subtitle2">Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia. Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis.</Typography>
-        <Typography sx={{ py: 2 }} variant="subtitle2" color="text.primary">
+        <Typography variant="subtitle2">
+          Lorem ipsum dolor sit amet, officia excepteur ex fugiat
+          reprehenderit enim labore culpa sint ad nisi Lorem pariatur
+          mollit ex esse exercitation amet. Nisi anim cupidatat excepteur
+          officia. Reprehenderit nostrud nostrud ipsum Lorem est aliquip
+          amet voluptate voluptate dolor minim nulla est proident. Nostrud
+          officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex
+          occaecat reprehenderit commodo officia dolor Lorem duis laboris
+          cupidatat officia voluptate. Culpa proident adipisicing id nulla
+          nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua
+          reprehenderit commodo ex non excepteur duis sunt velit enim.
+          Voluptate laboris sint cupidatat ullamco ut ea consectetur et est
+          culpa et culpa duis.
+        </Typography>
+        <Typography
+          sx={{ py: 2 }}
+          variant="subtitle2"
+          color="text.primary"
+        >
           {/* {user.jobtitle} | {user.location} | {user.followers} followers */}
           title location followers
         </Typography>
         <Box
-          display={{ xs: 'block', md: 'flex' }}
+          display={{ xs: "block", md: "flex" }}
           alignItems="center"
           justifyContent="space-between"
         >
@@ -123,7 +154,12 @@ export function ProfileCover({ user }: ProfileCoverProps) {
             <MuiButton size="small" variant="contained">
               Edit
             </MuiButton>
-            <MuiButton size="small" sx={{ mx: 1 }} variant="outlined" onClick={handleViewAs}>
+            <MuiButton
+              size="small"
+              sx={{ mx: 1 }}
+              variant="outlined"
+              onClick={handleViewAs}
+            >
               View as
             </MuiButton>
             {/* <IconButton color="primary" sx={{ p: 0.5 }}> */}
@@ -142,5 +178,5 @@ export function ProfileCover({ user }: ProfileCoverProps) {
         </Box>
       </Box>
     </>
-  )
+  );
 }

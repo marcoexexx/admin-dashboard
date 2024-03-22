@@ -1,2 +1,2 @@
-export * from './AuditLogsList'
-export * from './AuditLogsListTable'
+export * from "./AuditLogsList";
+export * from "./AuditLogsListTable";

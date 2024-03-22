@@ -1,17 +1,17 @@
-import { registerUserFn } from "@/services/authApi"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Stack } from "@mui/material"
-import { useMutation } from "@tanstack/react-query"
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
-import { object, string, z } from "zod"
-import { useLocalStorage, useStore } from "@/hooks"
-import { useNavigate } from "react-router-dom"
-import { MuiTextFieldWrapper } from "."
-import { PasswordInputField } from "@/components/input-fields"
-import { LoadingButton } from "@mui/lab"
-import AccountCircleIcon from "@mui/icons-material/AccountCircle"
-import { playSoundEffect } from "@/libs/playSound"
-import { useEffect } from "react"
+import { PasswordInputField } from "@/components/input-fields";
+import { useLocalStorage, useStore } from "@/hooks";
+import { playSoundEffect } from "@/libs/playSound";
+import { registerUserFn } from "@/services/authApi";
+import { zodResolver } from "@hookform/resolvers/zod";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { LoadingButton } from "@mui/lab";
+import { Stack } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { object, string, z } from "zod";
+import { MuiTextFieldWrapper } from ".";
 
 const registerUserSchema = object({
   name: string({ required_error: "Username is required" })
@@ -22,76 +22,99 @@ const registerUserSchema = object({
   password: string({ required_error: "Password id required" })
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-      { message: "Password must contain special characters, a number, a capital letter, and a small letter" }
+      {
+        message:
+          "Password must contain special characters, a number, a capital letter, and a small letter",
+      },
     )
     .min(8)
     .max(32),
-  passwordConfirm: string({ required_error: "Please confirm your password" })
+  passwordConfirm: string({
+    required_error: "Please confirm your password",
+  }),
 }).refine(data => data.password === data.passwordConfirm, {
   path: ["passwordConfirm"],
-  message: "Password do not match"
-})
+  message: "Password do not match",
+});
 
-export type RegisterUserInput = z.infer<typeof registerUserSchema>
-
+export type RegisterUserInput = z.infer<typeof registerUserSchema>;
 
 export function RegisterForm() {
-  const { dispatch } = useStore()
+  const { dispatch } = useStore();
 
-  const { set } = useLocalStorage()
+  const { set } = useLocalStorage();
 
-  const navigate = useNavigate()
-  const from = `/verify-email/__code__`
+  const navigate = useNavigate();
+  const from = `/verify-email/__code__`;
 
   const { mutate, isPending } = useMutation({
     mutationFn: registerUserFn,
     onSuccess: (data) => {
       set("VERIFICATION_CODE", {
         id: data.user.id,
-        code: data.user.verificationCode
-      })
+        code: data.user.verificationCode,
+      });
       dispatch({
-        type: "OPEN_TOAST", payload: {
+        type: "OPEN_TOAST",
+        payload: {
           message: "Success create an acount: check your email",
-          severity: "success"
-        }
-      })
-      if (import.meta.env.MODE === "development") console.log({ _devOnly: { redirectUrl: data.redirectUrl } })
-      navigate(from)
-      playSoundEffect("success")
+          severity: "success",
+        },
+      });
+      if (import.meta.env.MODE === "development") {
+        console.log({ _devOnly: { redirectUrl: data.redirectUrl } });
+      }
+      navigate(from);
+      playSoundEffect("success");
     },
     onError: (err: any) => {
       dispatch({
-        type: "OPEN_TOAST", payload: {
+        type: "OPEN_TOAST",
+        payload: {
           message: `failed: ${err.response.data.message}`,
-          severity: "error"
-        }
-      })
-      playSoundEffect("error")
+          severity: "error",
+        },
+      });
+      playSoundEffect("error");
     },
-  })
+  });
 
   const methods = useForm<RegisterUserInput>({
-    resolver: zodResolver(registerUserSchema)
-  })
+    resolver: zodResolver(registerUserSchema),
+  });
 
-  const { handleSubmit, register, setFocus, formState: { errors } } = methods
-
+  const { handleSubmit, register, setFocus, formState: { errors } } =
+    methods;
 
   useEffect(() => {
-    setFocus("name")
-  }, [setFocus])
-
+    setFocus("name");
+  }, [setFocus]);
 
   const onSubmit: SubmitHandler<RegisterUserInput> = (value) => {
-    mutate(value)
-  }
+    mutate(value);
+  };
 
   return (
-    <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Stack
+      px={3}
+      gap={1}
+      flexDirection="column"
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <FormProvider {...methods}>
-        <MuiTextFieldWrapper {...register("name")} label="Username" error={!!errors.name} helperText={!!errors.name ? errors.name.message : ""} />
-        <MuiTextFieldWrapper {...register("email")} label="Email" error={!!errors.email} helperText={!!errors.email ? errors.email.message : ""} />
+        <MuiTextFieldWrapper
+          {...register("name")}
+          label="Username"
+          error={!!errors.name}
+          helperText={!!errors.name ? errors.name.message : ""}
+        />
+        <MuiTextFieldWrapper
+          {...register("email")}
+          label="Email"
+          error={!!errors.email}
+          helperText={!!errors.email ? errors.email.message : ""}
+        />
         <PasswordInputField fieldName="password" />
         <PasswordInputField fieldName="passwordConfirm" />
 
@@ -107,6 +130,5 @@ export function RegisterForm() {
         </LoadingButton>
       </FormProvider>
     </Stack>
-  )
+  );
 }
-

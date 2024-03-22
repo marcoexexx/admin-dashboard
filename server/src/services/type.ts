@@ -1,84 +1,385 @@
-import { AuditLog, OperationAction, Prisma, Resource, User } from "@prisma/client"
-import { PartialShallow } from "lodash"
-import { UserWithRole, guestUserAccessResources, shopownerAccessResources } from "../type";
+import {
+  AuditLog,
+  OperationAction,
+  Prisma,
+  Resource,
+  User,
+} from "@prisma/client";
+import { PartialShallow } from "lodash";
+import { guestUserAccessResources, UserWithRole } from "../type";
 
-import AppError, { StatusCode } from "../utils/appError"
-import Result, { Err, Ok } from "../utils/result"
+import logging from "../middleware/logging/logging";
+import AppError, { StatusCode } from "../utils/appError";
+import { createAuditLog } from "../utils/auditLog";
+import { convertPrismaErrorToAppError } from "../utils/convertPrismaErrorToAppError";
+import Result, { as_result_async, Err, Ok } from "../utils/result";
 
-
-export class MetaAppService {
+export abstract class MetaAppService {
   constructor(
     public resource: Resource,
-    public log: { action: OperationAction; resourceIds: string[] } | undefined
+    public log:
+      | { action: OperationAction; resourceIds: string[]; }
+      | undefined,
   ) {}
 
-
-  async audit(user: User | undefined, _log?: PartialShallow<typeof this.log>): Promise<Result<AuditLog | undefined, AppError>> {
-    const log = { ...this.log, ..._log }
+  async audit(
+    user: User | undefined,
+    _log?: PartialShallow<typeof this.log>,
+  ): Promise<Result<AuditLog | undefined, AppError>> {
+    const log = { ...this.log, ..._log };
 
     // if not user, not create auditlog
-    if (!user) return Ok(undefined)
+    if (!user) return Ok(undefined);
 
-    if (!log) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit log for this resource: log is undefined`))
-    if (!log.action) return Err(AppError.new(StatusCode.ServiceUnavailable, `Could not create audit for this resource: action is undefined`)) 
-    if (!Array.isArray(log.resourceIds) || !log.resourceIds.length) return Ok(undefined)
+    if (!log) {
+      return Err(
+        AppError.new(
+          StatusCode.ServiceUnavailable,
+          `Could not create audit log for this resource: log is undefined`,
+        ),
+      );
+    }
+    if (!log.action) {
+      return Err(
+        AppError.new(
+          StatusCode.ServiceUnavailable,
+          `Could not create audit for this resource: action is undefined`,
+        ),
+      );
+    }
+    if (!Array.isArray(log.resourceIds) || !log.resourceIds.length) {
+      return Ok(undefined);
+    }
 
     const payload: Prisma.AuditLogUncheckedCreateInput = {
       userId: user.id,
       resource: this.resource,
       action: log.action,
-      resourceIds: log.resourceIds
-    }
+      resourceIds: log.resourceIds,
+    };
 
-    // const auditlog = (await createAuditLog(payload))
-    //   .or_else(err => err.status === StatusCode.NotModified ? Ok(undefined) : Err(err))
-    const auditlog = Ok(undefined)
-    console.log({ payload })
-
-    return Ok(auditlog.ok_or_throw())
+    const auditlog = (await createAuditLog(payload))
+      .or_else(err =>
+        err.status === StatusCode.NotModified ? Ok(undefined) : Err(err)
+      );
+    return auditlog;
   }
-
 
   /**
    * Check permissions
    * if Success return true and if access denied return Err
    */
-  async checkPermissions(user: UserWithRole | undefined, action: OperationAction = OperationAction.Read): Promise<Result<boolean, AppError>> {
+  async checkPermissions(
+    user: UserWithRole | undefined,
+    action: OperationAction = OperationAction.Read,
+  ): Promise<Result<boolean, AppError>> {
     if (!user) {
-      const isAccess = guestUserAccessResources.some(perm => perm.resource === this.resource && perm.action === action)
-      if (!isAccess) return Err(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))
-      return Ok(isAccess)
+      const isAccess = guestUserAccessResources.some(perm =>
+        perm.resource === this.resource && perm.action === action
+      );
+      if (!isAccess) {
+        return Err(
+          AppError.new(
+            StatusCode.Forbidden,
+            `You do not have permission to access this resource.`,
+          ),
+        );
+      }
+      return Ok(isAccess);
     }
 
-    if (user.isSuperuser) return Ok(true)
+    if (user.isSuperuser) return Ok(true);
 
-    if (user.shopownerProviderId !== null) {
-      const isAccess = [...guestUserAccessResources, ...shopownerAccessResources]?.some(perm => perm.resource === this.resource && perm.action === action)
-      if (isAccess) return Ok(true)
+    const isAccess = user.role?.permissions.some(perm =>
+      perm.resource === this.resource && perm.action === action
+    );
+    if (!isAccess) {
+      return Err(
+        AppError.new(
+          StatusCode.Forbidden,
+          `You do not have permission to access this resource.`,
+        ),
+      );
     }
-
-    const isAccess = user.role?.permissions.some(perm => perm.resource === this.resource && perm.action === action)
-    if (!isAccess) return Err(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`))
 
     // If does not role, return false
-    return Ok(Boolean(isAccess))
+    return Ok(Boolean(isAccess));
   }
 }
 
+type AnyFn = (...args: any[]) => Promise<any>;
 
-export interface AppService {
+export abstract class AppService<
+  CountFn extends AnyFn,
+  CreateFn extends AnyFn,
+  FindManyFn extends AnyFn,
+  FindUniqueFn extends AnyFn,
+  FindFirstFn extends AnyFn,
+  UpdateFn extends AnyFn,
+  DeleteFn extends AnyFn,
+  DeleteManyFn extends AnyFn,
+  UpsertFnFn extends AnyFn,
+  Repository extends {
+    count: CountFn;
+    create: CreateFn;
+    findMany: FindManyFn;
+    findUnique: FindUniqueFn;
+    findFirst: FindFirstFn;
+    update: UpdateFn;
+    delete: DeleteFn;
+    deleteMany: DeleteManyFn;
+    upsert: UpsertFnFn;
+  },
+> extends MetaAppService {
+  name: string = "AppService";
+
+  constructor(
+    public resource: Resource,
+    public log:
+      | { action: OperationAction; resourceIds: string[]; }
+      | undefined,
+    public repository: Repository,
+  ) {
+    super(resource, log);
+  }
+
   /**
    * Get totle of data
    *
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  tryCount(): Promise<Result<number, AppError>>
+  async tryCount(
+    ...args: Parameters<typeof this.repository.count>
+  ): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.count>>, AppError>
+  > {
+    const [arg] = args;
+
+    const opt = as_result_async(this.repository.count);
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError);
+
+    this.log = {
+      action: OperationAction.Read,
+      resourceIds: [],
+    };
+    return result;
+  }
+
   /**
    * Create a new
    *
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  tryCreate(args: any): Promise<Result<any, AppError>>
+  async tryCreate(
+    ...args: Parameters<typeof this.repository.create>
+  ): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.create>>, AppError>
+  > {
+    const [arg] = args;
+
+    const opt = as_result_async(this.repository.create);
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError);
+
+    this.log = {
+      action: OperationAction.Create,
+      resourceIds: [(result.ok_or_throw() as { id: string; }).id],
+    };
+    return result;
+  }
+
+  /**
+   * Finds all data based on the specified criteria.
+   *
+   * @returns A promise that resolves to a Result containing either the data or an AppError.
+   */
+  async tryFindManyWithCount(
+    ...args: [
+      { pagination: Pagination; },
+      ...Parameters<typeof this.repository.findMany>,
+    ]
+  ): Promise<
+    Result<
+      [number, Awaited<ReturnType<typeof this.repository.findMany>>],
+      AppError
+    >
+  > {
+    const [{ pagination }, arg] = args;
+    const { page = 1, pageSize = 10 } = pagination;
+    const offset = (page - 1) * pageSize;
+
+    const opt = as_result_async(this.repository.findMany);
+    // @ts-ignore
+    const count = await this.tryCount({ where: arg?.where });
+    if (count.is_err()) return Err(count.unwrap_err());
+
+    const result = (await opt({ ...arg, skip: offset, take: pageSize }))
+      .map_err(
+        convertPrismaErrorToAppError,
+      );
+    if (result.is_err()) return Err(result.unwrap_err());
+
+    this.log = {
+      action: OperationAction.Read,
+      resourceIds: (result.ok_or_throw() as { id: string; }[]).map(x =>
+        x.id
+      ),
+    };
+    return Ok([count.ok_or_throw(), result.ok_or_throw()]);
+  }
+
+  /**
+   * Find unique one data by id.
+   *
+   * @returns A promise that resolves to a Result containing either the data or an AppError.
+   */
+  async tryFindUnique(
+    ...args: Parameters<typeof this.repository.findUnique>
+  ): Promise<
+    Result<
+      Awaited<ReturnType<typeof this.repository.findUnique>>,
+      AppError
+    >
+  > {
+    const [arg] = args;
+
+    const opt = as_result_async(this.repository.findUnique);
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError);
+
+    const _res = result.ok();
+    if (!_res) {
+      return Err(
+        AppError.new(StatusCode.NotFound, `${this.resource} not found.`),
+      );
+    }
+
+    if (_res) {
+      this.log = {
+        action: OperationAction.Read,
+        resourceIds: [(_res as { id: string; }).id],
+      };
+    }
+    return result;
+  }
+
+  /**
+   * Find first data by specified criteria.
+   *
+   * @returns A promise that resolves to a Result containing either the data or an AppError.
+   */
+  async tryFindFirst(
+    ...args: Parameters<typeof this.repository.findFirst>
+  ): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.findFirst>>, AppError>
+  > {
+    const [arg] = args;
+
+    const opt = as_result_async(this.repository.findFirst);
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError);
+
+    const _res = result.ok();
+    if (!_res) {
+      return Err(
+        AppError.new(StatusCode.NotFound, `${this.resource} not found.`),
+      );
+    }
+
+    if (_res) {
+      this.log = {
+        action: OperationAction.Read,
+        resourceIds: [(_res as { id: string; }).id],
+      };
+    }
+    return result;
+  }
+
+  /**
+   * Update data by filter and payload.
+   *
+   * @returns A promise that resolves to a Result containing either the data or an AppError.
+   */
+  async tryUpdate(
+    ...args: Parameters<typeof this.repository.update>
+  ): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.update>>, AppError>
+  > {
+    const [arg] = args;
+
+    const opt = as_result_async(this.repository.update);
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError);
+
+    this.log = {
+      action: OperationAction.Update,
+      resourceIds: [(result.ok_or_throw() as { id: string; }).id],
+    };
+    return result;
+  }
+
+  /**
+   * Delete data by id.
+   *
+   * @returns A promise that resolves to a Result containing either the data or an AppError.
+   */
+  async tryDelete(
+    ...args: Parameters<typeof this.repository.delete>
+  ): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.delete>>, AppError>
+  > {
+    const [arg] = args;
+
+    const opt = as_result_async(this.repository.delete);
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError);
+
+    this.log = {
+      action: OperationAction.Delete,
+      resourceIds: [(result.ok_or_throw() as { id: string; }).id],
+    };
+    return result;
+  }
+
+  /**
+   * Delete multi records data by id.
+   *
+   * @returns A promise that resolves to a Result containing either the data or an AppError.
+   */
+  async tryDeleteMany(
+    ...args: Parameters<typeof this.repository.deleteMany>
+  ): Promise<
+    Result<
+      Awaited<ReturnType<typeof this.repository.deleteMany>>,
+      AppError
+    >
+  > {
+    const [arg] = args;
+
+    const opt = as_result_async(this.repository.deleteMany);
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError);
+
+    const _res = (arg?.where?.id as any)?.in;
+    if (Array.isArray(_res) && _res.length) {
+      this.log = {
+        action: OperationAction.Delete,
+        resourceIds: _res,
+      };
+    }
+    return result;
+  }
+
+  async tryUpsert(
+    ...args: Parameters<typeof this.repository.upsert>
+  ): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.update>>, AppError>
+  > {
+    const [arg] = args;
+
+    const opt = as_result_async(this.repository.upsert);
+    const result = (await opt(arg)).map_err(convertPrismaErrorToAppError);
+
+    this.log = {
+      action: OperationAction.Update,
+      resourceIds: [(result.ok_or_throw() as { id: string; }).id],
+    };
+    return result;
+  }
 
   /**
    * Create multi data with excel upload
@@ -87,53 +388,23 @@ export interface AppService {
    * @param uploadBy {User} - The arguments for the uploadBy user.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  tryExcelUpload(file: Express.Multer.File, uploadBy?: User): Promise<Result<any, AppError>>
-
-  /**
-   * Finds all data based on the specified criteria.
-   *
-   * @returns A promise that resolves to a Result containing either the data or an AppError.
-   */
-  tryFindManyWithCount(args: any): Promise<Result<any, AppError>>
-
-  /**
-   * Find unique one data by id.
-   *
-   * @returns A promise that resolves to a Result containing either the data or an AppError.
-   */
-  tryFindUnique(args: any): Promise<Result<any, AppError>>
-
-  /**
-   * Find first data by specified criteria.
-   *
-   * @returns A promise that resolves to a Result containing either the data or an AppError.
-   */
-  tryFindFirst(args: any): Promise<Result<any, AppError>>
-
-  /**
-   * Update data by filter and payload.
-   *
-   * @returns A promise that resolves to a Result containing either the data or an AppError.
-   */
-  tryUpdate(args: any): Promise<Result<any, AppError>>
-
-  /**
-   * Delete data by id.
-   *
-   * @returns A promise that resolves to a Result containing either the data or an AppError.
-   */
-  tryDelete(args: any): Promise<Result<any, AppError>>
-
-  /**
-   * Delete multi records data by id.
-   *
-   * @returns A promise that resolves to a Result containing either the data or an AppError.
-   */
-  tryDeleteMany(args: any): Promise<Result<any, AppError>>
+  async tryExcelUpload(
+    file: Express.Multer.File,
+    uploadBy?: User,
+  ): Promise<Result<any, AppError>> {
+    logging.debug(
+      `Calling unimplemented service: ${this.name}.tryExcelUpload(${file}, ${uploadBy})`,
+    );
+    return Err(
+      AppError.new(
+        StatusCode.ServiceUnavailable,
+        `This feature is not implemented yet.`,
+      ),
+    );
+  }
 }
-
 
 export type Pagination = {
-  page: number,
-  pageSize: number
-}
+  page: number;
+  pageSize: number;
+};

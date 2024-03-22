@@ -1,5 +1,4 @@
-import { bool, cleanEnv, port, str } from "envalid"
-
+import { bool, cleanEnv, port, str } from "envalid";
 
 const validateEnv = () => {
   cleanEnv(process.env, {
@@ -24,8 +23,8 @@ const validateEnv = () => {
     EMAIL_USER: str(),
     EMAIL_PASS: str(),
     EMAIL_HOST: str(),
-    EMAIL_PORT: port()
-  })
-}
+    EMAIL_PORT: port(),
+  });
+};
 
 export default validateEnv;

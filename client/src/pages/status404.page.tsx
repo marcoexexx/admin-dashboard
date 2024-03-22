@@ -1,5 +1,16 @@
-import { Box, Button, Card, Container, Divider, FormControl, InputAdornment, OutlinedInput, Typography, styled } from "@mui/material"
-import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone'
+import SearchTwoToneIcon from "@mui/icons-material/SearchTwoTone";
+import {
+  Box,
+  Button,
+  Card,
+  Container,
+  Divider,
+  FormControl,
+  InputAdornment,
+  OutlinedInput,
+  styled,
+  Typography,
+} from "@mui/material";
 
 const MainContent = styled(Box)(() => ({
   height: "100%",
@@ -7,16 +18,16 @@ const MainContent = styled(Box)(() => ({
   overflow: "auto",
   flexDirection: "column",
   alignItems: "center",
-  justifyContent: "center"
-}))
+  justifyContent: "center",
+}));
 
-const OutlinedInputWrapper = styled(OutlinedInput)(({theme}) => ({
-  backgroundColor: theme.colors.alpha.white[100]
-}))
+const OutlinedInputWrapper = styled(OutlinedInput)(({ theme }) => ({
+  backgroundColor: theme.colors.alpha.white[100],
+}));
 
-const ButtonSearch = styled(Button)(({theme}) => ({
-  marginRight: `-${theme.spacing(1)}`
-}))
+const ButtonSearch = styled(Button)(({ theme }) => ({
+  marginRight: `-${theme.spacing(1)}`,
+}));
 
 export default function Status404() {
   return (
@@ -27,15 +38,21 @@ export default function Status404() {
           <Typography variant="h2" sx={{ my: 2 }}>
             The page you were looking for doesn't exist.
           </Typography>
-          <Typography variant="h4" color="text.secondary" fontWeight="normal" sx={{ mb: 4 }}>
-            It's on us, we moved the content to a different page. The search below should help!
+          <Typography
+            variant="h4"
+            color="text.secondary"
+            fontWeight="normal"
+            sx={{ mb: 4 }}
+          >
+            It's on us, we moved the content to a different page. The
+            search below should help!
           </Typography>
         </Box>
 
         <Container maxWidth="sm">
           <Card sx={{ textAlign: "center", mt: 3, p: 4 }}>
             <FormControl variant="outlined" fullWidth>
-              <OutlinedInputWrapper 
+              <OutlinedInputWrapper
                 type="text"
                 placeholder="Search terms here..."
                 endAdornment={
@@ -62,5 +79,5 @@ export default function Status404() {
         </Container>
       </Container>
     </MainContent>
-  )
+  );
 }

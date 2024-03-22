@@ -1,48 +1,55 @@
 import { Router } from "express";
-import { validate } from "../middleware/validate";
+import {
+  createUserAddressHandler,
+  deleteMultiUserAddressesHandler,
+  deleteUserAddressHandler,
+  getUserAddressesHandler,
+  getUserAddressHandler,
+  updateUserAddressHandler,
+} from "../controllers/userAddress.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { createUserAddressSchema, deleteMultiUserAddressesSchema, getUserAddressSchema, updateUserAddressSchema } from "../schemas/userAddress.schema";
-import { createUserAddressHandler, deleteMultiUserAddressesHandler, deleteUserAddressHandler, getUserAddressHandler, getUserAddressesHandler, updateUserAddressHandler } from "../controllers/userAddress.controller";
-import { checkBlockedUser } from "../middleware/checkBlockedUser";
+import { validate } from "../middleware/validate";
+import {
+  createUserAddressSchema,
+  deleteMultiUserAddressesSchema,
+  getUserAddressSchema,
+  updateUserAddressSchema,
+} from "../schemas/userAddress.schema";
 
+const router = Router();
 
-const router = Router()
-
-router.use(deserializeUser, requiredUser, checkBlockedUser)
-
+router.use(deserializeUser, requiredUser, checkBlockedUser);
 
 router.route("")
   .get(
-    getUserAddressesHandler
+    getUserAddressesHandler,
   )
   .post(
     validate(createUserAddressSchema),
-    createUserAddressHandler
-  )
-
+    createUserAddressHandler,
+  );
 
 router.route("/multi")
   .delete(
     validate(deleteMultiUserAddressesSchema),
-    deleteMultiUserAddressesHandler
-  )
-
+    deleteMultiUserAddressesHandler,
+  );
 
 router.route("/detail/:userAddressId")
   .get(
     deserializeUser,
     validate(getUserAddressSchema),
-    getUserAddressHandler
+    getUserAddressHandler,
   )
   .patch(
-    validate(updateUserAddressSchema), 
-    updateUserAddressHandler
+    validate(updateUserAddressSchema),
+    updateUserAddressHandler,
   )
   .delete(
     validate(getUserAddressSchema),
-    deleteUserAddressHandler
-  )
+    deleteUserAddressHandler,
+  );
 
-
-export default router
+export default router;

@@ -1,10 +1,10 @@
-export * from './useGetPermissions'
-export * from './useGetPermission'
+export * from "./useGetPermission";
+export * from "./useGetPermissions";
 
-export * from './useCreatePermission'
-export * from './useCreateMultiPermissions'
+export * from "./useCreateMultiPermissions";
+export * from "./useCreatePermission";
 
-export * from './useDeletePermission'
-export * from './useDeleteMultiPermissions'
+export * from "./useDeleteMultiPermissions";
+export * from "./useDeletePermission";
 
-export * from './useUpdatePermission'
+export * from "./useUpdatePermission";

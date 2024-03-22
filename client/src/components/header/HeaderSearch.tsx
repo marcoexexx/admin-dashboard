@@ -1,64 +1,90 @@
-import { TransitionProps } from "@mui/material/transitions"
-import { Ref, forwardRef, useState } from "react"
-import { Box, Link, Dialog, DialogContent, DialogTitle, Divider, IconButton, InputAdornment, Slide, TextField, Tooltip, Typography, styled, List, lighten, Theme, Hidden, ListItemAvatar, Avatar, ListItemButton } from "@mui/material"
+import {
+  Avatar,
+  Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Hidden,
+  IconButton,
+  InputAdornment,
+  lighten,
+  Link,
+  List,
+  ListItemAvatar,
+  ListItemButton,
+  Slide,
+  styled,
+  TextField,
+  Theme,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { TransitionProps } from "@mui/material/transitions";
+import { forwardRef, Ref, useState } from "react";
 
-import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone'
-import FindInPageTwoToneIcon from '@mui/icons-material/FindInPageTwoTone'
-import ChevronRightTwoToneIcon from '@mui/icons-material/ChevronRightTwoTone'
-import { MuiButton } from "../ui"
+import ChevronRightTwoToneIcon from "@mui/icons-material/ChevronRightTwoTone";
+import FindInPageTwoToneIcon from "@mui/icons-material/FindInPageTwoTone";
+import SearchTwoToneIcon from "@mui/icons-material/SearchTwoTone";
+import { MuiButton } from "../ui";
 
-
-const Transition = forwardRef(function(props: TransitionProps & { children: React.ReactElement<any, any>}, ref: Ref<unknown>) {
-  return <Slide direction="down" ref={ref} {...props} />
-})
+const Transition = forwardRef(
+  function(
+    props: TransitionProps & { children: React.ReactElement<any, any>; },
+    ref: Ref<unknown>,
+  ) {
+    return <Slide direction="down" ref={ref} {...props} />;
+  },
+);
 
 const DialogWrapper = styled(Dialog)(() => ({
   ".MuiDialog-container": {
-    height: "auto"
+    height: "auto",
   },
 
   ".MuiDialog-paperScrollPaper": {
-    maxHeight: "calc(100vh - 64px)"
-  }
-}))
+    maxHeight: "calc(100vh - 64px)",
+  },
+}));
 
-const SearchInputWrapper = styled(TextField)(({theme}) => ({
+const SearchInputWrapper = styled(TextField)(({ theme }) => ({
   background: theme.colors.alpha.white[100],
 
   ".MuiInputBase-input": {
-    fontSize: theme.typography.pxToRem(17)
-  }
-}))
+    fontSize: theme.typography.pxToRem(17),
+  },
+}));
 
-const DialogTitleWrapper = styled(DialogTitle)(({theme}) => ({
+const DialogTitleWrapper = styled(DialogTitle)(({ theme }) => ({
   background: theme.colors.alpha.black[5],
-  padding: theme.spacing(3)
-}))
-
+  padding: theme.spacing(3),
+}));
 
 export default function HeaderSearch() {
-  const [openSearchResults, setOpenSearchResults] = useState(false)
-  const [searchValue, setSearchValue] = useState("")
+  const [openSearchResults, setOpenSearchResults] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
-  const handleSearchChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = evt.target
+  const handleSearchChange = (
+    evt: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const { value } = evt.target;
 
-    setSearchValue(value)
+    setSearchValue(value);
 
     if (value) {
-      if (!openSearchResults) setOpenSearchResults(true)
-    } else setOpenSearchResults(false)
-  }
+      if (!openSearchResults) setOpenSearchResults(true);
+    } else setOpenSearchResults(false);
+  };
 
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   const handleClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   return (
     <>
@@ -87,7 +113,7 @@ export default function HeaderSearch() {
                 <InputAdornment position="start">
                   <SearchTwoToneIcon />
                 </InputAdornment>
-              )
+              ),
             }}
             placeholder="Search terms here..."
             fullWidth
@@ -129,7 +155,7 @@ export default function HeaderSearch() {
                     <Avatar
                       sx={{
                         background: (theme: Theme) =>
-                          theme.palette.secondary.main
+                          theme.palette.secondary.main,
                       }}
                     >
                       <FindInPageTwoToneIcon />
@@ -141,7 +167,7 @@ export default function HeaderSearch() {
                     <Link
                       href="#"
                       underline="hover"
-                      sx={{ fontWeight: 'bold' }}
+                      sx={{ fontWeight: "bold" }}
                       variant="body2"
                     >
                       Dashboard for Healthcare Platform
@@ -152,7 +178,7 @@ export default function HeaderSearch() {
                     variant="body2"
                     sx={{
                       color: (theme: Theme) =>
-                        lighten(theme.palette.secondary.main, 0.5)
+                        lighten(theme.palette.secondary.main, 0.5),
                     }}
                   >
                     This page contains all the necessary information for
@@ -168,7 +194,7 @@ export default function HeaderSearch() {
                     <Avatar
                       sx={{
                         background: (theme: Theme) =>
-                          theme.palette.secondary.main
+                          theme.palette.secondary.main,
                       }}
                     >
                       <FindInPageTwoToneIcon />
@@ -180,7 +206,7 @@ export default function HeaderSearch() {
                     <Link
                       href="#"
                       underline="hover"
-                      sx={{ fontWeight: 'bold' }}
+                      sx={{ fontWeight: "bold" }}
                       variant="body2"
                     >
                       Example Projects Application
@@ -191,10 +217,11 @@ export default function HeaderSearch() {
                     variant="body2"
                     sx={{
                       color: (theme: Theme) =>
-                        lighten(theme.palette.secondary.main, 0.5)
+                        lighten(theme.palette.secondary.main, 0.5),
                     }}
                   >
-                    This is yet another search result pointing to a app page.
+                    This is yet another search result pointing to a app
+                    page.
                   </Typography>
                 </Box>
                 <ChevronRightTwoToneIcon />
@@ -206,7 +233,7 @@ export default function HeaderSearch() {
                     <Avatar
                       sx={{
                         background: (theme: Theme) =>
-                          theme.palette.secondary.main
+                          theme.palette.secondary.main,
                       }}
                     >
                       <FindInPageTwoToneIcon />
@@ -218,7 +245,7 @@ export default function HeaderSearch() {
                     <Link
                       href="#"
                       underline="hover"
-                      sx={{ fontWeight: 'bold' }}
+                      sx={{ fontWeight: "bold" }}
                       variant="body2"
                     >
                       Search Results Page
@@ -229,7 +256,7 @@ export default function HeaderSearch() {
                     variant="body2"
                     sx={{
                       color: (theme: Theme) =>
-                        lighten(theme.palette.secondary.main, 0.5)
+                        lighten(theme.palette.secondary.main, 0.5),
                     }}
                   >
                     Choose if you would like to show or not this typography
@@ -251,5 +278,5 @@ export default function HeaderSearch() {
         )}
       </DialogWrapper>
     </>
-  )
+  );
 }

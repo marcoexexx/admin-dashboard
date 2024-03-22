@@ -1,45 +1,43 @@
-import { Box, Typography, styled } from "@mui/material";
-import { FormModal } from "./forms";
-import { MuiButton } from "./ui";
 import { ModalFormField } from "@/context/store";
 import { useStore } from "@/hooks";
+import { Box, styled, Typography } from "@mui/material";
+import { FormModal } from "./forms";
+import { MuiButton } from "./ui";
 
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import DeleteTwoToneIcon from "@mui/icons-material/DeleteTwoTone";
 
-
-const ButtonError = styled(MuiButton)(({theme}) => ({
+const ButtonError = styled(MuiButton)(({ theme }) => ({
   background: theme.colors.error.main,
   color: theme.palette.error.contrastText,
 
   "&:hover": {
-    background: theme.colors.error.dark
-  }
-}))
-
+    background: theme.colors.error.dark,
+  },
+}));
 
 interface BulkActionsProps {
-  field: ModalFormField
-  isAllowedDelete: boolean
-  onDelete?: () => void
+  field: ModalFormField;
+  isAllowedDelete: boolean;
+  onDelete?: () => void;
 }
 
 export function BulkActions(props: BulkActionsProps) {
-  const { field, isAllowedDelete, onDelete } = props
+  const { field, isAllowedDelete, onDelete } = props;
 
-  const { dispatch } = useStore()
+  const { dispatch } = useStore();
 
   const handleOnDelete = () => {
-    if (!onDelete) return
+    if (!onDelete) return;
 
-    onDelete()
-  }
+    onDelete();
+  };
 
   const handleClickDeleteAction = () => {
     dispatch({
       type: "OPEN_MODAL_FORM",
-      payload: field
-    })
-  }
+      payload: field,
+    });
+  };
 
   return (
     <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -49,16 +47,17 @@ export function BulkActions(props: BulkActionsProps) {
         </Typography>
 
         {isAllowedDelete
-        ? <ButtonError
-            sx={{ ml: 1 }}
-            startIcon={<DeleteTwoToneIcon />}
-            variant="contained"
-            onClick={handleClickDeleteAction}
-          >
-            Delete
-          </ButtonError>
-        : null}
-        
+          ? (
+            <ButtonError
+              sx={{ ml: 1 }}
+              startIcon={<DeleteTwoToneIcon />}
+              variant="contained"
+              onClick={handleClickDeleteAction}
+            >
+              Delete
+            </ButtonError>
+          )
+          : null}
       </Box>
 
       <FormModal
@@ -70,11 +69,23 @@ export function BulkActions(props: BulkActionsProps) {
             <Typography>Are you sure want to delete</Typography>
           </Box>
           <Box display="flex" flexDirection="row" gap={1}>
-            <MuiButton variant="contained" color="error" onClick={handleOnDelete}>Delete</MuiButton>
-            <MuiButton variant="outlined" onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}>Cancel</MuiButton>
+            <MuiButton
+              variant="contained"
+              color="error"
+              onClick={handleOnDelete}
+            >
+              Delete
+            </MuiButton>
+            <MuiButton
+              variant="outlined"
+              onClick={() =>
+                dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}
+            >
+              Cancel
+            </MuiButton>
           </Box>
         </Box>
       </FormModal>
     </Box>
-  )
+  );
 }

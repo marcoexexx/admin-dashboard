@@ -1,18 +1,23 @@
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material"
-import { Resource, ShopownerProvider } from "@/services/types";
 import { EnhancedTable, TypedColumn } from "@/components";
-import { ShopownersFilterForm } from ".";
 import { CacheResource } from "@/context/cacheKey";
-import { useStore } from "@/hooks";
 import { INITIAL_PAGINATION } from "@/context/store";
-
+import { useStore } from "@/hooks";
+import { Resource, ShopownerProvider } from "@/services/types";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
+import { ShopownersFilterForm } from ".";
 
 const columns: TypedColumn<ShopownerProvider>[] = [
   {
     id: "name",
     align: "left",
     name: "Name",
-    render: ({ value }) => <Typography>{value.name}</Typography>
+    render: ({ value }) => <Typography>{value.name}</Typography>,
   },
   // {
   //   id: "remark",
@@ -24,37 +29,46 @@ const columns: TypedColumn<ShopownerProvider>[] = [
     id: "createdAt",
     align: "left",
     name: "Created At",
-    render: ({ value }) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
+    render: ({ value }) => (
+      <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
+    ),
   },
-]
-
+];
 
 interface ShopownersListTableProps {
-  shopowners: ShopownerProvider[]
-  count: number
-  isLoading?: boolean
-  onDelete?: (id: string) => void
-  onMultiDelete?: (ids: string[]) => void
-  onCreateMany?: (buf: ArrayBuffer) => void
+  shopowners: ShopownerProvider[];
+  count: number;
+  isLoading?: boolean;
+  onDelete?: (id: string) => void;
+  onMultiDelete?: (ids: string[]) => void;
+  onCreateMany?: (buf: ArrayBuffer) => void;
 }
 
 export function ShopownersListTable(props: ShopownersListTableProps) {
-  const { shopowners, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
-  const { state: { shopownerFilter: { pagination } }, dispatch } = useStore()
+  const {
+    shopowners,
+    count,
+    isLoading,
+    onCreateMany,
+    onDelete,
+    onMultiDelete,
+  } = props;
+  const { state: { shopownerFilter: { pagination } }, dispatch } =
+    useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
       type: "SET_SHOPOWNER_PAGE",
-      payload: page += 1
-    })
-  }
+      payload: page += 1,
+    });
+  };
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: "SET_SHOPOWNER_PAGE_SIZE",
-      payload: parseInt(evt.target.value, 10)
-    })
-  }
+      payload: parseInt(evt.target.value, 10),
+    });
+  };
 
   return (
     <Card>
@@ -85,7 +99,6 @@ export function ShopownersListTable(props: ShopownersListTableProps) {
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>
-
     </Card>
-  )
+  );
 }

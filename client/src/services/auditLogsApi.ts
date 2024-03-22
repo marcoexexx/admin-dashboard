@@ -1,28 +1,36 @@
-import { AuditLog, GenericResponse, HttpListResponse, Pagination, QueryOptionArgs } from "./types";
-import { BaseApiService } from "./baseApiService";
 import { AuditLogWhereInput } from "@/context/auditLogs";
 import { CacheResource } from "@/context/cacheKey";
 import { authApi } from "./authApi";
+import { BaseApiService } from "./baseApiService";
+import {
+  AuditLog,
+  GenericResponse,
+  HttpListResponse,
+  Pagination,
+  QueryOptionArgs,
+} from "./types";
 
-
-export class AuditLogApiService extends BaseApiService<AuditLogWhereInput, AuditLog> {
-  constructor(public repo: CacheResource) { super() }
-
-  static new() {
-    return new AuditLogApiService(CacheResource.AuditLog)
+export class AuditLogApiService
+  extends BaseApiService<AuditLogWhereInput, AuditLog>
+{
+  constructor(public repo: CacheResource) {
+    super();
   }
 
+  static new() {
+    return new AuditLogApiService(CacheResource.AuditLog);
+  }
 
   async findMany(
-    opt: QueryOptionArgs, 
+    opt: QueryOptionArgs,
     where: {
       filter?: AuditLogWhereInput["where"];
       pagination: Pagination;
       include?: AuditLogWhereInput["include"];
-    }
+    },
   ): Promise<HttpListResponse<AuditLog>> {
-    const url = `/${this.repo}`
-    const { filter, pagination, include } = where
+    const url = `/${this.repo}`;
+    const { filter, pagination, include } = where;
 
     const { data } = await authApi.get(url, {
       ...opt,
@@ -31,22 +39,22 @@ export class AuditLogApiService extends BaseApiService<AuditLogWhereInput, Audit
         pagination,
         include,
         orderBy: {
-          updatedAt: "desc"
+          updatedAt: "desc",
         },
       },
-    })
-    return data
+    });
+    return data;
   }
 
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<AuditLog, "auditLog">> {
+    const url = `/${this.repo}/detail/${id}`;
 
-  async delete(id: string): Promise<GenericResponse<AuditLog, "auditLog">> {
-    const url = `/${this.repo}/detail/${id}`
-
-    const { data } = await authApi.delete(url)
-    return data
+    const { data } = await authApi.delete(url);
+    return data;
   }
 }
-
 
 /**
  * DEBUG

@@ -1,3 +1,3 @@
-export * from './UploadProfilePicture'
-export * from './UploadCoverPhoto'
-export * from './UploadProductImageAppend'
+export * from "./UploadCoverPhoto";
+export * from "./UploadProductImageAppend";
+export * from "./UploadProfilePicture";

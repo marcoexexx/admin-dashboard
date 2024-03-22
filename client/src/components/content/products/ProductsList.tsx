@@ -1,94 +1,109 @@
 import { useStore } from "@/hooks";
-import { useCreateMultiProducts, useDeleteMultiProducts, useDeleteProduct, useGetProducts, useUpdateProduct } from "@/hooks/product";
+import {
+  useCreateMultiProducts,
+  useDeleteMultiProducts,
+  useDeleteProduct,
+  useGetProducts,
+  useUpdateProduct,
+} from "@/hooks/product";
 
-import { Card } from "@mui/material";
-import { ProductsListTable } from ".";
-import { Product, ProductStatus } from "@/services/types";
 import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
-
+import { Product, ProductStatus } from "@/services/types";
+import { Card } from "@mui/material";
+import { ProductsListTable } from ".";
 
 export function ProductsList() {
-  const { state: { productFilter }, dispatch } = useStore()
+  const { state: { productFilter }, dispatch } = useStore();
 
   // Queries
   const productsQuery = useGetProducts({
     filter: productFilter.where,
     pagination: productFilter.pagination || INITIAL_PAGINATION,
     include: {
-      specification: false,
+      specification: true,
       brand: true,
       categories: {
         include: {
           category: true,
-        }
+        },
       },
       salesCategory: {
         include: {
-          salesCategory: true
-        }
+          salesCategory: true,
+        },
       },
-      creator: true
-    }
-  })
+      creator: {
+        include: {
+          shopownerProvider: true,
+        },
+      },
+    },
+  });
 
   // Mutations
-  const createProductsMutation = useCreateMultiProducts()
-  const deleteProductMutation = useDeleteProduct()
-  const deleteProductsMutation = useDeleteMultiProducts()
-  const statusChangeProductMutation = useUpdateProduct()
+  const createProductsMutation = useCreateMultiProducts();
+  const deleteProductMutation = useDeleteProduct();
+  const deleteProductsMutation = useDeleteMultiProducts();
+  const statusChangeProductMutation = useUpdateProduct();
 
   // Extraction
-  const data = productsQuery.try_data.ok_or_throw()
-
+  const data = productsQuery.try_data.ok_or_throw();
 
   function handleCreateManyProducts(data: ArrayBuffer) {
-    createProductsMutation.mutate(data)
+    createProductsMutation.mutate(data);
   }
 
   function handleDeleteProduct(id: string) {
-    deleteProductMutation.mutate(id)
+    deleteProductMutation.mutate(id);
   }
 
   function handleDeleteMultiProducts(ids: string[]) {
-    deleteProductsMutation.mutate(ids)
+    deleteProductsMutation.mutate(ids);
   }
 
-  function handleChangeStatusProduct(product: Product, status: ProductStatus) {
-    dispatch({ type: "OPEN_BACKDROP" })
+  function handleChangeStatusProduct(
+    product: Product,
+    status: ProductStatus,
+  ) {
+    dispatch({ type: "OPEN_BACKDROP" });
 
     statusChangeProductMutation.mutate({
-      id: product.id, payload: {
+      id: product.id,
+      payload: {
         ...product,
         overview: product.overview || undefined,
         description: product.description || undefined,
         status,
         categories: product.categories?.map(x => x.categoryId) || [],
-        // TODO: fix type 
+        dealerPrice: product.dealerPrice ?? undefined,
+        marketPrice: product.marketPrice ?? undefined,
+        // TODO: fix type
         // @ts-ignore
-        salesCategory: product.salesCategory?.map(({ salesCategoryId, discount }) => ({
+        salesCategory: product.salesCategory?.map((
+          { salesCategoryId, discount },
+        ) => ({
           salesCategory: salesCategoryId,
-          discount
-        }))
-
-      }
-    })
+          discount,
+        })),
+      },
+    });
   }
 
-
   // TODO: Skeleton table loader
-  if (!data) return <SuspenseLoader />
+  if (!data) return <SuspenseLoader />;
 
-
-  return <Card>
-    <ProductsListTable
-      isLoading={productsQuery.isLoading}
-      onStatusChange={handleChangeStatusProduct}
-      products={data.results}
-      count={data.count}
-      onCreateMany={handleCreateManyProducts}
-      onDelete={handleDeleteProduct}
-      onMultiDelete={handleDeleteMultiProducts}
-    />
-  </Card>
+  return (
+    <Card>
+      <ProductsListTable
+        isLoading={productsQuery.isLoading}
+        onStatusChange={handleChangeStatusProduct}
+        products={data.results}
+        count={data.count}
+        onCreateMany={handleCreateManyProducts}
+        onDelete={handleDeleteProduct}
+        onMultiDelete={handleDeleteMultiProducts}
+      />
+    </Card>
+  );
 }

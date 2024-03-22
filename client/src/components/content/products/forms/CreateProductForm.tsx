@@ -1,22 +1,41 @@
-import { Box, FormControlLabel, FormHelperText, Grid, InputAdornment, MenuItem, OutlinedInput, Switch, TextField } from "@mui/material";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { MuiButton } from "@/components/ui";
+import { queryClient } from "@/components";
 import { FormModal } from "@/components/forms";
+import {
+  BrandInputField,
+  CatgoryMultiInputField,
+  EditorInputField,
+  ImageMultiInputField,
+  SpecificationInputField,
+} from "@/components/input-fields";
+import { productStockStatusLabel } from "@/components/table-labels";
+import { MuiButton } from "@/components/ui";
+import { CacheResource } from "@/context/cacheKey";
+import { useBeforeUnloadPage, useStore } from "@/hooks";
+import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
+import { useCreateProduct } from "@/hooks/product";
+import { tryParseInt } from "@/libs/result/std";
+import {
+  PriceUnit,
+  ProductStatus,
+  ProductStockStatus,
+} from "@/services/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Box,
+  FormControlLabel,
+  FormHelperText,
+  Grid,
+  InputAdornment,
+  MenuItem,
+  OutlinedInput,
+  Switch,
+  TextField,
+} from "@mui/material";
+import { useEffect } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { boolean, number, object, string, z } from "zod";
 import { CreateBrandForm } from "../../brands/forms";
 import { CreateCategoryForm } from "../../categories/forms";
-import { BrandInputField, CatgoryMultiInputField, EditorInputField, ImageMultiInputField, SpecificationInputField } from "@/components/input-fields";
-import { PriceUnit, ProductStatus, ProductStockStatus } from "@/services/types";
-import { CacheResource } from "@/context/cacheKey";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { boolean, number, object, string, z } from "zod";
-import { useStore } from "@/hooks";
-import { queryClient } from "@/components";
-import { useEffect } from "react";
-import { useCreateProduct } from "@/hooks/product";
-import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
-import { tryParseInt } from "@/libs/result/std";
-import { productStockStatusLabel } from "@/components/table-labels";
-
 
 const createProductSchema = object({
   price: number({ required_error: "Price is required " }),
@@ -25,8 +44,11 @@ const createProductSchema = object({
   title: string({ required_error: "Brand is required" })
     .min(2).max(128),
   specification: object({
-    name: string({ required_error: "Specification name is required" }).min(1),
-    value: string({ required_error: "Specification value is required" }).min(1),
+    name: string({ required_error: "Specification name is required" }).min(
+      1,
+    ),
+    value: string({ required_error: "Specification value is required" })
+      .min(1),
   }).array(),
   overview: string().max(5000).optional(),
   description: string().max(5000).optional(),
@@ -42,47 +64,56 @@ const createProductSchema = object({
   isPending: boolean().default(false),
   status: z.nativeEnum(ProductStatus).default("Draft"),
 
-  images: string().array().default([]),
-  itemCode: string().nullable().optional(),
-})
+  images: string().startsWith("http").array().default([]),
+});
 
-export type CreateProductInput = z.infer<typeof createProductSchema>
+export type CreateProductInput = z.infer<typeof createProductSchema>;
 
 export function CreateProductForm() {
-  const { state: { modalForm } } = useStore()
+  const { state: { modalForm } } = useStore();
 
   const methods = useForm<CreateProductInput>({
-    resolver: zodResolver(createProductSchema)
-  })
+    resolver: zodResolver(createProductSchema),
+  });
 
-  const { handleSubmit, register, formState: { errors } } = methods
+  useBeforeUnloadPage();
+
+  const { handleSubmit, register, formState: { errors } } = methods;
 
   // Mutations
-  const createProductMutation = useCreateProduct()
+  const createProductMutation = useCreateProduct();
 
   // Queries
-  const exchangesQuery = useGetExchangeByLatestUnit(methods.getValues("priceUnit"))
+  const exchangesQuery = useGetExchangeByLatestUnit(
+    methods.getValues("priceUnit"),
+  );
 
   // Extraction
-  const exchangeRate = exchangesQuery.try_data.ok_or_throw()
-
+  const exchangeRate = exchangesQuery.try_data.ok_or_throw();
 
   useEffect(() => {
     queryClient.invalidateQueries({
-      queryKey: [CacheResource.Exchange, "latest", methods.getValues("priceUnit")],
-    })
-  }, [methods.watch("priceUnit")])
-
+      queryKey: [
+        CacheResource.Exchange,
+        "latest",
+        methods.getValues("priceUnit"),
+      ],
+    });
+  }, [methods.watch("priceUnit")]);
 
   // Calculate percent discount
   useEffect(() => {
-    const price = methods.getValues("price")
-    const marketPrice = methods.getValues("marketPrice")
+    const price = methods.getValues("price");
+    const marketPrice = methods.getValues("marketPrice");
 
-    if (!price || !!marketPrice) methods.setValue("discount", 0)
-    if (price && marketPrice) methods.setValue("discount", ((marketPrice - price) / marketPrice) * 100)
-  }, [methods.watch("marketPrice"), methods.watch("price")])
-
+    if (!price || !!marketPrice) methods.setValue("discount", 0);
+    if (price && marketPrice) {
+      methods.setValue(
+        "discount",
+        ((marketPrice - price) / marketPrice) * 100,
+      );
+    }
+  }, [methods.watch("marketPrice"), methods.watch("price")]);
 
   const onSubmit: SubmitHandler<CreateProductInput> = (value) => {
     createProductMutation.mutate({
@@ -90,25 +121,35 @@ export function CreateProductForm() {
       status: value.isPending
         ? "Pending"
         : "Draft",
-      salesCategory: []
-    })
-  }
+      salesCategory: [],
+    });
+  };
 
   const handleOnCalculate = (_: React.MouseEvent<HTMLButtonElement>) => {
-    const price = methods.getValues("price")
-    const rate = exchangeRate?.[0]?.rate || 1
+    const price = methods.getValues("price");
+    const rate = exchangeRate?.[0]?.rate || 1;
 
-    methods.setValue("price", price * rate)
-  }
-
+    methods.setValue("price", price * rate);
+  };
 
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField fullWidth {...register("title")} label="Title" error={!!errors.title} helperText={!!errors.title ? errors.title.message : ""} />
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
+              <TextField
+                fullWidth
+                {...register("title")}
+                label="Title"
+                error={!!errors.title}
+                helperText={!!errors.title ? errors.title.message : ""}
+              />
               <OutlinedInput
                 fullWidth
                 {...register("price", { valueAsNumber: true })}
@@ -116,30 +157,41 @@ export function CreateProductForm() {
                 placeholder="Price"
                 error={!!errors.price}
                 inputProps={{
-                  step: "0.01"
+                  step: "0.01",
                 }}
-                // helperText={!!errors.price 
-                //   ? errors.price.message 
+                // helperText={!!errors.price
+                //   ? errors.price.message
                 //   : "1 dolla ~ 2098.91 kyat"
-                // } 
+                // }
                 sx={{
-                  my: 1
+                  my: 1,
                 }}
                 endAdornment={
                   <InputAdornment position="end">
-                    <MuiButton onClick={handleOnCalculate} variant="outlined" size="small">
+                    <MuiButton
+                      onClick={handleOnCalculate}
+                      variant="outlined"
+                      size="small"
+                    >
                       Convert to MMK
                     </MuiButton>
                   </InputAdornment>
                 }
               />
-              {!!errors.price ? <FormHelperText error id="price-error"></FormHelperText> : <FormHelperText>{`1 ${methods.getValues("priceUnit")} ~ ${exchangeRate?.[0]?.rate} MMK`}</FormHelperText>}
+              {!!errors.price
+                ? <FormHelperText error id="price-error"></FormHelperText>
+                : (
+                  <FormHelperText>
+                    {`1 ${methods.getValues("priceUnit")} ~ ${
+                      exchangeRate?.[0]?.rate
+                    } MMK`}
+                  </FormHelperText>
+                )}
             </Box>
           </Grid>
 
-
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 {...register("priceUnit")}
                 defaultValue={PriceUnit.MMK}
@@ -147,7 +199,9 @@ export function CreateProductForm() {
                 label="Price unit"
                 select
                 error={!!errors.priceUnit}
-                helperText={!!errors.priceUnit ? errors.priceUnit.message : ""}
+                helperText={!!errors.priceUnit
+                  ? errors.priceUnit.message
+                  : ""}
                 fullWidth
               >
                 {(Object.keys(PriceUnit) as PriceUnit[]).map(t => (
@@ -156,42 +210,66 @@ export function CreateProductForm() {
                   </MenuItem>
                 ))}
               </TextField>
-              <TextField fullWidth {...register("dealerPrice", { setValueAs: (v) => !v ? undefined : tryParseInt(v, 10).unwrap_or(0) })} type="number" label="Dealer Price" error={!!errors.dealerPrice} helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""} />
+              <TextField
+                fullWidth
+                {...register("dealerPrice", {
+                  setValueAs: (v) =>
+                    !v ? undefined : tryParseInt(v, 10).unwrap_or(0),
+                })}
+                type="number"
+                label="Dealer Price"
+                error={!!errors.dealerPrice}
+                helperText={!!errors.dealerPrice
+                  ? errors.dealerPrice.message
+                  : ""}
+              />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
-              <TextField fullWidth {...register("marketPrice", { setValueAs: (v) => !v ? undefined : tryParseInt(v, 10).unwrap_or(0) })} type="number" label="MarketPrice" error={!!errors.marketPrice} helperText={!!errors.marketPrice ? errors.marketPrice.message : ""} />
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
+              <TextField
+                fullWidth
+                {...register("marketPrice", {
+                  setValueAs: (v) =>
+                    !v ? undefined : tryParseInt(v, 10).unwrap_or(0),
+                })}
+                type="number"
+                label="MarketPrice"
+                error={!!errors.marketPrice}
+                helperText={!!errors.marketPrice
+                  ? errors.marketPrice.message
+                  : ""}
+              />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <CatgoryMultiInputField />
             </Box>
           </Grid>
 
           <Grid item xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <EditorInputField fieldName="overview" />
             </Box>
           </Grid>
 
           <Grid item xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <EditorInputField fieldName="description" />
             </Box>
           </Grid>
 
           <Grid item xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <ImageMultiInputField />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 fullWidth
                 {...register("instockStatus")}
@@ -199,44 +277,51 @@ export function CreateProductForm() {
                 select
                 label="Instock Status"
                 error={!!errors.instockStatus}
-                helperText={!!errors.instockStatus ? errors.instockStatus.message : ""}
+                helperText={!!errors.instockStatus
+                  ? errors.instockStatus.message
+                  : ""}
               >
-                {(Object.keys(ProductStockStatus) as ProductStockStatus[]).map(status => (
-                  <MenuItem key={status} value={status}>
-                    {productStockStatusLabel[status]}
-                  </MenuItem>
-                ))}
+                {(Object.keys(ProductStockStatus) as ProductStockStatus[])
+                  .map(status => (
+                    <MenuItem key={status} value={status}>
+                      {productStockStatusLabel[status]}
+                    </MenuItem>
+                  ))}
               </TextField>
               <BrandInputField />
             </Box>
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 fullWidth
                 type="number"
-                {...register("quantity", { valueAsNumber: true })} 
-                label="Quantity" 
-                error={!!errors.quantity} 
-                helperText={!!errors.quantity ? errors.quantity.message : ""} 
+                {...register("quantity", { valueAsNumber: true })}
+                label="Quantity"
+                error={!!errors.quantity}
+                helperText={!!errors.quantity
+                  ? errors.quantity.message
+                  : ""}
               />
               <TextField
                 fullWidth
                 type="number"
                 {...register("discount", { valueAsNumber: true })}
                 inputProps={{
-                  step: "0.01"
+                  step: "0.01",
                 }}
                 label="Discount"
                 error={!!errors.discount}
-                helperText={!!errors.discount ? errors.discount.message : ""} 
+                helperText={!!errors.discount
+                  ? errors.discount.message
+                  : ""}
               />
             </Box>
           </Grid>
 
           <Grid item xs={12}>
-            <Box sx={{ '& .MuiTextField-root': { my: 1, width: '100%' } }}>
+            <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <SpecificationInputField />
             </Box>
           </Grid>
@@ -244,36 +329,49 @@ export function CreateProductForm() {
           <Grid item xs={12}>
             <FormControlLabel
               label="Discounted item"
-              control={<Switch
-                {...register("isDiscountItem")}
-              />}
+              control={
+                <Switch
+                  {...register("isDiscountItem")}
+                />
+              }
             />
             <FormControlLabel
               label="Request review"
-              control={<Switch
-                {...register("isPending")}
-              />}
+              control={
+                <Switch
+                  {...register("isPending")}
+                />
+              }
             />
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={createProductMutation.isPending}>Create</MuiButton>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={createProductMutation.isPending}
+            >
+              Create
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>
 
-
       {modalForm.field === "create-brand"
-        ? <FormModal field='create-brand' title='Create new brand'>
-          <CreateBrandForm />
-        </FormModal>
+        ? (
+          <FormModal field="create-brand" title="Create new brand">
+            <CreateBrandForm />
+          </FormModal>
+        )
         : null}
 
       {modalForm.field === "create-category"
-        ? <FormModal field='create-category' title='Create new category'>
-          <CreateCategoryForm />
-        </FormModal>
+        ? (
+          <FormModal field="create-category" title="Create new category">
+            <CreateCategoryForm />
+          </FormModal>
+        )
         : null}
     </>
-  )
+  );
 }

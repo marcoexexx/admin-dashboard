@@ -1,16 +1,14 @@
-import { Box, Container, Grid, Typography, styled } from "@mui/material";
+import { Box, Container, Grid, styled, Typography } from "@mui/material";
 
-
-const HeaderWrapper = styled(Typography)(({theme}) => ({
+const HeaderWrapper = styled(Typography)(({ theme }) => ({
   color: theme.colors.alpha.black[70],
   fontSize: "2rem",
-}))
+}));
 
-const ContentWrapper = styled(Typography)(({theme}) => ({
+const ContentWrapper = styled(Typography)(({ theme }) => ({
   color: theme.colors.alpha.black[70],
-  fontSize: "1.3rem"
-}))
-
+  fontSize: "1.3rem",
+}));
 
 export function MiniAccessDenied() {
   return (
@@ -28,10 +26,14 @@ export function MiniAccessDenied() {
         <Grid item md={6} xs={12}>
           <Box display="flex" flexDirection="column" gap={2}>
             <HeaderWrapper>Access denied!</HeaderWrapper>
-            <ContentWrapper>We're sorry, but you do not have required permissions to access page or resource. Please contact the site administrator.</ContentWrapper>
+            <ContentWrapper>
+              We're sorry, but you do not have required permissions to
+              access page or resource. Please contact the site
+              administrator.
+            </ContentWrapper>
           </Box>
         </Grid>
       </Grid>
     </Container>
-  )
+  );
 }

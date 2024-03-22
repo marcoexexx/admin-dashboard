@@ -1,45 +1,63 @@
-import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { convertNumericStrings } from "../utils/convertNumber";
 import { checkUser } from "../services/checkUser";
+import { convertNumericStrings } from "../utils/convertNumber";
+import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 
+import { OperationAction } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
-import { CreatePotentialOrderInput, DeleteMultiPotentialOrdersInput, GetPotentialOrderInput, UpdatePotentialOrderInput } from "../schemas/potentialOrder.schema";
+import {
+  CreatePotentialOrderInput,
+  DeleteMultiPotentialOrdersInput,
+  GetPotentialOrderInput,
+  UpdatePotentialOrderInput,
+} from "../schemas/potentialOrder.schema";
 import { PotentialOrderService } from "../services/potentialOrder";
 import { StatusCode } from "../utils/appError";
-import { OperationAction } from "@prisma/client";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
-
-const service = PotentialOrderService.new()
-
+const service = PotentialOrderService.new();
 
 export async function getPotentialOrdersHandler(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const query = convertNumericStrings(req.query)
+    const query = convertNumericStrings(req.query);
 
-    const { id, startDate, endDate, status, totalPrice, remark } = query.filter ?? {}
-    const { page, pageSize } = query.pagination ?? {}
-    const { _count, user, deliveryAddress, billingAddress, pickupAddress, orderItems } = convertStringToBoolean(query.include) ?? {}
-    const orderBy = query.orderBy ?? {}
+    const { id, startDate, endDate, status, totalPrice, remark } =
+      query.filter ?? {};
+    const { page, pageSize } = query.pagination ?? {};
+    const {
+      _count,
+      user,
+      deliveryAddress,
+      billingAddress,
+      pickupAddress,
+      orderItems,
+    } = convertStringToBoolean(query.include) ?? {};
+    const orderBy = query.orderBy ?? {};
 
-    const sessionUser = checkUser(req?.user).ok()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
-    _isAccess.ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok();
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
+    _isAccess.ok_or_throw();
 
     const [count, potentialOrders] = (await service.tryFindManyWithCount(
       {
-        pagination: { page, pageSize }
+        pagination: { page, pageSize },
       },
       {
         where: {
           id,
           updatedAt: {
             gte: startDate,
-            lte: endDate
+            lte: endDate,
           },
           status,
           totalPrice,
@@ -53,35 +71,46 @@ export async function getPotentialOrdersHandler(
           pickupAddress,
           orderItems,
         },
-        orderBy
-      }
-    )).ok_or_throw()
+        orderBy,
+      },
+    )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(potentialOrders, count))
+    res.status(StatusCode.OK).json(
+      HttpListResponse(potentialOrders, count),
+    );
   } catch (err) {
-    next(err)
+    next(err);
   }
 }
-
 
 export async function getPotentialOrderHandler(
   req: Request<GetPotentialOrderInput["params"]>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const query = convertNumericStrings(req.query)
+    const query = convertNumericStrings(req.query);
 
-    const { potentialOrderId } = req.params
-    const { _count, user, deliveryAddress, billingAddress, pickupAddress, orderItems } = convertStringToBoolean(query.include) ?? {}
+    const { potentialOrderId } = req.params;
+    const {
+      _count,
+      user,
+      deliveryAddress,
+      billingAddress,
+      pickupAddress,
+      orderItems,
+    } = convertStringToBoolean(query.include) ?? {};
 
-    const sessionUser = checkUser(req?.user).ok()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read)
-    _isAccess.ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok();
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
+    _isAccess.ok_or_throw();
 
     const potentialOrder = (await service.tryFindUnique({
       where: {
-        id: potentialOrderId
+        id: potentialOrderId,
       },
       include: {
         _count,
@@ -90,39 +119,54 @@ export async function getPotentialOrderHandler(
         billingAddress,
         pickupAddress,
         orderItems,
-      }
-    })).ok_or_throw()
+      },
+    })).ok_or_throw();
 
     // Create audit log
-    if (potentialOrder && sessionUser) (await service.audit(sessionUser)).ok_or_throw()
+    if (potentialOrder && sessionUser) {
+      (await service.audit(sessionUser)).ok_or_throw();
+    }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }));
   } catch (err) {
-    next(err)
+    next(err);
   }
 }
-
 
 export async function createPotentialOrderHandler(
   req: Request<{}, {}, CreatePotentialOrderInput>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const { id, orderItems, totalPrice, addressType, deliveryAddressId, billingAddressId, pickupAddressId, status, paymentMethodProvider, remark } = req.body
+    const {
+      id,
+      orderItems,
+      totalPrice,
+      addressType,
+      deliveryAddressId,
+      billingAddressId,
+      pickupAddressId,
+      status,
+      paymentMethodProvider,
+      remark,
+    } = req.body;
 
-    const sessionUser = checkUser(req?.user).ok()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create)
-    _isAccess.ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok();
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
+    _isAccess.ok_or_throw();
 
     const potentialOrder = (await service.tryUpsert({
       where: {
-        id
+        id,
       },
       create: {
         addressType,
         orderItems: {
-          connect: orderItems.map(orderItemId => ({ id: orderItemId }))
+          connect: orderItems.map(orderItemId => ({ id: orderItemId })),
         },
         userId: sessionUser?.id,
         status,
@@ -141,100 +185,113 @@ export async function createPotentialOrderHandler(
         billingAddressId,
         pickupAddressId,
         paymentMethodProvider,
-        remark
-      }
-    })).ok_or_throw()
+        remark,
+      },
+    })).ok_or_throw();
 
     // Create audit log
-    if (sessionUser) (await service.audit(sessionUser)).ok_or_throw()
+    if (sessionUser) (await service.audit(sessionUser)).ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ potentialOrder }))
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ potentialOrder }),
+    );
   } catch (err) {
-    console.log("Err:", err)
-    next(err)
+    console.log("Err:", err);
+    next(err);
   }
 }
-
 
 export async function deletePotentialOrderHandler(
   req: Request<GetPotentialOrderInput["params"]>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const { potentialOrderId } = req.params
+    const { potentialOrderId } = req.params;
 
-    const sessionUser = checkUser(req?.user).ok()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
-    _isAccess.ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok();
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
+    _isAccess.ok_or_throw();
 
     const potentialOrder = (await service.tryDelete({
       where: {
-        id: potentialOrderId
-      }
-    })).ok_or_throw()
+        id: potentialOrderId,
+      },
+    })).ok_or_throw();
 
     // Create audit log
-    const _auditLog = await service.audit(sessionUser)
-    _auditLog.ok_or_throw()
+    const _auditLog = await service.audit(sessionUser);
+    _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }));
   } catch (err) {
-    next(err)
+    next(err);
   }
 }
-
 
 export async function deleteMultiPotentialOrdersHandler(
   req: Request<{}, {}, DeleteMultiPotentialOrdersInput>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const { potentialOrderIds } = req.body
+    const { potentialOrderIds } = req.body;
 
-    const sessionUser = checkUser(req?.user).ok()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete)
-    _isAccess.ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok();
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
+    _isAccess.ok_or_throw();
 
     const _deleteOrders = await service.tryDeleteMany({
       where: {
         id: {
-          in: potentialOrderIds
-        }
-      }
-    })
-    _deleteOrders.ok_or_throw()
+          in: potentialOrderIds,
+        },
+      },
+    });
+    _deleteOrders.ok_or_throw();
 
     // Create audit log
-    const _auditLog = await service.audit(sessionUser)
-    _auditLog.ok_or_throw()
+    const _auditLog = await service.audit(sessionUser);
+    _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"))
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
-    next(err)
+    next(err);
   }
 }
 
-
-
 export async function updatePotentialOrderHandler(
-  req: Request<UpdatePotentialOrderInput["params"], {}, UpdatePotentialOrderInput["body"]>,
+  req: Request<
+    UpdatePotentialOrderInput["params"],
+    {},
+    UpdatePotentialOrderInput["body"]
+  >,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const { potentialOrderId } = req.params
-    const data = req.body
+    const { potentialOrderId } = req.params;
+    const data = req.body;
 
     // @ts-ignore  for mocha testing
-    const userId: string | undefined = req.user?.id || undefined
+    const userId: string | undefined = req.user?.id || undefined;
 
-    const sessionUser = checkUser(req?.user).ok()
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update)
-    _isAccess.ok_or_throw()
+    const sessionUser = checkUser(req?.user).ok();
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
+    _isAccess.ok_or_throw();
 
-    const potentialOrder = (await service.tryUpdate({
+    const potentialOrder = await service.tryUpdate({
       where: {
         id: potentialOrderId,
       },
@@ -246,18 +303,18 @@ export async function updatePotentialOrderHandler(
         deliveryAddressId: data.deliveryAddressId,
         billingAddressId: data.billingAddressId,
         paymentMethodProvider: data.paymentMethodProvider,
-        remark: data.remark
-      }
-    }))
+        remark: data.remark,
+      },
+    });
 
     // Create audit log
     if (sessionUser) {
-      const _auditLog = await service.audit(sessionUser)
-      _auditLog.ok_or_throw()
+      const _auditLog = await service.audit(sessionUser);
+      _auditLog.ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }))
+    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }));
   } catch (err) {
-    next(err)
+    next(err);
   }
 }

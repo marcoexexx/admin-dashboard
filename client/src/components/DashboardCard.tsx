@@ -1,11 +1,10 @@
-import { Avatar, Box, Typography, styled, useTheme } from "@mui/material"
+import { Avatar, Box, styled, Typography, useTheme } from "@mui/material";
 
-import LoyaltyIcon from '@mui/icons-material/Loyalty'
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import LoyaltyIcon from "@mui/icons-material/Loyalty";
 
-
-const AvatarWrapper = styled(Avatar)(({theme}) => ({
+const AvatarWrapper = styled(Avatar)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -16,15 +15,15 @@ const AvatarWrapper = styled(Avatar)(({theme}) => ({
   // background: theme.palette.mode === "dark"
   //   ? theme.colors.alpha.trueWhite[30]
   //   : alpha(theme.colors.alpha.black[100], 0.07),
-  background: theme.palette.primary.light
-}))
+  background: theme.palette.primary.light,
+}));
 
 const CardWrapper = styled(Box)(() => ({
   display: "flex",
   flexDirection: "row",
   alignItems: "start",
   justifyContent: "space-between",
-}))
+}));
 
 const HelperContentWrapper = styled(Box)(() => ({
   display: "flex",
@@ -32,22 +31,21 @@ const HelperContentWrapper = styled(Box)(() => ({
   alignItems: "center",
   justifyContent: "start",
   gap: 10,
-}))
-
+}));
 
 interface DashboardCardProps {
-  subtitle: string
-  value: string
-  helperText: string
-  isDown: boolean
-  percent: string
-  actions?: JSX.Element
+  subtitle: string;
+  value: string;
+  helperText: string;
+  isDown: boolean;
+  percent: string;
+  actions?: JSX.Element;
 }
 
 export function DashboardCard(props: DashboardCardProps) {
-  const theme = useTheme()
+  const theme = useTheme();
 
-  const { subtitle, value, helperText, isDown, percent, actions } = props
+  const { subtitle, value, helperText, isDown, percent, actions } = props;
 
   return (
     <Box
@@ -70,18 +68,26 @@ export function DashboardCard(props: DashboardCardProps) {
       </CardWrapper>
 
       <HelperContentWrapper>
-        <Box display="flex" flexDirection="row" color={isDown ? theme.colors.error.light : theme.colors.primary.light}>
+        <Box
+          display="flex"
+          flexDirection="row"
+          color={isDown
+            ? theme.colors.error.light
+            : theme.colors.primary.light}
+        >
           {isDown
-          ? <ArrowDownwardIcon fontSize="small" />
-          : <ArrowUpwardIcon fontSize="small" />}
-          
+            ? <ArrowDownwardIcon fontSize="small" />
+            : <ArrowUpwardIcon fontSize="small" />}
+
           <Typography>{percent}</Typography>
         </Box>
 
-        <Typography color={theme.colors.alpha.black[70]}>{helperText}</Typography>
+        <Typography color={theme.colors.alpha.black[70]}>
+          {helperText}
+        </Typography>
 
         {actions}
       </HelperContentWrapper>
     </Box>
-  )
+  );
 }

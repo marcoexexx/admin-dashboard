@@ -3,11 +3,15 @@ import { useContext } from "react";
 
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 
-
 export function useStore() {
-  const ctx = useContext(StoreContext)
+  const ctx = useContext(StoreContext);
 
-  if (!ctx) throw AppError.new(AppErrorKind.InvalidInputError, "useStore must provide")
+  if (!ctx) {
+    throw AppError.new(
+      AppErrorKind.InvalidInputError,
+      "useStore must provide",
+    );
+  }
 
-  return ctx
+  return ctx;
 }

@@ -1,54 +1,61 @@
 import { Router } from "express";
+import {
+  createBlockUserHandler,
+  getUserByUsernameHandler,
+  getUserHandler,
+  getUsersHandler,
+  removeBlockedUserHandler,
+  updateRoleUserBySuperuserHandler,
+} from "../controllers/user.controller";
+import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
-import { createBlockUserHandler, getUserByUsernameHandler, getUserHandler, getUsersHandler, removeBlockedUserHandler, updateRoleUserBySuperuserHandler } from "../controllers/user.controller";
-import { getUserByUsernameSchema, getUserSchema, updateUserSchema } from "../schemas/user.schema";
-import { validate } from "../middleware/validate";
-import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { sudo } from "../middleware/sudo";
+import { validate } from "../middleware/validate";
+import {
+  getUserByUsernameSchema,
+  getUserSchema,
+  updateUserSchema,
+} from "../schemas/user.schema";
 
+const router = Router();
 
-const router = Router()
-
-router.use(deserializeUser, requiredUser, checkBlockedUser)
-
+router.use(deserializeUser, requiredUser, checkBlockedUser);
 
 router.route("")
   .get(
-    getUsersHandler
-  )
-
+    getUsersHandler,
+  );
 
 router.route("/profile/:username")
   .get(
     validate(getUserByUsernameSchema),
-    getUserByUsernameHandler
-  )
-
+    getUserByUsernameHandler,
+  );
 
 router.route("/detail/:userId")
   .get(
     validate(getUserSchema),
-    getUserHandler
+    getUserHandler,
   )
   .patch(
-    sudo,
+    // sudo,  // Only shop owner change role
     validate(updateUserSchema.update),
     updateRoleUserBySuperuserHandler,
-  )
-
+  );
 
 router.route("/block-user")
   .patch(
+    sudo,
     validate(updateUserSchema.createBlockUser),
     createBlockUserHandler,
-  )
+  );
 
 router.route("/unblock-user/:blockedUserId")
   .patch(
+    sudo,
     validate(updateUserSchema.removeBlockdUser),
     removeBlockedUserHandler,
-  )
+  );
 
-
-export default router
+export default router;

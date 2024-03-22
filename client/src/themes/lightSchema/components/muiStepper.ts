@@ -6,8 +6,7 @@ export const MuiStepper: ComponentCustomizedStyle["MuiStepper"] = {
     root: {
       paddingTop: 20,
       paddingBottom: 20,
-      background: colors.alpha.black[5]
-    }
-  }
-}
-
+      background: colors.alpha.black[5],
+    },
+  },
+};

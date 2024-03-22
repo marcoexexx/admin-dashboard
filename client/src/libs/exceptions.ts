@@ -1,4 +1,4 @@
-import { ToString } from "./result"
+import { ToString } from "./result";
 
 export const AppErrorKind = {
   InvalidInputError: "InvalidInputError",
@@ -10,21 +10,20 @@ export const AppErrorKind = {
   AccessDeniedError: "AccessDeniedError",
   UnderTheMaintenance: "UnderTheMaintenance",
   BlockedUserError: "BlockedUserError",
-  ServiceUnavailable: "ServiceUnavailable"
-} as const
-export type AppErrorKind = typeof AppErrorKind[keyof typeof AppErrorKind]
-
+  ServiceUnavailable: "ServiceUnavailable",
+} as const;
+export type AppErrorKind = typeof AppErrorKind[keyof typeof AppErrorKind];
 
 export default class AppError extends Error implements ToString {
   constructor(public kind: AppErrorKind, message?: string) {
-    super(`${message}: ${kind}`)
+    super(`${message}: ${kind}`);
   }
 
   static new(kind: AppErrorKind, message: string = "Unknown error") {
-    return new AppError(kind, message)
+    return new AppError(kind, message);
   }
 
   toString(): string {
-    return `${this.message}: ${this.kind}`
+    return `${this.message}: ${this.kind}`;
   }
 }

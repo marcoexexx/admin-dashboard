@@ -1,10 +1,10 @@
-export * from './useGetRegions'
-export * from './useGetRegion'
+export * from "./useGetRegion";
+export * from "./useGetRegions";
 
-export * from './useCreateRegion'
-export * from './useCreateMultiRegions'
+export * from "./useCreateMultiRegions";
+export * from "./useCreateRegion";
 
-export * from './useDeleteRegion'
-export * from './useDeleteMultiRegions'
+export * from "./useDeleteMultiRegions";
+export * from "./useDeleteRegion";
 
-export * from './useUpdateRegion'
+export * from "./useUpdateRegion";

@@ -3,15 +3,14 @@ import { ComponentCustomizedStyle } from "../types";
 export const MuiAccordion: ComponentCustomizedStyle["MuiAccordion"] = {
   styleOverrides: {
     root: {
-      boxShadow: 'none',
+      boxShadow: "none",
 
-      '&.Mui-expanded': {
-        margin: 0
+      "&.Mui-expanded": {
+        margin: 0,
       },
-      '&::before': {
-        display: 'none'
-      }
-    }
-  }
-}
-
+      "&::before": {
+        display: "none",
+      },
+    },
+  },
+};

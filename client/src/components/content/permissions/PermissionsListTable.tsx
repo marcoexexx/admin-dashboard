@@ -1,54 +1,66 @@
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material"
-import { Permission, Resource } from "@/services/types";
 import { EnhancedTable, TypedColumn } from "@/components";
-import { PermissionsFilterForm } from ".";
 import { CacheResource } from "@/context/cacheKey";
-import { useStore } from "@/hooks";
 import { INITIAL_PAGINATION } from "@/context/store";
-
+import { useStore } from "@/hooks";
+import { Permission, Resource } from "@/services/types";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
+import { PermissionsFilterForm } from ".";
 
 const columns: TypedColumn<Permission>[] = [
   {
     id: "resource",
     align: "left",
     name: "Resource",
-    render: ({ value }) => <Typography>{value.resource}</Typography>
+    render: ({ value }) => <Typography>{value.resource}</Typography>,
   },
   {
     id: "action",
     align: "left",
     name: "Action",
-    render: ({ value }) => <Typography>{value.action}</Typography>
+    render: ({ value }) => <Typography>{value.action}</Typography>,
   },
-]
-
+];
 
 interface PermissionsListTableProps {
-  permissions: Permission[]
-  count: number
-  isLoading?: boolean
-  onDelete?: (id: string) => void
-  onMultiDelete?: (ids: string[]) => void
-  onCreateMany?: (buf: ArrayBuffer) => void
+  permissions: Permission[];
+  count: number;
+  isLoading?: boolean;
+  onDelete?: (id: string) => void;
+  onMultiDelete?: (ids: string[]) => void;
+  onCreateMany?: (buf: ArrayBuffer) => void;
 }
 
 export function PermissionsListTable(props: PermissionsListTableProps) {
-  const { permissions, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props
-  const { state: { permissionFilter: { pagination } }, dispatch } = useStore()
+  const {
+    permissions,
+    count,
+    isLoading,
+    onCreateMany,
+    onDelete,
+    onMultiDelete,
+  } = props;
+  const { state: { permissionFilter: { pagination } }, dispatch } =
+    useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({
       type: "SET_PERMISSION_PAGE",
-      payload: page += 1
-    })
-  }
+      payload: page += 1,
+    });
+  };
 
   const handleChangeLimit = (evt: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: "SET_PERMISSION_PAGE_SIZE",
-      payload: parseInt(evt.target.value, 10)
-    })
-  }
+      payload: parseInt(evt.target.value, 10),
+    });
+  };
 
   return (
     <Card>
@@ -79,7 +91,6 @@ export function PermissionsListTable(props: PermissionsListTableProps) {
           rowsPerPageOptions={[5, 10, 25, 30]}
         />
       </Box>
-
     </Card>
-  )
+  );
 }

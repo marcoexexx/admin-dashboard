@@ -1,49 +1,68 @@
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material"
 import { EnhancedTable, TypedColumn } from "@/components";
-import { PickupAddress, Resource } from "@/services/types";
 import { RenderOrderLabel } from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
-
+import { PickupAddress, Resource } from "@/services/types";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 
 const columns: TypedColumn<PickupAddress>[] = [
   {
     id: "username",
     align: "left",
     name: "Username",
-    render: ({ value }) => <Typography>{value.username}</Typography>
+    render: ({ value }) => <Typography>{value.username}</Typography>,
   },
   {
     id: "phone",
     align: "left",
     name: "Phone",
-    render: ({ value }) => <Typography>{value.phone}</Typography>
+    render: ({ value }) => <Typography>{value.phone}</Typography>,
   },
   {
     id: "email",
     align: "left",
     name: "Email",
-    render: ({ value }) => <Typography>{value.email}</Typography>
+    render: ({ value }) => <Typography>{value.email}</Typography>,
   },
   {
     id: "orders",
     align: "left",
     name: "Orders",
-    render: ({ value }) => <>{value.orders?.map(order => <RenderOrderLabel key={order.id} order={order} />)}</>
+    render: ({ value }) => (
+      <>
+        {value.orders?.map(order => (
+          <RenderOrderLabel key={order.id} order={order} />
+        ))}
+      </>
+    ),
   },
-]
-
+];
 
 interface PickupAddressListTableProps {
-  pickupAddresses: PickupAddress[]
-  count: number
-  isLoading?: boolean
-  onDelete?: (id: string) => void
-  onMultiDelete?: (ids: string[]) => void
-  onCreateMany?: (buf: ArrayBuffer) => void
+  pickupAddresses: PickupAddress[];
+  count: number;
+  isLoading?: boolean;
+  onDelete?: (id: string) => void;
+  onMultiDelete?: (ids: string[]) => void;
+  onCreateMany?: (buf: ArrayBuffer) => void;
 }
 
-export function PickupAddressListTable(props: PickupAddressListTableProps) {
-  const { pickupAddresses, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props
+export function PickupAddressListTable(
+  props: PickupAddressListTableProps,
+) {
+  const {
+    pickupAddresses,
+    count,
+    isLoading,
+    onDelete,
+    onMultiDelete,
+    onCreateMany,
+  } = props;
 
   return (
     <Card>
@@ -66,14 +85,13 @@ export function PickupAddressListTable(props: PickupAddressListTableProps) {
         <TablePagination
           component="div"
           count={count}
-          onPageChange={() => { }}
-          onRowsPerPageChange={() => { }}
+          onPageChange={() => {}}
+          onRowsPerPageChange={() => {}}
           page={0}
           rowsPerPage={count}
           rowsPerPageOptions={[count]}
         />
       </Box>
     </Card>
-  )
+  );
 }
-

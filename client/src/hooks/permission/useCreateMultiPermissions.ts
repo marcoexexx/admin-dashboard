@@ -1,53 +1,61 @@
-import Result, { Err, Ok } from "@/libs/result"
-import AppError, { AppErrorKind } from "@/libs/exceptions"
+import AppError, { AppErrorKind } from "@/libs/exceptions";
+import Result, { Err, Ok } from "@/libs/result";
 
-import { useMutation } from "@tanstack/react-query"
-import { useStore } from ".."
-import { playSoundEffect } from "@/libs/playSound"
-import { queryClient } from "@/components"
-import { CacheResource } from "@/context/cacheKey"
-import { PermisssionApiService } from "@/services/permissionsApi"
+import { queryClient } from "@/components";
+import { CacheResource } from "@/context/cacheKey";
+import { playSoundEffect } from "@/libs/playSound";
+import { PermisssionApiService } from "@/services/permissionsApi";
+import { useMutation } from "@tanstack/react-query";
+import { useStore } from "..";
 
-
-const apiService = PermisssionApiService.new()
-
+const apiService = PermisssionApiService.new();
 
 export function useCreateMultiPermissions() {
-  const { dispatch } = useStore()
+  const { dispatch } = useStore();
 
   const mutation = useMutation({
-    mutationFn: (...args: Parameters<typeof apiService.uploadExcel>) => apiService.uploadExcel(...args),
+    mutationFn: (...args: Parameters<typeof apiService.uploadExcel>) =>
+      apiService.uploadExcel(...args),
     onError(err: any) {
       dispatch({
-        type: "OPEN_TOAST", payload: {
-          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
-          severity: "error"
-        }
-      })
-      dispatch({ type: "CLOSE_BACKDROP" })
-      playSoundEffect("error")
+        type: "OPEN_TOAST",
+        payload: {
+          message: `failed: ${
+            err?.response?.data?.message || err?.message || "Unknown error"
+          }`,
+          severity: "error",
+        },
+      });
+      dispatch({ type: "CLOSE_BACKDROP" });
+      playSoundEffect("error");
     },
     onSuccess() {
-      console.log("success")
+      console.log("success");
       dispatch({
-        type: "OPEN_TOAST", payload: {
+        type: "OPEN_TOAST",
+        payload: {
           message: "Success created new permissions.",
-          severity: "success"
-        }
-      })
-      dispatch({ type: "CLOSE_ALL_MODAL_FORM" })
+          severity: "success",
+        },
+      });
+      dispatch({ type: "CLOSE_ALL_MODAL_FORM" });
       queryClient.invalidateQueries({
-        queryKey: [CacheResource.Permission]
-      })
-      dispatch({ type: "CLOSE_BACKDROP" })
-      playSoundEffect("success")
-    }
-  })
+        queryKey: [CacheResource.Permission],
+      });
+      dispatch({ type: "CLOSE_BACKDROP" });
+      playSoundEffect("success");
+    },
+  });
 
-  const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message))
-    : Ok(mutation.data)
+  const try_data: Result<typeof mutation.data, AppError> =
+    !!mutation.error && mutation.isError
+      ? Err(
+        AppError.new(
+          (mutation.error as any).kind || AppErrorKind.ApiError,
+          mutation.error.message,
+        ),
+      )
+      : Ok(mutation.data);
 
-  return { ...mutation, try_data }
+  return { ...mutation, try_data };
 }
-

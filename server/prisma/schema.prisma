@@ -343,7 +343,7 @@ model Product {
   reviews        Review[]
   creator        User?                   @relation("CreatedBy", fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId      String?                 @db.ObjectId
-  itemCode       String?
+  itemCode       String                  @unique
   categories     ProductCategory[]
   salesCategory  ProductSalesCategory[]
   coupons        Coupon[]

@@ -5,19 +5,18 @@ export const MuiTimelineDot = {
     root: {
       margin: 0,
       zIndex: 5,
-      position: 'absolute',
-      top: '50%',
+      position: "absolute",
+      top: "50%",
       marginTop: -6,
-      left: -6
+      left: -6,
     },
     outlined: {
       backgroundColor: colors.alpha.white[100],
-      boxShadow: '0 0 0 6px ' + colors.alpha.white[100]
+      boxShadow: "0 0 0 6px " + colors.alpha.white[100],
     },
     outlinedPrimary: {
       backgroundColor: colors.alpha.white[100],
-      boxShadow: '0 0 0 6px ' + colors.alpha.white[100]
-    }
-  }
-}
-
+      boxShadow: "0 0 0 6px " + colors.alpha.white[100],
+    },
+  },
+};
