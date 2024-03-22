@@ -3,6 +3,7 @@ export NVM_DIR="$HOME/.nvm"
 
  cd admin-dashboard
 
+git restore .
 git pull origin rangoon
 
 # server
