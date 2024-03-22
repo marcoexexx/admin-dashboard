@@ -1,14 +1,26 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 
-import { CreatePotentialOrderInput, UpdatePotentialOrderInput } from "@/components/content/potential-orders/forms";
+import {
+  CreatePotentialOrderInput,
+  UpdatePotentialOrderInput,
+} from "@/components/content/potential-orders/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { PotentialOrderWhereInput } from "@/context/order";
 import { BaseApiService } from "./baseApiService";
-import { GenericResponse, HttpListResponse, HttpResponse, Pagination, PotentialOrder, QueryOptionArgs } from "./types";
+import {
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  PotentialOrder,
+  QueryOptionArgs,
+} from "./types";
 
 import { authApi } from "./authApi";
 
-export class PotentialOrderApiService extends BaseApiService<PotentialOrderWhereInput, PotentialOrder> {
+export class PotentialOrderApiService
+  extends BaseApiService<PotentialOrderWhereInput, PotentialOrder>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -60,7 +72,9 @@ export class PotentialOrderApiService extends BaseApiService<PotentialOrderWhere
     return data;
   }
 
-  async create(payload: CreatePotentialOrderInput): Promise<GenericResponse<PotentialOrder, "potentialOrder">> {
+  async create(
+    payload: CreatePotentialOrderInput,
+  ): Promise<GenericResponse<PotentialOrder, "potentialOrder">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);

@@ -16,7 +16,10 @@ export abstract class BaseApiService<Where extends { fields?: any; include?: any
   /**
    * @returns GenericResponse<Return, string>
    */
-  find(_opt: QueryOptionArgs, _where: { filter: { id: string; }; include?: Where["include"]; }): Promise<any> {
+  find(
+    _opt: QueryOptionArgs,
+    _where: { filter: { id: string; }; include?: Where["include"]; },
+  ): Promise<any> {
     return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Unimplemented feature`));
   }
 

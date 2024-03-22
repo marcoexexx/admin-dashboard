@@ -12,7 +12,8 @@ export default async function show_bannar() {
     const getString = (ptr) => {
       const uint8Memory = new Uint8Array(exports.memory.buffer);
       const utf8decoder = new TextDecoder("utf-8");
-      const length = uint8Memory.findIndex((element, index) => index === ptr && element === 0) - ptr;
+      const length = uint8Memory.findIndex((element, index) => index === ptr && element === 0)
+        - ptr;
       const encodedString = uint8Memory.subarray(ptr, ptr + length);
       return utf8decoder.decode(encodedString);
     };

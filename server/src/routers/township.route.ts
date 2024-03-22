@@ -44,7 +44,14 @@ router.route("/multi")
   );
 
 // Upload Routes
-router.post("/excel-upload", deserializeUser, requiredUser, checkBlockedUser, uploadExcel, createMultiTownshipsHandler);
+router.post(
+  "/excel-upload",
+  deserializeUser,
+  requiredUser,
+  checkBlockedUser,
+  uploadExcel,
+  createMultiTownshipsHandler,
+);
 
 router.route("/detail/:townshipId")
   .get(

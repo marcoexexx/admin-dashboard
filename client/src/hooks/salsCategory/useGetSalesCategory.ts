@@ -17,7 +17,9 @@ export function useGetSalesCategory({
 }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: [CacheResource.SalesCategory, { id, include }] as CacheKey<"sales-categories">["detail"],
+    queryKey: [CacheResource.SalesCategory, { id, include }] as CacheKey<
+      "sales-categories"
+    >["detail"],
     queryFn: args => apiService.find(args, { filter: { id }, include }),
     select: data => data?.salesCategory,
   });

@@ -30,11 +30,15 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
   const createProductSalesCategoryMutation = useCreateProductSalesCategory();
   const updateProductSalesCategoryMutation = useUpdateProductSalesCategory();
 
-  const { mutate: createSalesCategory, isPending: isPendingCreateSalsCategory } = createProductSalesCategoryMutation;
+  const { mutate: createSalesCategory, isPending: isPendingCreateSalsCategory } =
+    createProductSalesCategoryMutation;
   const { mutate: updateSalesCategory, isPending: isPendingCreateProductSalesCategory } =
     updateProductSalesCategoryMutation;
 
-  const { isSuccess } = useCombineQuerys(createProductSalesCategoryMutation, updateProductSalesCategoryMutation);
+  const { isSuccess } = useCombineQuerys(
+    createProductSalesCategoryMutation,
+    updateProductSalesCategoryMutation,
+  );
 
   const methods = useForm<CreateProductSalesCategoryInput>({
     resolver: zodResolver(createProductSalesCategorySchema),
@@ -60,7 +64,11 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
 
   const onSubmit: SubmitHandler<CreateProductSalesCategoryInput> = (value) => {
     if (!!defaultValues) {
-      updateSalesCategory({ productId, productSaleCategoryId: defaultValues.id, discount: value.discount });
+      updateSalesCategory({
+        productId,
+        productSaleCategoryId: defaultValues.id,
+        discount: value.discount,
+      });
     } else createSalesCategory(value);
     dispatch({ type: "CLOSE_ALL_MODAL_FORM" });
   };

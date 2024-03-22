@@ -112,7 +112,9 @@ export function CreateExchangeForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit" loading={createExchangeMuttion.isPending}>Create</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={createExchangeMuttion.isPending}>
+            Create
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

@@ -1,7 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import _ from "lodash";
-import { customerUserAccessResources, guestUserAccessResources, shopownerAccessResources } from "./type";
+import {
+  customerUserAccessResources,
+  guestUserAccessResources,
+  shopownerAccessResources,
+} from "./type";
 
 const prisma = new PrismaClient();
 
@@ -116,7 +120,8 @@ async function usersSeed() {
           points: 0,
         },
       },
-      image: "https://avatars.githubusercontent.com/u/103842280?s=400&u=9fe6bb21b1133980e96384942c66aca35bc9e06d&v=4",
+      image:
+        "https://avatars.githubusercontent.com/u/103842280?s=400&u=9fe6bb21b1133980e96384942c66aca35bc9e06d&v=4",
       isSuperuser: true,
     },
     update: {},

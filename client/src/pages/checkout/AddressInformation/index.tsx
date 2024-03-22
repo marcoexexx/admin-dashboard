@@ -20,17 +20,19 @@ const SelectionCardWrapper = styled(Box)<{ active: "true" | "false"; }>(({ theme
 export default function AddressInformationStep() {
   const { getValues, setValue } = useFormContext<CreateOrderInput>();
 
-  const addressType: CreateOrderInput["addressType"] = getValues("addressType") || OrderAddressType.Delivery;
+  const addressType: CreateOrderInput["addressType"] = getValues("addressType")
+    || OrderAddressType.Delivery;
 
   useEffect(() => {
     setValue("addressType", addressType);
   }, [addressType]);
 
-  const handleChangeAddressType = (addressType: OrderAddressType) => (_: React.MouseEvent<HTMLDivElement>) => {
-    if (addressType === OrderAddressType.Delivery) setValue("pickupAddressId", undefined);
-    if (addressType === OrderAddressType.Pickup) setValue("deliveryAddressId", undefined);
-    setValue("addressType", addressType);
-  };
+  const handleChangeAddressType =
+    (addressType: OrderAddressType) => (_: React.MouseEvent<HTMLDivElement>) => {
+      if (addressType === OrderAddressType.Delivery) setValue("pickupAddressId", undefined);
+      if (addressType === OrderAddressType.Pickup) setValue("deliveryAddressId", undefined);
+      setValue("addressType", addressType);
+    };
 
   return (
     <Container maxWidth="lg">
@@ -92,7 +94,9 @@ export default function AddressInformationStep() {
 
         <Card>
           <CardContent>
-            {addressType === "Delivery" ? <AddressInputField updateField fieldName="deliveryAddressId" /> : null}
+            {addressType === "Delivery"
+              ? <AddressInputField updateField fieldName="deliveryAddressId" />
+              : null}
             {addressType === "Pickup" ? <PickupAddressInputField /> : null}
           </CardContent>
         </Card>

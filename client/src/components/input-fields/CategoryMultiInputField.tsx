@@ -19,7 +19,9 @@ interface CatgoryMultiInputFieldProps {
 }
 
 export function CatgoryMultiInputField({ updateField = false }: CatgoryMultiInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ categories: string[]; }>();
+  const { control, setValue, getValues, formState: { errors } } = useFormContext<
+    { categories: string[]; }
+  >();
   const [selectedCategories, setSelectedCategories] = useState<Pick<Category, "id" | "name">[]>([]);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
@@ -48,7 +50,10 @@ export function CatgoryMultiInputField({ updateField = false }: CatgoryMultiInpu
     if (defaultCategories.length && updateField) setSelectedCategories(defaultCategories);
   }, [defaultCategories.length]);
 
-  const handleCategoryChange = (_: React.SyntheticEvent, value: Pick<Category, "id" | "name">[] | null) => {
+  const handleCategoryChange = (
+    _: React.SyntheticEvent,
+    value: Pick<Category, "id" | "name">[] | null,
+  ) => {
     if (value) {
       setSelectedCategories(value);
       setValue("categories", value.map(v => v.id));

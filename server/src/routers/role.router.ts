@@ -12,7 +12,12 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { sudo } from "../middleware/sudo";
 import { validate } from "../middleware/validate";
-import { createRoleSchema, deleteMultiRolesSchema, getRoleSchema, updateRoleSchema } from "../schemas/role.schema";
+import {
+  createRoleSchema,
+  deleteMultiRolesSchema,
+  getRoleSchema,
+  updateRoleSchema,
+} from "../schemas/role.schema";
 import { uploadExcel } from "../upload/excelUpload";
 
 const router = Router();

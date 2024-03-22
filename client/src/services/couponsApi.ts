@@ -2,7 +2,14 @@ import { CreateCouponInput, UpdateCouponInput } from "@/components/content/coupo
 import { CacheResource } from "@/context/cacheKey";
 import { CouponWhereInput } from "@/context/coupon";
 import { BaseApiService } from "./baseApiService";
-import { Coupon, GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
+import {
+  Coupon,
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  QueryOptionArgs,
+} from "./types";
 
 import { authApi } from "./authApi";
 
@@ -70,7 +77,9 @@ export class CouponApiService extends BaseApiService<CouponWhereInput, Coupon> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `Coupons_${Date.now()}.xlsx`);
 
@@ -83,7 +92,9 @@ export class CouponApiService extends BaseApiService<CouponWhereInput, Coupon> {
     return data;
   }
 
-  async update(arg: { id: string; payload: UpdateCouponInput; }): Promise<GenericResponse<Coupon, "coupon">> {
+  async update(
+    arg: { id: string; payload: UpdateCouponInput; },
+  ): Promise<GenericResponse<Coupon, "coupon">> {
     const { id, payload } = arg;
     const url = `/${this.repo}/detail/${id}`;
 

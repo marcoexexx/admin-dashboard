@@ -28,7 +28,10 @@ import {
   likeProductByUserSchema,
   updateProductSchema,
 } from "../schemas/product.schema";
-import { createProductSalesCategorySchema, updateProductSaleCategorySchema } from "../schemas/salesCategory.schema";
+import {
+  createProductSalesCategorySchema,
+  updateProductSaleCategorySchema,
+} from "../schemas/salesCategory.schema";
 import { uploadExcel } from "../upload/excelUpload";
 
 const router = Router();
@@ -55,7 +58,14 @@ router.route("/multi")
   );
 
 // Upload Routes
-router.post("/excel-upload", deserializeUser, requiredUser, checkBlockedUser, uploadExcel, createMultiProductsHandler);
+router.post(
+  "/excel-upload",
+  deserializeUser,
+  requiredUser,
+  checkBlockedUser,
+  uploadExcel,
+  createMultiProductsHandler,
+);
 
 router.route("/detail/:productId")
   .get(

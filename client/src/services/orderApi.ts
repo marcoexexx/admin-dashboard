@@ -3,7 +3,14 @@ import { CacheResource } from "@/context/cacheKey";
 import { OrderWhereInput } from "@/context/order";
 import { authApi } from "./authApi";
 import { BaseApiService } from "./baseApiService";
-import { GenericResponse, HttpListResponse, HttpResponse, Order, Pagination, QueryOptionArgs } from "./types";
+import {
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Order,
+  Pagination,
+  QueryOptionArgs,
+} from "./types";
 
 export class OrderApiService extends BaseApiService<OrderWhereInput, Order> {
   constructor(public repo: CacheResource) {
@@ -68,7 +75,9 @@ export class OrderApiService extends BaseApiService<OrderWhereInput, Order> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `Orders_${Date.now()}.xlsx`);
 
@@ -81,7 +90,9 @@ export class OrderApiService extends BaseApiService<OrderWhereInput, Order> {
     return data;
   }
 
-  async update(arg: { id: string; payload: UpdateOrderInput; }): Promise<GenericResponse<Order, "order">> {
+  async update(
+    arg: { id: string; payload: UpdateOrderInput; },
+  ): Promise<GenericResponse<Order, "order">> {
     const { id, payload } = arg;
     const url = `/${this.repo}/detail/${id}`;
 

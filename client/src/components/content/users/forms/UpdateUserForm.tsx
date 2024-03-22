@@ -44,7 +44,9 @@ export function UpdateUserForm() {
   useEffect(() => {
     if (userQuery.isSuccess && user && userFetchStatus === "idle") {
       if (user.roleId) methods.setValue("roleId", user.roleId);
-      if (user.shopownerProviderId) methods.setValue("shopownerProviderId", user.shopownerProviderId);
+      if (user.shopownerProviderId) {
+        methods.setValue("shopownerProviderId", user.shopownerProviderId);
+      }
     }
   }, [userQuery.isSuccess, userFetchStatus]);
 

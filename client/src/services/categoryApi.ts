@@ -3,7 +3,14 @@ import { CacheResource } from "@/context/cacheKey";
 import { CategoryWhereInput } from "@/context/category";
 import { authApi } from "./authApi";
 import { BaseApiService } from "./baseApiService";
-import { Category, GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
+import {
+  Category,
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  QueryOptionArgs,
+} from "./types";
 
 export class CategoryApiService extends BaseApiService<CategoryWhereInput, Category> {
   constructor(public repo: CacheResource) {
@@ -69,7 +76,9 @@ export class CategoryApiService extends BaseApiService<CategoryWhereInput, Categ
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `Categories_${Date.now()}.xlsx`);
 
@@ -82,7 +91,9 @@ export class CategoryApiService extends BaseApiService<CategoryWhereInput, Categ
     return data;
   }
 
-  async update(arg: { id: string; payload: UpdateCategoryInput; }): Promise<GenericResponse<Category, "category">> {
+  async update(
+    arg: { id: string; payload: UpdateCategoryInput; },
+  ): Promise<GenericResponse<Category, "category">> {
     const { id, payload } = arg;
     const url = `/${this.repo}/detail/${id}`;
 

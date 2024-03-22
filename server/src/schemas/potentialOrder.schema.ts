@@ -17,7 +17,9 @@ export const createPotentialOrderSchema = object({
     addressType: z.nativeEnum(AddressType),
     pickupAddressId: string().optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
-    paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+    paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, {
+      required_error: "paymentMethodProvider is required",
+    }),
     remark: string().optional(),
   }),
 });
@@ -39,7 +41,9 @@ export const updatePotentialOrderSchema = object({
     totalPrice: number().min(0),
     pickupAddressId: string().optional(),
     billingAddressId: string({ required_error: "billingAddressId is required" }),
-    paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+    paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, {
+      required_error: "paymentMethodProvider is required",
+    }),
     remark: string().optional(),
   }),
 });
@@ -52,5 +56,7 @@ export const deleteMultiPotentialOrdersSchema = object({
 
 export type GetPotentialOrderInput = z.infer<typeof getPotentialOrderSchema>;
 export type CreatePotentialOrderInput = z.infer<typeof createPotentialOrderSchema>["body"];
-export type DeleteMultiPotentialOrdersInput = z.infer<typeof deleteMultiPotentialOrdersSchema>["body"];
+export type DeleteMultiPotentialOrdersInput = z.infer<
+  typeof deleteMultiPotentialOrdersSchema
+>["body"];
 export type UpdatePotentialOrderInput = z.infer<typeof updatePotentialOrderSchema>;

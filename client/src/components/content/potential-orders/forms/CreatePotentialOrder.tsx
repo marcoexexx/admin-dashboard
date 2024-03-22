@@ -11,7 +11,9 @@ const createPotentialOrderSchema = object({
   addressType: z.nativeEnum(OrderAddressType),
   pickupAddressId: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
-  paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+  paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, {
+    required_error: "paymentMethodProvider is required",
+  }),
   remark: string().optional(),
 });
 

@@ -18,7 +18,9 @@ interface BrandInputFieldProps {
 }
 
 export function BrandInputField({ updateField = false }: BrandInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ brandId: string; }>();
+  const { control, setValue, getValues, formState: { errors } } = useFormContext<
+    { brandId: string; }
+  >();
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 

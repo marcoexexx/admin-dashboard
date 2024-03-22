@@ -19,7 +19,9 @@ export function useGetTownships({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.Township, { filter, pagination, include }] as CacheKey<"townships">["list"],
+    queryKey: [CacheResource.Township, { filter, pagination, include }] as CacheKey<
+      "townships"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

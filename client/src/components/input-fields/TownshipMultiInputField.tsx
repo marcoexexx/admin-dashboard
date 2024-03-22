@@ -19,8 +19,12 @@ interface TownshipMultiInputFieldProps {
 }
 
 export function TownshipMultiInputField({ updateField = false }: TownshipMultiInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ townships: string[]; }>();
-  const [selectedTownships, setSelectedTownships] = useState<Pick<TownshipFees, "id" | "name">[]>([]);
+  const { control, setValue, getValues, formState: { errors } } = useFormContext<
+    { townships: string[]; }
+  >();
+  const [selectedTownships, setSelectedTownships] = useState<Pick<TownshipFees, "id" | "name">[]>(
+    [],
+  );
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
   const { dispatch } = useStore();
@@ -48,7 +52,10 @@ export function TownshipMultiInputField({ updateField = false }: TownshipMultiIn
     if (defaultTownships.length && updateField) setSelectedTownships(defaultTownships);
   }, [defaultTownships.length]);
 
-  const handleCategoryChange = (_: React.SyntheticEvent, value: Pick<TownshipFees, "id" | "name">[] | null) => {
+  const handleCategoryChange = (
+    _: React.SyntheticEvent,
+    value: Pick<TownshipFees, "id" | "name">[] | null,
+  ) => {
     if (value) {
       setSelectedTownships(value);
       setValue("townships", value.map(v => v.id));

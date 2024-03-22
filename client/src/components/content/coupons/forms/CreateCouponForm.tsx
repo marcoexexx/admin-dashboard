@@ -76,7 +76,9 @@ export function CreateCouponForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit" loading={createCouponMutation.isPending}>Create</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={createCouponMutation.isPending}>
+            Create
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

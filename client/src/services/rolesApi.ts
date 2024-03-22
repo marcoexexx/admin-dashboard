@@ -3,7 +3,14 @@ import { CacheResource } from "@/context/cacheKey";
 import { RoleWhereInput } from "@/context/role";
 import { authApi } from "./authApi";
 import { BaseApiService } from "./baseApiService";
-import { GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, Role } from "./types";
+import {
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  QueryOptionArgs,
+  Role,
+} from "./types";
 
 export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
   constructor(public repo: CacheResource) {
@@ -68,7 +75,9 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `Roles_${Date.now()}.xlsx`);
 
@@ -81,7 +90,9 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
     return data;
   }
 
-  async update(arg: { id: string; payload: UpdateRoleInput; }): Promise<GenericResponse<Role, "role">> {
+  async update(
+    arg: { id: string; payload: UpdateRoleInput; },
+  ): Promise<GenericResponse<Role, "role">> {
     const { id, payload } = arg;
     const url = `/${this.repo}/detail/${id}`;
 

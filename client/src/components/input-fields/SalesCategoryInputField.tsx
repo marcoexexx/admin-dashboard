@@ -18,7 +18,9 @@ interface SalesCategoriesInputFieldProps {
 }
 
 export function SalesCategoriesInputField({ updateField = false }: SalesCategoriesInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors }, watch } = useFormContext<{ salesCategoryId: string; }>();
+  const { control, setValue, getValues, formState: { errors }, watch } = useFormContext<
+    { salesCategoryId: string; }
+  >();
   const [selectedSaleCategory, setSelectedSaleCategory] = useState<SalesCategory | null>(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 

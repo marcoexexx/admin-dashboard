@@ -27,8 +27,8 @@ export function PaymentMethodDetailCard() {
           />
         </Box>
         <Typography mt={1} variant="h4">
-          Click the "Place Order" button below and the instructions of purchasing the product will be given in the next
-          page.
+          Click the "Place Order" button below and the instructions of purchasing the product will
+          be given in the next page.
         </Typography>
       </CardContent>
     </Card>

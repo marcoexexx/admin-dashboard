@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 
 import { DatePickerField, EditorInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
+import { useBeforeUnloadPage } from "@/hooks";
 import { useGetSalesCategory, useUpdateSalesCategory } from "@/hooks/salsCategory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
@@ -9,7 +10,6 @@ import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
-import { useBeforeUnloadPage } from "@/hooks";
 
 const updateSalesCategorySchema = object({
   name: string({ required_error: "Sales category name is required" })
@@ -46,9 +46,11 @@ export function UpdateSalesCategoryForm() {
   useEffect(() => {
     if (isSuccess && salesCategory && fetchStatus === "idle") {
       for (const field of toUpdateFields) {
-        if (field === "startDate" || field === "endDate") methods.setValue(field, dayjs(salesCategory[field]));
-        else if (field === "description" && !salesCategory.description) methods.setValue("description", undefined);
-        else methods.setValue(field, salesCategory[field]);
+        if (field === "startDate" || field === "endDate") {
+          methods.setValue(field, dayjs(salesCategory[field]));
+        } else if (field === "description" && !salesCategory.description) {
+          methods.setValue("description", undefined);
+        } else methods.setValue(field, salesCategory[field]);
       }
     }
   }, [isSuccess, fetchStatus]);

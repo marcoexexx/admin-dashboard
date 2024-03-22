@@ -12,7 +12,9 @@ export function RenderCountLabel<T extends object>({ _count }: { _count: T; }) {
         gap: 1,
       }}
     >
-      {fields.map((field, idx) => <Chip key={idx} label={`${_count?.[field as keyof typeof _count]} ${field}`} />)}
+      {fields.map((field, idx) => (
+        <Chip key={idx} label={`${_count?.[field as keyof typeof _count]} ${field}`} />
+      ))}
     </Box>
   );
 }

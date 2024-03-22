@@ -1,5 +1,9 @@
 import { EnhancedTable, TypedColumn } from "@/components";
-import { RenderShopownerLabel, RenderToggleBlockUserButton, RenderUsernameLabel } from "@/components/table-labels";
+import {
+  RenderShopownerLabel,
+  RenderToggleBlockUserButton,
+  RenderUsernameLabel,
+} from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";

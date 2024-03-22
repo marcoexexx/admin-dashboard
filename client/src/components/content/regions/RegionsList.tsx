@@ -1,7 +1,12 @@
 import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
-import { useCreateMultiRegions, useDeleteMultiRegions, useDeleteRegion, useGetRegions } from "@/hooks/region";
+import {
+  useCreateMultiRegions,
+  useDeleteMultiRegions,
+  useDeleteRegion,
+  useGetRegions,
+} from "@/hooks/region";
 import { Card } from "@mui/material";
 import { RegionsListTable } from ".";
 

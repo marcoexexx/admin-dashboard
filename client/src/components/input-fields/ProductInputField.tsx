@@ -18,7 +18,9 @@ interface ProductInputFieldProps {
 }
 
 export function ProductInputField({ updateField = false }: ProductInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ productId: string; }>();
+  const { control, setValue, getValues, formState: { errors } } = useFormContext<
+    { productId: string; }
+  >();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 

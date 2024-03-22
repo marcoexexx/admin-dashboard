@@ -1,7 +1,14 @@
 import { ModalFormField } from "@/context/store";
 import { useStore } from "@/hooks";
 import CloseIcon from "@mui/icons-material/Close";
-import { Dialog, DialogContent, DialogContentText, DialogProps, DialogTitle, IconButton } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogProps,
+  DialogTitle,
+  IconButton,
+} from "@mui/material";
 import { useCallback } from "react";
 
 interface FormModalProps {
@@ -21,7 +28,11 @@ export function FormModal(props: FormModalProps) {
   }, []);
 
   return (
-    <Dialog maxWidth={maxWidth} open={state.modalForm.state && state.modalForm.field === field} onClose={handleOnClose}>
+    <Dialog
+      maxWidth={maxWidth}
+      open={state.modalForm.state && state.modalForm.field === field}
+      onClose={handleOnClose}
+    >
       <DialogTitle>{title}</DialogTitle>
       <IconButton
         aria-label="close"
@@ -30,8 +41,7 @@ export function FormModal(props: FormModalProps) {
           position: "absolute",
           right: 8,
           top: 8,
-          color: (theme) =>
-            theme.palette.grey[500],
+          color: (theme) => theme.palette.grey[500],
         }}
       >
         <CloseIcon />

@@ -47,7 +47,9 @@ export async function getExchangesHandler(
             gte: startDate,
           },
           rate,
-          shopownerProviderId: sessionUser?.isSuperuser ? undefined : (sessionUser?.shopownerProviderId || undefined),
+          shopownerProviderId: sessionUser?.isSuperuser
+            ? undefined
+            : (sessionUser?.shopownerProviderId || undefined),
         },
         orderBy,
         include: {
@@ -104,7 +106,9 @@ export async function updateExchangeHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
     _isAccess.ok_or_throw();
 
-    if (!sessionUser.shopownerProviderId) return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`));
+    if (!sessionUser.shopownerProviderId) {
+      return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`));
+    }
 
     const exchange = (await service.tryUpdate({
       where: {

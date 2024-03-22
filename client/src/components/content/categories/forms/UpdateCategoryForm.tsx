@@ -37,7 +37,9 @@ export function UpdateCategoryForm() {
   useBeforeUnloadPage();
 
   useEffect(() => {
-    if (categoryQuery.isSuccess && category && categoryFetchStatus === "idle") methods.setValue("name", category.name);
+    if (categoryQuery.isSuccess && category && categoryFetchStatus === "idle") {
+      methods.setValue("name", category.name);
+    }
   }, [categoryQuery.isSuccess, categoryFetchStatus]);
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods;
@@ -67,7 +69,9 @@ export function UpdateCategoryForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={updateCategoryMutation.isPending}>Save</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={updateCategoryMutation.isPending}>
+              Save
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

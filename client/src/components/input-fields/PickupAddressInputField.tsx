@@ -18,7 +18,9 @@ interface PickupAddressInputFieldProps {
 }
 
 export function PickupAddressInputField({ updateField = false }: PickupAddressInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ pickupAddressId: string; }>();
+  const { control, setValue, getValues, formState: { errors } } = useFormContext<
+    { pickupAddressId: string; }
+  >();
   const [selectedPickupAddress, setSelectedPickupAddress] = useState<PickupAddress | null>(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 

@@ -440,7 +440,11 @@ export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableP
                 <Typography>Are you sure want to delete</Typography>
               </Box>
               <Box display="flex" flexDirection="row" gap={1}>
-                <MuiButton variant="contained" color="error" onClick={handleSingleDelete(singleDeleteRow)}>
+                <MuiButton
+                  variant="contained"
+                  color="error"
+                  onClick={handleSingleDelete(singleDeleteRow)}
+                >
                   Delete
                 </MuiButton>
                 <MuiButton variant="outlined" onClick={handleCloseModal}>Cancel</MuiButton>
@@ -461,7 +465,9 @@ export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableP
                 <Typography>Are you sure want to upload, This may update or create rows</Typography>
               </Box>
               <Box display="flex" flexDirection="row" gap={1}>
-                <MuiButton variant="contained" color="error" onClick={handleOnImport}>Upload</MuiButton>
+                <MuiButton variant="contained" color="error" onClick={handleOnImport}>
+                  Upload
+                </MuiButton>
                 <MuiButton variant="outlined" onClick={handleCloseModal}>Cancel</MuiButton>
               </Box>
             </Box>

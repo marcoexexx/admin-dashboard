@@ -1,11 +1,23 @@
-import { CreateSalesCategoryInput, UpdateSalesCategoryInput } from "@/components/content/sales-categories/forms";
+import {
+  CreateSalesCategoryInput,
+  UpdateSalesCategoryInput,
+} from "@/components/content/sales-categories/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { SalesCategoryWhereInput } from "@/context/salesCategory";
 import { authApi } from "./authApi";
 import { BaseApiService } from "./baseApiService";
-import { GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, SalesCategory } from "./types";
+import {
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  QueryOptionArgs,
+  SalesCategory,
+} from "./types";
 
-export class SalesCategoryApiService extends BaseApiService<SalesCategoryWhereInput, SalesCategory> {
+export class SalesCategoryApiService
+  extends BaseApiService<SalesCategoryWhereInput, SalesCategory>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -57,7 +69,9 @@ export class SalesCategoryApiService extends BaseApiService<SalesCategoryWhereIn
     return data;
   }
 
-  async create(payload: CreateSalesCategoryInput): Promise<GenericResponse<SalesCategory, "salesCategory">> {
+  async create(
+    payload: CreateSalesCategoryInput,
+  ): Promise<GenericResponse<SalesCategory, "salesCategory">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -68,7 +82,9 @@ export class SalesCategoryApiService extends BaseApiService<SalesCategoryWhereIn
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `SalesCategories_${Date.now()}.xlsx`);
 

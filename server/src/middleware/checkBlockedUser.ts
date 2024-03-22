@@ -25,7 +25,9 @@ export async function checkBlockedUser(
     });
 
     if (isBlocked !== null) {
-      return next(AppError.new(StatusCode.Forbidden, `You are blocked and cannot access this resource.`));
+      return next(
+        AppError.new(StatusCode.Forbidden, `You are blocked and cannot access this resource.`),
+      );
     }
 
     next();

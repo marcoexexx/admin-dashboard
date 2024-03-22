@@ -38,8 +38,12 @@ authApi.interceptors.response.use(
       document.location.href = "/auth/login";
     }
 
-    if (msg.includes("under maintenance")) return Promise.reject(AppError.new(AppErrorKind.UnderTheMaintenance, msg));
-    if (msg.includes("You are blocked")) return Promise.reject(AppError.new(AppErrorKind.BlockedUserError, msg));
+    if (msg.includes("under maintenance")) {
+      return Promise.reject(AppError.new(AppErrorKind.UnderTheMaintenance, msg));
+    }
+    if (msg.includes("You are blocked")) {
+      return Promise.reject(AppError.new(AppErrorKind.BlockedUserError, msg));
+    }
 
     if (res.status === 403) return Promise.reject(AppError.new(AppErrorKind.AccessDeniedError));
 
@@ -47,7 +51,10 @@ authApi.interceptors.response.use(
   },
 );
 
-export async function getMeFn(opt: QueryOptionArgs, { include }: { include?: UserWhereInput["include"]; }) {
+export async function getMeFn(
+  opt: QueryOptionArgs,
+  { include }: { include?: UserWhereInput["include"]; },
+) {
   const res = await authApi.get<UserResponse>("me", {
     ...opt,
     params: {

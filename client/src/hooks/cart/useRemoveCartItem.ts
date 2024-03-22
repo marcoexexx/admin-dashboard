@@ -14,7 +14,8 @@ export function useRemoveCartItem() {
   const { dispatch } = useStore();
 
   const mutation = useMutation({
-    mutationFn: (...args: Parameters<typeof apiService.deleteSingleItem>) => apiService.deleteSingleItem(...args),
+    mutationFn: (...args: Parameters<typeof apiService.deleteSingleItem>) =>
+      apiService.deleteSingleItem(...args),
     onSuccess: () => {
       dispatch({ type: "OPEN_MODAL_FORM", payload: "cart" });
       queryClient.invalidateQueries({
@@ -34,7 +35,9 @@ export function useRemoveCartItem() {
   });
 
   const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message))
+    ? Err(
+      AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message),
+    )
     : Ok(mutation.data);
 
   return { ...mutation, try_data };

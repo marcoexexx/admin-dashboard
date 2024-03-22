@@ -19,7 +19,9 @@ export function useGetAccessLogs({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.AccessLog, { filter, pagination, include }] as CacheKey<"access-logs">["list"],
+    queryKey: [CacheResource.AccessLog, { filter, pagination, include }] as CacheKey<
+      "access-logs"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

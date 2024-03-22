@@ -8,7 +8,10 @@ export function useSudo<
     const { state: { user } } = useStore();
 
     if (!user?.isSuperuser) {
-      throw AppError.new(AppErrorKind.AccessDeniedError, `Could not access this recouse, superuser only`);
+      throw AppError.new(
+        AppErrorKind.AccessDeniedError,
+        `Could not access this recouse, superuser only`,
+      );
     }
 
     return fn(...args);

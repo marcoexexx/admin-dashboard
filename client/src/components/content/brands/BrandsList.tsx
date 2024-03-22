@@ -4,7 +4,12 @@ import { Card } from "@mui/material";
 
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
-import { useCreateMultiBrands, useDeleteBrand, useDeleteMultiBrands, useGetBrands } from "@/hooks/brand";
+import {
+  useCreateMultiBrands,
+  useDeleteBrand,
+  useDeleteMultiBrands,
+  useGetBrands,
+} from "@/hooks/brand";
 
 export function BrandsList() {
   const { state: { brandFilter } } = useStore();

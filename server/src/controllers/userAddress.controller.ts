@@ -143,7 +143,8 @@ export async function createUserAddressHandler(
   next: NextFunction,
 ) {
   try {
-    const { username, isDefault, phone, email, regionId, townshipFeesId, fullAddress, remark } = req.body;
+    const { username, isDefault, phone, email, regionId, townshipFeesId, fullAddress, remark } =
+      req.body;
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw();

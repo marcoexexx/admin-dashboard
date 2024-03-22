@@ -1,7 +1,12 @@
 import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
-import { useCreateMultiTownships, useDeleteMultiTownships, useDeleteTownship, useGetTownships } from "@/hooks/township";
+import {
+  useCreateMultiTownships,
+  useDeleteMultiTownships,
+  useDeleteTownship,
+  useGetTownships,
+} from "@/hooks/township";
 import { Card } from "@mui/material";
 import { TownshipsListTable } from ".";
 

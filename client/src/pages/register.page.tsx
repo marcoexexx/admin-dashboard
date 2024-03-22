@@ -72,7 +72,8 @@ export default function Register() {
                 <RegisterForm />
 
                 <TypographySecondary variant="h4" fontWeight="normal" sx={{ my: 2 }}>
-                  Already have an account? <Link component={BrowserLink} to="/auth/login">Login</Link>
+                  Already have an account?{" "}
+                  <Link component={BrowserLink} to="/auth/login">Login</Link>
                 </TypographySecondary>
 
                 <OAuthForm />

@@ -136,13 +136,18 @@ export async function googleOAuthHandler(
     const code = req.query.code;
     const pathUrl = req.query.state || "/";
 
-    if (!code) return next(AppError.new(StatusCode.Unauthorized, "Authorization code not provided!"));
+    if (!code) {
+      return next(AppError.new(StatusCode.Unauthorized, "Authorization code not provided!"));
+    }
 
     const { id_token, access_token } = (await getGoogleAuthToken(code)).ok_or_throw();
 
-    const { name, verified_email, email, picture } = (await getGoogleUser({ id_token, access_token })).ok_or_throw();
+    const { name, verified_email, email, picture } =
+      (await getGoogleUser({ id_token, access_token })).ok_or_throw();
 
-    if (!verified_email) return next(AppError.new(StatusCode.Forbidden, "Google account not verified"));
+    if (!verified_email) {
+      return next(AppError.new(StatusCode.Forbidden, "Google account not verified"));
+    }
 
     // set Superuser if first time create user,
     const isSuperuser = (await service.tryCount()).ok_or_throw() === 0 ? true : false;
@@ -212,7 +217,9 @@ export async function loginUserHandler(
     // Check password
     const validPassword = await bcrypt.compare(password, user.password);
 
-    if (!validPassword) return next(AppError.new(StatusCode.BadRequest, "invalid email or password"));
+    if (!validPassword) {
+      return next(AppError.new(StatusCode.BadRequest, "invalid email or password"));
+    }
 
     const { accessToken, refreshToken } = await signToken(user);
     res.cookie("access_token", accessToken, accessTokenCookieOptions);
@@ -301,7 +308,9 @@ export async function logoutHandler(
     // @ts-ignore  for mocha testing
     const user = req.user;
 
-    if (!user) return next(AppError.new(StatusCode.Forbidden, "Session has expired or user doesn't exist"));
+    if (!user) {
+      return next(AppError.new(StatusCode.Forbidden, "Session has expired or user doesn't exist"));
+    }
 
     await redisClient.del(user.id);
 

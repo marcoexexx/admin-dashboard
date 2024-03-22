@@ -1,6 +1,11 @@
 import { OperationAction } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { CreateRoleInput, DeleteMultiRolesInput, GetRoleInput, UpdateRoleInput } from "../schemas/role.schema";
+import {
+  CreateRoleInput,
+  DeleteMultiRolesInput,
+  GetRoleInput,
+  UpdateRoleInput,
+} from "../schemas/role.schema";
 import { checkUser } from "../services/checkUser";
 import { RoleService } from "../services/role";
 import { StatusCode } from "../utils/appError";

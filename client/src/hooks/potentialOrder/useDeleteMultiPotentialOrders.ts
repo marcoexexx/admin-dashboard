@@ -16,7 +16,8 @@ export function useDeleteMultiPotentialOrders() {
   const { set, get } = useLocalStorage();
 
   const mutation = useMutation({
-    mutationFn: (...args: Parameters<typeof apiService.deleteMany>) => apiService.deleteMany(...args),
+    mutationFn: (...args: Parameters<typeof apiService.deleteMany>) =>
+      apiService.deleteMany(...args),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST",
@@ -41,14 +42,19 @@ export function useDeleteMultiPotentialOrders() {
       });
       // Clean created PotentialOrder from localStorage
       const pickupForm = get<CreateOrderInput>("PICKUP_FORM");
-      const isCartOrderId = pickupForm?.createdPotentialOrderId && ids.includes(pickupForm.createdPotentialOrderId);
-      if (isCartOrderId) set<CreateOrderInput>("PICKUP_FORM", { ...pickupForm, createdPotentialOrderId: undefined });
+      const isCartOrderId = pickupForm?.createdPotentialOrderId
+        && ids.includes(pickupForm.createdPotentialOrderId);
+      if (isCartOrderId) {
+        set<CreateOrderInput>("PICKUP_FORM", { ...pickupForm, createdPotentialOrderId: undefined });
+      }
       playSoundEffect("success");
     },
   });
 
   const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message))
+    ? Err(
+      AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message),
+    )
     : Ok(mutation.data);
 
   return {

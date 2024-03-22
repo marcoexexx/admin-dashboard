@@ -53,7 +53,9 @@ export function CreateCategoryForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit" loading={createCategoryMutation.isPending}>Create</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={createCategoryMutation.isPending}>
+            Create
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

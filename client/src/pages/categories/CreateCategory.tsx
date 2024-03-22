@@ -57,7 +57,8 @@ export default function CreatePage() {
           <Grid item xs={10}>
             <Typography variant="h3" component="h3" gutterBottom>Create a new category</Typography>
             <Typography variant="subtitle2" gutterBottom>
-              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.
+              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
+              consectetur cupidatat.
             </Typography>
           </Grid>
         </Grid>

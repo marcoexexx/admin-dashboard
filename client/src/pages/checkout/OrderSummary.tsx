@@ -75,7 +75,12 @@ export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps)
                     {orderItems.slice(0, 3).map((item, idx) => {
                       if (item.product) {
                         return (
-                          <Badge key={idx} badgeContent={item.quantity} variant="standard" color="primary">
+                          <Badge
+                            key={idx}
+                            badgeContent={item.quantity}
+                            variant="standard"
+                            color="primary"
+                          >
                             <Box
                               component="img"
                               sx={{
@@ -139,7 +144,9 @@ export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps)
                           <Typography variant="h4">Total</Typography>
                         </TableCell>
                         <TableCell align="right">
-                          <Typography variant="h4">{numberFormat(totalAmount + deliveryFee)} Ks</Typography>
+                          <Typography variant="h4">
+                            {numberFormat(totalAmount + deliveryFee)} Ks
+                          </Typography>
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -148,7 +155,9 @@ export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps)
               </Grid>
 
               <Grid item xs={12}>
-                <Alert severity="info">Transportation charges may vary due to your shipping method or address.</Alert>
+                <Alert severity="info">
+                  Transportation charges may vary due to your shipping method or address.
+                </Alert>
               </Grid>
             </Grid>
           </Box>

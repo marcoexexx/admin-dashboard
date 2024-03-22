@@ -44,7 +44,14 @@ router.route("/multi")
   );
 
 // Upload Routes
-router.post("/excel-upload", deserializeUser, requiredUser, checkBlockedUser, uploadExcel, createMultiRegionsHandler);
+router.post(
+  "/excel-upload",
+  deserializeUser,
+  requiredUser,
+  checkBlockedUser,
+  uploadExcel,
+  createMultiRegionsHandler,
+);
 
 router.route("/detail/:regionId")
   .get(

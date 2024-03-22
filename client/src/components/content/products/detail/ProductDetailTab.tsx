@@ -25,7 +25,8 @@ export const calculateProductDiscount = memoize((product: Product | undefined) =
 
   const originalProductDiscount = product.discount;
   const activeSaleDiscount = product.salesCategory?.find(sale =>
-    sale.salesCategory.isActive && dayjs().isBetween(sale.salesCategory.startDate, sale.salesCategory.endDate)
+    sale.salesCategory.isActive
+    && dayjs().isBetween(sale.salesCategory.startDate, sale.salesCategory.endDate)
     && sale.salesCategory.isActive
   )?.discount;
 
@@ -96,9 +97,8 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
   };
 
   const isLiked =
-    (product as Product & { likedUsers: { productId: string; userId: string; }[]; }).likedUsers.find(fav =>
-        fav.userId === state.user?.id
-      )
+    (product as Product & { likedUsers: { productId: string; userId: string; }[]; }).likedUsers
+        .find(fav => fav.userId === state.user?.id)
       ? true
       : false;
 
@@ -156,7 +156,8 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
         <Typography>Sales discounts</Typography>
         {product.salesCategory?.map(sale => (
           <Typography key={sale.id}>
-            {sale.salesCategory.name} {"->"} {sale.discount}% :: {sale.salesCategory.isActive ? "Active" : "Unactive"}
+            {sale.salesCategory.name} {"->"} {sale.discount}% ::{" "}
+            {sale.salesCategory.isActive ? "Active" : "Unactive"}
           </Typography>
         ))}
       </Box>

@@ -72,8 +72,9 @@ export async function getCouponHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
     _isAccess.ok_or_throw();
 
-    const coupon = (await service.tryFindUnique({ where: { id: couponId }, include: { reward, product } }))
-      .ok_or_throw();
+    const coupon =
+      (await service.tryFindUnique({ where: { id: couponId }, include: { reward, product } }))
+        .ok_or_throw();
 
     // Create audit log
     if (coupon && sessionUser) (await service.audit(sessionUser)).ok_or_throw();

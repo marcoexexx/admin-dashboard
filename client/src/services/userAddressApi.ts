@@ -1,10 +1,20 @@
 import AppError, { AppErrorKind } from "@/libs/exceptions";
 
-import { CreateUserAddressInput, UpdateUserAddressInput } from "@/components/content/user-addresses/forms";
+import {
+  CreateUserAddressInput,
+  UpdateUserAddressInput,
+} from "@/components/content/user-addresses/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { UserAddressWhereInput } from "@/context/userAddress";
 import { BaseApiService } from "./baseApiService";
-import { Address, GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
+import {
+  Address,
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  QueryOptionArgs,
+} from "./types";
 
 import { authApi } from "./authApi";
 

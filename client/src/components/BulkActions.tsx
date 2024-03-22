@@ -70,7 +70,12 @@ export function BulkActions(props: BulkActionsProps) {
           </Box>
           <Box display="flex" flexDirection="row" gap={1}>
             <MuiButton variant="contained" color="error" onClick={handleOnDelete}>Delete</MuiButton>
-            <MuiButton variant="outlined" onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}>Cancel</MuiButton>
+            <MuiButton
+              variant="outlined"
+              onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}
+            >
+              Cancel
+            </MuiButton>
           </Box>
         </Box>
       </FormModal>

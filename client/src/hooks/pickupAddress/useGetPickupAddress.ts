@@ -17,7 +17,9 @@ export function useGetPickupAddress({
 }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: [CacheResource.PickupAddress, { id, include }] as CacheKey<"pickup-addresses">["detail"],
+    queryKey: [CacheResource.PickupAddress, { id, include }] as CacheKey<
+      "pickup-addresses"
+    >["detail"],
     queryFn: args => apiService.find(args, { filter: { id }, include }),
   });
 

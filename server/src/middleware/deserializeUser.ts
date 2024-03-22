@@ -71,11 +71,15 @@ export async function deserializeUser(
     if (!accessToken) return next(AppError.new(StatusCode.Unauthorized, `You are not logged in`));
 
     const decoded = verifyJwt(accessToken, "accessTokenPublicKey"); //  decoded.sub == user.id
-    if (!decoded) return next(AppError.new(StatusCode.Unauthorized, `Invalid token or user doesn't exist`));
+    if (!decoded) {
+      return next(AppError.new(StatusCode.Unauthorized, `Invalid token or user doesn't exist`));
+    }
 
     const session = await redisClient.get(decoded.sub);
 
-    if (!session) return next(AppError.new(StatusCode.Unauthorized, `Invalid token or session has expired`));
+    if (!session) {
+      return next(AppError.new(StatusCode.Unauthorized, `Invalid token or session has expired`));
+    }
 
     const user = (await service.tryFindUnique({
       where: {

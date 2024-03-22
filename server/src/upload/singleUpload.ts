@@ -28,7 +28,9 @@ export async function resizeProfileImage(
       .toFile(output);
 
     if (getConfig("nodeEnv") === "development") {
-      req.body.image = `${req.protocol}://${req.hostname}:${getConfig("port")}/img/upload/${filename}`;
+      req.body.image = `${req.protocol}://${req.hostname}:${
+        getConfig("port")
+      }/img/upload/${filename}`;
     }
     if (getConfig("nodeEnv") === "production" || getConfig("nodeEnv") === "test") {
       req.body.image = `${req.protocol}://${req.hostname}/img/upload/${filename}`;

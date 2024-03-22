@@ -52,7 +52,13 @@ export default function ProductRelationshipTable(props: ProductRelationshipTable
     {
       id: "2",
       relative: "categories",
-      render: () => categories?.map(cat => <RenderCategoryLabel key={cat.categoryId} category={cat.category} />),
+      render: () =>
+        categories?.map(cat => (
+          <RenderCategoryLabel
+            key={cat.categoryId}
+            category={cat.category}
+          />
+        )),
     },
     {
       id: "3",

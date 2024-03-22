@@ -3,7 +3,14 @@ import { CacheResource } from "@/context/cacheKey";
 import { RegionWhereInput } from "@/context/region";
 import { authApi } from "./authApi";
 import { BaseApiService } from "./baseApiService";
-import { GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, Region } from "./types";
+import {
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  QueryOptionArgs,
+  Region,
+} from "./types";
 
 export class RegionApiService extends BaseApiService<RegionWhereInput, Region> {
   constructor(public repo: CacheResource) {
@@ -68,7 +75,9 @@ export class RegionApiService extends BaseApiService<RegionWhereInput, Region> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `Regions_${Date.now()}.xlsx`);
 
@@ -81,7 +90,9 @@ export class RegionApiService extends BaseApiService<RegionWhereInput, Region> {
     return data;
   }
 
-  async update(arg: { id: string; payload: UpdateRegionInput; }): Promise<GenericResponse<Region, "region">> {
+  async update(
+    arg: { id: string; payload: UpdateRegionInput; },
+  ): Promise<GenericResponse<Region, "region">> {
     const { id, payload } = arg;
     const url = `/${this.repo}/detail/${id}`;
 

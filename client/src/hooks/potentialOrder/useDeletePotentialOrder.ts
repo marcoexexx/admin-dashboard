@@ -32,12 +32,16 @@ export function useDeletePotentialOrder() {
       // Clean created PotentialOrder from localStorage
       const pickupForm = get<CreateOrderInput>("PICKUP_FORM");
       const isCartOrderId = data.potentialOrder.id === pickupForm?.createdPotentialOrderId;
-      if (isCartOrderId) set<CreateOrderInput>("PICKUP_FORM", { ...pickupForm, createdPotentialOrderId: undefined });
+      if (isCartOrderId) {
+        set<CreateOrderInput>("PICKUP_FORM", { ...pickupForm, createdPotentialOrderId: undefined });
+      }
     },
   });
 
   const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message))
+    ? Err(
+      AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message),
+    )
     : Ok(mutation.data);
 
   return {

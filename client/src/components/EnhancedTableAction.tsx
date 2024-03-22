@@ -99,7 +99,12 @@ export function EnhancedTableActions(props: EnhancedTableActionsProps) {
   return (
     <Box display="flex" justifyContent="space-between" alignItems="baseline" flexDirection="row">
       <Accordion sx={{ width: "100%" }}>
-        <Box display="flex" justifyContent="space-between" alignItems="baseline" flexDirection="row">
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="baseline"
+          flexDirection="row"
+        >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel-filter-content"

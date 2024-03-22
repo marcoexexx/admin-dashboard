@@ -64,9 +64,11 @@ export async function getRegionHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
     _isAccess.ok_or_throw();
 
-    const region =
-      (await service.tryFindUnique({ where: { id: regionId }, include: { _count, townships, userAddresses } }))
-        .ok_or_throw();
+    const region = (await service.tryFindUnique({
+      where: { id: regionId },
+      include: { _count, townships, userAddresses },
+    }))
+      .ok_or_throw();
 
     if (region && sessionUser) {
       const _auditLog = await service.audit(sessionUser);

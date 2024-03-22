@@ -8,8 +8,8 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { any, boolean, number, object, string, z } from "zod";
 
-import dayjs from "dayjs";
 import { useBeforeUnloadPage } from "@/hooks";
+import dayjs from "dayjs";
 
 const updateCouponSchema = object({
   points: number({ required_error: "Points is required" })
@@ -108,7 +108,9 @@ export function UpdateCouponForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit" loading={updateCouponMutation.isPending}>Save</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={updateCouponMutation.isPending}>
+            Save
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

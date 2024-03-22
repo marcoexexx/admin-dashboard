@@ -7,7 +7,9 @@ import AppError, { StatusCode } from "../utils/appError";
 
 const service = UserService.new();
 
-export async function _checkPermission({ action, resource }: { action: OperationAction; resource: Resource; }) {
+export async function _checkPermission(
+  { action, resource }: { action: OperationAction; resource: Resource; },
+) {
   return async function(
     req: Request,
     _res: Response,
@@ -26,7 +28,9 @@ export async function _checkPermission({ action, resource }: { action: Operation
 
       const isAccess = perms?.some(perm => perm.action === action && perm.resource === resource);
       if (!isAccess) {
-        return next(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`));
+        return next(
+          AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`),
+        );
       }
 
       next();

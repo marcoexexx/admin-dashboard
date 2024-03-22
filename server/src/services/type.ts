@@ -25,12 +25,18 @@ export abstract class MetaAppService {
 
     if (!log) {
       return Err(
-        AppError.new(StatusCode.ServiceUnavailable, `Could not create audit log for this resource: log is undefined`),
+        AppError.new(
+          StatusCode.ServiceUnavailable,
+          `Could not create audit log for this resource: log is undefined`,
+        ),
       );
     }
     if (!log.action) {
       return Err(
-        AppError.new(StatusCode.ServiceUnavailable, `Could not create audit for this resource: action is undefined`),
+        AppError.new(
+          StatusCode.ServiceUnavailable,
+          `Could not create audit for this resource: action is undefined`,
+        ),
       );
     }
     if (!Array.isArray(log.resourceIds) || !log.resourceIds.length) return Ok(undefined);
@@ -56,18 +62,26 @@ export abstract class MetaAppService {
     action: OperationAction = OperationAction.Read,
   ): Promise<Result<boolean, AppError>> {
     if (!user) {
-      const isAccess = guestUserAccessResources.some(perm => perm.resource === this.resource && perm.action === action);
+      const isAccess = guestUserAccessResources.some(perm =>
+        perm.resource === this.resource && perm.action === action
+      );
       if (!isAccess) {
-        return Err(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`));
+        return Err(
+          AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`),
+        );
       }
       return Ok(isAccess);
     }
 
     if (user.isSuperuser) return Ok(true);
 
-    const isAccess = user.role?.permissions.some(perm => perm.resource === this.resource && perm.action === action);
+    const isAccess = user.role?.permissions.some(perm =>
+      perm.resource === this.resource && perm.action === action
+    );
     if (!isAccess) {
-      return Err(AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`));
+      return Err(
+        AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`),
+      );
     }
 
     // If does not role, return false
@@ -168,7 +182,9 @@ export abstract class AppService<
     const count = await this.tryCount({ where: arg?.where });
     if (count.is_err()) return Err(count.unwrap_err());
 
-    const result = (await opt({ ...arg, skip: offset, take: pageSize })).map_err(convertPrismaErrorToAppError);
+    const result = (await opt({ ...arg, skip: offset, take: pageSize })).map_err(
+      convertPrismaErrorToAppError,
+    );
     if (result.is_err()) return Err(result.unwrap_err());
 
     this.log = {
@@ -314,7 +330,9 @@ export abstract class AppService<
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
   async tryExcelUpload(file: Express.Multer.File, uploadBy?: User): Promise<Result<any, AppError>> {
-    logging.debug(`Calling unimplemented service: ${this.name}.tryExcelUpload(${file}, ${uploadBy})`);
+    logging.debug(
+      `Calling unimplemented service: ${this.name}.tryExcelUpload(${file}, ${uploadBy})`,
+    );
     return Err(AppError.new(StatusCode.ServiceUnavailable, `This feature is not implemented yet.`));
   }
 }

@@ -124,7 +124,8 @@ export async function deletePickupAddressHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
     _isAccess.ok_or_throw();
 
-    const pickupAddress = (await service.tryDelete({ where: { id: pickupAddressId } })).ok_or_throw();
+    const pickupAddress = (await service.tryDelete({ where: { id: pickupAddressId } }))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);

@@ -1,7 +1,11 @@
 import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
-import { useDeleteMultiUserAddresses, useDeleteUserAddress, useGetUserAddresses } from "@/hooks/userAddress";
+import {
+  useDeleteMultiUserAddresses,
+  useDeleteUserAddress,
+  useGetUserAddresses,
+} from "@/hooks/userAddress";
 import { Card } from "@mui/material";
 import { UserAddressesListTable } from ".";
 

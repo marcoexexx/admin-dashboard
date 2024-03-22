@@ -19,7 +19,9 @@ export function useGetCategories({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.Category, { filter, pagination, include }] as CacheKey<"categories">["list"],
+    queryKey: [CacheResource.Category, { filter, pagination, include }] as CacheKey<
+      "categories"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

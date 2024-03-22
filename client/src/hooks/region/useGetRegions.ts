@@ -19,7 +19,9 @@ export function useGetRegions({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.Region, { filter, pagination, include }] as CacheKey<"regions">["list"],
+    queryKey: [CacheResource.Region, { filter, pagination, include }] as CacheKey<
+      "regions"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

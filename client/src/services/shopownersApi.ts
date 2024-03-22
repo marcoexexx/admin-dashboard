@@ -12,7 +12,9 @@ import {
   ShopownerProvider,
 } from "./types";
 
-export class ShopownerApiService extends BaseApiService<ShopownerProviderWhereInput, ShopownerProvider> {
+export class ShopownerApiService
+  extends BaseApiService<ShopownerProviderWhereInput, ShopownerProvider>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -64,7 +66,9 @@ export class ShopownerApiService extends BaseApiService<ShopownerProviderWhereIn
     return data;
   }
 
-  async create(payload: CreateShopownerInput): Promise<GenericResponse<ShopownerProvider, "shopowner">> {
+  async create(
+    payload: CreateShopownerInput,
+  ): Promise<GenericResponse<ShopownerProvider, "shopowner">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -75,7 +79,9 @@ export class ShopownerApiService extends BaseApiService<ShopownerProviderWhereIn
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `Shopowners_${Date.now()}.xlsx`);
 

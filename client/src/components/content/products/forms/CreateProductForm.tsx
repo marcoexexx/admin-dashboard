@@ -94,7 +94,9 @@ export function CreateProductForm() {
     const marketPrice = methods.getValues("marketPrice");
 
     if (!price || !!marketPrice) methods.setValue("discount", 0);
-    if (price && marketPrice) methods.setValue("discount", ((marketPrice - price) / marketPrice) * 100);
+    if (price && marketPrice) {
+      methods.setValue("discount", ((marketPrice - price) / marketPrice) * 100);
+    }
   }, [methods.watch("marketPrice"), methods.watch("price")]);
 
   const onSubmit: SubmitHandler<CreateProductInput> = (value) => {
@@ -181,7 +183,9 @@ export function CreateProductForm() {
               </TextField>
               <TextField
                 fullWidth
-                {...register("dealerPrice", { setValueAs: (v) => !v ? undefined : tryParseInt(v, 10).unwrap_or(0) })}
+                {...register("dealerPrice", {
+                  setValueAs: (v) => !v ? undefined : tryParseInt(v, 10).unwrap_or(0),
+                })}
                 type="number"
                 label="Dealer Price"
                 error={!!errors.dealerPrice}
@@ -194,7 +198,9 @@ export function CreateProductForm() {
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
                 fullWidth
-                {...register("marketPrice", { setValueAs: (v) => !v ? undefined : tryParseInt(v, 10).unwrap_or(0) })}
+                {...register("marketPrice", {
+                  setValueAs: (v) => !v ? undefined : tryParseInt(v, 10).unwrap_or(0),
+                })}
                 type="number"
                 label="MarketPrice"
                 error={!!errors.marketPrice}
@@ -298,7 +304,9 @@ export function CreateProductForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={createProductMutation.isPending}>Create</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={createProductMutation.isPending}>
+              Create
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

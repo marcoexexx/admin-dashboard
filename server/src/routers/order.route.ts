@@ -11,7 +11,12 @@ import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createOrderSchema, deleteMultiOrdersSchema, getOrderSchema, updateOrderSchema } from "../schemas/order.schema";
+import {
+  createOrderSchema,
+  deleteMultiOrdersSchema,
+  getOrderSchema,
+  updateOrderSchema,
+} from "../schemas/order.schema";
 
 const router = Router();
 

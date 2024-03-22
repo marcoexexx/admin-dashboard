@@ -22,7 +22,11 @@ export class PickupAddressService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.PickupAddress, { action: OperationAction.Read, resourceIds: [] }, db.pickupAddress);
+    super(
+      Resource.PickupAddress,
+      { action: OperationAction.Read, resourceIds: [] },
+      db.pickupAddress,
+    );
     this.name = "PickupAddress";
   }
 

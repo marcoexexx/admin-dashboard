@@ -6,7 +6,10 @@ export const currentLevel = getConfig("logLevel") || "info";
 
 export type Color = typeof currentLevel;
 
-type Logging = Record<typeof currentLevel, <T extends unknown>(message: T, ...optionalParams: any[]) => void>;
+type Logging = Record<
+  typeof currentLevel,
+  <T extends unknown>(message: T, ...optionalParams: any[]) => void
+>;
 
 export const level: Color[] = ["error", "warn", "debug", "info", "log"];
 

@@ -68,7 +68,11 @@ export function DashboardCard(props: DashboardCardProps) {
       </CardWrapper>
 
       <HelperContentWrapper>
-        <Box display="flex" flexDirection="row" color={isDown ? theme.colors.error.light : theme.colors.primary.light}>
+        <Box
+          display="flex"
+          flexDirection="row"
+          color={isDown ? theme.colors.error.light : theme.colors.primary.light}
+        >
           {isDown
             ? <ArrowDownwardIcon fontSize="small" />
             : <ArrowUpwardIcon fontSize="small" />}

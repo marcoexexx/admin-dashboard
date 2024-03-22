@@ -10,7 +10,8 @@ export const MuiSwitch: ComponentCustomizedStyle["MuiSwitch"] = {
       "& .MuiButtonBase-root": {
         position: "absolute",
         padding: 6,
-        transition: "left 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+        transition:
+          "left 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
       },
       "& .MuiIconButton-root": {
         borderRadius: 100,

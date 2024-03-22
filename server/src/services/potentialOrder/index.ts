@@ -22,7 +22,11 @@ export class PotentialOrderService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.PotentialOrder, { action: OperationAction.Read, resourceIds: [] }, db.potentialOrder);
+    super(
+      Resource.PotentialOrder,
+      { action: OperationAction.Read, resourceIds: [] },
+      db.potentialOrder,
+    );
     this.name = "PotentialOrder";
   }
 

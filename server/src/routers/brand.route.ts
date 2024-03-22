@@ -12,7 +12,12 @@ import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
-import { createBrandSchema, deleteMultiBrandsSchema, getBrandSchema, updateBrandSchema } from "../schemas/brand.schema";
+import {
+  createBrandSchema,
+  deleteMultiBrandsSchema,
+  getBrandSchema,
+  updateBrandSchema,
+} from "../schemas/brand.schema";
 import { uploadExcel } from "../upload/excelUpload";
 
 const router = Router();
@@ -39,7 +44,14 @@ router.route("/multi")
   );
 
 // Upload Routes
-router.post("/excel-upload", deserializeUser, requiredUser, checkBlockedUser, uploadExcel, createMultiBrandsHandler);
+router.post(
+  "/excel-upload",
+  deserializeUser,
+  requiredUser,
+  checkBlockedUser,
+  uploadExcel,
+  createMultiBrandsHandler,
+);
 
 router.route("/detail/:brandId")
   .get(

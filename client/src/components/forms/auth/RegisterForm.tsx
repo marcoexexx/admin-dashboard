@@ -22,7 +22,10 @@ const registerUserSchema = object({
   password: string({ required_error: "Password id required" })
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-      { message: "Password must contain special characters, a number, a capital letter, and a small letter" },
+      {
+        message:
+          "Password must contain special characters, a number, a capital letter, and a small letter",
+      },
     )
     .min(8)
     .max(32),
@@ -56,7 +59,9 @@ export function RegisterForm() {
           severity: "success",
         },
       });
-      if (import.meta.env.MODE === "development") console.log({ _devOnly: { redirectUrl: data.redirectUrl } });
+      if (import.meta.env.MODE === "development") {
+        console.log({ _devOnly: { redirectUrl: data.redirectUrl } });
+      }
       navigate(from);
       playSoundEffect("success");
     },

@@ -19,7 +19,9 @@ export function useGetPotentialOrders({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.PotentialOrder, { filter, pagination, include }] as CacheKey<"potential-orders">["list"],
+    queryKey: [CacheResource.PotentialOrder, { filter, pagination, include }] as CacheKey<
+      "potential-orders"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

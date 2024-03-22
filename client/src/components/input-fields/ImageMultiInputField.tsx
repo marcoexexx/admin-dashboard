@@ -1,4 +1,10 @@
-import { Autocomplete, AutocompleteInputChangeReason, Avatar, Chip, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  AutocompleteInputChangeReason,
+  Avatar,
+  Chip,
+  TextField,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
@@ -40,13 +46,17 @@ export function ImageMultiInputField(props: ImageMultiInputFieldProps) {
     }
 
     if ((evt.metaKey || evt.ctrlKey) && evt.key === "z") {
-      console.log({ selectedImages })
-      console.log(getValues("images"))
+      console.log({ selectedImages });
+      console.log(getValues("images"));
       return;
     }
   };
 
-  const handleOnInputChange = (_event: React.SyntheticEvent, _value: string, reason: AutocompleteInputChangeReason) => {
+  const handleOnInputChange = (
+    _event: React.SyntheticEvent,
+    _value: string,
+    reason: AutocompleteInputChangeReason,
+  ) => {
     if (reason === "clear") {
       setText("");
       setImages([]);
@@ -72,7 +82,13 @@ export function ImageMultiInputField(props: ImageMultiInputFieldProps) {
             renderTags={(values, _props, _owner) => {
               return values.map((value, idx) => {
                 const label = `${value.split("//")[0]}//...`;
-                return <Chip key={value + idx} avatar={<Avatar alt="image" src={value} />} label={label} />;
+                return (
+                  <Chip
+                    key={value + idx}
+                    avatar={<Avatar alt="image" src={value} />}
+                    label={label}
+                  />
+                );
               });
             }}
             renderOption={(props, option) => (

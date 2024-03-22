@@ -21,7 +21,10 @@ export const handleTryOnProcessOrderStatus: OrderLifeCycleStatusHandler = () => 
   [OrderStatus.Processing]: () => OrderStatus.Processing,
   [OrderStatus.Pending]: () => OrderStatus.Pending,
   [OrderStatus.Shipped]: () => {
-    throw AppError.new(StatusCode.BadRequest, "Cannot change the `Shipped` status while the order is in processing.");
+    throw AppError.new(
+      StatusCode.BadRequest,
+      "Cannot change the `Shipped` status while the order is in processing.",
+    );
   },
   [OrderStatus.Cancelled]: () => OrderStatus.Cancelled,
   [OrderStatus.Delivered]: () => {
@@ -62,7 +65,10 @@ export const handleTryOnShippedOrderStatus: OrderLifeCycleStatusHandler = () => 
   [OrderStatus.Pending]: () => OrderStatus.Pending,
   [OrderStatus.Shipped]: () => OrderStatus.Shipped,
   [OrderStatus.Cancelled]: () => {
-    throw AppError.new(StatusCode.BadRequest, "Unable to cancel the order as it has already been shipped.");
+    throw AppError.new(
+      StatusCode.BadRequest,
+      "Unable to cancel the order as it has already been shipped.",
+    );
   },
   [OrderStatus.Delivered]: () => OrderStatus.Delivered,
 });
@@ -96,7 +102,10 @@ export const handleTryOnDeliveredOrderStatus: OrderLifeCycleStatusHandler = () =
   [OrderStatus.Pending]: () => OrderStatus.Pending,
   [OrderStatus.Shipped]: () => OrderStatus.Shipped,
   [OrderStatus.Cancelled]: () => {
-    throw AppError.new(StatusCode.BadRequest, "Unable to cancel the order as it has already been delivered.");
+    throw AppError.new(
+      StatusCode.BadRequest,
+      "Unable to cancel the order as it has already been delivered.",
+    );
   },
   [OrderStatus.Delivered]: () => OrderStatus.Delivered,
 });

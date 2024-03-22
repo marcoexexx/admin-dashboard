@@ -37,7 +37,9 @@ export function UpdateBrandForm() {
   useBeforeUnloadPage();
 
   useEffect(() => {
-    if (brandQuery.isSuccess && brand && brandFetchStatus === "idle") methods.setValue("name", brand.name);
+    if (brandQuery.isSuccess && brand && brandFetchStatus === "idle") {
+      methods.setValue("name", brand.name);
+    }
   }, [brandQuery.isSuccess, brandFetchStatus]);
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods;
@@ -67,7 +69,9 @@ export function UpdateBrandForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={updateBrandMutation.isPending}>Save</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={updateBrandMutation.isPending}>
+              Save
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

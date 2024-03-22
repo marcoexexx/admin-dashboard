@@ -1,7 +1,12 @@
 import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
-import { useCreateMultiCoupons, useDeleteCoupon, useDeleteMultiCoupons, useGetCoupons } from "@/hooks/coupon";
+import {
+  useCreateMultiCoupons,
+  useDeleteCoupon,
+  useDeleteMultiCoupons,
+  useGetCoupons,
+} from "@/hooks/coupon";
 import { Card } from "@mui/material";
 import { CouponsListTable } from ".";
 

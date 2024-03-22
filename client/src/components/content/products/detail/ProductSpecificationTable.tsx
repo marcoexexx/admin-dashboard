@@ -54,7 +54,9 @@ export default function ProductSpecificationTable(props: ProductSpecificationTab
                 <TableRow key={spec.id}>
                   {columnHeader.map((col, idx) => {
                     return (
-                      <TableCell key={idx} align={col.align}>{spec[col.id as keyof typeof spec] as string}</TableCell>
+                      <TableCell key={idx} align={col.align}>
+                        {spec[col.id as keyof typeof spec] as string}
+                      </TableCell>
                     );
                   })}
                 </TableRow>

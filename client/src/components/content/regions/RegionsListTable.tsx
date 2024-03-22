@@ -19,7 +19,11 @@ const columns: TypedColumn<Region>[] = [
     align: "left",
     name: "Townships",
     render: ({ value }) => (
-      <>{value.townships?.map(township => <RenderTownshipName key={township.id} township={township} />)}</>
+      <>
+        {value.townships?.map(township => (
+          <RenderTownshipName key={township.id} township={township} />
+        ))}
+      </>
     ),
   },
 ];

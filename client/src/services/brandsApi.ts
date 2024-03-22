@@ -3,7 +3,14 @@ import { BrandWhereInput } from "@/context/brand";
 import { CacheResource } from "@/context/cacheKey";
 import { authApi } from "./authApi";
 import { BaseApiService } from "./baseApiService";
-import { Brand, GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
+import {
+  Brand,
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  QueryOptionArgs,
+} from "./types";
 
 export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
   constructor(public repo: CacheResource) {
@@ -68,7 +75,9 @@ export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `Brands_${Date.now()}.xlsx`);
 
@@ -81,7 +90,9 @@ export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
     return data;
   }
 
-  async update(arg: { id: string; payload: UpdateBrandInput; }): Promise<GenericResponse<Brand, "brand">> {
+  async update(
+    arg: { id: string; payload: UpdateBrandInput; },
+  ): Promise<GenericResponse<Brand, "brand">> {
     const { id, payload } = arg;
     const url = `/${this.repo}/detail/${id}`;
 

@@ -11,7 +11,9 @@ export function as_result<Args extends any[], ReturnType>(fn: (...args: Args) =>
   };
 }
 
-export function as_result_async<Args extends any[], ReturnType>(fn: (...args: Args) => Promise<ReturnType>) {
+export function as_result_async<Args extends any[], ReturnType>(
+  fn: (...args: Args) => Promise<ReturnType>,
+) {
   return async function<E extends Error>(...args: Args): Promise<Result<ReturnType, E>> {
     try {
       const func = await fn(...args);

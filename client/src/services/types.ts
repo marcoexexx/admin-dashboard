@@ -90,7 +90,8 @@ export const PaymentMethodProvider = {
   WavePay: "WavePay",
   BankTransfer: "BankTransfer",
 } as const;
-export type PaymentMethodProvider = typeof PaymentMethodProvider[keyof typeof PaymentMethodProvider];
+export type PaymentMethodProvider =
+  typeof PaymentMethodProvider[keyof typeof PaymentMethodProvider];
 
 /**
  * @enum
@@ -745,7 +746,10 @@ export type WhereInput<T> = {
 };
 
 export type LoginResponse = Omit<HttpResponse, "message"> & { accessToken: string; };
-export type UserResponse = Omit<HttpResponse, "message"> & { user: User; redirectUrl: string | undefined; };
+export type UserResponse = Omit<HttpResponse, "message"> & {
+  user: User;
+  redirectUrl: string | undefined;
+};
 export type ProductSalesCategoriesResponse = {
   id: string;
   salesCategoryId: string;

@@ -135,7 +135,9 @@ export function CartsTable() {
               <TableHead>
                 <TableRow>
                   {columns.map(header => {
-                    const render = <TableCell key={header.id} align={header.align}>{header.name}</TableCell>;
+                    const render = (
+                      <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
+                    );
                     return render;
                   })}
                 </TableRow>
@@ -166,8 +168,11 @@ export function CartsTable() {
                                   alt={row.product?.title || "product"}
                                 />
                               )}
-                              {col.id === "discount" && row.product && `${productDiscountPercent} %`}
-                              {col.id === "product" && row.product && <RenderProductLabel product={row.product} />}
+                              {col.id === "discount" && row.product
+                                && `${productDiscountPercent} %`}
+                              {col.id === "product" && row.product && (
+                                <RenderProductLabel product={row.product} />
+                              )}
                               {col.id === "quantity" && (
                                 <RenderQuantityButtons
                                   disabled={isCreatedPotentialOrder}
@@ -214,7 +219,11 @@ export function CartsTable() {
       </TableContainer>
 
       {isCreatedPotentialOrder
-        ? <Alert severity="warning">Order items cannot be edited once potential order has been created.</Alert>
+        ? (
+          <Alert severity="warning">
+            Order items cannot be edited once potential order has been created.
+          </Alert>
+        )
         : null}
     </Box>
   );

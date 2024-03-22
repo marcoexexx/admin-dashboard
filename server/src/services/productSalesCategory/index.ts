@@ -22,7 +22,11 @@ export class ProductSalesCategoryService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.SalesCategory, { action: OperationAction.Read, resourceIds: [] }, db.productSalesCategory);
+    super(
+      Resource.SalesCategory,
+      { action: OperationAction.Read, resourceIds: [] },
+      db.productSalesCategory,
+    );
     this.name = "SalesCategory";
   }
 

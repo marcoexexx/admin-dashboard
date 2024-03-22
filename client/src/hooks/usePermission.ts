@@ -19,7 +19,9 @@ export function usePermission({
 
   if (user?.isSuperuser) return Ok(undefined);
 
-  const isAllowed = user?.role?.permissions?.some(perm => perm.action === action && perm.resource === resource);
+  const isAllowed = user?.role?.permissions?.some(perm =>
+    perm.action === action && perm.resource === resource
+  );
   if (isAllowed) return Ok(undefined);
 
   return Err(AppError.new(AppErrorKind.AccessDeniedError, `Could not access this recouse`));

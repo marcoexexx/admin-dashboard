@@ -36,12 +36,16 @@ export class LifeCycleState<T extends LifeCycleStateConcrate> {
   public changeState(state: T["state"]): T["state"] {
     switch (this.concrate.resource) {
       case "order": {
-        const toChangeState = this.changeStateOnOrder(state as OrderStatus) as (state: T["state"]) => T["state"];
+        const toChangeState = this.changeStateOnOrder(state as OrderStatus) as (
+          state: T["state"],
+        ) => T["state"];
         return toChangeState(this.concrate.state);
       }
 
       case "product": {
-        const toChangeState = this.changeStateOnProduct(state as ProductStatus) as (state: T["state"]) => T["state"];
+        const toChangeState = this.changeStateOnProduct(state as ProductStatus) as (
+          state: T["state"],
+        ) => T["state"];
         return toChangeState(this.concrate.state);
       }
 

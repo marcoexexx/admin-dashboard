@@ -15,7 +15,8 @@ export function Carts() {
   const navigate = useNavigate();
 
   const itemsCount = try_data.ok_or_throw()?.orderItems?.length;
-  const disableCheckout = !itemsCount || !!get<CreateOrderInput>("PICKUP_FORM")?.createdPotentialOrderId;
+  const disableCheckout = !itemsCount
+    || !!get<CreateOrderInput>("PICKUP_FORM")?.createdPotentialOrderId;
 
   const handleNavigate = () => {
     dispatch({ type: "CLOSE_MODAL_FORM", payload: "cart" });
@@ -31,7 +32,9 @@ export function Carts() {
         </Grid>
 
         <Grid item xs={6}>
-          <MuiButton onClick={handleNavigate} loading={isLoading} disabled={disableCheckout}>Checkout</MuiButton>
+          <MuiButton onClick={handleNavigate} loading={isLoading} disabled={disableCheckout}>
+            Checkout
+          </MuiButton>
         </Grid>
       </Grid>
     </Container>

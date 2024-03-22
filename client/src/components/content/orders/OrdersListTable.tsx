@@ -51,7 +51,8 @@ const columns: TypedColumn<Order>[] = [
     id: "user",
     align: "left",
     name: "Username",
-    render: ({ value, me }) => value.user && me ? <RenderUsernameLabel user={value.user} me={me} /> : null,
+    render: ({ value, me }) =>
+      value.user && me ? <RenderUsernameLabel user={value.user} me={me} /> : null,
   },
   {
     id: "totalPrice",
@@ -63,8 +64,9 @@ const columns: TypedColumn<Order>[] = [
     id: "orderItems",
     align: "left",
     name: "Order No",
-    render: ({ value }) => <>{value.orderItems?.map(item => <RenderOrderItemLabel key={item.id} orderItem={item} />)}
-    </>,
+    render: ({ value }) => (
+      <>{value.orderItems?.map(item => <RenderOrderItemLabel key={item.id} orderItem={item} />)}</>
+    ),
   },
   {
     id: "createdAt",

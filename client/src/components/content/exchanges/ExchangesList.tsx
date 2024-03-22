@@ -1,7 +1,12 @@
 import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
-import { useCreateMultiExchanges, useDeleteExchange, useDeleteMultiExchanges, useGetExchanges } from "@/hooks/exchange";
+import {
+  useCreateMultiExchanges,
+  useDeleteExchange,
+  useDeleteMultiExchanges,
+  useGetExchanges,
+} from "@/hooks/exchange";
 import { Card } from "@mui/material";
 import { ExchangesListTable } from ".";
 

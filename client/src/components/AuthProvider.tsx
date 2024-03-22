@@ -32,7 +32,9 @@ export function AuthProvider(props: AuthProviderProps) {
 
   if (isLoading) return <SuspenseLoader />;
 
-  if (cookies.logged_in && !isAllowedReactDashboard) throw AppError.new(AppErrorKind.PermissionError);
+  if (cookies.logged_in && !isAllowedReactDashboard) {
+    throw AppError.new(AppErrorKind.PermissionError);
+  }
 
   return children;
 }

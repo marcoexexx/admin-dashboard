@@ -15,7 +15,9 @@ const updateOrderSchema = object({
   totalPrice: number().min(0),
   pickupAddressId: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
-  paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+  paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, {
+    required_error: "paymentMethodProvider is required",
+  }),
   remark: string().optional(),
   addressType: z.nativeEnum(OrderAddressType, { required_error: "Order address type is required" }),
 });

@@ -12,7 +12,9 @@ const THROTTLE_TIME = 60 * 5; // 5 minute
 export async function createAuditLog(
   data: Prisma.AuditLogUncheckedCreateInput,
 ): Promise<Result<AuditLog | undefined, AppError>> {
-  if (!data.resourceIds || (Array.isArray(data.resourceIds) && !data.resourceIds.length)) return Ok(undefined);
+  if (!data.resourceIds || (Array.isArray(data.resourceIds) && !data.resourceIds.length)) {
+    return Ok(undefined);
+  }
 
   const key = `${data.resource}:${data.action}:${JSON.stringify(data.resourceIds)}`;
 

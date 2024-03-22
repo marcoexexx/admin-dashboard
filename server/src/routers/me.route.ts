@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { getMeHandler, uploadImageCoverHandler, uploadImageProfileHandler } from "../controllers/user.controller";
+import {
+  getMeHandler,
+  uploadImageCoverHandler,
+  uploadImageProfileHandler,
+} from "../controllers/user.controller";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";

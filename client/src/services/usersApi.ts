@@ -75,7 +75,9 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
     return data;
   }
 
-  async block({ userId, remark }: { userId: string; remark?: string; }): Promise<GenericResponse<User, "user">> {
+  async block(
+    { userId, remark }: { userId: string; remark?: string; },
+  ): Promise<GenericResponse<User, "user">> {
     const url = `/${this.repo}/block-user`;
 
     const { data } = await authApi.patch(url, {
@@ -85,14 +87,18 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
     return data;
   }
 
-  async unblock({ blockedUserId }: { blockedUserId: string; }): Promise<GenericResponse<User, "user">> {
+  async unblock(
+    { blockedUserId }: { blockedUserId: string; },
+  ): Promise<GenericResponse<User, "user">> {
     const url = `/${this.repo}/unblock-user/${blockedUserId}`;
 
     const { data } = await authApi.patch(url);
     return data;
   }
 
-  async uploadProfilePicture(upload: UploadProfilePictureInput): Promise<GenericResponse<User, "user">> {
+  async uploadProfilePicture(
+    upload: UploadProfilePictureInput,
+  ): Promise<GenericResponse<User, "user">> {
     const url = `/me/upload/profile-picture`;
 
     const formData = new FormData();
@@ -120,7 +126,9 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
     return res.data;
   }
 
-  async update(arg: { id: string; payload: UpdateUserInput; }): Promise<GenericResponse<User, "user">> {
+  async update(
+    arg: { id: string; payload: UpdateUserInput; },
+  ): Promise<GenericResponse<User, "user">> {
     const { id, payload } = arg;
     const url = `/${this.repo}/detail/${id}`;
 

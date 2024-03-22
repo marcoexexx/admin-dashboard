@@ -19,7 +19,9 @@ export function useGetPickupAddresses({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.PickupAddress, { filter, pagination, include }] as CacheKey<"pickup-addresses">["list"],
+    queryKey: [CacheResource.PickupAddress, { filter, pagination, include }] as CacheKey<
+      "pickup-addresses"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

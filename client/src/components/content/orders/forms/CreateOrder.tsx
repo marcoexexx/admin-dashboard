@@ -14,7 +14,9 @@ export const createOrderSchema = object({
   totalPrice: number().min(0),
   pickupAddressId: string().optional(),
   billingAddressId: string({ required_error: "billingAddressId is required" }),
-  paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, { required_error: "paymentMethodProvider is required" }),
+  paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, {
+    required_error: "paymentMethodProvider is required",
+  }),
   remark: string().optional(),
 
   createdPotentialOrderId: string().optional(),

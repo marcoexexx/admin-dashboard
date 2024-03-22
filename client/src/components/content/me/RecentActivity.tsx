@@ -1,5 +1,14 @@
 import { User } from "@/services/types";
-import { Avatar, Box, Card, CardHeader, Divider, styled, Typography, useTheme } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Card,
+  CardHeader,
+  Divider,
+  styled,
+  Typography,
+  useTheme,
+} from "@mui/material";
 
 import FavoriteTwoToneIcon from "@mui/icons-material/FavoriteTwoTone";
 import ShoppingBagTwoToneIcon from "@mui/icons-material/ShoppingBagTwoTone";

@@ -10,7 +10,9 @@ export function signJwt<T extends { sub: string; }>(
   const key = getConfig("jwtConfig")[keyName];
 
   if (!key) {
-    throw new Error("The process environment (process.env) is undefined. Ensure that it is properly configured.");
+    throw new Error(
+      "The process environment (process.env) is undefined. Ensure that it is properly configured.",
+    );
   }
 
   const privateKey = Buffer.from(key, "base64").toString("utf8");

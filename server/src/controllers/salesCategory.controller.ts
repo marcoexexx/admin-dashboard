@@ -96,8 +96,10 @@ export async function getSalesCategoryHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
     _isAccess.ok_or_throw();
 
-    const salesCategory =
-      (await service.tryFindUnique({ where: { id: salesCategoryId }, include: { _count, products } })).ok_or_throw();
+    const salesCategory = (await service.tryFindUnique({
+      where: { id: salesCategoryId },
+      include: { _count, products },
+    })).ok_or_throw();
 
     res.status(StatusCode.OK).json(HttpDataResponse({ salesCategory }));
   } catch (err) {
@@ -137,7 +139,11 @@ export async function createSalesCategoryHandler(
 }
 
 export async function createSaleCategoryForProductHandler(
-  req: Request<CreateProductSalesCategoryInput["params"], {}, CreateProductSalesCategoryInput["body"]>,
+  req: Request<
+    CreateProductSalesCategoryInput["params"],
+    {},
+    CreateProductSalesCategoryInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {

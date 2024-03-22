@@ -57,7 +57,8 @@ export class ProductService extends AppService<
           name: product["sales.name"].toString(),
           startDate: product["sales.startDate"] || new Date(),
           get endDate() {
-            return product["sales.endDate"] || new Date(new Date(this.startDate).getTime() + 1000 * 60 * 60 * 24 * 5);
+            return product["sales.endDate"]
+              || new Date(new Date(this.startDate).getTime() + 1000 * 60 * 60 * 24 * 5);
           }, // default: 5 days
           discount: product["sales.discount"],
           isActive: product["sales.isActive"] || true,

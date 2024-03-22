@@ -96,7 +96,9 @@ function QontoStepIcon(props: StepIconProps) {
 
   return (
     <QontoStepIconRoot ownerState={{ active }} className={className}>
-      {completed ? <Check className="QontoStepIcon-completedIcon" /> : <div className="QontoStepIcon-circle" />}
+      {completed
+        ? <Check className="QontoStepIcon-completedIcon" />
+        : <div className="QontoStepIcon-circle" />}
     </QontoStepIconRoot>
   );
 }
@@ -178,7 +180,10 @@ export function CheckoutForm() {
 
     if (createPotentialOrderMutation.isSuccess && createdPotentialOrder) {
       setValue("createdPotentialOrderId", createdPotentialOrder.potentialOrder.id);
-      setValue("pickupAddressId", createdPotentialOrder.potentialOrder.pickupAddressId || undefined);
+      setValue(
+        "pickupAddressId",
+        createdPotentialOrder.potentialOrder.pickupAddressId || undefined,
+      );
       setActiveStepIdx(2);
       set("CHECKOUT_FORM_ACTIVE_STEP", 2);
     }
@@ -206,8 +211,12 @@ export function CheckoutForm() {
       if (values.pickupAddressId) setValue("pickupAddressId", values.pickupAddressId);
       if (values.deliveryAddressId) setValue("deliveryAddressId", values.deliveryAddressId);
       if (values.billingAddressId) setValue("billingAddressId", values.billingAddressId);
-      if (values.paymentMethodProvider) setValue("paymentMethodProvider", values.paymentMethodProvider);
-      if (values.createdPotentialOrderId) setValue("createdPotentialOrderId", values.createdPotentialOrderId);
+      if (values.paymentMethodProvider) {
+        setValue("paymentMethodProvider", values.paymentMethodProvider);
+      }
+      if (values.createdPotentialOrderId) {
+        setValue("createdPotentialOrderId", values.createdPotentialOrderId);
+      }
     }
 
     setValue("addressType", values?.addressType || "Delivery");
@@ -242,7 +251,13 @@ export function CheckoutForm() {
   };
 
   const checkValidCurrentStepForm = (idx: number) => {
-    const { addressType, deliveryAddressId, pickupAddressId, billingAddressId, paymentMethodProvider } = getValues();
+    const {
+      addressType,
+      deliveryAddressId,
+      pickupAddressId,
+      billingAddressId,
+      paymentMethodProvider,
+    } = getValues();
 
     if (idx === 0) {
       if (addressType === "Delivery" && !errors.deliveryAddressId && deliveryAddressId) return true;
@@ -278,11 +293,16 @@ export function CheckoutForm() {
         addressType: value.addressType,
       };
 
-      if (deliveryFee && deliveryFee.township) payload.totalPrice = deliveryFee.township.fees + totalAmount;
+      if (deliveryFee && deliveryFee.township) {
+        payload.totalPrice = deliveryFee.township.fees + totalAmount;
+      }
 
       // check address type and add their address data
-      if (value.addressType === AddressType.Delivery) payload.deliveryAddressId = value.deliveryAddressId;
-      else if (value.addressType === AddressType.Pickup) payload.pickupAddressId = value.pickupAddressId;
+      if (value.addressType === AddressType.Delivery) {
+        payload.deliveryAddressId = value.deliveryAddressId;
+      } else if (value.addressType === AddressType.Pickup) {
+        payload.pickupAddressId = value.pickupAddressId;
+      }
 
       createPotentialOrderMutation.mutate(payload);
     }
@@ -379,14 +399,19 @@ export function CheckoutForm() {
                     justifyContent="flex-start"
                     gap={1}
                   >
-                    <MuiButton disabled={activeStepIdx === 0} onClick={handleBackStep} variant="text">
+                    <MuiButton
+                      disabled={activeStepIdx === 0}
+                      onClick={handleBackStep}
+                      variant="text"
+                    >
                       Back
                     </MuiButton>
                     {isLastStep
                       ? (
                         <MuiButton
                           onClick={handleNextStep}
-                          loading={createOrderMutation.isPending || deletePotentialOrderMutation.isPending}
+                          loading={createOrderMutation.isPending
+                            || deletePotentialOrderMutation.isPending}
                           disabled={!isConfirmed}
                           type="submit"
                           variant="contained"

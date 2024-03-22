@@ -76,7 +76,9 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `Products_${Date.now()}.xlsx`);
 
@@ -89,7 +91,9 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
     return data;
   }
 
-  async update(arg: { id: string; payload: UpdateProductInput; }): Promise<GenericResponse<Product, "product">> {
+  async update(
+    arg: { id: string; payload: UpdateProductInput; },
+  ): Promise<GenericResponse<Product, "product">> {
     const { id, payload } = arg;
     const url = `/${this.repo}/detail/${id}`;
 
@@ -125,7 +129,11 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
   }
 
   async createSaleCategory(
-    { productId, salesCategoryId, discount }: { productId: string; salesCategoryId: string; discount: number; },
+    { productId, salesCategoryId, discount }: {
+      productId: string;
+      salesCategoryId: string;
+      discount: number;
+    },
   ): Promise<GenericResponse<ProductSalesCategoriesResponse, "category"> | undefined> {
     const url = `/${this.repo}/detail/${productId}/sales`;
 
@@ -167,7 +175,9 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
     return res.data;
   }
 
-  async unlike({ userId, productId }: { userId: string; productId: string; }): Promise<HttpResponse> {
+  async unlike(
+    { userId, productId }: { userId: string; productId: string; },
+  ): Promise<HttpResponse> {
     const url = `/${this.repo}/unlike/${productId}`;
 
     const res = await authApi.patch(url, { userId });

@@ -61,7 +61,9 @@ export function CreateRoleForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={createRoleMutation.isPending}>Create</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={createRoleMutation.isPending}>
+              Create
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

@@ -1,9 +1,19 @@
-import { CreatePermissionInput, UpdatePermissionInput } from "@/components/content/permissions/forms";
+import {
+  CreatePermissionInput,
+  UpdatePermissionInput,
+} from "@/components/content/permissions/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { PermissionWhereInput } from "@/context/permission";
 import { authApi } from "./authApi";
 import { BaseApiService } from "./baseApiService";
-import { GenericResponse, HttpListResponse, HttpResponse, Pagination, Permission, QueryOptionArgs } from "./types";
+import {
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  Permission,
+  QueryOptionArgs,
+} from "./types";
 
 export class PermisssionApiService extends BaseApiService<PermissionWhereInput, Permission> {
   constructor(public repo: CacheResource) {

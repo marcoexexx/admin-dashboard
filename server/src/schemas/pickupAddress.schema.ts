@@ -39,6 +39,8 @@ export const deleteMultiPickupAddressesSchema = object({
   }),
 });
 
-export type DeleteMultiPickupAddressesInput = z.infer<typeof deleteMultiPickupAddressesSchema>["body"];
+export type DeleteMultiPickupAddressesInput = z.infer<
+  typeof deleteMultiPickupAddressesSchema
+>["body"];
 export type GetPickupAddressInput = z.infer<typeof getPickupAddressSchema>;
 export type CreatePickupAddressInput = z.infer<typeof createPickupAddressSchema>["body"];

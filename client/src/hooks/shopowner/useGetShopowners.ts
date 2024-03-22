@@ -19,7 +19,9 @@ export function useGetShopowners({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.Shopowner, { filter, pagination, include }] as CacheKey<"shopowners">["list"],
+    queryKey: [CacheResource.Shopowner, { filter, pagination, include }] as CacheKey<
+      "shopowners"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

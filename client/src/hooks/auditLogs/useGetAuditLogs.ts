@@ -19,7 +19,9 @@ export function useGetAuditLogs({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.AuditLog, { filter, pagination, include }] as CacheKey<"audit-logs">["list"],
+    queryKey: [CacheResource.AuditLog, { filter, pagination, include }] as CacheKey<
+      "audit-logs"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

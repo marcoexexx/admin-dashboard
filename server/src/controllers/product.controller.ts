@@ -83,7 +83,9 @@ export async function getProductsHandler(
           status,
           priceUnit,
           creator: {
-            shopownerProviderId: sessionUser?.isSuperuser ? undefined : sessionUser?.shopownerProviderId,
+            shopownerProviderId: sessionUser?.isSuperuser
+              ? undefined
+              : sessionUser?.shopownerProviderId,
           },
         },
         include: {
@@ -155,7 +157,9 @@ export async function getProductHandler(
       },
     })).ok_or_throw();
 
-    if (!product) return next(AppError.new(StatusCode.NotFound, `Product '${productId}' not found`));
+    if (!product) {
+      return next(AppError.new(StatusCode.NotFound, `Product '${productId}' not found`));
+    }
 
     // Read event action audit log
     if (product && sessionUser) (await service.audit(sessionUser)).ok_or_throw();
@@ -305,7 +309,11 @@ export async function deleteProductSaleCategoryHandler(
 }
 
 export async function updateProductSalesCategoryHandler(
-  req: Request<UpdateProductSaleCategoryInput["params"], {}, UpdateProductSaleCategoryInput["body"]>,
+  req: Request<
+    UpdateProductSaleCategoryInput["params"],
+    {},
+    UpdateProductSaleCategoryInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -360,7 +368,12 @@ export async function deleteProductHandler(
       },
     })).ok_or_throw();
     if (_product?.status !== ProductStatus.Draft) {
-      return next(AppError.new(StatusCode.BadRequest, `Deletion is restricted for product in non-drift states.`));
+      return next(
+        AppError.new(
+          StatusCode.BadRequest,
+          `Deletion is restricted for product in non-drift states.`,
+        ),
+      );
     }
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
@@ -372,7 +385,9 @@ export async function deleteProductHandler(
         id: productId,
         status: ProductStatus.Draft,
         creator: {
-          shopownerProviderId: sessionUser.isSuperuser ? undefined : sessionUser.shopownerProviderId,
+          shopownerProviderId: sessionUser.isSuperuser
+            ? undefined
+            : sessionUser.shopownerProviderId,
         },
       },
     })).ok_or_throw();
@@ -406,7 +421,9 @@ export async function deleteMultiProductHandler(
         },
         status: ProductStatus.Draft,
         creator: {
-          shopownerProviderId: sessionUser.isSuperuser ? undefined : sessionUser.shopownerProviderId,
+          shopownerProviderId: sessionUser.isSuperuser
+            ? undefined
+            : sessionUser.shopownerProviderId,
         },
       },
     });
@@ -462,7 +479,9 @@ export async function updateProductHandler(
         },
       },
     })).ok_or_throw();
-    if (!originalProductState) return next(AppError.new(StatusCode.NotFound, `Product ${productId} not found.`));
+    if (!originalProductState) {
+      return next(AppError.new(StatusCode.NotFound, `Product ${productId} not found.`));
+    }
 
     const productLifeCycleState = new LifeCycleState<LifeCycleProductConcrate>({
       resource: "product",
@@ -475,14 +494,18 @@ export async function updateProductHandler(
     _isAccess.ok_or_throw();
 
     if (!sessionUser.isSuperuser && productState === ProductStatus.Published) {
-      return next(AppError.new(StatusCode.BadRequest, `You do not have permission to access this resource.`));
+      return next(
+        AppError.new(StatusCode.BadRequest, `You do not have permission to access this resource.`),
+      );
     }
 
     const _deleteProductSpecifications = await service.tryUpdate({
       where: {
         id: productId,
         creator: {
-          shopownerProviderId: sessionUser.isSuperuser ? undefined : sessionUser.shopownerProviderId,
+          shopownerProviderId: sessionUser.isSuperuser
+            ? undefined
+            : sessionUser.shopownerProviderId,
         },
       },
       data: {

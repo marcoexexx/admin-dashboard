@@ -19,7 +19,9 @@ export function useGetCoupons({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.Coupon, { filter, pagination, include }] as CacheKey<"coupons">["list"],
+    queryKey: [CacheResource.Coupon, { filter, pagination, include }] as CacheKey<
+      "coupons"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

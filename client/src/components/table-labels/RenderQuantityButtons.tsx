@@ -41,7 +41,12 @@ export function RenderQuantityButtons({
     >
       <Tooltip title="add">
         <>
-          <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickIncrementAction}>
+          <IconButton
+            disabled={disabled}
+            aria-label="add item"
+            size="small"
+            onClick={handleOnClickIncrementAction}
+          >
             <AddIcon color="primary" fontSize="small" />
           </IconButton>
         </>
@@ -53,7 +58,12 @@ export function RenderQuantityButtons({
         ? (
           <Tooltip title="decrement">
             <>
-              <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickDecrementAction}>
+              <IconButton
+                disabled={disabled}
+                aria-label="add item"
+                size="small"
+                onClick={handleOnClickDecrementAction}
+              >
                 <RemoveIcon color="primary" fontSize="small" />
               </IconButton>
             </>
@@ -63,7 +73,12 @@ export function RenderQuantityButtons({
 
       <Tooltip title="remove">
         <>
-          <IconButton disabled={disabled} aria-label="add item" size="small" onClick={handleOnClickRemoveAction}>
+          <IconButton
+            disabled={disabled}
+            aria-label="add item"
+            size="small"
+            onClick={handleOnClickRemoveAction}
+          >
             <DeleteIcon color="primary" fontSize="small" />
           </IconButton>
         </>

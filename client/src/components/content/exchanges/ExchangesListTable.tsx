@@ -36,7 +36,8 @@ const columns: TypedColumn<Exchange>[] = [
     id: "shopowner",
     align: "right",
     name: "Shopowner",
-    render: ({ value }) => value.shopowner ? <RenderShopownerLabel shopowner={value.shopowner} /> : null,
+    render: ({ value }) =>
+      value.shopowner ? <RenderShopownerLabel shopowner={value.shopowner} /> : null,
   },
 ];
 

@@ -18,8 +18,12 @@ interface ShopownerInputFieldProps {
   disabled?: boolean;
 }
 
-export function ShopownerInputField({ updateField = false, disabled = false }: ShopownerInputFieldProps) {
-  const { control, setValue, getValues } = useFormContext<{ shopownerProviderId: string | null; }>();
+export function ShopownerInputField(
+  { updateField = false, disabled = false }: ShopownerInputFieldProps,
+) {
+  const { control, setValue, getValues } = useFormContext<
+    { shopownerProviderId: string | null; }
+  >();
   const [selectedShopowner, setSelectedShopowner] = useState<ShopownerProvider | null>(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 

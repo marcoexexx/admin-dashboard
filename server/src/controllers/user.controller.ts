@@ -235,7 +235,9 @@ export async function createBlockUserHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
     _isAccess.ok_or_throw();
 
-    if (!sessionUser.isSuperuser) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`));
+    if (!sessionUser.isSuperuser) {
+      return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`));
+    }
 
     const user = await service.tryUpdate({
       where: { id: sessionUser.id },
@@ -267,7 +269,9 @@ export async function removeBlockedUserHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
     _isAccess.ok_or_throw();
 
-    if (!sessionUser.isSuperuser) return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`));
+    if (!sessionUser.isSuperuser) {
+      return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`));
+    }
 
     const user = await service.tryUpdate({
       where: { id: sessionUser.id },

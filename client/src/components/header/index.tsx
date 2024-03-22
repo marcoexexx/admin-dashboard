@@ -55,7 +55,12 @@ export default function Header() {
 
   return (
     <MainContent display="flex" alignItems="center">
-      <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} alignItems="center" spacing={2}>
+      <Stack
+        direction="row"
+        divider={<Divider orientation="vertical" flexItem />}
+        alignItems="center"
+        spacing={2}
+      >
         <HeaderMenu />
       </Stack>
 

@@ -7,7 +7,10 @@ import { useGetProductSalesCategories } from "@/hooks/salsCategory/useGetProduct
 import { ProductSalesCategoriesResponse } from "@/services/types";
 import { Box, Card, CardContent, CardHeader, Container, Grid, Typography } from "@mui/material";
 import { useState } from "react";
-import { CreateProductSalesCategoryForm, CreateSalesCategoryForm } from "../../sales-categories/forms";
+import {
+  CreateProductSalesCategoryForm,
+  CreateSalesCategoryForm,
+} from "../../sales-categories/forms";
 import { ProductSalesCategoryCard } from "./ProductSalesCategoryCard";
 
 interface ProductSalesTabProps {
@@ -19,7 +22,9 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
 
   const { state: { modalForm }, dispatch } = useStore();
 
-  const [selectedProductSale, setSelectedProductSale] = useState<ProductSalesCategoriesResponse | undefined>(undefined);
+  const [selectedProductSale, setSelectedProductSale] = useState<
+    ProductSalesCategoriesResponse | undefined
+  >(undefined);
   const [toDeleteProductSale, setToDeleteProductSale] = useState<string | undefined>(undefined);
 
   const { try_data, isLoading } = useGetProductSalesCategories({ productId });
@@ -49,7 +54,11 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
     <Container maxWidth="lg">
       <Grid container spacing={1} gap={5}>
         <Grid item xs={12}>
-          <ProductSalesCategoryCard productSales={sales} onSelect={handleOnSelect} onDelete={handleOnDelete} />
+          <ProductSalesCategoryCard
+            productSales={sales}
+            onSelect={handleOnSelect}
+            onDelete={handleOnDelete}
+          />
         </Grid>
 
         <Grid item xs={12}>

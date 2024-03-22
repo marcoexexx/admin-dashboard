@@ -2,7 +2,14 @@ import { CreateTownshipInput, UpdateTownshipInput } from "@/components/content/t
 import { CacheResource } from "@/context/cacheKey";
 import { TownshipWhereInput } from "@/context/township";
 import { BaseApiService } from "./baseApiService";
-import { GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs, TownshipFees } from "./types";
+import {
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  QueryOptionArgs,
+  TownshipFees,
+} from "./types";
 
 import { authApi } from "./authApi";
 
@@ -69,7 +76,9 @@ export class TownshipApiService extends BaseApiService<TownshipWhereInput, Towns
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `TownshipFees_${Date.now()}.xlsx`);
 
@@ -82,7 +91,9 @@ export class TownshipApiService extends BaseApiService<TownshipWhereInput, Towns
     return data;
   }
 
-  async update(arg: { id: string; payload: UpdateTownshipInput; }): Promise<GenericResponse<TownshipFees, "township">> {
+  async update(
+    arg: { id: string; payload: UpdateTownshipInput; },
+  ): Promise<GenericResponse<TownshipFees, "township">> {
     const { id, payload } = arg;
     const url = `/${this.repo}/detail/${id}`;
 

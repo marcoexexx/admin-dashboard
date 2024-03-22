@@ -29,7 +29,10 @@ import SearchTwoToneIcon from "@mui/icons-material/SearchTwoTone";
 import { MuiButton } from "../ui";
 
 const Transition = forwardRef(
-  function(props: TransitionProps & { children: React.ReactElement<any, any>; }, ref: Ref<unknown>) {
+  function(
+    props: TransitionProps & { children: React.ReactElement<any, any>; },
+    ref: Ref<unknown>,
+  ) {
     return <Slide direction="down" ref={ref} {...props} />;
   },
 );
@@ -174,7 +177,8 @@ export default function HeaderSearch() {
                       color: (theme: Theme) => lighten(theme.palette.secondary.main, 0.5),
                     }}
                   >
-                    This page contains all the necessary information for managing all hospital staff.
+                    This page contains all the necessary information for managing all hospital
+                    staff.
                   </Typography>
                 </Box>
                 <ChevronRightTwoToneIcon />

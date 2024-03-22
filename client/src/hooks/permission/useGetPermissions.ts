@@ -19,7 +19,9 @@ export function useGetPermissions({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.Permission, { filter, pagination, include }] as CacheKey<"permissions">["list"],
+    queryKey: [CacheResource.Permission, { filter, pagination, include }] as CacheKey<
+      "permissions"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

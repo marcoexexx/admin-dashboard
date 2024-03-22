@@ -50,10 +50,11 @@ export function SpecificationInputField() {
     setDraggedIdx(idx);
   };
 
-  const handleClickRemoveSpecificationAction = (idx: number) => (_evt: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteIdx(idx);
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "delete-specification" });
-  };
+  const handleClickRemoveSpecificationAction =
+    (idx: number) => (_evt: React.MouseEvent<HTMLButtonElement>) => {
+      setDeleteIdx(idx);
+      dispatch({ type: "OPEN_MODAL_FORM", payload: "delete-specification" });
+    };
 
   const handleRemoveSpecification = (_evt: React.MouseEvent<HTMLButtonElement>) => {
     if (deleteIdx !== undefined) specificationRemove(deleteIdx);

@@ -29,7 +29,11 @@ export class ShopownerService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.Shopowner, { action: OperationAction.Read, resourceIds: [] }, db.shopownerProvider);
+    super(
+      Resource.Shopowner,
+      { action: OperationAction.Read, resourceIds: [] },
+      db.shopownerProvider,
+    );
     this.name = "shopownerProvider";
   }
 

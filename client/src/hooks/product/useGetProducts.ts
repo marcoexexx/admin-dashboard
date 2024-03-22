@@ -19,7 +19,9 @@ export function useGetProducts({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.Product, { filter, pagination, include }] as CacheKey<"products">["list"],
+    queryKey: [CacheResource.Product, { filter, pagination, include }] as CacheKey<
+      "products"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

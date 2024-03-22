@@ -1,6 +1,6 @@
 import { MuiButton } from "@/components/ui";
-import { useCreateBrand } from "@/hooks/brand";
 import { useBeforeUnloadPage } from "@/hooks";
+import { useCreateBrand } from "@/hooks/brand";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
 import { useEffect } from "react";
@@ -22,7 +22,6 @@ export function CreateBrandForm() {
   });
 
   useBeforeUnloadPage();
-
 
   const { handleSubmit, register, formState: { errors }, setFocus } = methods;
 
@@ -51,7 +50,9 @@ export function CreateBrandForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={createBrandMutation.isPending}>Create</MuiButton>
+            <MuiButton variant="contained" type="submit" loading={createBrandMutation.isPending}>
+              Create
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

@@ -27,8 +27,8 @@ export function MiniAccessDenied() {
           <Box display="flex" flexDirection="column" gap={2}>
             <HeaderWrapper>Access denied!</HeaderWrapper>
             <ContentWrapper>
-              We're sorry, but you do not have required permissions to access page or resource. Please contact the site
-              administrator.
+              We're sorry, but you do not have required permissions to access page or resource.
+              Please contact the site administrator.
             </ContentWrapper>
           </Box>
         </Grid>

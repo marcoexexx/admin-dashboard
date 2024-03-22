@@ -27,7 +27,9 @@ const columns: TypedColumn<PickupAddress>[] = [
     id: "orders",
     align: "left",
     name: "Orders",
-    render: ({ value }) => <>{value.orders?.map(order => <RenderOrderLabel key={order.id} order={order} />)}</>,
+    render: ({ value }) => (
+      <>{value.orders?.map(order => <RenderOrderLabel key={order.id} order={order} />)}</>
+    ),
   },
 ];
 

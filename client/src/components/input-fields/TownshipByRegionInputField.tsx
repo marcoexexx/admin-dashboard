@@ -17,7 +17,9 @@ interface TownshipByRegionInputFieldProps {
   updateField?: boolean;
 }
 
-export function TownshipByRegionInputField({ updateField = false }: TownshipByRegionInputFieldProps) {
+export function TownshipByRegionInputField(
+  { updateField = false }: TownshipByRegionInputFieldProps,
+) {
   const { control, setValue, getValues, formState: { errors }, watch } = useFormContext<
     { regionId: string; townshipFeesId: string; }
   >();

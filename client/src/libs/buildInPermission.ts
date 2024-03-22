@@ -1,7 +1,9 @@
 import { OperationAction, Permission, Resource } from "@/services/types";
 import _ from "lodash";
 
-function createResourcesPermission(accessResource: Record<Resource, OperationAction[] | "*" | "!">) {
+function createResourcesPermission(
+  accessResource: Record<Resource, OperationAction[] | "*" | "!">,
+) {
   const perms: Pick<Permission, "action" | "resource">[] = [];
 
   _.forEach(accessResource, (value, key) => {

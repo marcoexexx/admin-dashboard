@@ -24,7 +24,9 @@ interface GoogleUserResult {
   locale: string;
 }
 
-export async function getGoogleAuthToken(code: string): Promise<Result<GoogleOAuthToken, AppError>> {
+export async function getGoogleAuthToken(
+  code: string,
+): Promise<Result<GoogleOAuthToken, AppError>> {
   const rootUrl = "https://oauth2.googleapis.com/token";
   const { clientID, clientSecret, redirect } = getConfig("googleOAuth");
 
@@ -44,7 +46,12 @@ export async function getGoogleAuthToken(code: string): Promise<Result<GoogleOAu
     });
     return Ok(data);
   } catch (err: any) {
-    return Err(AppError.new(StatusCode.InternalServerError, `Failed to fetch Google Oauth Tokens: ${err.message}`));
+    return Err(
+      AppError.new(
+        StatusCode.InternalServerError,
+        `Failed to fetch Google Oauth Tokens: ${err.message}`,
+      ),
+    );
   }
 }
 
@@ -54,7 +61,8 @@ export async function getGoogleUser(
   const { id_token, access_token } = args;
 
   try {
-    const url = `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`;
+    const url =
+      `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`;
     const { data } = await axios.get<GoogleUserResult>(url, {
       headers: {
         Authorization: `Bearer ${id_token}`,

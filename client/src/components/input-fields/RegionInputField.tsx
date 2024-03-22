@@ -18,7 +18,9 @@ interface RegionInputFieldProps {
 }
 
 export function RegionInputField({ updateField = false }: RegionInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<{ regionId: string; }>();
+  const { control, setValue, getValues, formState: { errors } } = useFormContext<
+    { regionId: string; }
+  >();
   const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 

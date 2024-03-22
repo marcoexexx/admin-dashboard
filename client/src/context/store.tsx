@@ -33,7 +33,12 @@ import {
   ChangeAuditLogPageActions,
   ChangeAuditLogPageSizeActions,
 } from "./auditLogs";
-import { BrandFilterActions, BrandWhereInput, ChangeBrandPageActions, ChangeBrandPageSizeActions } from "./brand";
+import {
+  BrandFilterActions,
+  BrandWhereInput,
+  ChangeBrandPageActions,
+  ChangeBrandPageSizeActions,
+} from "./brand";
 import { CacheResource } from "./cacheKey";
 import {
   CategoryFilterActions,
@@ -41,7 +46,12 @@ import {
   ChangeCategoryPageActions,
   ChangeCategoryPageSizeActions,
 } from "./category";
-import { ChangeCouponPageActions, ChangeCouponPageSizeActions, CouponFilterActions, CouponWhereInput } from "./coupon";
+import {
+  ChangeCouponPageActions,
+  ChangeCouponPageSizeActions,
+  CouponFilterActions,
+  CouponWhereInput,
+} from "./coupon";
 import {
   ChangeExchangePageActions,
   ChangeExchangePageSizeActions,
@@ -76,8 +86,18 @@ import {
   ProductFilterActions,
   ProductWhereInput,
 } from "./product";
-import { ChangeRegionPageActions, ChangeRegionPageSizeActions, RegionFilterActions, RegionWhereInput } from "./region";
-import { ChangeRolePageActions, ChangeRolePageSizeActions, RoleFilterActions, RoleWhereInput } from "./role";
+import {
+  ChangeRegionPageActions,
+  ChangeRegionPageSizeActions,
+  RegionFilterActions,
+  RegionWhereInput,
+} from "./region";
+import {
+  ChangeRolePageActions,
+  ChangeRolePageSizeActions,
+  RoleFilterActions,
+  RoleWhereInput,
+} from "./role";
 import {
   ChangeSalesCategoryPageActions,
   ChangeSalesCategoryPageSizeActions,
@@ -96,7 +116,12 @@ import {
   TownshipFilterActions,
   TownshipWhereInput,
 } from "./township";
-import { ChangeUserPageActions, ChangeUserPageSizeActions, UserFilterActions, UserWhereInput } from "./user";
+import {
+  ChangeUserPageActions,
+  ChangeUserPageSizeActions,
+  UserFilterActions,
+  UserWhereInput,
+} from "./user";
 import {
   ChangeUserAddressPageActions,
   ChangeUserAddressPageSizeActions,
@@ -576,7 +601,8 @@ const stateReducer = (state: Store, action: Action): Store => {
         potentialOrderFilter: {
           ...state.potentialOrderFilter,
           pagination: {
-            pageSize: state.potentialOrderFilter.pagination?.pageSize || INITIAL_PAGINATION.pageSize,
+            pageSize: state.potentialOrderFilter.pagination?.pageSize
+              || INITIAL_PAGINATION.pageSize,
             page: action.payload,
           },
         },

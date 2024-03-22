@@ -1,6 +1,11 @@
 import { OperationAction } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { CreateBrandInput, DeleteMultiBrandsInput, GetBrandInput, UpdateBrandInput } from "../schemas/brand.schema";
+import {
+  CreateBrandInput,
+  DeleteMultiBrandsInput,
+  GetBrandInput,
+  UpdateBrandInput,
+} from "../schemas/brand.schema";
 import { BrandService } from "../services/brand";
 import { checkUser } from "../services/checkUser";
 import { StatusCode } from "../utils/appError";
@@ -198,7 +203,8 @@ export async function updateBrandHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
     _isAccess.ok_or_throw();
 
-    const brand = (await service.tryUpdate({ where: { id: brandId }, data: { name } })).ok_or_throw();
+    const brand = (await service.tryUpdate({ where: { id: brandId }, data: { name } }))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);

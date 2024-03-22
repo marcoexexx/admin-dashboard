@@ -30,12 +30,16 @@ export function EditorInputField({ fieldName }: EditorInputFieldProps) {
                   minHeight: "18em",
                 },
                 ".ql-toolbar.ql-snow": {
-                  borderColor: !!fieldState.error ? theme.colors.error.main : theme.colors.alpha.black[30],
+                  borderColor: !!fieldState.error
+                    ? theme.colors.error.main
+                    : theme.colors.alpha.black[30],
                   borderTopLeftRadius: theme.shape.borderRadius,
                   borderTopRightRadius: theme.shape.borderRadius,
                 },
                 ".ql-container.ql-snow": {
-                  borderColor: !!fieldState.error ? theme.colors.error.main : theme.colors.alpha.black[30],
+                  borderColor: !!fieldState.error
+                    ? theme.colors.error.main
+                    : theme.colors.alpha.black[30],
                   borderBottomLeftRadius: theme.shape.borderRadius,
                   borderBottomRightRadius: theme.shape.borderRadius,
                 },

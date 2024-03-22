@@ -1,7 +1,17 @@
 import { CreateOrderInput } from "@/components/content/orders/forms";
 import { AddressInputField } from "@/components/input-fields";
 import { PaymentMethodProvider } from "@/services/types";
-import { Box, Card, CardContent, Container, FormLabel, Grid, Radio, styled, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Container,
+  FormLabel,
+  Grid,
+  Radio,
+  styled,
+  Typography,
+} from "@mui/material";
 import { useFormContext } from "react-hook-form";
 
 const SelectionCardWrapper = styled(Box)<{
@@ -44,9 +54,10 @@ export function PaymentMethodStep() {
 
   const selectedPayment = getValues("paymentMethodProvider");
 
-  const handleChangeAddressType = (payment: PaymentMethodProvider) => (_: React.MouseEvent<HTMLDivElement>) => {
-    setValue("paymentMethodProvider", payment);
-  };
+  const handleChangeAddressType =
+    (payment: PaymentMethodProvider) => (_: React.MouseEvent<HTMLDivElement>) => {
+      setValue("paymentMethodProvider", payment);
+    };
 
   return (
     <Container maxWidth="lg">

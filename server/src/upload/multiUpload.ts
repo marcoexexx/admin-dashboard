@@ -33,7 +33,9 @@ export async function resizeProductImages(
           const output = path.join(imageUploadPath, filename);
 
           if (getConfig("nodeEnv") === "development") {
-            req.body.images.push(`${req.protocol}://${req.hostname}:${getConfig("port")}/img/upload/${filename}`);
+            req.body.images.push(
+              `${req.protocol}://${req.hostname}:${getConfig("port")}/img/upload/${filename}`,
+            );
           }
           if (getConfig("nodeEnv") === "production" || getConfig("nodeEnv") === "test") {
             req.body.images.push(`${req.protocol}://${req.hostname}/img/upload/${filename}`);

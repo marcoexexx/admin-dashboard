@@ -2,7 +2,14 @@ import { CreateExchangeInput, UpdateExchangeInput } from "@/components/content/e
 import { CacheResource } from "@/context/cacheKey";
 import { ExchangeWhereInput } from "@/context/exchange";
 import { BaseApiService } from "./baseApiService";
-import { Exchange, GenericResponse, HttpListResponse, HttpResponse, Pagination, QueryOptionArgs } from "./types";
+import {
+  Exchange,
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  QueryOptionArgs,
+} from "./types";
 
 import { authApi } from "./authApi";
 
@@ -70,7 +77,9 @@ export class ExchangeApiService extends BaseApiService<ExchangeWhereInput, Excha
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
 
     formData.append("excel", blob, `Exchange_${Date.now()}.xlsx`);
 
@@ -83,7 +92,9 @@ export class ExchangeApiService extends BaseApiService<ExchangeWhereInput, Excha
     return data;
   }
 
-  async update(arg: { id: string; payload: UpdateExchangeInput; }): Promise<GenericResponse<Exchange, "exchange">> {
+  async update(
+    arg: { id: string; payload: UpdateExchangeInput; },
+  ): Promise<GenericResponse<Exchange, "exchange">> {
     const { id, payload } = arg;
     const url = `/${this.repo}/detail/${id}`;
 

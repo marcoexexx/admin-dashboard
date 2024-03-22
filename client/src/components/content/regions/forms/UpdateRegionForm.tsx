@@ -38,7 +38,12 @@ export function UpdateRegionForm() {
   useEffect(() => {
     if (isSuccess && region && fetchStatus === "idle") {
       methods.setValue("name", region.name);
-      if (region.townships) methods.setValue("townships", region.townships.map(township => township.id));
+      if (region.townships) {
+        methods.setValue(
+          "townships",
+          region.townships.map(township => township.id),
+        );
+      }
     }
   }, [isSuccess, fetchStatus]);
 

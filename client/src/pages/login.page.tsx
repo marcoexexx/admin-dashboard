@@ -74,7 +74,8 @@ export default function Login() {
                 <LoginForm />
 
                 <TypographySecondary variant="h4" fontWeight="normal" sx={{ my: 2 }}>
-                  Need an account? <Link component={BrowserLink} to="/auth/register">Create an account</Link>
+                  Need an account?{" "}
+                  <Link component={BrowserLink} to="/auth/register">Create an account</Link>
                 </TypographySecondary>
 
                 <OAuthForm />

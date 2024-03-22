@@ -32,7 +32,9 @@ export class CartApiService extends BaseApiService<CartWhereInput, Cart> {
     return data;
   }
 
-  async createCartOrderItem(payload: CreateCartOrderItemInput): Promise<GenericResponse<OrderItem, "orderItem">> {
+  async createCartOrderItem(
+    payload: CreateCartOrderItemInput,
+  ): Promise<GenericResponse<OrderItem, "orderItem">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);

@@ -74,7 +74,13 @@ export function UpdateShopownerForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={updateShopownerMutation.isPending}>Save</MuiButton>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={updateShopownerMutation.isPending}
+            >
+              Save
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

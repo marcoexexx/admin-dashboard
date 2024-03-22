@@ -64,8 +64,9 @@ export async function getCategoryHandler(
     const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
     _isAccess.ok_or_throw();
 
-    const category = (await service.tryFindUnique({ where: { id: categoryId }, include: { _count, products } }))
-      .ok_or_throw();
+    const category =
+      (await service.tryFindUnique({ where: { id: categoryId }, include: { _count, products } }))
+        .ok_or_throw();
 
     // Create audit log
     if (category && sessionUser) (await service.audit(sessionUser)).ok_or_throw();

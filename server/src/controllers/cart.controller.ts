@@ -210,7 +210,8 @@ export async function deleteCartOrderItemHandler(
     const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Delete);
     _isAccess.ok_or_throw();
 
-    const orderItem = (await userService.tryRemoveSingleOrderItem({ where: { id: orderItemId } })).ok_or_throw();
+    const orderItem = (await userService.tryRemoveSingleOrderItem({ where: { id: orderItemId } }))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await userService.audit(sessionUser);

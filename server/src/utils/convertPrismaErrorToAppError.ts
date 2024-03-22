@@ -1,4 +1,7 @@
-import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library";
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from "@prisma/client/runtime/library";
 import logging from "../middleware/logging/logging";
 import AppError, { StatusCode } from "./appError";
 
@@ -35,7 +38,10 @@ export function convertPrismaErrorToAppError<E extends Error>(err: E): AppError 
 
   if (err instanceof PrismaClientValidationError) {
     logging.error(err.name);
-    return AppError.new(StatusCode.BadRequest, `Invalid input. Please check your request parameters and try again`);
+    return AppError.new(
+      StatusCode.BadRequest,
+      `Invalid input. Please check your request parameters and try again`,
+    );
   }
 
   logging.error(err.name, `Unknown error`);

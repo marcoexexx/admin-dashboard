@@ -51,7 +51,9 @@ const columns: TypedColumn<Product>[] = [
     id: "images",
     align: "left",
     name: "Image",
-    render: ({ value }) => <RenderImageLabel src={value.images[0] || "/default.png"} alt={value.title} />,
+    render: ({ value }) => (
+      <RenderImageLabel src={value.images[0] || "/default.png"} alt={value.title} />
+    ),
   },
   {
     id: "title",
@@ -83,7 +85,11 @@ const columns: TypedColumn<Product>[] = [
     align: "right",
     name: "Categories",
     render: ({ value }) => (
-      <>{value.categories?.map(({ category }, idx) => <RenderCategoryLabel key={idx} category={category} />)}</>
+      <>
+        {value.categories?.map(({ category }, idx) => (
+          <RenderCategoryLabel key={idx} category={category} />
+        ))}
+      </>
     ),
   },
   {
@@ -120,7 +126,9 @@ const columns: TypedColumn<Product>[] = [
     id: "isDiscountItem",
     align: "right",
     name: "Is discount item",
-    render: ({ value }) => <Typography>{value.isDiscountItem ? `Discounted: item` : "No"}</Typography>,
+    render: ({ value }) => (
+      <Typography>{value.isDiscountItem ? `Discounted: item` : "No"}</Typography>
+    ),
   },
   {
     id: "creator",
@@ -141,7 +149,8 @@ interface ProductsListTableProps {
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
-  const { products, count, isLoading, onDelete, onMultiDelete, onCreateMany, onStatusChange } = props;
+  const { products, count, isLoading, onDelete, onMultiDelete, onCreateMany, onStatusChange } =
+    props;
   const { state: { productFilter: { pagination } }, dispatch } = useStore();
 
   const theme = useTheme();

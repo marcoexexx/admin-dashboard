@@ -4,11 +4,20 @@ import { CreatePickupAddressInput } from "@/components/content/pickupAddressHist
 import { CacheResource } from "@/context/cacheKey";
 import { PickupAddressWhereInput } from "@/context/pickupAddress";
 import { BaseApiService } from "./baseApiService";
-import { GenericResponse, HttpListResponse, HttpResponse, Pagination, PickupAddress, QueryOptionArgs } from "./types";
+import {
+  GenericResponse,
+  HttpListResponse,
+  HttpResponse,
+  Pagination,
+  PickupAddress,
+  QueryOptionArgs,
+} from "./types";
 
 import { authApi } from "./authApi";
 
-export class PickupAddressApiService extends BaseApiService<PickupAddressWhereInput, PickupAddress> {
+export class PickupAddressApiService
+  extends BaseApiService<PickupAddressWhereInput, PickupAddress>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -60,7 +69,9 @@ export class PickupAddressApiService extends BaseApiService<PickupAddressWhereIn
     return data;
   }
 
-  async create(payload: CreatePickupAddressInput): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
+  async create(
+    payload: CreatePickupAddressInput,
+  ): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -77,7 +88,9 @@ export class PickupAddressApiService extends BaseApiService<PickupAddressWhereIn
   /**
    * Not Support yet!
    */
-  async update(_arg: { id: string; payload: any; }): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
+  async update(
+    _arg: { id: string; payload: any; },
+  ): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
     return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`));
   }
 

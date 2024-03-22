@@ -49,7 +49,10 @@ export default class AppError extends Error implements ToString {
     Error.captureStackTrace(this, this.constructor);
   }
 
-  static new(status: StatusCode = StatusCode.InternalServerError, message: string = "Unknown error") {
+  static new(
+    status: StatusCode = StatusCode.InternalServerError,
+    message: string = "Unknown error",
+  ) {
     return new AppError(status, message);
   }
 

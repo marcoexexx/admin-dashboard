@@ -116,7 +116,9 @@ export function ProductdsFilterForm() {
             fullWidth
             defaultValue={filterQuery.get("minPrice")}
             type="number"
-            {...register("minPrice", { setValueAs: value => value === "" ? undefined : parseInt(value, 10) })}
+            {...register("minPrice", {
+              setValueAs: value => value === "" ? undefined : parseInt(value, 10),
+            })}
             label="Minimum price"
             error={!!errors.minPrice}
             helperText={!!errors.minPrice ? errors.minPrice.message : ""}

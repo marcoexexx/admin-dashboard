@@ -12,8 +12,12 @@ const HomePage = Loader(lazy(() => import("@/pages/home")));
 const CheckoutPage = Loader(lazy(() => import("@/pages/checkout")));
 
 // Pickup address
-const ListPickupAddressHistoryPage = Loader(lazy(() => import("@/pages/pickupHistory/ListPickupHistory")));
-const CreatePickupAddressHistoryPage = Loader(lazy(() => import("@/pages/pickupHistory/CreatePickupAddress")));
+const ListPickupAddressHistoryPage = Loader(
+  lazy(() => import("@/pages/pickupHistory/ListPickupHistory")),
+);
+const CreatePickupAddressHistoryPage = Loader(
+  lazy(() => import("@/pages/pickupHistory/CreatePickupAddress")),
+);
 
 // Status
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")));
@@ -35,9 +39,15 @@ const CreatePermissionPage = Loader(lazy(() => import("@/pages/permissions/Creat
 const UpdatePermissionPage = Loader(lazy(() => import("@/pages/permissions/UpdatePermission")));
 
 // potential-orders
-const ListPotentialOrderPage = Loader(lazy(() => import("@/pages/potentialOrders/ListPotentialOrder")));
-const CreatePotentialOrderPage = Loader(lazy(() => import("@/pages/potentialOrders/CreatePotentialOrder")));
-const UpdatePotentialOrderPage = Loader(lazy(() => import("@/pages/potentialOrders/UpdatePotentialOrder")));
+const ListPotentialOrderPage = Loader(
+  lazy(() => import("@/pages/potentialOrders/ListPotentialOrder")),
+);
+const CreatePotentialOrderPage = Loader(
+  lazy(() => import("@/pages/potentialOrders/CreatePotentialOrder")),
+);
+const UpdatePotentialOrderPage = Loader(
+  lazy(() => import("@/pages/potentialOrders/UpdatePotentialOrder")),
+);
 
 // user-address
 const ListUserAddressPage = Loader(lazy(() => import("@/pages/userAddress/ListUserAddress")));
@@ -103,9 +113,15 @@ const CreateCategoryPage = Loader(lazy(() => import("@/pages/categories/CreateCa
 const UpdateCategoryPage = Loader(lazy(() => import("@/pages/categories/UpdateCategory")));
 
 // sales categories
-const ListSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategories/ListSalesCategory")));
-const CreateSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategories/CreateSalesCategory")));
-const UpdateSalesCategoryPage = Loader(lazy(() => import("@/pages/salesCategories/UpdateSalesCategory")));
+const ListSalesCategoryPage = Loader(
+  lazy(() => import("@/pages/salesCategories/ListSalesCategory")),
+);
+const CreateSalesCategoryPage = Loader(
+  lazy(() => import("@/pages/salesCategories/CreateSalesCategory")),
+);
+const UpdateSalesCategoryPage = Loader(
+  lazy(() => import("@/pages/salesCategories/UpdateSalesCategory")),
+);
 
 const routes = createBrowserRouter([
   {

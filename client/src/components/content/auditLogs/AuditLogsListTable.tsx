@@ -11,7 +11,8 @@ const typedCols: TypedColumn<AuditLog>[] = [
     id: "user",
     align: "left",
     name: "User",
-    render: ({ value, me }) => value.user && me ? <RenderUsernameLabel user={value.user} me={me} /> : null,
+    render: ({ value, me }) =>
+      value.user && me ? <RenderUsernameLabel user={value.user} me={me} /> : null,
   },
   {
     id: "resource",
@@ -30,7 +31,11 @@ const typedCols: TypedColumn<AuditLog>[] = [
     align: "left",
     name: "Resource items",
     render: ({ value }) => (
-      <>{value.resourceIds.map(id => <RenderResourceItemLabel key={id} id={id} resource={value.resource} />)}</>
+      <>
+        {value.resourceIds.map(id => (
+          <RenderResourceItemLabel key={id} id={id} resource={value.resource} />
+        ))}
+      </>
     ),
   },
 ];

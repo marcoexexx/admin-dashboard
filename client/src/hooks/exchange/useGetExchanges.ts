@@ -19,7 +19,9 @@ export function useGetExchanges({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.Exchange, { filter, pagination, include }] as CacheKey<"exchanges">["list"],
+    queryKey: [CacheResource.Exchange, { filter, pagination, include }] as CacheKey<
+      "exchanges"
+    >["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,

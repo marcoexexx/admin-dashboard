@@ -24,7 +24,8 @@ export function UploadCoverPhoto() {
   const { dispatch } = useStore();
 
   const { mutate: upload } = useMutation({
-    mutationFn: (...args: Parameters<typeof apiService.uploadCoverPhoto>) => apiService.uploadCoverPhoto(...args),
+    mutationFn: (...args: Parameters<typeof apiService.uploadCoverPhoto>) =>
+      apiService.uploadCoverPhoto(...args),
     onSuccess() {
       dispatch({
         type: "OPEN_TOAST",

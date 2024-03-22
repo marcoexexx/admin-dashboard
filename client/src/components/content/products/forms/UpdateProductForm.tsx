@@ -353,7 +353,9 @@ export function UpdateProductForm() {
           {product.status !== "Draft"
             ? (
               <Grid item xs={12}>
-                <Alert severity="warning">Update not permitted during the {product.status} process.</Alert>
+                <Alert severity="warning">
+                  Update not permitted during the {product.status} process.
+                </Alert>
               </Grid>
             )
             : null}

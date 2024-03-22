@@ -1,6 +1,8 @@
 import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
 
-export function useCombineQuerys(...queries: (UseQueryResult | UseMutationResult<any, any, any, any>)[]) {
+export function useCombineQuerys(
+  ...queries: (UseQueryResult | UseMutationResult<any, any, any, any>)[]
+) {
   const isError = queries.some(query => query.isError);
   const isLoading = queries.some(query => "isLoading" in query ? query.isLoading : query.isPending);
   const isSuccess = queries.every(query => query.isSuccess);

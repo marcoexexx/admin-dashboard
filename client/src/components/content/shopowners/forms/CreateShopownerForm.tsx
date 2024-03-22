@@ -54,7 +54,13 @@ export function CreateShopownerForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={createShopownerMutation.isPending}>Create</MuiButton>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={createShopownerMutation.isPending}
+            >
+              Create
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

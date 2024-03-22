@@ -7,7 +7,9 @@ import { getMeFn } from "@/services/authApi";
 import { UserResponse } from "@/services/types";
 import { useQuery } from "@tanstack/react-query";
 
-export function useMe({ enabled = true, include }: { enabled?: boolean; include?: UserWhereInput["include"]; }) {
+export function useMe(
+  { enabled = true, include }: { enabled?: boolean; include?: UserWhereInput["include"]; },
+) {
   const query = useQuery({
     enabled,
     queryKey: [CacheResource.AuthUser, { include }],
