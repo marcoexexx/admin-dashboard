@@ -1,4 +1,7 @@
-import { CreateRegionInput, UpdateRegionInput } from "@/components/content/regions/forms";
+import {
+  CreateRegionInput,
+  UpdateRegionInput,
+} from "@/components/content/regions/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { RegionWhereInput } from "@/context/region";
 import { authApi } from "./authApi";
@@ -12,7 +15,9 @@ import {
   Region,
 } from "./types";
 
-export class RegionApiService extends BaseApiService<RegionWhereInput, Region> {
+export class RegionApiService
+  extends BaseApiService<RegionWhereInput, Region>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -64,7 +69,9 @@ export class RegionApiService extends BaseApiService<RegionWhereInput, Region> {
     return data;
   }
 
-  async create(payload: CreateRegionInput): Promise<GenericResponse<Region, "region">> {
+  async create(
+    payload: CreateRegionInput,
+  ): Promise<GenericResponse<Region, "region">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -76,7 +83,8 @@ export class RegionApiService extends BaseApiService<RegionWhereInput, Region> {
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `Regions_${Date.now()}.xlsx`);
@@ -103,7 +111,9 @@ export class RegionApiService extends BaseApiService<RegionWhereInput, Region> {
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { regionIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { regionIds: ids },
+    });
     return data;
   }
 

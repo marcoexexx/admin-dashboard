@@ -1,7 +1,8 @@
 import { Link } from "@mui/material";
 
 export default function ErrorPage({ error }: { error?: Error; }) {
-  const message = error?.message + ": " + ((error as any)?.response?.data?.message ?? "");
+  const message = error?.message + ": "
+    + ((error as any)?.response?.data?.message ?? "");
 
   return (
     <div>

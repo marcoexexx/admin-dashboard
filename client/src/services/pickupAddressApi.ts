@@ -81,8 +81,12 @@ export class PickupAddressApiService
   /**
    * Not Support yet!
    */
-  async uploadExcel(_buf: ArrayBuffer): Promise<HttpListResponse<PickupAddress>> {
-    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`));
+  async uploadExcel(
+    _buf: ArrayBuffer,
+  ): Promise<HttpListResponse<PickupAddress>> {
+    return Promise.reject(
+      AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`),
+    );
   }
 
   /**
@@ -91,17 +95,23 @@ export class PickupAddressApiService
   async update(
     _arg: { id: string; payload: any; },
   ): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
-    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`));
+    return Promise.reject(
+      AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`),
+    );
   }
 
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { pickupAddressIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { pickupAddressIds: ids },
+    });
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

@@ -14,7 +14,11 @@ import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
 import { useCreateProduct } from "@/hooks/product";
 import { tryParseInt } from "@/libs/result/std";
-import { PriceUnit, ProductStatus, ProductStockStatus } from "@/services/types";
+import {
+  PriceUnit,
+  ProductStatus,
+  ProductStockStatus,
+} from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Box,
@@ -40,8 +44,11 @@ const createProductSchema = object({
   title: string({ required_error: "Brand is required" })
     .min(2).max(128),
   specification: object({
-    name: string({ required_error: "Specification name is required" }).min(1),
-    value: string({ required_error: "Specification value is required" }).min(1),
+    name: string({ required_error: "Specification name is required" }).min(
+      1,
+    ),
+    value: string({ required_error: "Specification value is required" })
+      .min(1),
   }).array(),
   overview: string().max(5000).optional(),
   description: string().max(5000).optional(),
@@ -77,14 +84,20 @@ export function CreateProductForm() {
   const createProductMutation = useCreateProduct();
 
   // Queries
-  const exchangesQuery = useGetExchangeByLatestUnit(methods.getValues("priceUnit"));
+  const exchangesQuery = useGetExchangeByLatestUnit(
+    methods.getValues("priceUnit"),
+  );
 
   // Extraction
   const exchangeRate = exchangesQuery.try_data.ok_or_throw();
 
   useEffect(() => {
     queryClient.invalidateQueries({
-      queryKey: [CacheResource.Exchange, "latest", methods.getValues("priceUnit")],
+      queryKey: [
+        CacheResource.Exchange,
+        "latest",
+        methods.getValues("priceUnit"),
+      ],
     });
   }, [methods.watch("priceUnit")]);
 
@@ -95,7 +108,10 @@ export function CreateProductForm() {
 
     if (!price || !!marketPrice) methods.setValue("discount", 0);
     if (price && marketPrice) {
-      methods.setValue("discount", ((marketPrice - price) / marketPrice) * 100);
+      methods.setValue(
+        "discount",
+        ((marketPrice - price) / marketPrice) * 100,
+      );
     }
   }, [methods.watch("marketPrice"), methods.watch("price")]);
 
@@ -119,7 +135,12 @@ export function CreateProductForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item md={6} xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -147,7 +168,11 @@ export function CreateProductForm() {
                 }}
                 endAdornment={
                   <InputAdornment position="end">
-                    <MuiButton onClick={handleOnCalculate} variant="outlined" size="small">
+                    <MuiButton
+                      onClick={handleOnCalculate}
+                      variant="outlined"
+                      size="small"
+                    >
                       Convert to MMK
                     </MuiButton>
                   </InputAdornment>
@@ -157,7 +182,9 @@ export function CreateProductForm() {
                 ? <FormHelperText error id="price-error"></FormHelperText>
                 : (
                   <FormHelperText>
-                    {`1 ${methods.getValues("priceUnit")} ~ ${exchangeRate?.[0]?.rate} MMK`}
+                    {`1 ${methods.getValues("priceUnit")} ~ ${
+                      exchangeRate?.[0]?.rate
+                    } MMK`}
                   </FormHelperText>
                 )}
             </Box>
@@ -172,7 +199,9 @@ export function CreateProductForm() {
                 label="Price unit"
                 select
                 error={!!errors.priceUnit}
-                helperText={!!errors.priceUnit ? errors.priceUnit.message : ""}
+                helperText={!!errors.priceUnit
+                  ? errors.priceUnit.message
+                  : ""}
                 fullWidth
               >
                 {(Object.keys(PriceUnit) as PriceUnit[]).map(t => (
@@ -184,12 +213,15 @@ export function CreateProductForm() {
               <TextField
                 fullWidth
                 {...register("dealerPrice", {
-                  setValueAs: (v) => !v ? undefined : tryParseInt(v, 10).unwrap_or(0),
+                  setValueAs: (v) =>
+                    !v ? undefined : tryParseInt(v, 10).unwrap_or(0),
                 })}
                 type="number"
                 label="Dealer Price"
                 error={!!errors.dealerPrice}
-                helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""}
+                helperText={!!errors.dealerPrice
+                  ? errors.dealerPrice.message
+                  : ""}
               />
             </Box>
           </Grid>
@@ -199,12 +231,15 @@ export function CreateProductForm() {
               <TextField
                 fullWidth
                 {...register("marketPrice", {
-                  setValueAs: (v) => !v ? undefined : tryParseInt(v, 10).unwrap_or(0),
+                  setValueAs: (v) =>
+                    !v ? undefined : tryParseInt(v, 10).unwrap_or(0),
                 })}
                 type="number"
                 label="MarketPrice"
                 error={!!errors.marketPrice}
-                helperText={!!errors.marketPrice ? errors.marketPrice.message : ""}
+                helperText={!!errors.marketPrice
+                  ? errors.marketPrice.message
+                  : ""}
               />
             </Box>
           </Grid>
@@ -242,13 +277,16 @@ export function CreateProductForm() {
                 select
                 label="Instock Status"
                 error={!!errors.instockStatus}
-                helperText={!!errors.instockStatus ? errors.instockStatus.message : ""}
+                helperText={!!errors.instockStatus
+                  ? errors.instockStatus.message
+                  : ""}
               >
-                {(Object.keys(ProductStockStatus) as ProductStockStatus[]).map(status => (
-                  <MenuItem key={status} value={status}>
-                    {productStockStatusLabel[status]}
-                  </MenuItem>
-                ))}
+                {(Object.keys(ProductStockStatus) as ProductStockStatus[])
+                  .map(status => (
+                    <MenuItem key={status} value={status}>
+                      {productStockStatusLabel[status]}
+                    </MenuItem>
+                  ))}
               </TextField>
               <BrandInputField />
             </Box>
@@ -262,7 +300,9 @@ export function CreateProductForm() {
                 {...register("quantity", { valueAsNumber: true })}
                 label="Quantity"
                 error={!!errors.quantity}
-                helperText={!!errors.quantity ? errors.quantity.message : ""}
+                helperText={!!errors.quantity
+                  ? errors.quantity.message
+                  : ""}
               />
               <TextField
                 fullWidth
@@ -273,7 +313,9 @@ export function CreateProductForm() {
                 }}
                 label="Discount"
                 error={!!errors.discount}
-                helperText={!!errors.discount ? errors.discount.message : ""}
+                helperText={!!errors.discount
+                  ? errors.discount.message
+                  : ""}
               />
             </Box>
           </Grid>
@@ -304,7 +346,11 @@ export function CreateProductForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={createProductMutation.isPending}>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={createProductMutation.isPending}
+            >
               Create
             </MuiButton>
           </Grid>

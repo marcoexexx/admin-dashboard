@@ -46,11 +46,15 @@ export function UpdateRoleForm() {
   useEffect(() => {
     if (roleQuery.isSuccess && role && roleFetchStatus === "idle") {
       methods.setValue("name", role.name);
-      methods.setValue("permissions", role.permissions?.map(p => p.id) || []);
+      methods.setValue(
+        "permissions",
+        role.permissions?.map(p => p.id) || [],
+      );
     }
   }, [roleQuery.isSuccess, roleFetchStatus]);
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods;
+  const { handleSubmit, register, formState: { errors }, setFocus } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
@@ -63,7 +67,12 @@ export function UpdateRoleForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -83,7 +92,11 @@ export function UpdateRoleForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={updateRoleMutation.isPending}>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={updateRoleMutation.isPending}
+            >
               Save
             </MuiButton>
           </Grid>
@@ -92,7 +105,10 @@ export function UpdateRoleForm() {
 
       {modalForm.field === "create-permission"
         ? (
-          <FormModal field="create-permission" title="Create new permission">
+          <FormModal
+            field="create-permission"
+            title="Create new permission"
+          >
             <CreatePermissionForm />
           </FormModal>
         )

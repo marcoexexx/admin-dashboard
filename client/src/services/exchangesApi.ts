@@ -1,4 +1,7 @@
-import { CreateExchangeInput, UpdateExchangeInput } from "@/components/content/exchanges/forms";
+import {
+  CreateExchangeInput,
+  UpdateExchangeInput,
+} from "@/components/content/exchanges/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { ExchangeWhereInput } from "@/context/exchange";
 import { BaseApiService } from "./baseApiService";
@@ -13,7 +16,9 @@ import {
 
 import { authApi } from "./authApi";
 
-export class ExchangeApiService extends BaseApiService<ExchangeWhereInput, Exchange> {
+export class ExchangeApiService
+  extends BaseApiService<ExchangeWhereInput, Exchange>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -66,19 +71,24 @@ export class ExchangeApiService extends BaseApiService<ExchangeWhereInput, Excha
     return data;
   }
 
-  async create(payload: CreateExchangeInput): Promise<GenericResponse<Exchange, "brand">> {
+  async create(
+    payload: CreateExchangeInput,
+  ): Promise<GenericResponse<Exchange, "brand">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
     return data;
   }
 
-  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<Exchange>> {
+  async uploadExcel(
+    buf: ArrayBuffer,
+  ): Promise<HttpListResponse<Exchange>> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `Exchange_${Date.now()}.xlsx`);
@@ -105,11 +115,15 @@ export class ExchangeApiService extends BaseApiService<ExchangeWhereInput, Excha
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { exchangeIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { exchangeIds: ids },
+    });
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<Exchange, "exchange">> {
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<Exchange, "exchange">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

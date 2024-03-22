@@ -1,7 +1,13 @@
 import { MuiButton } from "@/components/ui";
 import { useStore } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  TextField,
+} from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
@@ -23,7 +29,8 @@ export function UsersFilterForm() {
     resolver: zodResolver(filterUsersSchema),
   });
 
-  const { handleSubmit, register, formState: { errors }, setValue } = methods;
+  const { handleSubmit, register, formState: { errors }, setValue } =
+    methods;
 
   const onSubmit: SubmitHandler<FilterUsersInput> = (value) => {
     const { name, insensitive, email } = value;
@@ -58,7 +65,12 @@ export function UsersFilterForm() {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
@@ -72,7 +84,12 @@ export function UsersFilterForm() {
             <FormControlLabel
               {...register("insensitive")}
               label="Insensitive"
-              control={<Checkbox defaultChecked={filterQuery.get("insensitive") === "true"} />}
+              control={
+                <Checkbox
+                  defaultChecked={filterQuery.get("insensitive")
+                    === "true"}
+                />
+              }
             />
           </Box>
         </Grid>
@@ -84,7 +101,13 @@ export function UsersFilterForm() {
         </Grid>
 
         <Grid item>
-          <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
+          <MuiButton
+            onClick={handleOnClickReset}
+            variant="outlined"
+            type="button"
+          >
+            Reset
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

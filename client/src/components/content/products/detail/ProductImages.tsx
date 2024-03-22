@@ -12,7 +12,9 @@ interface ProductImagesProps {
 export function ProductImages(props: ProductImagesProps) {
   const { images } = props;
 
-  const [selectedImg, setSelectedImg] = useState(images[0] || "/default.png");
+  const [selectedImg, setSelectedImg] = useState(
+    images[0] || "/default.png",
+  );
 
   const handleSelectImage = (src: string) => () => {
     setSelectedImg(src);
@@ -25,7 +27,13 @@ export function ProductImages(props: ProductImagesProps) {
         display="flex"
         flexDirection="column"
       >
-        <Box component="img" height={400} px={2} src={selectedImg} alt="Primary image" />
+        <Box
+          component="img"
+          height={400}
+          px={2}
+          src={selectedImg}
+          alt="Primary image"
+        />
 
         <Box>
           <Carousel height={100} autoPlay={false} animation="slide">
@@ -48,8 +56,10 @@ export function ProductImages(props: ProductImagesProps) {
                           onClick={handleSelectImage(src[key])}
                           component="img"
                           p={2}
-                          border={(theme) => `solid 1px ${theme.colors.alpha.black[10]}`}
-                          borderRadius={(theme) => `${theme.shape.borderRadius}px`}
+                          border={(theme) =>
+                            `solid 1px ${theme.colors.alpha.black[10]}`}
+                          borderRadius={(theme) =>
+                            `${theme.shape.borderRadius}px`}
                           key={key}
                           height={100}
                           src={src[key]}

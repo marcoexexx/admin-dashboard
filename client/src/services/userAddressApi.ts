@@ -18,7 +18,9 @@ import {
 
 import { authApi } from "./authApi";
 
-export class UserAddressApiService extends BaseApiService<UserAddressWhereInput, Address> {
+export class UserAddressApiService
+  extends BaseApiService<UserAddressWhereInput, Address>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -70,7 +72,9 @@ export class UserAddressApiService extends BaseApiService<UserAddressWhereInput,
     return data;
   }
 
-  async create(payload: CreateUserAddressInput): Promise<GenericResponse<Address, "userAddress">> {
+  async create(
+    payload: CreateUserAddressInput,
+  ): Promise<GenericResponse<Address, "userAddress">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -80,8 +84,12 @@ export class UserAddressApiService extends BaseApiService<UserAddressWhereInput,
   /**
    * Not Support yet!
    */
-  async uploadExcel(_buf: ArrayBuffer): Promise<HttpListResponse<Address>> {
-    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`));
+  async uploadExcel(
+    _buf: ArrayBuffer,
+  ): Promise<HttpListResponse<Address>> {
+    return Promise.reject(
+      AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`),
+    );
   }
 
   async update(
@@ -97,11 +105,15 @@ export class UserAddressApiService extends BaseApiService<UserAddressWhereInput,
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { userAddressIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { userAddressIds: ids },
+    });
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<Address, "userAddress">> {
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<Address, "userAddress">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

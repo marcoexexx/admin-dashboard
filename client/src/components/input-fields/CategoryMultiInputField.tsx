@@ -18,11 +18,16 @@ interface CatgoryMultiInputFieldProps {
   updateField?: boolean;
 }
 
-export function CatgoryMultiInputField({ updateField = false }: CatgoryMultiInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<
-    { categories: string[]; }
-  >();
-  const [selectedCategories, setSelectedCategories] = useState<Pick<Category, "id" | "name">[]>([]);
+export function CatgoryMultiInputField(
+  { updateField = false }: CatgoryMultiInputFieldProps,
+) {
+  const { control, setValue, getValues, formState: { errors } } =
+    useFormContext<
+      { categories: string[]; }
+    >();
+  const [selectedCategories, setSelectedCategories] = useState<
+    Pick<Category, "id" | "name">[]
+  >([]);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
   const { dispatch } = useStore();
@@ -43,11 +48,16 @@ export function CatgoryMultiInputField({ updateField = false }: CatgoryMultiInpu
 
   const defaultCategoryIds = getValues("categories");
   const defaultCategories = defaultCategoryIds
-    ? filter(categories, (category) => defaultCategoryIds.includes(category.id))
+    ? filter(
+      categories,
+      (category) => defaultCategoryIds.includes(category.id),
+    )
     : [];
 
   useEffect(() => {
-    if (defaultCategories.length && updateField) setSelectedCategories(defaultCategories);
+    if (defaultCategories.length && updateField) {
+      setSelectedCategories(defaultCategories);
+    }
   }, [defaultCategories.length]);
 
   const handleCategoryChange = (
@@ -60,12 +70,16 @@ export function CatgoryMultiInputField({ updateField = false }: CatgoryMultiInpu
     }
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "create-category" });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -99,7 +113,8 @@ export function CatgoryMultiInputField({ updateField = false }: CatgoryMultiInpu
             multiple
             value={selectedCategories}
             options={categories || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             getOptionLabel={option => option.name || ""}
             loading={isLoading}
             renderOption={(props, option) => (
@@ -130,7 +145,9 @@ export function CatgoryMultiInputField({ updateField = false }: CatgoryMultiInpu
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

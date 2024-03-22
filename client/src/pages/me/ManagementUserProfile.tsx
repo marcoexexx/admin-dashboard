@@ -1,4 +1,7 @@
-import { PlaceholderManagementUserProfile, queryClient } from "@/components";
+import {
+  PlaceholderManagementUserProfile,
+  queryClient,
+} from "@/components";
 import { ProfileCover, RecentActivity } from "@/components/content/me";
 import { CacheResource } from "@/context/cacheKey";
 import { useMe } from "@/hooks";
@@ -44,7 +47,9 @@ export default function ManagementUserProfilePage() {
 
   const user = userQuery.try_data.ok_or_throw();
 
-  if (!user || userQuery.isLoading) return <PlaceholderManagementUserProfile />;
+  if (!user || userQuery.isLoading) {
+    return <PlaceholderManagementUserProfile />;
+  }
 
   return (
     <Container sx={{ mt: 3 }} maxWidth="lg">

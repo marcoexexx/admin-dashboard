@@ -1,5 +1,8 @@
 import { EnhancedTable, TypedColumn } from "@/components";
-import { RenderOrderItemLabel, RenderUsernameLabel } from "@/components/table-labels";
+import {
+  RenderOrderItemLabel,
+  RenderUsernameLabel,
+} from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
@@ -52,33 +55,45 @@ const columns: TypedColumn<Order>[] = [
     align: "left",
     name: "Username",
     render: ({ value, me }) =>
-      value.user && me ? <RenderUsernameLabel user={value.user} me={me} /> : null,
+      value.user && me
+        ? <RenderUsernameLabel user={value.user} me={me} />
+        : null,
   },
   {
     id: "totalPrice",
     align: "left",
     name: "Amount",
-    render: ({ value }) => <Typography>{numberFormat(value.totalPrice)}</Typography>,
+    render: ({ value }) => (
+      <Typography>{numberFormat(value.totalPrice)}</Typography>
+    ),
   },
   {
     id: "orderItems",
     align: "left",
     name: "Order No",
     render: ({ value }) => (
-      <>{value.orderItems?.map(item => <RenderOrderItemLabel key={item.id} orderItem={item} />)}</>
+      <>
+        {value.orderItems?.map(item => (
+          <RenderOrderItemLabel key={item.id} orderItem={item} />
+        ))}
+      </>
     ),
   },
   {
     id: "createdAt",
     align: "left",
     name: "Created",
-    render: ({ value }) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
+    ),
   },
   {
     id: "updatedAt",
     align: "left",
     name: "Updated",
-    render: ({ value }) => <Typography>{new Date(value.updatedAt).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.updatedAt).toUTCString()}</Typography>
+    ),
   },
   {
     id: "remark",
@@ -99,15 +114,23 @@ interface OrdersListTableProps {
 }
 
 export function OrdersListTable(props: OrdersListTableProps) {
-  const { orders, count, isLoading, onStatusChange, onDelete, onMultiDelete } = props;
+  const {
+    orders,
+    count,
+    isLoading,
+    onStatusChange,
+    onDelete,
+    onMultiDelete,
+  } = props;
   const { state: { orderFilter: { pagination } }, dispatch } = useStore();
 
   const theme = useTheme();
 
-  const handleChangeOrderStatus = (order: Order) => (evt: SelectChangeEvent) => {
-    const { value } = evt.target;
-    if (value) onStatusChange(order, value as OrderStatus);
-  };
+  const handleChangeOrderStatus =
+    (order: Order) => (evt: SelectChangeEvent) => {
+      const { value } = evt.target;
+      if (value) onStatusChange(order, value as OrderStatus);
+    };
 
   const columnsWithEditableStatus = useMemo(() =>
     columns.concat([
@@ -128,7 +151,9 @@ export function OrdersListTable(props: OrdersListTableProps) {
                   key={status.label}
                   value={status.label}
                 >
-                  <Typography color={status.color(theme)}>{status.label}</Typography>
+                  <Typography color={status.color(theme)}>
+                    {status.label}
+                  </Typography>
                 </MenuItem>
               );
             })}

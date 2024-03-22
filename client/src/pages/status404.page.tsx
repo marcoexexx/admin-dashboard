@@ -38,8 +38,14 @@ export default function Status404() {
           <Typography variant="h2" sx={{ my: 2 }}>
             The page you were looking for doesn't exist.
           </Typography>
-          <Typography variant="h4" color="text.secondary" fontWeight="normal" sx={{ mb: 4 }}>
-            It's on us, we moved the content to a different page. The search below should help!
+          <Typography
+            variant="h4"
+            color="text.secondary"
+            fontWeight="normal"
+            sx={{ mb: 4 }}
+          >
+            It's on us, we moved the content to a different page. The
+            search below should help!
           </Typography>
         </Box>
 

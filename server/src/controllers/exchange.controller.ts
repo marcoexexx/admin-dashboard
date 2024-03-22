@@ -10,7 +10,11 @@ import { checkUser } from "../services/checkUser";
 import { ExchangeService } from "../services/exchange";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 import AppError, { StatusCode } from "../utils/appError";
 
@@ -30,7 +34,10 @@ export async function getExchangesHandler(
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, exchanges] = (await service.tryFindManyWithCount(
@@ -76,7 +83,10 @@ export async function getExchangeHandler(
     const { shopowner } = convertStringToBoolean(query.include) ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const exchange = (await service.tryFindUnique({
@@ -85,7 +95,9 @@ export async function getExchangeHandler(
     })).ok_or_throw();
 
     // Create event action audit log
-    if (exchange && sessionUser) (await service.audit(sessionUser)).ok_or_throw();
+    if (exchange && sessionUser) {
+      (await service.audit(sessionUser)).ok_or_throw();
+    }
 
     res.status(StatusCode.OK).json(HttpDataResponse({ exchange }));
   } catch (err) {
@@ -94,7 +106,11 @@ export async function getExchangeHandler(
 }
 
 export async function updateExchangeHandler(
-  req: Request<UpdateExchangeInput["params"], {}, UpdateExchangeInput["body"]>,
+  req: Request<
+    UpdateExchangeInput["params"],
+    {},
+    UpdateExchangeInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -103,11 +119,16 @@ export async function updateExchangeHandler(
     const { to, from, rate, date, shopownerProviderId } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     if (!sessionUser.shopownerProviderId) {
-      return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`));
+      return next(
+        AppError.new(StatusCode.BadRequest, `Shopowner must be provide`),
+      );
     }
 
     const exchange = (await service.tryUpdate({
@@ -142,11 +163,16 @@ export async function createExchangeHandler(
     const { from, to, rate, date, shopownerProviderId } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     if (!sessionUser.shopownerProviderId && !sessionUser.isSuperuser) {
-      return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`));
+      return next(
+        AppError.new(StatusCode.BadRequest, `Shopowner must be provide`),
+      );
     }
 
     const exchange = (await service.tryCreate({
@@ -184,10 +210,14 @@ export async function createMultiExchangesHandler(
     if (!excelFile) return res.status(StatusCode.NoContent);
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
-    const exchanges = (await service.tryExcelUpload(excelFile)).ok_or_throw();
+    const exchanges = (await service.tryExcelUpload(excelFile))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);
@@ -208,11 +238,16 @@ export async function deleteExchangeHandler(
     const { exchangeId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     if (!sessionUser.shopownerProviderId || !sessionUser.isSuperuser) {
-      return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`));
+      return next(
+        AppError.new(StatusCode.BadRequest, `Shopowner must be provide`),
+      );
     }
 
     const exchange = (await service.tryDelete({
@@ -241,11 +276,16 @@ export async function deleteMultiExchangesHandler(
     const { exchangeIds } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     if (!sessionUser.shopownerProviderId || !sessionUser.isSuperuser) {
-      return next(AppError.new(StatusCode.BadRequest, `Shopowner must be provide`));
+      return next(
+        AppError.new(StatusCode.BadRequest, `Shopowner must be provide`),
+      );
     }
 
     const _tryDeleteExchanges = await service.tryDeleteMany({
@@ -262,7 +302,9 @@ export async function deleteMultiExchangesHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
     next(err);
   }

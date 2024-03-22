@@ -29,7 +29,10 @@ export class RegionService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.Region, { action: OperationAction.Read, resourceIds: [] }, db.region);
+    super(Resource.Region, {
+      action: OperationAction.Read,
+      resourceIds: [],
+    }, db.region);
     this.name = "Region";
   }
 

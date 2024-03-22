@@ -8,7 +8,13 @@ import { MuiButton } from "@/components/ui";
 import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useCreateUserAddress } from "@/hooks/userAddress";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
+import {
+  Box,
+  FormControlLabel,
+  Grid,
+  Switch,
+  TextField,
+} from "@mui/material";
 import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { boolean, object, string, z } from "zod";
@@ -24,11 +30,14 @@ const createUserAddressSchema = object({
   email: string({ required_error: "email is required" }).email(),
   regionId: string({ required_error: "region is required" }),
   townshipFeesId: string({ required_error: "township is required" }),
-  fullAddress: string({ required_error: "fullAddress is required" }).min(1).max(128),
+  fullAddress: string({ required_error: "fullAddress is required" }).min(1)
+    .max(128),
   remark: string().optional(),
 });
 
-export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>;
+export type CreateUserAddressInput = z.infer<
+  typeof createUserAddressSchema
+>;
 
 export function CreateUserAddressForm() {
   const { state: { modalForm, user } } = useStore();
@@ -57,7 +66,12 @@ export function CreateUserAddressForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item md={6} xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -65,7 +79,9 @@ export function CreateUserAddressForm() {
                 {...register("username")}
                 label="Name"
                 error={!!errors.username}
-                helperText={!!errors.username ? errors.username.message : ""}
+                helperText={!!errors.username
+                  ? errors.username.message
+                  : ""}
               />
               <RegionInputField />
             </Box>
@@ -103,7 +119,9 @@ export function CreateUserAddressForm() {
                 {...register("fullAddress")}
                 label="Full address"
                 error={!!errors.fullAddress}
-                helperText={!!errors.fullAddress ? errors.fullAddress.message : ""}
+                helperText={!!errors.fullAddress
+                  ? errors.fullAddress.message
+                  : ""}
               />
             </Box>
           </Grid>
@@ -121,7 +139,13 @@ export function CreateUserAddressForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={isPending}>Create</MuiButton>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={isPending}
+            >
+              Create
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

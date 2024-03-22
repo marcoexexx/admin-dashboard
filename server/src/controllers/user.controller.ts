@@ -84,7 +84,10 @@ export async function getUserHandler(
     const { userId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const user = (await service.tryFindUnique({
@@ -116,7 +119,10 @@ export async function getUserByUsernameHandler(
     const { username } = req.params;
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const user = (await service.tryFindUnique({
@@ -168,7 +174,10 @@ export async function getUsersHandler(
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, users] = (await service.tryFindManyWithCount(
@@ -187,7 +196,12 @@ export async function getUsersHandler(
               isSuperuser: false,
               OR: [
                 { shopownerProviderId: null },
-                { shopownerProviderId: { isSet: true, equals: sessionUser.shopownerProviderId } },
+                {
+                  shopownerProviderId: {
+                    isSet: true,
+                    equals: sessionUser.shopownerProviderId,
+                  },
+                },
               ],
             },
         },
@@ -232,11 +246,19 @@ export async function createBlockUserHandler(
 
   try {
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     if (!sessionUser.isSuperuser) {
-      return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`));
+      return next(
+        AppError.new(
+          StatusCode.Forbidden,
+          `You cannot access this resource.`,
+        ),
+      );
     }
 
     const user = await service.tryUpdate({
@@ -266,11 +288,19 @@ export async function removeBlockedUserHandler(
 
   try {
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     if (!sessionUser.isSuperuser) {
-      return next(AppError.new(StatusCode.Forbidden, `You cannot access this resource.`));
+      return next(
+        AppError.new(
+          StatusCode.Forbidden,
+          `You cannot access this resource.`,
+        ),
+      );
     }
 
     const user = await service.tryUpdate({
@@ -355,7 +385,10 @@ export async function updateRoleUserBySuperuserHandler(
     const { roleId, shopownerProviderId } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const user = (await service.tryUpdate({
@@ -367,7 +400,12 @@ export async function updateRoleUserBySuperuserHandler(
             isSuperuser: false,
             OR: [
               { shopownerProviderId: null },
-              { shopownerProviderId: { isSet: true, equals: sessionUser.shopownerProviderId } },
+              {
+                shopownerProviderId: {
+                  isSet: true,
+                  equals: sessionUser.shopownerProviderId,
+                },
+              },
             ],
           },
       },

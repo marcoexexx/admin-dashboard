@@ -5,6 +5,8 @@ const Image = styled("img")(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
 }));
 
-export function RenderImageLabel({ src, alt }: { src: string; alt: string; }) {
+export function RenderImageLabel(
+  { src, alt }: { src: string; alt: string; },
+) {
   return <Image src={src} alt={alt} />;
 }

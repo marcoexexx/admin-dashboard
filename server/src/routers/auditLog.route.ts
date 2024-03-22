@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { deleteAuditLogsHandler, getAuditLogsHandler } from "../controllers/auditLog.controller";
+import {
+  deleteAuditLogsHandler,
+  getAuditLogsHandler,
+} from "../controllers/auditLog.controller";
 import { checkBlockedUser } from "../middleware/checkBlockedUser";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";

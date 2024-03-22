@@ -17,14 +17,22 @@ export function useGetTownship({
 }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: [CacheResource.Township, { id, include }] as CacheKey<"townships">["detail"],
+    queryKey: [CacheResource.Township, { id, include }] as CacheKey<
+      "townships"
+    >["detail"],
     queryFn: args => apiService.find(args, { filter: { id }, include }),
     select: data => data?.township,
   });
 
-  const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
-    : Ok(query.data);
+  const try_data: Result<typeof query.data, AppError> =
+    !!query.error && query.isError
+      ? Err(
+        AppError.new(
+          (query.error as any).kind || AppErrorKind.ApiError,
+          query.error.message,
+        ),
+      )
+      : Ok(query.data);
 
   return {
     ...query,

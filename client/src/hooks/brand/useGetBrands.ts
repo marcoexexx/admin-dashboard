@@ -19,7 +19,11 @@ export function useGetBrands({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.Brand, { filter, pagination, include }] as CacheKey<"brands">["list"],
+    queryKey: [CacheResource.Brand, {
+      filter,
+      pagination,
+      include,
+    }] as CacheKey<"brands">["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,
@@ -29,9 +33,15 @@ export function useGetBrands({
     select: data => data,
   });
 
-  const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
-    : Ok(query.data);
+  const try_data: Result<typeof query.data, AppError> =
+    !!query.error && query.isError
+      ? Err(
+        AppError.new(
+          (query.error as any).kind || AppErrorKind.ApiError,
+          query.error.message,
+        ),
+      )
+      : Ok(query.data);
 
   return {
     ...query,

@@ -44,11 +44,20 @@ export default function Unauthorized() {
     <MainContent>
       <Container maxWidth="md">
         <Box textAlign="center">
-          <img alt="404" height={180} src="/static/concept-of-data-privacy-and-policy.svg" />
+          <img
+            alt="404"
+            height={180}
+            src="/static/concept-of-data-privacy-and-policy.svg"
+          />
           <Typography variant="h2" sx={{ my: 2 }}>
             Access Denied
           </Typography>
-          <Typography variant="h4" color="text.secondary" fontWeight="normal" sx={{ mb: 4 }}>
+          <Typography
+            variant="h4"
+            color="text.secondary"
+            fontWeight="normal"
+            sx={{ mb: 4 }}
+          >
             you currently does not have permission to access this resource.
           </Typography>
         </Box>

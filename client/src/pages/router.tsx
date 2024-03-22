@@ -21,22 +21,40 @@ const CreatePickupAddressHistoryPage = Loader(
 
 // Status
 const Status404Page = Loader(lazy(() => import("@/pages/status404.page")));
-const StatusUnauthorizedPage = Loader(lazy(() => import("@/pages/unauthorized.page")));
+const StatusUnauthorizedPage = Loader(
+  lazy(() => import("@/pages/unauthorized.page")),
+);
 
 // shopowner
-const ListShopownerPage = Loader(lazy(() => import("@/pages/shopowners/ListShopowner")));
-const CreateShopownerPage = Loader(lazy(() => import("@/pages/shopowners/CreateShopowner")));
-const UpdateShopownerPage = Loader(lazy(() => import("@/pages/shopowners/UpdateShopowner")));
+const ListShopownerPage = Loader(
+  lazy(() => import("@/pages/shopowners/ListShopowner")),
+);
+const CreateShopownerPage = Loader(
+  lazy(() => import("@/pages/shopowners/CreateShopowner")),
+);
+const UpdateShopownerPage = Loader(
+  lazy(() => import("@/pages/shopowners/UpdateShopowner")),
+);
 
 // roles
 const ListRolePage = Loader(lazy(() => import("@/pages/roles/ListRole")));
-const CreateRolePage = Loader(lazy(() => import("@/pages/roles/CreateRole")));
-const UpdateRolePage = Loader(lazy(() => import("@/pages/roles/UpdateRole")));
+const CreateRolePage = Loader(
+  lazy(() => import("@/pages/roles/CreateRole")),
+);
+const UpdateRolePage = Loader(
+  lazy(() => import("@/pages/roles/UpdateRole")),
+);
 
 // permissions
-const ListPermissionPage = Loader(lazy(() => import("@/pages/permissions/ListPermission")));
-const CreatePermissionPage = Loader(lazy(() => import("@/pages/permissions/CreatePermission")));
-const UpdatePermissionPage = Loader(lazy(() => import("@/pages/permissions/UpdatePermission")));
+const ListPermissionPage = Loader(
+  lazy(() => import("@/pages/permissions/ListPermission")),
+);
+const CreatePermissionPage = Loader(
+  lazy(() => import("@/pages/permissions/CreatePermission")),
+);
+const UpdatePermissionPage = Loader(
+  lazy(() => import("@/pages/permissions/UpdatePermission")),
+);
 
 // potential-orders
 const ListPotentialOrderPage = Loader(
@@ -50,67 +68,135 @@ const UpdatePotentialOrderPage = Loader(
 );
 
 // user-address
-const ListUserAddressPage = Loader(lazy(() => import("@/pages/userAddress/ListUserAddress")));
-const CreateUserAddressPage = Loader(lazy(() => import("@/pages/userAddress/CreateUserAddress")));
-const UpdateUserAddressPage = Loader(lazy(() => import("@/pages/userAddress/UpdateUserAddress")));
+const ListUserAddressPage = Loader(
+  lazy(() => import("@/pages/userAddress/ListUserAddress")),
+);
+const CreateUserAddressPage = Loader(
+  lazy(() => import("@/pages/userAddress/CreateUserAddress")),
+);
+const UpdateUserAddressPage = Loader(
+  lazy(() => import("@/pages/userAddress/UpdateUserAddress")),
+);
 
-const ListAccessLogPage = Loader(lazy(() => import("@/pages/accessLogs/ListAccessLogs")));
-const ListAuditLogPage = Loader(lazy(() => import("@/pages/auditLogs/ListAuditLogs")));
+const ListAccessLogPage = Loader(
+  lazy(() => import("@/pages/accessLogs/ListAccessLogs")),
+);
+const ListAuditLogPage = Loader(
+  lazy(() => import("@/pages/auditLogs/ListAuditLogs")),
+);
 
 // townships
-const ListTownshipPage = Loader(lazy(() => import("@/pages/townships/ListTownship")));
-const CreateTownshipPage = Loader(lazy(() => import("@/pages/townships/CreateTownship")));
-const UpdateTownshipPage = Loader(lazy(() => import("@/pages/townships/UpdateTownship")));
+const ListTownshipPage = Loader(
+  lazy(() => import("@/pages/townships/ListTownship")),
+);
+const CreateTownshipPage = Loader(
+  lazy(() => import("@/pages/townships/CreateTownship")),
+);
+const UpdateTownshipPage = Loader(
+  lazy(() => import("@/pages/townships/UpdateTownship")),
+);
 
 // regions
-const ListRegionPage = Loader(lazy(() => import("@/pages/regions/ListRegion")));
-const CreateRegionPage = Loader(lazy(() => import("@/pages/regions/CreateRegion")));
-const UpdateRegionPage = Loader(lazy(() => import("@/pages/regions/UpdateRegion")));
+const ListRegionPage = Loader(
+  lazy(() => import("@/pages/regions/ListRegion")),
+);
+const CreateRegionPage = Loader(
+  lazy(() => import("@/pages/regions/CreateRegion")),
+);
+const UpdateRegionPage = Loader(
+  lazy(() => import("@/pages/regions/UpdateRegion")),
+);
 
 // coupons
-const ListCouponPage = Loader(lazy(() => import("@/pages/coupons/ListCoupon")));
-const CreateCouponPage = Loader(lazy(() => import("@/pages/coupons/CreateCoupon")));
-const UpdateCouponPage = Loader(lazy(() => import("@/pages/coupons/UpdateCoupon")));
+const ListCouponPage = Loader(
+  lazy(() => import("@/pages/coupons/ListCoupon")),
+);
+const CreateCouponPage = Loader(
+  lazy(() => import("@/pages/coupons/CreateCoupon")),
+);
+const UpdateCouponPage = Loader(
+  lazy(() => import("@/pages/coupons/UpdateCoupon")),
+);
 
 // orders
-const ListOrderPage = Loader(lazy(() => import("@/pages/orders/ListOrder")));
-const CreateOrderPage = Loader(lazy(() => import("@/pages/orders/CreateOrder")));
-const UpdateOrderPage = Loader(lazy(() => import("@/pages/orders/UpdateOrder")));
+const ListOrderPage = Loader(
+  lazy(() => import("@/pages/orders/ListOrder")),
+);
+const CreateOrderPage = Loader(
+  lazy(() => import("@/pages/orders/CreateOrder")),
+);
+const UpdateOrderPage = Loader(
+  lazy(() => import("@/pages/orders/UpdateOrder")),
+);
 
 // exchanges
-const ListExchangePage = Loader(lazy(() => import("@/pages/exchanges/ListExchange")));
-const CreateExchangePage = Loader(lazy(() => import("@/pages/exchanges/CreateExchange")));
-const UpdateExchangePage = Loader(lazy(() => import("@/pages/exchanges/UpdateExchange")));
+const ListExchangePage = Loader(
+  lazy(() => import("@/pages/exchanges/ListExchange")),
+);
+const CreateExchangePage = Loader(
+  lazy(() => import("@/pages/exchanges/CreateExchange")),
+);
+const UpdateExchangePage = Loader(
+  lazy(() => import("@/pages/exchanges/UpdateExchange")),
+);
 
 // Auth
 const RegisterPage = Loader(lazy(() => import("@/pages/register.page")));
 const LoginPage = Loader(lazy(() => import("@/pages/login.page")));
 
-const VerifyEmailPage = Loader(lazy(() => import("@/pages/verifyEmail.page")));
+const VerifyEmailPage = Loader(
+  lazy(() => import("@/pages/verifyEmail.page")),
+);
 
 // produts
-const ListProductPage = Loader(lazy(() => import("@/pages/products/ListProduct")));
-const CreateProductPage = Loader(lazy(() => import("@/pages/products/CreateProduct")));
-const ViewProductPage = Loader(lazy(() => import("@/pages/products/ViewProduct")));
-const UpdateProductPage = Loader(lazy(() => import("@/pages/products/UpdateProduct")));
+const ListProductPage = Loader(
+  lazy(() => import("@/pages/products/ListProduct")),
+);
+const CreateProductPage = Loader(
+  lazy(() => import("@/pages/products/CreateProduct")),
+);
+const ViewProductPage = Loader(
+  lazy(() => import("@/pages/products/ViewProduct")),
+);
+const UpdateProductPage = Loader(
+  lazy(() => import("@/pages/products/UpdateProduct")),
+);
 
 // users
 const ListUserPage = Loader(lazy(() => import("@/pages/users/ListUser")));
-const UpdateUserPage = Loader(lazy(() => import("@/pages/users/UpdateUser")));
-const UserProfilePage = Loader(lazy(() => import("@/pages/users/ViewUserProfile")));
+const UpdateUserPage = Loader(
+  lazy(() => import("@/pages/users/UpdateUser")),
+);
+const UserProfilePage = Loader(
+  lazy(() => import("@/pages/users/ViewUserProfile")),
+);
 
 // Me
-const ManagementUserProfilePage = Loader(lazy(() => import("@/pages/me/ManagementUserProfile")));
+const ManagementUserProfilePage = Loader(
+  lazy(() => import("@/pages/me/ManagementUserProfile")),
+);
 
 // brands
-const ListBrandPage = Loader(lazy(() => import("@/pages/brands/ListBrand")));
-const CreateBrandPage = Loader(lazy(() => import("@/pages/brands/CreateBrand")));
-const UpdateBrandPage = Loader(lazy(() => import("@/pages/brands/UpdateBrand")));
+const ListBrandPage = Loader(
+  lazy(() => import("@/pages/brands/ListBrand")),
+);
+const CreateBrandPage = Loader(
+  lazy(() => import("@/pages/brands/CreateBrand")),
+);
+const UpdateBrandPage = Loader(
+  lazy(() => import("@/pages/brands/UpdateBrand")),
+);
 
 // categories
-const ListCategoryPage = Loader(lazy(() => import("@/pages/categories/ListCategory")));
-const CreateCategoryPage = Loader(lazy(() => import("@/pages/categories/CreateCategory")));
-const UpdateCategoryPage = Loader(lazy(() => import("@/pages/categories/UpdateCategory")));
+const ListCategoryPage = Loader(
+  lazy(() => import("@/pages/categories/ListCategory")),
+);
+const CreateCategoryPage = Loader(
+  lazy(() => import("@/pages/categories/CreateCategory")),
+);
+const UpdateCategoryPage = Loader(
+  lazy(() => import("@/pages/categories/UpdateCategory")),
+);
 
 // sales categories
 const ListSalesCategoryPage = Loader(
@@ -167,7 +253,9 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to={`/${CacheResource.PickupAddress}`} />,
+                element: (
+                  <Navigate to={`/${CacheResource.PickupAddress}`} />
+                ),
               },
               {
                 path: "",
@@ -291,7 +379,9 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to={`/${CacheResource.PotentialOrder}`} />,
+                element: (
+                  <Navigate to={`/${CacheResource.PotentialOrder}`} />
+                ),
               },
               {
                 path: "",
@@ -539,7 +629,9 @@ const routes = createBrowserRouter([
               },
               {
                 path: "list",
-                element: <Navigate to={`${CacheResource.SalesCategory}`} />,
+                element: (
+                  <Navigate to={`${CacheResource.SalesCategory}`} />
+                ),
               },
               {
                 path: "",

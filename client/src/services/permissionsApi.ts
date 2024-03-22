@@ -15,7 +15,9 @@ import {
   QueryOptionArgs,
 } from "./types";
 
-export class PermisssionApiService extends BaseApiService<PermissionWhereInput, Permission> {
+export class PermisssionApiService
+  extends BaseApiService<PermissionWhereInput, Permission>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -67,7 +69,9 @@ export class PermisssionApiService extends BaseApiService<PermissionWhereInput, 
     return data;
   }
 
-  async create(payload: CreatePermissionInput): Promise<GenericResponse<Permission, "permission">> {
+  async create(
+    payload: CreatePermissionInput,
+  ): Promise<GenericResponse<Permission, "permission">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -87,11 +91,15 @@ export class PermisssionApiService extends BaseApiService<PermissionWhereInput, 
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { permissionIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { permissionIds: ids },
+    });
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<Permission, "permission">> {
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<Permission, "permission">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

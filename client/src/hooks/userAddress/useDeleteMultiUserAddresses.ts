@@ -20,7 +20,9 @@ export function useDeleteMultiUserAddresses() {
       dispatch({
         type: "OPEN_TOAST",
         payload: {
-          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
+          message: `failed: ${
+            err?.response?.data?.message || err?.message || "Unknown error"
+          }`,
           severity: "error",
         },
       });
@@ -42,11 +44,15 @@ export function useDeleteMultiUserAddresses() {
     },
   });
 
-  const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(
-      AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message),
-    )
-    : Ok(mutation.data);
+  const try_data: Result<typeof mutation.data, AppError> =
+    !!mutation.error && mutation.isError
+      ? Err(
+        AppError.new(
+          (mutation.error as any).kind || AppErrorKind.ApiError,
+          mutation.error.message,
+        ),
+      )
+      : Ok(mutation.data);
 
   return {
     ...mutation,

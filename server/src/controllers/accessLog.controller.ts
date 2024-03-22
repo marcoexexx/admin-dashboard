@@ -26,7 +26,10 @@ export async function getAccessLogsHandler(
     const { user } = convertStringToBoolean(query.include) ?? {};
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, logs] = (await service.tryFindManyWithCount(
@@ -66,7 +69,10 @@ export async function deleteAccessLogsHandler(
     const { accessLogId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const accessLog = (await service.tryDelete({

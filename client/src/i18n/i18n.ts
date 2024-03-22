@@ -31,7 +31,8 @@ export const i18n: I18n = {
   local: getStore<keyof typeof countries>(LANGUAGE_PREFIX) || "en",
 
   t(key, options) {
-    const localPrefix = this.translations[this.local as keyof I18n["translations"]];
+    const localPrefix =
+      this.translations[this.local as keyof I18n["translations"]];
     let msg = _get(localPrefix, key);
     if (options) msg = strTemplate(_get(localPrefix, key), options);
     return msg;
@@ -43,12 +44,16 @@ export const i18n: I18n = {
   },
 };
 
-type RecusiveKeyOfHandleValue<TValue, Text extends string> = TValue extends any[] ? Text
+type RecusiveKeyOfHandleValue<TValue, Text extends string> = TValue extends
+  any[] ? Text
   : TValue extends object ? `${Text}.${RecusiveKeyOf<TValue>}`
   : Text;
 
 type RecusiveKeyOf<TObj extends object> = {
-  [TKey in keyof TObj & (string)]: RecusiveKeyOfHandleValue<TObj[TKey], `${TKey}`>;
+  [TKey in keyof TObj & (string)]: RecusiveKeyOfHandleValue<
+    TObj[TKey],
+    `${TKey}`
+  >;
 }[keyof TObj & string];
 
 export type TxPath = RecusiveKeyOf<Translations>;

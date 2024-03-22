@@ -22,7 +22,10 @@ export class OrderItemService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.OrderItem, { action: OperationAction.Read, resourceIds: [] }, db.orderItem);
+    super(Resource.OrderItem, {
+      action: OperationAction.Read,
+      resourceIds: [],
+    }, db.orderItem);
     this.name = "OrderItem";
   }
 

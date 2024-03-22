@@ -1,7 +1,13 @@
 import { PageTitle } from "@/components";
 import { SalesCategoryCard } from "@/components/content/sales-categories/dashboard";
 import { useStore } from "@/hooks";
-import { Avatar, Container, Grid, Typography, useTheme } from "@mui/material";
+import {
+  Avatar,
+  Container,
+  Grid,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { Helmet } from "react-helmet-async";
 
 import getConfig from "@/libs/getConfig";
@@ -45,8 +51,8 @@ export default function HomePage() {
             </Typography>
 
             <Typography variant="subtitle2">
-              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
-              consectetur cupidatat.
+              Lorem ipsum dolor sit amet, qui minim labore adipisicing
+              minim sint cillum sint consectetur cupidatat.
             </Typography>
           </Grid>
         </Grid>

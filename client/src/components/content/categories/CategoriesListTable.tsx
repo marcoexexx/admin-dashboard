@@ -4,7 +4,13 @@ import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Category, Resource } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { CategoriesFilterForm } from ".";
 
 const columns: TypedColumn<Category>[] = [
@@ -18,7 +24,9 @@ const columns: TypedColumn<Category>[] = [
     id: "createdAt",
     align: "left",
     name: "Created At",
-    render: ({ value }) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
+    ),
   },
 ];
 
@@ -32,8 +40,16 @@ interface CategoriesListTableProps {
 }
 
 export function CategoriesListTable(props: CategoriesListTableProps) {
-  const { categories, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
-  const { state: { categoryFilter: { pagination } }, dispatch } = useStore();
+  const {
+    categories,
+    count,
+    isLoading,
+    onCreateMany,
+    onDelete,
+    onMultiDelete,
+  } = props;
+  const { state: { categoryFilter: { pagination } }, dispatch } =
+    useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({

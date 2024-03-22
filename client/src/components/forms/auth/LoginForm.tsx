@@ -37,7 +37,9 @@ export const MuiTextFieldWrapper = styled(TextField)(({ theme }) => ({
 }));
 
 const loginUserSchema = object({
-  email: string({ required_error: "Email is required" }).email({ message: "Invalid email." }),
+  email: string({ required_error: "Email is required" }).email({
+    message: "Invalid email.",
+  }),
   password: string({ required_error: "Password is required" })
     .min(8),
 });
@@ -85,7 +87,8 @@ export function LoginForm() {
     resolver: zodResolver(loginUserSchema),
   });
 
-  const { handleSubmit, register, setFocus, formState: { errors } } = methods;
+  const { handleSubmit, register, setFocus, formState: { errors } } =
+    methods;
 
   useEffect(() => {
     setFocus("email");
@@ -96,7 +99,13 @@ export function LoginForm() {
   };
 
   return (
-    <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Stack
+      px={3}
+      gap={1}
+      flexDirection="column"
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <FormProvider {...methods}>
         <MuiTextFieldWrapper
           {...register("email")}

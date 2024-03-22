@@ -28,7 +28,8 @@ export function CreateRoleForm() {
 
   useBeforeUnloadPage();
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods;
+  const { handleSubmit, register, formState: { errors }, setFocus } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
@@ -41,7 +42,12 @@ export function CreateRoleForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -61,7 +67,11 @@ export function CreateRoleForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={createRoleMutation.isPending}>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={createRoleMutation.isPending}
+            >
               Create
             </MuiButton>
           </Grid>
@@ -70,7 +80,10 @@ export function CreateRoleForm() {
 
       {modalForm.field === "create-permission"
         ? (
-          <FormModal field="create-permission" title="Create new permission">
+          <FormModal
+            field="create-permission"
+            title="Create new permission"
+          >
             <CreatePermissionForm />
           </FormModal>
         )

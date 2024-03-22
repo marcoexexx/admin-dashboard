@@ -13,7 +13,11 @@ import { SalesCategoryService } from "../services/saleCategory";
 import { StatusCode } from "../utils/appError";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 const service = SalesCategoryService.new();
 const _salesService = ProductSalesCategoryService.new();
@@ -29,11 +33,15 @@ export async function getSalesCategoriesHandler(
 
     const { id, name } = query.filter ?? {};
     const { page, pageSize } = query.pagination ?? {};
-    const { _count, products } = convertStringToBoolean(query.include) ?? {};
+    const { _count, products } = convertStringToBoolean(query.include)
+      ?? {};
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, categories] = (await service.tryFindManyWithCount(
@@ -62,20 +70,26 @@ export async function getSalesCategoriesInProductHandler(
     const { productId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
-    const [count, salesCategories] = (await _salesService.tryFindManyWithCount(
-      {
-        pagination: { page: 1, pageSize: 10 },
-      },
-      {
-        where: { productId },
-        include: { salesCategory: true },
-      },
-    )).ok_or_throw();
+    const [count, salesCategories] =
+      (await _salesService.tryFindManyWithCount(
+        {
+          pagination: { page: 1, pageSize: 10 },
+        },
+        {
+          where: { productId },
+          include: { salesCategory: true },
+        },
+      )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(salesCategories, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(salesCategories, count),
+    );
   } catch (err) {
     next(err);
   }
@@ -90,10 +104,14 @@ export async function getSalesCategoryHandler(
     const query = convertNumericStrings(req.query);
 
     const { salesCategoryId } = req.params;
-    const { _count, products } = convertStringToBoolean(query.include) ?? {};
+    const { _count, products } = convertStringToBoolean(query.include)
+      ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const salesCategory = (await service.tryFindUnique({
@@ -116,7 +134,10 @@ export async function createSalesCategoryHandler(
     const { name, startDate, endDate, description } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const category = (await service.tryCreate({
@@ -152,7 +173,10 @@ export async function createSaleCategoryForProductHandler(
     const { discount, salesCategoryId } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const category = (await _salesService.tryCreate({
@@ -183,10 +207,14 @@ export async function createMultiSalesCategoriesHandler(
     if (!excelFile) return res.status(StatusCode.NoContent);
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
-    const categories = (await service.tryExcelUpload(excelFile)).ok_or_throw();
+    const categories = (await service.tryExcelUpload(excelFile))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);
@@ -207,10 +235,15 @@ export async function deleteSalesCategoryHandler(
     const { salesCategoryId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
-    const category = (await service.tryDelete({ where: { id: salesCategoryId } })).ok_or_throw();
+    const category =
+      (await service.tryDelete({ where: { id: salesCategoryId } }))
+        .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);
@@ -231,7 +264,10 @@ export async function deleteMultiSalesCategoriesHandler(
     const { salesCategoryIds } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const _deleteSalesCategories = await service.tryDeleteMany({
@@ -247,14 +283,20 @@ export async function deleteMultiSalesCategoriesHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
     next(err);
   }
 }
 
 export async function updateSalesCategoryHandler(
-  req: Request<UpdateSalesCategoryInput["params"], {}, UpdateSalesCategoryInput["body"]>,
+  req: Request<
+    UpdateSalesCategoryInput["params"],
+    {},
+    UpdateSalesCategoryInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -263,7 +305,10 @@ export async function updateSalesCategoryHandler(
     const { name, startDate, endDate, isActive, description } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const category = (await service.tryUpdate({

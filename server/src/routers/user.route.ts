@@ -12,7 +12,11 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { sudo } from "../middleware/sudo";
 import { validate } from "../middleware/validate";
-import { getUserByUsernameSchema, getUserSchema, updateUserSchema } from "../schemas/user.schema";
+import {
+  getUserByUsernameSchema,
+  getUserSchema,
+  updateUserSchema,
+} from "../schemas/user.schema";
 
 const router = Router();
 

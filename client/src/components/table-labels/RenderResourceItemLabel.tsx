@@ -3,7 +3,9 @@ import { Resource } from "@/services/types";
 import { useNavigate } from "react-router-dom";
 import { LinkLabel } from "..";
 
-export function RenderResourceItemLabel({ resource, id }: { resource: Resource; id: string; }) {
+export function RenderResourceItemLabel(
+  { resource, id }: { resource: Resource; id: string; },
+) {
   const navigate = useNavigate();
 
   const handleNavigate = () => {

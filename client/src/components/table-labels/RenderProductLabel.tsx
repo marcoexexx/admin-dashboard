@@ -12,7 +12,10 @@ export function RenderProductLabel({ product }: { product: Product; }) {
   const to = `/${CacheResource.Product}/detail/${product.id}`;
 
   const handleNavigate = () => {
-    dispatch({ type: "SET_PRODUCT_FILTER", payload: { include: { specification: true } } });
+    dispatch({
+      type: "SET_PRODUCT_FILTER",
+      payload: { include: { specification: true } },
+    });
     navigate(to);
   };
 

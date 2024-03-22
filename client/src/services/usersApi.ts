@@ -3,7 +3,13 @@ import { UploadProfilePictureInput } from "@/components/image-uploader";
 import { CacheResource } from "@/context/cacheKey";
 import { UserWhereInput } from "@/context/user";
 import { BaseApiService } from "./baseApiService";
-import { GenericResponse, HttpListResponse, Pagination, QueryOptionArgs, User } from "./types";
+import {
+  GenericResponse,
+  HttpListResponse,
+  Pagination,
+  QueryOptionArgs,
+  User,
+} from "./types";
 
 import { authApi } from "./authApi";
 

@@ -6,7 +6,9 @@ interface DatePickerFieldProps {
   required?: boolean;
 }
 
-export function DatePickerField({ fieldName, required }: DatePickerFieldProps) {
+export function DatePickerField(
+  { fieldName, required }: DatePickerFieldProps,
+) {
   const { control } = useFormContext();
 
   return (

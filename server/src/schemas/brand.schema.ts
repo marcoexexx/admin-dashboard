@@ -39,7 +39,11 @@ export const deleteMultiBrandsSchema = object({
 });
 
 export type CreateBrandInput = z.infer<typeof createBrandSchema>["body"];
-export type CreateMultiBrandsInput = z.infer<typeof createMultiBrandsSchema>["body"];
-export type DeleteMultiBrandsInput = z.infer<typeof deleteMultiBrandsSchema>["body"];
+export type CreateMultiBrandsInput = z.infer<
+  typeof createMultiBrandsSchema
+>["body"];
+export type DeleteMultiBrandsInput = z.infer<
+  typeof deleteMultiBrandsSchema
+>["body"];
 export type GetBrandInput = z.infer<typeof getBrandSchema>;
 export type UpdateBrandInput = z.infer<typeof updateBrandSchema>;

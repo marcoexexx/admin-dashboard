@@ -1,7 +1,13 @@
 import { MuiButton } from "@/components/ui";
 import { useStore } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  TextField,
+} from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { boolean, object, string, z } from "zod";
@@ -11,7 +17,9 @@ const filterUserAddressesSchema = object({
   insensitive: boolean().optional().default(false),
 });
 
-export type FilterUserAddressesInput = z.infer<typeof filterUserAddressesSchema>;
+export type FilterUserAddressesInput = z.infer<
+  typeof filterUserAddressesSchema
+>;
 
 export function UserAddressesFilterForm() {
   const { dispatch } = useStore();
@@ -22,7 +30,8 @@ export function UserAddressesFilterForm() {
     resolver: zodResolver(filterUserAddressesSchema),
   });
 
-  const { handleSubmit, register, formState: { errors }, setValue } = methods;
+  const { handleSubmit, register, formState: { errors }, setValue } =
+    methods;
 
   const onSubmit: SubmitHandler<FilterUserAddressesInput> = (value) => {
     const { name, insensitive } = value;
@@ -56,7 +65,12 @@ export function UserAddressesFilterForm() {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
@@ -70,7 +84,12 @@ export function UserAddressesFilterForm() {
             <FormControlLabel
               {...register("insensitive")}
               label="Insensitive"
-              control={<Checkbox defaultChecked={filterQuery.get("insensitive") === "true"} />}
+              control={
+                <Checkbox
+                  defaultChecked={filterQuery.get("insensitive")
+                    === "true"}
+                />
+              }
             />
           </Box>
         </Grid>
@@ -80,7 +99,13 @@ export function UserAddressesFilterForm() {
         </Grid>
 
         <Grid item>
-          <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
+          <MuiButton
+            onClick={handleOnClickReset}
+            variant="outlined"
+            type="button"
+          >
+            Reset
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

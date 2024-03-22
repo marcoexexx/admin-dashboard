@@ -1,8 +1,16 @@
-import { AddDashboardCard, DashboardCard, SuspenseLoader } from "@/components";
+import {
+  AddDashboardCard,
+  DashboardCard,
+  SuspenseLoader,
+} from "@/components";
 import { MuiButton } from "@/components/ui";
 import { usePermission, useStore } from "@/hooks";
 import { useGetSalesCategories } from "@/hooks/salsCategory";
-import { OperationAction, Resource, SalesCategory } from "@/services/types";
+import {
+  OperationAction,
+  Resource,
+  SalesCategory,
+} from "@/services/types";
 import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -25,7 +33,9 @@ export function SalesCategoryCard() {
     resource: Resource.SalesCategory,
   }).is_ok();
 
-  const handleCreateNewSalesCategory = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCreateNewSalesCategory = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     navigate("/sales-categories/create");
   };
 

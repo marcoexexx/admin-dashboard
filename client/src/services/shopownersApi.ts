@@ -1,4 +1,7 @@
-import { CreateShopownerInput, UpdateShopownerInput } from "@/components/content/shopowners/forms";
+import {
+  CreateShopownerInput,
+  UpdateShopownerInput,
+} from "@/components/content/shopowners/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { ShopownerProviderWhereInput } from "@/context/shopowner";
 import { authApi } from "./authApi";
@@ -75,12 +78,15 @@ export class ShopownerApiService
     return data;
   }
 
-  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<ShopownerProvider>> {
+  async uploadExcel(
+    buf: ArrayBuffer,
+  ): Promise<HttpListResponse<ShopownerProvider>> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `Shopowners_${Date.now()}.xlsx`);
@@ -107,11 +113,15 @@ export class ShopownerApiService
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { shopownerIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { shopownerIds: ids },
+    });
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<ShopownerProvider, "shopowner">> {
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<ShopownerProvider, "shopowner">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

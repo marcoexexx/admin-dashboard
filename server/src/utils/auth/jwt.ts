@@ -4,7 +4,10 @@ import getConfig, { Config } from "../getConfig";
 
 export function signJwt<T extends { sub: string; }>(
   payload: T,
-  keyName: keyof Pick<Config["jwtConfig"], "accessTokenPrivateKey" | "refreshTokenPrivateKey">,
+  keyName: keyof Pick<
+    Config["jwtConfig"],
+    "accessTokenPrivateKey" | "refreshTokenPrivateKey"
+  >,
   options: SignOptions,
 ): string {
   const key = getConfig("jwtConfig")[keyName];
@@ -21,7 +24,10 @@ export function signJwt<T extends { sub: string; }>(
 
 export function verifyJwt<T extends { sub: string; }>(
   token: string,
-  keyName: keyof Pick<Config["jwtConfig"], "accessTokenPublicKey" | "refreshTokenPublicKey">,
+  keyName: keyof Pick<
+    Config["jwtConfig"],
+    "accessTokenPublicKey" | "refreshTokenPublicKey"
+  >,
 ): T | null {
   try {
     const key = getConfig("jwtConfig")[keyName];
@@ -49,9 +55,13 @@ export async function signToken<T extends { id: string; }>(user: T) {
     expiresIn: `${accessTokenExpiresIn}s`,
   });
 
-  const refreshToken = signJwt({ sub: user.id }, "refreshTokenPrivateKey", {
-    expiresIn: `${refreshTokenExpiresIn}s`,
-  });
+  const refreshToken = signJwt(
+    { sub: user.id },
+    "refreshTokenPrivateKey",
+    {
+      expiresIn: `${refreshTokenExpiresIn}s`,
+    },
+  );
 
   return { accessToken, refreshToken };
 }

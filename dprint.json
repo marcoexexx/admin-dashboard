@@ -2,7 +2,7 @@
   "typescript": {
     "indentWidth": 2,
     "quoteStyle": "alwaysDouble",
-    "lineWidth": 100,
+    "lineWidth": 75,
     "semiColons": "always"
   },
   "json": {

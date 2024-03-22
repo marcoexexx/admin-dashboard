@@ -2,7 +2,13 @@ import { PageTitle, SuspenseLoader } from "@/components";
 import { UserProfile } from "@/components/content/users";
 import { usePermission } from "@/hooks";
 import { OperationAction, Resource } from "@/services/types";
-import { Container, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import {
+  Container,
+  Grid,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { Suspense } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,8 +19,11 @@ import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
 
 const appName = getConfig("appName");
 
-function ViewDetailWrapper({ username }: { username: string | undefined; }) {
-  usePermission({ action: OperationAction.Read, resource: Resource.User }).ok_or_throw();
+function ViewDetailWrapper(
+  { username }: { username: string | undefined; },
+) {
+  usePermission({ action: OperationAction.Read, resource: Resource.User })
+    .ok_or_throw();
 
   return <UserProfile username={username} />;
 }
@@ -49,17 +58,23 @@ export default function ViewPage() {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Tooltip arrow placeholder="top" title="go back">
-              <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={handleBack}>
+              <IconButton
+                color="primary"
+                sx={{ p: 2, mr: 2 }}
+                onClick={handleBack}
+              >
                 <ArrowBackTwoToneIcon />
               </IconButton>
             </Tooltip>
           </Grid>
 
           <Grid item>
-            <Typography variant="h3" component="h3" gutterBottom>User profile</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>
+              User profile
+            </Typography>
             <Typography variant="subtitle2" gutterBottom>
-              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
-              consectetur cupidatat.
+              Lorem ipsum dolor sit amet, qui minim labore adipisicing
+              minim sint cillum sint consectetur cupidatat.
             </Typography>
           </Grid>
 
@@ -70,7 +85,13 @@ export default function ViewPage() {
       </PageTitle>
 
       <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="stretch"
+          spacing={3}
+        >
           <Grid item xs={12}>
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>

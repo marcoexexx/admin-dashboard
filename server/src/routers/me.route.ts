@@ -9,7 +9,10 @@ import { deserializeUser } from "../middleware/deserializeUser";
 import { requiredUser } from "../middleware/requiredUser";
 import { validate } from "../middleware/validate";
 import { uploadImageProfileSchema } from "../schemas/user.schema";
-import { resizeProfileImage, uploadProfileImage } from "../upload/singleUpload";
+import {
+  resizeProfileImage,
+  uploadProfileImage,
+} from "../upload/singleUpload";
 
 const router = Router();
 

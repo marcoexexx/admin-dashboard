@@ -11,7 +11,11 @@ import { UserAddressService } from "../services/userAddresses";
 import { StatusCode } from "../utils/appError";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 const service = UserAddressService.new();
 
@@ -47,7 +51,10 @@ export async function getUserAddressesHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, userAddresses] = (await service.tryFindManyWithCount(
@@ -107,7 +114,10 @@ export async function getUserAddressHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const userAddress = (await service.tryFindUnique({
@@ -143,12 +153,23 @@ export async function createUserAddressHandler(
   next: NextFunction,
 ) {
   try {
-    const { username, isDefault, phone, email, regionId, townshipFeesId, fullAddress, remark } =
-      req.body;
+    const {
+      username,
+      isDefault,
+      phone,
+      email,
+      regionId,
+      townshipFeesId,
+      fullAddress,
+      remark,
+    } = req.body;
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const userAddress = (await service.tryCreate({
@@ -185,7 +206,10 @@ export async function deleteUserAddressHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const userAddress = (await service.tryDelete({
@@ -214,7 +238,10 @@ export async function deleteMultiUserAddressesHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const _deleteUserAddresses = await service.tryDeleteMany({
@@ -230,14 +257,20 @@ export async function deleteMultiUserAddressesHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
     next(err);
   }
 }
 
 export async function updateUserAddressHandler(
-  req: Request<UpdateUserAddressInput["params"], {}, UpdateUserAddressInput["body"]>,
+  req: Request<
+    UpdateUserAddressInput["params"],
+    {},
+    UpdateUserAddressInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -247,7 +280,10 @@ export async function updateUserAddressHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const userAddress = (await service.tryUpdate({

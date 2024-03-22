@@ -39,11 +39,15 @@ export async function getGoogleAuthToken(
   };
 
   try {
-    const { data } = await axios.post<GoogleOAuthToken>(rootUrl, qs.stringify(options), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+    const { data } = await axios.post<GoogleOAuthToken>(
+      rootUrl,
+      qs.stringify(options),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       },
-    });
+    );
     return Ok(data);
   } catch (err: any) {
     return Err(
@@ -71,6 +75,11 @@ export async function getGoogleUser(
 
     return Ok(data);
   } catch (err: any) {
-    return Err(AppError.new(StatusCode.InternalServerError, `Failed to fetch Google Oauth Tokens`));
+    return Err(
+      AppError.new(
+        StatusCode.InternalServerError,
+        `Failed to fetch Google Oauth Tokens`,
+      ),
+    );
   }
 }

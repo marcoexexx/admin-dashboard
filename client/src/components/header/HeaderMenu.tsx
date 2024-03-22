@@ -59,28 +59,40 @@ export default function HeaderMenu() {
             classes={{ root: "MuiListItem-indicators" }}
             onClick={() => navigate("/products/list")}
           >
-            <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Products" />
+            <ListItemText
+              primaryTypographyProps={{ noWrap: true }}
+              primary="Products"
+            />
           </ListItem>
 
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
             onClick={() => navigate("/brands/list")}
           >
-            <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Brands" />
+            <ListItemText
+              primaryTypographyProps={{ noWrap: true }}
+              primary="Brands"
+            />
           </ListItem>
 
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
             onClick={() => navigate("/categories/list")}
           >
-            <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Categories" />
+            <ListItemText
+              primaryTypographyProps={{ noWrap: true }}
+              primary="Categories"
+            />
           </ListItem>
 
           <ListItem
             classes={{ root: "MuiListItem-indicators" }}
             onClick={() => navigate("/sales-categories/list")}
           >
-            <ListItemText primaryTypographyProps={{ noWrap: true }} primary="Sales Categories" />
+            <ListItemText
+              primaryTypographyProps={{ noWrap: true }}
+              primary="Sales Categories"
+            />
           </ListItem>
         </List>
       </ListWrapper>

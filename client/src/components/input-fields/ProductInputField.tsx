@@ -17,11 +17,16 @@ interface ProductInputFieldProps {
   updateField?: boolean;
 }
 
-export function ProductInputField({ updateField = false }: ProductInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<
-    { productId: string; }
-  >();
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+export function ProductInputField(
+  { updateField = false }: ProductInputFieldProps,
+) {
+  const { control, setValue, getValues, formState: { errors } } =
+    useFormContext<
+      { productId: string; }
+    >();
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(
+    null,
+  );
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
   const { dispatch } = useStore();
@@ -49,19 +54,26 @@ export function ProductInputField({ updateField = false }: ProductInputFieldProp
     if (defaultProduct && updateField) setSelectedProduct(defaultProduct);
   }, [defaultProduct]);
 
-  const handleProductChange = (_: React.SyntheticEvent, value: Product | null) => {
+  const handleProductChange = (
+    _: React.SyntheticEvent,
+    value: Product | null,
+  ) => {
     if (value) {
       setSelectedProduct(value);
       setValue("productId", value.id);
     }
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "create-product" });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -94,7 +106,8 @@ export function ProductInputField({ updateField = false }: ProductInputFieldProp
             onClose={handleOnCloseOptions}
             value={selectedProduct}
             options={products || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             // TODO: some name are same, so, should not use as key
             getOptionLabel={option => option.id || ""}
             loading={isLoading}
@@ -126,7 +139,9 @@ export function ProductInputField({ updateField = false }: ProductInputFieldProp
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

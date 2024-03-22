@@ -4,7 +4,13 @@ import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Region, Resource } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { RegionsFilterForm } from ".";
 
 const columns: TypedColumn<Region>[] = [
@@ -38,7 +44,14 @@ interface RegionsListTableProps {
 }
 
 export function RegionsListTable(props: RegionsListTableProps) {
-  const { regions, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
+  const {
+    regions,
+    count,
+    isLoading,
+    onCreateMany,
+    onDelete,
+    onMultiDelete,
+  } = props;
   const { state: { regionFilter: { pagination } }, dispatch } = useStore();
 
   const handleChangePagination = (_: any, page: number) => {

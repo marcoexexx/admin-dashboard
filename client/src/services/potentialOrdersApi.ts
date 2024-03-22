@@ -60,7 +60,9 @@ export class PotentialOrderApiService
       filter: { id: string | undefined; };
       include?: PotentialOrderWhereInput["include"];
     },
-  ): Promise<GenericResponse<PotentialOrder, "potentialOrder"> | undefined> {
+  ): Promise<
+    GenericResponse<PotentialOrder, "potentialOrder"> | undefined
+  > {
     const { filter: { id }, include } = where;
     const url = `/${this.repo}/detail/${id}`;
 
@@ -84,8 +86,12 @@ export class PotentialOrderApiService
   /**
    * Not Support yet!
    */
-  async uploadExcel(_buf: ArrayBuffer): Promise<HttpListResponse<PotentialOrder>> {
-    return Promise.reject(AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`));
+  async uploadExcel(
+    _buf: ArrayBuffer,
+  ): Promise<HttpListResponse<PotentialOrder>> {
+    return Promise.reject(
+      AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`),
+    );
   }
 
   async update(
@@ -101,11 +107,15 @@ export class PotentialOrderApiService
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { potentialOrderIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { potentialOrderIds: ids },
+    });
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<PotentialOrder, "potentialOrder">> {
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<PotentialOrder, "potentialOrder">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

@@ -6,7 +6,9 @@ interface SelectInputFieldProps {
   options: string[];
 }
 
-export function SelectInputField({ fieldName, options }: SelectInputFieldProps) {
+export function SelectInputField(
+  { fieldName, options }: SelectInputFieldProps,
+) {
   const { control } = useFormContext();
 
   return (
@@ -21,7 +23,9 @@ export function SelectInputField({ fieldName, options }: SelectInputFieldProps) 
               label="Price unit from"
               defaultValue={field.value || "KK"}
               error={!!fieldState.error}
-              helperText={!!fieldState.error ? fieldState.error.message : ""}
+              helperText={!!fieldState.error
+                ? fieldState.error.message
+                : ""}
               select
               fullWidth
             >

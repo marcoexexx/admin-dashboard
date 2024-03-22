@@ -22,7 +22,9 @@ export function useDeleteMultiPotentialOrders() {
       dispatch({
         type: "OPEN_TOAST",
         payload: {
-          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
+          message: `failed: ${
+            err?.response?.data?.message || err?.message || "Unknown error"
+          }`,
           severity: "error",
         },
       });
@@ -45,17 +47,24 @@ export function useDeleteMultiPotentialOrders() {
       const isCartOrderId = pickupForm?.createdPotentialOrderId
         && ids.includes(pickupForm.createdPotentialOrderId);
       if (isCartOrderId) {
-        set<CreateOrderInput>("PICKUP_FORM", { ...pickupForm, createdPotentialOrderId: undefined });
+        set<CreateOrderInput>("PICKUP_FORM", {
+          ...pickupForm,
+          createdPotentialOrderId: undefined,
+        });
       }
       playSoundEffect("success");
     },
   });
 
-  const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(
-      AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message),
-    )
-    : Ok(mutation.data);
+  const try_data: Result<typeof mutation.data, AppError> =
+    !!mutation.error && mutation.isError
+      ? Err(
+        AppError.new(
+          (mutation.error as any).kind || AppErrorKind.ApiError,
+          mutation.error.message,
+        ),
+      )
+      : Ok(mutation.data);
 
   return {
     ...mutation,

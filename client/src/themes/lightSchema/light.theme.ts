@@ -48,7 +48,12 @@ import {
 } from "@/themes/lightSchema/components";
 import { Components, createTheme, Theme } from "@mui/material";
 
-import { breakpoints, colors, palette, typography } from "@/themes/lightSchema";
+import {
+  breakpoints,
+  colors,
+  palette,
+  typography,
+} from "@/themes/lightSchema";
 
 export const components: Components<Omit<Theme, "components">> & {
   MuiTimelineDot: any;

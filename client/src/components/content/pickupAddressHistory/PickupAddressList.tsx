@@ -1,7 +1,10 @@
 import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
-import { useDeletePickupAddress, useGetPickupAddresses } from "@/hooks/pickupAddress";
+import {
+  useDeletePickupAddress,
+  useGetPickupAddresses,
+} from "@/hooks/pickupAddress";
 import { Card } from "@mui/material";
 import { PickupAddressListTable } from ".";
 

@@ -8,7 +8,10 @@ import { UserResponse } from "@/services/types";
 import { useQuery } from "@tanstack/react-query";
 
 export function useMe(
-  { enabled = true, include }: { enabled?: boolean; include?: UserWhereInput["include"]; },
+  { enabled = true, include }: {
+    enabled?: boolean;
+    include?: UserWhereInput["include"];
+  },
 ) {
   const query = useQuery({
     enabled,
@@ -22,9 +25,15 @@ export function useMe(
     staleTime: 500,
   });
 
-  const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
-    : Ok(query.data);
+  const try_data: Result<typeof query.data, AppError> =
+    !!query.error && query.isError
+      ? Err(
+        AppError.new(
+          (query.error as any).kind || AppErrorKind.ApiError,
+          query.error.message,
+        ),
+      )
+      : Ok(query.data);
 
   return {
     ...query,

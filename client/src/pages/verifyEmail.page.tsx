@@ -45,9 +45,14 @@ export default function VerifyEmail() {
           <Typography variant="h2" sx={{ my: 2 }}>
             Confirm your email!
           </Typography>
-          <Typography variant="h4" color="text.secondary" fontWeight="normal" sx={{ mb: 4 }}>
-            Your account has been successfully registered. To complete the process please check your
-            email for a validation request.
+          <Typography
+            variant="h4"
+            color="text.secondary"
+            fontWeight="normal"
+            sx={{ mb: 4 }}
+          >
+            Your account has been successfully registered. To complete the
+            process please check your email for a validation request.
           </Typography>
         </Box>
       </Container>

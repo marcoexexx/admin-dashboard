@@ -40,7 +40,9 @@ const accessTokenCookieOptions: CookieOptions = {
 
 const refreshTokenCookieOptions: CookieOptions = {
   ...cookieOptions,
-  expires: new Date(Date.now() + getConfig("refreshTokenExpiresIn") * 1000),
+  expires: new Date(
+    Date.now() + getConfig("refreshTokenExpiresIn") * 1000,
+  ),
   maxAge: getConfig("refreshTokenExpiresIn") * 1000,
 };
 
@@ -52,7 +54,8 @@ export async function registerUserHandler(
   try {
     const { name, email, password } = req.body;
 
-    const user = (await service.register({ name, email, password })).ok_or_throw();
+    const user = (await service.register({ name, email, password }))
+      .ok_or_throw();
 
     res.status(StatusCode.Created).json(HttpDataResponse({ user }));
   } catch (err) {
@@ -68,7 +71,8 @@ export async function resendEmailVerificationCodeHandler(
   try {
     const { code, id } = req.body;
 
-    const { hashedVerificationCode, verificationCode } = createVerificationCode();
+    const { hashedVerificationCode, verificationCode } =
+      createVerificationCode();
 
     const user = (await service.tryUpdate({
       where: {
@@ -81,7 +85,9 @@ export async function resendEmailVerificationCodeHandler(
       },
     })).ok_or_throw();
 
-    const redirectUrl = `${getConfig("origin")}/verify-email/${verificationCode}`;
+    const redirectUrl = `${
+      getConfig("origin")
+    }/verify-email/${verificationCode}`;
 
     try {
       await new Email(user, redirectUrl).sendVerificationCode();
@@ -90,7 +96,12 @@ export async function resendEmailVerificationCodeHandler(
     } catch (err: any) {
       user.verificationCode = null;
 
-      return next(AppError.new(err?.status || StatusCode.InternalServerError, err?.message));
+      return next(
+        AppError.new(
+          err?.status || StatusCode.InternalServerError,
+          err?.message,
+        ),
+      );
     }
   } catch (err) {
     next(err);
@@ -108,9 +119,15 @@ export async function verificationEmailHandler(
       .update(req.params.verificationCode)
       .digest("hex");
 
-    const user = (await service.tryFindFirst({ where: { verificationCode } })).ok_or_throw();
+    const user =
+      (await service.tryFindFirst({ where: { verificationCode } }))
+        .ok_or_throw();
 
-    if (!user) return next(AppError.new(StatusCode.Unauthorized, `Could not verify email`));
+    if (!user) {
+      return next(
+        AppError.new(StatusCode.Unauthorized, `Could not verify email`),
+      );
+    }
 
     const _updatedUser = await service.tryUpdate({
       where: { id: user.id },
@@ -118,7 +135,9 @@ export async function verificationEmailHandler(
     });
     _updatedUser.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, `Email verified successfully`));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, `Email verified successfully`),
+    );
   } catch (err) {
     next(err);
   }
@@ -137,20 +156,30 @@ export async function googleOAuthHandler(
     const pathUrl = req.query.state || "/";
 
     if (!code) {
-      return next(AppError.new(StatusCode.Unauthorized, "Authorization code not provided!"));
+      return next(
+        AppError.new(
+          StatusCode.Unauthorized,
+          "Authorization code not provided!",
+        ),
+      );
     }
 
-    const { id_token, access_token } = (await getGoogleAuthToken(code)).ok_or_throw();
+    const { id_token, access_token } = (await getGoogleAuthToken(code))
+      .ok_or_throw();
 
     const { name, verified_email, email, picture } =
       (await getGoogleUser({ id_token, access_token })).ok_or_throw();
 
     if (!verified_email) {
-      return next(AppError.new(StatusCode.Forbidden, "Google account not verified"));
+      return next(
+        AppError.new(StatusCode.Forbidden, "Google account not verified"),
+      );
     }
 
     // set Superuser if first time create user,
-    const isSuperuser = (await service.tryCount()).ok_or_throw() === 0 ? true : false;
+    const isSuperuser = (await service.tryCount()).ok_or_throw() === 0
+      ? true
+      : false;
 
     const user = await db.user.upsert({
       where: { email },
@@ -209,16 +238,26 @@ export async function loginUserHandler(
       },
     });
 
-    if (!user) return next(AppError.new(StatusCode.BadRequest, "invalid email or password"));
+    if (!user) {
+      return next(
+        AppError.new(StatusCode.BadRequest, "invalid email or password"),
+      );
+    }
 
     // Check verified
-    if (!user.verified) return next(AppError.new(StatusCode.BadRequest, "You are not verified"));
+    if (!user.verified) {
+      return next(
+        AppError.new(StatusCode.BadRequest, "You are not verified"),
+      );
+    }
 
     // Check password
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return next(AppError.new(StatusCode.BadRequest, "invalid email or password"));
+      return next(
+        AppError.new(StatusCode.BadRequest, "invalid email or password"),
+      );
     }
 
     const { accessToken, refreshToken } = await signToken(user);
@@ -284,15 +323,22 @@ export async function refreshTokenHandler(
     });
     if (!user) return next(AppError.new(StatusCode.Forbidden, message));
 
-    const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await signToken(user);
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+      await signToken(user);
     res.cookie("access_token", newAccessToken, accessTokenCookieOptions);
-    res.cookie("refresh_token", newRefreshToken, refreshTokenCookieOptions);
+    res.cookie(
+      "refresh_token",
+      newRefreshToken,
+      refreshTokenCookieOptions,
+    );
     res.cookie("logged_in", true, {
       ...accessTokenCookieOptions,
       httpOnly: false,
     });
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ accessToken: newAccessToken }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ accessToken: newAccessToken }),
+    );
   } catch (err: any) {
     const msg = err.message;
     next(AppError.new(err.status || StatusCode.InternalServerError, msg));
@@ -309,7 +355,12 @@ export async function logoutHandler(
     const user = req.user;
 
     if (!user) {
-      return next(AppError.new(StatusCode.Forbidden, "Session has expired or user doesn't exist"));
+      return next(
+        AppError.new(
+          StatusCode.Forbidden,
+          "Session has expired or user doesn't exist",
+        ),
+      );
     }
 
     await redisClient.del(user.id);
@@ -318,7 +369,9 @@ export async function logoutHandler(
     res.cookie("refresh_token", "", { maxAge: 1 });
     res.cookie("logged_in", "", { maxAge: 1 });
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success loggout"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success loggout"),
+    );
   } catch (err: any) {
     const msg = err.message;
     next(AppError.new(err.status || StatusCode.InternalServerError, msg));

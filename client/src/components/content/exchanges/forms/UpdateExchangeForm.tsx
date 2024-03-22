@@ -17,7 +17,9 @@ const updateExchangeSchema = object({
   rate: number({ required_error: "rate is required" })
     .min(0),
   date: z.any(),
-  shopownerProviderId: z.string({ required_error: "shopownerProviderId is required." }),
+  shopownerProviderId: z.string({
+    required_error: "shopownerProviderId is required.",
+  }),
 }).refine(data => data.from !== data.to, {
   path: ["to"],
   message: "to and from must different",
@@ -46,7 +48,9 @@ export function UpdateExchangeForm() {
   useBeforeUnloadPage();
 
   useEffect(() => {
-    if (exchangeQuery.isSuccess && exchange && exchangeFetchStatus === "idle") {
+    if (
+      exchangeQuery.isSuccess && exchange && exchangeFetchStatus === "idle"
+    ) {
       methods.setValue("date", dayjs(exchange.date));
       methods.setValue("to", exchange.to);
       methods.setValue("from", exchange.from);
@@ -57,12 +61,19 @@ export function UpdateExchangeForm() {
   const { handleSubmit, register, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<UpdateExchangeInput> = (value) => {
-    if (exchangeId) updateExchangeMutation.mutate({ id: exchangeId, payload: value });
+    if (exchangeId) {
+      updateExchangeMutation.mutate({ id: exchangeId, payload: value });
+    }
   };
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12} md={6}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
@@ -120,7 +131,11 @@ export function UpdateExchangeForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit" loading={updateExchangeMutation.isPending}>
+          <MuiButton
+            variant="contained"
+            type="submit"
+            loading={updateExchangeMutation.isPending}
+          >
             Save
           </MuiButton>
         </Grid>

@@ -12,7 +12,11 @@ import {
 } from "../schemas/potentialOrder.schema";
 import { PotentialOrderService } from "../services/potentialOrder";
 import { StatusCode } from "../utils/appError";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 const service = PotentialOrderService.new();
 
@@ -24,14 +28,24 @@ export async function getPotentialOrdersHandler(
   try {
     const query = convertNumericStrings(req.query);
 
-    const { id, startDate, endDate, status, totalPrice, remark } = query.filter ?? {};
+    const { id, startDate, endDate, status, totalPrice, remark } =
+      query.filter ?? {};
     const { page, pageSize } = query.pagination ?? {};
-    const { _count, user, deliveryAddress, billingAddress, pickupAddress, orderItems } =
-      convertStringToBoolean(query.include) ?? {};
+    const {
+      _count,
+      user,
+      deliveryAddress,
+      billingAddress,
+      pickupAddress,
+      orderItems,
+    } = convertStringToBoolean(query.include) ?? {};
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, potentialOrders] = (await service.tryFindManyWithCount(
@@ -61,7 +75,9 @@ export async function getPotentialOrdersHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(potentialOrders, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(potentialOrders, count),
+    );
   } catch (err) {
     next(err);
   }
@@ -76,11 +92,20 @@ export async function getPotentialOrderHandler(
     const query = convertNumericStrings(req.query);
 
     const { potentialOrderId } = req.params;
-    const { _count, user, deliveryAddress, billingAddress, pickupAddress, orderItems } =
-      convertStringToBoolean(query.include) ?? {};
+    const {
+      _count,
+      user,
+      deliveryAddress,
+      billingAddress,
+      pickupAddress,
+      orderItems,
+    } = convertStringToBoolean(query.include) ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const potentialOrder = (await service.tryFindUnique({
@@ -98,7 +123,9 @@ export async function getPotentialOrderHandler(
     })).ok_or_throw();
 
     // Create audit log
-    if (potentialOrder && sessionUser) (await service.audit(sessionUser)).ok_or_throw();
+    if (potentialOrder && sessionUser) {
+      (await service.audit(sessionUser)).ok_or_throw();
+    }
 
     res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }));
   } catch (err) {
@@ -126,7 +153,10 @@ export async function createPotentialOrderHandler(
     } = req.body;
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const potentialOrder = (await service.tryUpsert({
@@ -162,7 +192,9 @@ export async function createPotentialOrderHandler(
     // Create audit log
     if (sessionUser) (await service.audit(sessionUser)).ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ potentialOrder }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ potentialOrder }),
+    );
   } catch (err) {
     console.log("Err:", err);
     next(err);
@@ -178,7 +210,10 @@ export async function deletePotentialOrderHandler(
     const { potentialOrderId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const potentialOrder = (await service.tryDelete({
@@ -206,7 +241,10 @@ export async function deleteMultiPotentialOrdersHandler(
     const { potentialOrderIds } = req.body;
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const _deleteOrders = await service.tryDeleteMany({
@@ -222,14 +260,20 @@ export async function deleteMultiPotentialOrdersHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
     next(err);
   }
 }
 
 export async function updatePotentialOrderHandler(
-  req: Request<UpdatePotentialOrderInput["params"], {}, UpdatePotentialOrderInput["body"]>,
+  req: Request<
+    UpdatePotentialOrderInput["params"],
+    {},
+    UpdatePotentialOrderInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -241,7 +285,10 @@ export async function updatePotentialOrderHandler(
     const userId: string | undefined = req.user?.id || undefined;
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const potentialOrder = await service.tryUpdate({

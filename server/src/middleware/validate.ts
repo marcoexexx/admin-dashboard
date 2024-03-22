@@ -16,7 +16,11 @@ export function validate(schema: AnyZodObject) {
     } catch (err) {
       if (err instanceof ZodError) {
         return res.status(StatusCode.UnprocessableEntity).json(
-          HttpResponse(StatusCode.UnprocessableEntity, "invalid input", err.errors),
+          HttpResponse(
+            StatusCode.UnprocessableEntity,
+            "invalid input",
+            err.errors,
+          ),
         );
       }
 

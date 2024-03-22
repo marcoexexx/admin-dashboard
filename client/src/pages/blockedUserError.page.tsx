@@ -9,7 +9,11 @@ export default function BlockedUserErrorPage() {
 
       <h1>You are blocked</h1>
 
-      <Box component="img" src="/static/palm-recognition.svg" width={500} />
+      <Box
+        component="img"
+        src="/static/palm-recognition.svg"
+        width={500}
+      />
     </div>
   );
 }

@@ -1,5 +1,9 @@
 import { useLocalStorage } from "@/hooks";
-import { useGetCart, useRemoveCartItem, useUpdateCartOrderItem } from "@/hooks/cart";
+import {
+  useGetCart,
+  useRemoveCartItem,
+  useUpdateCartOrderItem,
+} from "@/hooks/cart";
 import { numberFormat } from "@/libs/numberFormat";
 import { OrderItem } from "@/services/types";
 import {
@@ -18,7 +22,11 @@ import { number, object, string, z } from "zod";
 import { LoadingTablePlaceholder, TypedColumn } from "..";
 import { CreateOrderInput } from "../content/orders/forms";
 import { calculateProductDiscount } from "../content/products/detail/ProductDetailTab";
-import { RenderImageLabel, RenderProductLabel, RenderQuantityButtons } from "../table-labels";
+import {
+  RenderImageLabel,
+  RenderProductLabel,
+  RenderQuantityButtons,
+} from "../table-labels";
 
 const createCartOrderItemSchema = object({
   price: number(),
@@ -26,16 +34,22 @@ const createCartOrderItemSchema = object({
   productId: string(),
   totalPrice: number().min(0),
 });
-export type CreateCartOrderItemInput = z.infer<typeof createCartOrderItemSchema>;
+export type CreateCartOrderItemInput = z.infer<
+  typeof createCartOrderItemSchema
+>;
 
 const updateCartOrderItemSchema = object({
   price: number(),
   quantity: number(),
   totalPrice: number().min(0),
 });
-export type UpdateCartOrderItemInput = z.infer<typeof updateCartOrderItemSchema>;
+export type UpdateCartOrderItemInput = z.infer<
+  typeof updateCartOrderItemSchema
+>;
 
-const columns: TypedColumn<OrderItem & { discount: number; image: string; }>[] = [
+const columns: TypedColumn<
+  OrderItem & { discount: number; image: string; }
+>[] = [
   {
     id: "image",
     align: "left",
@@ -83,16 +97,28 @@ export function CartsTable() {
 
   const orderCarts = try_data.ok_or_throw()?.orderItems || [];
 
-  const totalAmount = orderCarts.reduce((total, item) => total + item.totalPrice, 0);
-  const totalSaving = orderCarts.reduce((total, item) => total + item.saving, 0);
-  const originalTotalPrice = orderCarts.reduce((total, item) => total + item.originalTotalPrice, 0);
+  const totalAmount = orderCarts.reduce(
+    (total, item) => total + item.totalPrice,
+    0,
+  );
+  const totalSaving = orderCarts.reduce(
+    (total, item) => total + item.saving,
+    0,
+  );
+  const originalTotalPrice = orderCarts.reduce(
+    (total, item) => total + item.originalTotalPrice,
+    0,
+  );
 
-  const isCreatedPotentialOrder = !!get<CreateOrderInput>("PICKUP_FORM")?.createdPotentialOrderId;
+  const isCreatedPotentialOrder = !!get<CreateOrderInput>("PICKUP_FORM")
+    ?.createdPotentialOrderId;
 
   const handleOnIncrement = (item: OrderItem) => {
     if (!item.product || item.product.quantity <= item.quantity) return;
     const quantity = item.quantity + 1;
-    const totalPrice = quantity * calculateProductDiscount(item.product).productDiscountAmount || 0;
+    const totalPrice = quantity
+        * calculateProductDiscount(item.product).productDiscountAmount
+      || 0;
 
     updateCartOrderItem({
       id: item.id,
@@ -108,7 +134,9 @@ export function CartsTable() {
   const handleOnDecrement = (item: OrderItem) => {
     if (!item.product) return;
     const quantity = item.quantity - 1;
-    const totalPrice = quantity * calculateProductDiscount(item.product).productDiscountAmount || 0;
+    const totalPrice = quantity
+        * calculateProductDiscount(item.product).productDiscountAmount
+      || 0;
 
     updateCartOrderItem({
       id: item.id,
@@ -136,7 +164,9 @@ export function CartsTable() {
                 <TableRow>
                   {columns.map(header => {
                     const render = (
-                      <TableCell key={header.id} align={header.align}>{header.name}</TableCell>
+                      <TableCell key={header.id} align={header.align}>
+                        {header.name}
+                      </TableCell>
                     );
                     return render;
                   })}
@@ -151,7 +181,8 @@ export function CartsTable() {
                       key={idx}
                     >
                       {columns.map(col => {
-                        const { productDiscountPercent } = calculateProductDiscount(row.product);
+                        const { productDiscountPercent } =
+                          calculateProductDiscount(row.product);
 
                         return (
                           <TableCell align={col.align} key={col.id}>
@@ -164,14 +195,17 @@ export function CartsTable() {
                             >
                               {col.id === "image" && (
                                 <RenderImageLabel
-                                  src={row.product?.images[0] || "/default.png"}
+                                  src={row.product?.images[0]
+                                    || "/default.png"}
                                   alt={row.product?.title || "product"}
                                 />
                               )}
                               {col.id === "discount" && row.product
                                 && `${productDiscountPercent} %`}
                               {col.id === "product" && row.product && (
-                                <RenderProductLabel product={row.product} />
+                                <RenderProductLabel
+                                  product={row.product}
+                                />
                               )}
                               {col.id === "quantity" && (
                                 <RenderQuantityButtons
@@ -182,8 +216,10 @@ export function CartsTable() {
                                   onRemove={handleOnRemove}
                                 />
                               )}
-                              {col.id === "price" && numberFormat(row.price)}
-                              {col.id === "totalPrice" && numberFormat(row.originalTotalPrice)}
+                              {col.id === "price"
+                                && numberFormat(row.price)}
+                              {col.id === "totalPrice"
+                                && numberFormat(row.originalTotalPrice)}
                             </Typography>
                           </TableCell>
                         );
@@ -198,18 +234,30 @@ export function CartsTable() {
                     <Typography variant="h4">Total</Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <Typography variant="h4">{numberFormat(totalAmount)} Ks</Typography>
-                    <Typography variant="h5" sx={{ textDecoration: "line-through" }}>
+                    <Typography variant="h4">
+                      {numberFormat(totalAmount)} Ks
+                    </Typography>
+                    <Typography
+                      variant="h5"
+                      sx={{ textDecoration: "line-through" }}
+                    >
                       {numberFormat(originalTotalPrice)} Ks
                     </Typography>
-                    <Box display="flex" alignItems="center" gap={1} justifyContent="end">
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      gap={1}
+                      justifyContent="end"
+                    >
                       <Chip
                         label="saving"
                         style={{ borderRadius: 5 }}
                         color="primary"
                         size="small"
                       />
-                      <Typography variant="h5">{numberFormat(totalSaving)} Ks</Typography>
+                      <Typography variant="h5">
+                        {numberFormat(totalSaving)} Ks
+                      </Typography>
                     </Box>
                   </TableCell>
                 </TableRow>
@@ -221,7 +269,8 @@ export function CartsTable() {
       {isCreatedPotentialOrder
         ? (
           <Alert severity="warning">
-            Order items cannot be edited once potential order has been created.
+            Order items cannot be edited once potential order has been
+            created.
           </Alert>
         )
         : null}

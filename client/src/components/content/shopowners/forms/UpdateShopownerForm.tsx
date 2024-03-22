@@ -40,26 +40,37 @@ export function UpdateShopownerForm() {
   useBeforeUnloadPage();
 
   useEffect(() => {
-    if (shopownerQuery.isSuccess && shopowner && shopownerFetchStatus === "idle") {
+    if (
+      shopownerQuery.isSuccess && shopowner
+      && shopownerFetchStatus === "idle"
+    ) {
       methods.setValue("name", shopowner.name);
       methods.setValue("remark", shopowner.remark);
     }
   }, [shopownerQuery.isSuccess, shopownerFetchStatus]);
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods;
+  const { handleSubmit, register, formState: { errors }, setFocus } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
   }, [setFocus]);
 
   const onSubmit: SubmitHandler<UpdateShopownerInput> = (value) => {
-    if (shopownerId) updateShopownerMutation.mutate({ id: shopownerId, payload: value });
+    if (shopownerId) {
+      updateShopownerMutation.mutate({ id: shopownerId, payload: value });
+    }
   };
 
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField

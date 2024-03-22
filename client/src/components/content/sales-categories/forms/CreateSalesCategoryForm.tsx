@@ -1,4 +1,7 @@
-import { DatePickerField, EditorInputField } from "@/components/input-fields";
+import {
+  DatePickerField,
+  EditorInputField,
+} from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
 import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useCreateSalesCategory } from "@/hooks/salsCategory";
@@ -17,12 +20,15 @@ const createSalesCategorySchema = object({
   description: string().optional(),
 });
 
-export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>;
+export type CreateSalesCategoryInput = z.infer<
+  typeof createSalesCategorySchema
+>;
 
 export function CreateSalesCategoryForm() {
   const { dispatch } = useStore();
 
-  const { mutate: createSalesCategory, isPending } = useCreateSalesCategory();
+  const { mutate: createSalesCategory, isPending } =
+    useCreateSalesCategory();
 
   const methods = useForm<CreateSalesCategoryInput>({
     resolver: zodResolver(createSalesCategorySchema),
@@ -30,7 +36,8 @@ export function CreateSalesCategoryForm() {
 
   useBeforeUnloadPage();
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods;
+  const { handleSubmit, register, formState: { errors }, setFocus } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
@@ -43,7 +50,12 @@ export function CreateSalesCategoryForm() {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
@@ -75,7 +87,9 @@ export function CreateSalesCategoryForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit" loading={isPending}>Create</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={isPending}>
+            Create
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

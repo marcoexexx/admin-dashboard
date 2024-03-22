@@ -36,7 +36,13 @@ export const deleteCartOrderItemSchema = object({
   }),
 });
 
-export type CreateCartOrderItemInput = z.infer<typeof createCartOrderItemSchema>["body"];
-export type UpdateCartOrderItemInput = z.infer<typeof updateCartOrderItemSchema>;
+export type CreateCartOrderItemInput = z.infer<
+  typeof createCartOrderItemSchema
+>["body"];
+export type UpdateCartOrderItemInput = z.infer<
+  typeof updateCartOrderItemSchema
+>;
 export type GetCartInput = z.infer<typeof getCartSchema>;
-export type DeleteCartOrderItemInput = z.infer<typeof deleteCartOrderItemSchema>["params"];
+export type DeleteCartOrderItemInput = z.infer<
+  typeof deleteCartOrderItemSchema
+>["params"];

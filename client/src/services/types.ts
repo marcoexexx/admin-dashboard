@@ -10,7 +10,8 @@ export const ProductStatus = {
   Pending: "Pending",
   Published: "Published",
 } as const;
-export type ProductStatus = typeof ProductStatus[keyof typeof ProductStatus];
+export type ProductStatus =
+  typeof ProductStatus[keyof typeof ProductStatus];
 
 /**
  * Enum defining authentication providers.
@@ -63,7 +64,8 @@ export const ProductStockStatus = {
   AskForStock: "AskForStock",
   Discontinued: "Discontinued",
 } as const;
-export type ProductStockStatus = typeof ProductStockStatus[keyof typeof ProductStockStatus];
+export type ProductStockStatus =
+  typeof ProductStockStatus[keyof typeof ProductStockStatus];
 
 /**
  * @enum
@@ -122,7 +124,8 @@ export const PotentialOrderStatus = {
   Confimed: "Confimed",
   Cancelled: "Cancelled",
 } as const;
-export type PotentialOrderStatus = typeof PotentialOrderStatus[keyof typeof PotentialOrderStatus];
+export type PotentialOrderStatus =
+  typeof PotentialOrderStatus[keyof typeof PotentialOrderStatus];
 
 /**
  * @enum
@@ -133,7 +136,8 @@ export const OperationAction = {
   Update: "Update",
   Delete: "Delete",
 } as const;
-export type OperationAction = typeof OperationAction[keyof typeof OperationAction];
+export type OperationAction =
+  typeof OperationAction[keyof typeof OperationAction];
 
 export type Cart = {
   id: string;
@@ -745,7 +749,9 @@ export type WhereInput<T> = {
     : never;
 };
 
-export type LoginResponse = Omit<HttpResponse, "message"> & { accessToken: string; };
+export type LoginResponse = Omit<HttpResponse, "message"> & {
+  accessToken: string;
+};
 export type UserResponse = Omit<HttpResponse, "message"> & {
   user: User;
   redirectUrl: string | undefined;
@@ -758,4 +764,6 @@ export type ProductSalesCategoriesResponse = {
   salesCategory: SalesCategory;
 };
 
-export type GenericResponse<T, L extends string> = Omit<HttpResponse, "message"> & { [K in L]: T; };
+export type GenericResponse<T, L extends string> =
+  & Omit<HttpResponse, "message">
+  & { [K in L]: T; };

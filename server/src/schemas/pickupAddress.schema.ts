@@ -2,7 +2,9 @@ import { object, string, z } from "zod";
 
 const params = {
   params: object({
-    pickupAddressId: string({ required_error: "Pickup Address id is required" }),
+    pickupAddressId: string({
+      required_error: "Pickup Address id is required",
+    }),
   }),
 };
 
@@ -12,7 +14,8 @@ export const getPickupAddressSchema = object({
 
 export const createPickupAddressSchema = object({
   body: object({
-    username: string({ required_error: "Username is required." }).min(1).max(1024),
+    username: string({ required_error: "Username is required." }).min(1)
+      .max(1024),
     phone: string({ required_error: "phone is required" }).regex(
       /^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
     ),
@@ -24,7 +27,8 @@ export const createPickupAddressSchema = object({
 export const updatePickupAddressSchema = object({
   ...params,
   body: object({
-    username: string({ required_error: "Username is required." }).min(1).max(1024),
+    username: string({ required_error: "Username is required." }).min(1)
+      .max(1024),
     phone: string({ required_error: "phone is required" }).regex(
       /^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
     ),
@@ -43,4 +47,6 @@ export type DeleteMultiPickupAddressesInput = z.infer<
   typeof deleteMultiPickupAddressesSchema
 >["body"];
 export type GetPickupAddressInput = z.infer<typeof getPickupAddressSchema>;
-export type CreatePickupAddressInput = z.infer<typeof createPickupAddressSchema>["body"];
+export type CreatePickupAddressInput = z.infer<
+  typeof createPickupAddressSchema
+>["body"];

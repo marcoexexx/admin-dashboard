@@ -47,7 +47,9 @@ export function FormModal(props: FormModalProps) {
         <CloseIcon />
       </IconButton>
       <DialogContent>
-        {description ? <DialogContentText>{description}</DialogContentText> : null}
+        {description
+          ? <DialogContentText>{description}</DialogContentText>
+          : null}
         {children}
       </DialogContent>
     </Dialog>

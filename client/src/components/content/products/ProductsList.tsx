@@ -62,7 +62,10 @@ export function ProductsList() {
     deleteProductsMutation.mutate(ids);
   }
 
-  function handleChangeStatusProduct(product: Product, status: ProductStatus) {
+  function handleChangeStatusProduct(
+    product: Product,
+    status: ProductStatus,
+  ) {
     dispatch({ type: "OPEN_BACKDROP" });
 
     statusChangeProductMutation.mutate({
@@ -77,7 +80,9 @@ export function ProductsList() {
         marketPrice: product.marketPrice ?? undefined,
         // TODO: fix type
         // @ts-ignore
-        salesCategory: product.salesCategory?.map(({ salesCategoryId, discount }) => ({
+        salesCategory: product.salesCategory?.map((
+          { salesCategoryId, discount },
+        ) => ({
           salesCategory: salesCategoryId,
           discount,
         })),

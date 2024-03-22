@@ -10,11 +10,18 @@ import {
 } from "../schemas/order.schema";
 import { checkUser } from "../services/checkUser";
 import { OrderService } from "../services/order";
-import { LifeCycleOrderConcrate, LifeCycleState } from "../utils/auth/life-cycle-state";
+import {
+  LifeCycleOrderConcrate,
+  LifeCycleState,
+} from "../utils/auth/life-cycle-state";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { db } from "../utils/db";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 const service = OrderService.new();
 
@@ -26,14 +33,24 @@ export async function getOrdersHandler(
   try {
     const query = convertNumericStrings(req.query);
 
-    const { id, startDate, endDate, status, totalPrice, remark } = query.filter ?? {};
+    const { id, startDate, endDate, status, totalPrice, remark } =
+      query.filter ?? {};
     const { page, pageSize } = query.pagination ?? {};
-    const { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } =
-      convertStringToBoolean(query.include) ?? {};
+    const {
+      _count,
+      user,
+      orderItems,
+      pickupAddress,
+      billingAddress,
+      deliveryAddress,
+    } = convertStringToBoolean(query.include) ?? {};
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, orders] = (await service.tryFindManyWithCount(
@@ -78,20 +95,38 @@ export async function getOrderHandler(
     const query = convertNumericStrings(req.query);
 
     const { orderId } = req.params;
-    const { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress } =
-      convertStringToBoolean(query.include) ?? {};
+    const {
+      _count,
+      user,
+      orderItems,
+      pickupAddress,
+      billingAddress,
+      deliveryAddress,
+    } = convertStringToBoolean(query.include) ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const order = (await service.tryFindUnique({
       where: { id: orderId },
-      include: { _count, user, orderItems, pickupAddress, billingAddress, deliveryAddress },
+      include: {
+        _count,
+        user,
+        orderItems,
+        pickupAddress,
+        billingAddress,
+        deliveryAddress,
+      },
     })).ok_or_throw();
 
     // Create audit log
-    if (order && sessionUser) (await service.audit(sessionUser)).ok_or_throw();
+    if (order && sessionUser) {
+      (await service.audit(sessionUser)).ok_or_throw();
+    }
 
     res.status(StatusCode.OK).json(HttpDataResponse({ order }));
   } catch (err) {
@@ -119,7 +154,10 @@ export async function createOrderHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const userId = sessionUser?.id;
@@ -131,7 +169,9 @@ export async function createOrderHandler(
           connect: await Promise.all(orderItems.map(async id => {
             const _orderItem = await db.orderItem.findUnique({
               where: { id },
-              include: { product: { select: { id: true, quantity: true } } },
+              include: {
+                product: { select: { id: true, quantity: true } },
+              },
             });
             if (!_orderItem?.product) {
               return Promise.reject(
@@ -183,7 +223,10 @@ export async function deleteOrderHandler(
     const { orderId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const order = (await service.tryDelete({
@@ -212,7 +255,10 @@ export async function deleteMultiOrdersHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const _deletedOrders = await service.tryDeleteMany({
@@ -228,7 +274,9 @@ export async function deleteMultiOrdersHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
     next(err);
   }
@@ -248,17 +296,24 @@ export async function updateOrderHandler(
       select: { status: true },
     })).ok_or_throw();
 
-    if (!originalOrderState) return next(AppError.new(StatusCode.NotFound, `Order not found`));
+    if (!originalOrderState) {
+      return next(AppError.new(StatusCode.NotFound, `Order not found`));
+    }
 
-    const orderLifeCycleState = new LifeCycleState<LifeCycleOrderConcrate>({
-      resource: "order",
-      state: originalOrderState.status,
-    });
+    const orderLifeCycleState = new LifeCycleState<LifeCycleOrderConcrate>(
+      {
+        resource: "order",
+        state: originalOrderState.status,
+      },
+    );
     const orderState = orderLifeCycleState.changeState(data.status);
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const order = (await service.tryUpdate({

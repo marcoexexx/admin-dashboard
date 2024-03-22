@@ -14,12 +14,16 @@ const updateOrderSchema = object({
   deliveryAddressId: string().optional(),
   totalPrice: number().min(0),
   pickupAddressId: string().optional(),
-  billingAddressId: string({ required_error: "billingAddressId is required" }),
+  billingAddressId: string({
+    required_error: "billingAddressId is required",
+  }),
   paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, {
     required_error: "paymentMethodProvider is required",
   }),
   remark: string().optional(),
-  addressType: z.nativeEnum(OrderAddressType, { required_error: "Order address type is required" }),
+  addressType: z.nativeEnum(OrderAddressType, {
+    required_error: "Order address type is required",
+  }),
 });
 
 export type UpdateOrderInput = z.infer<typeof updateOrderSchema>;

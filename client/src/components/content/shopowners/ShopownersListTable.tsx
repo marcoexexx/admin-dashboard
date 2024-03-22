@@ -3,7 +3,13 @@ import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Resource, ShopownerProvider } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { ShopownersFilterForm } from ".";
 
 const columns: TypedColumn<ShopownerProvider>[] = [
@@ -23,7 +29,9 @@ const columns: TypedColumn<ShopownerProvider>[] = [
     id: "createdAt",
     align: "left",
     name: "Created At",
-    render: ({ value }) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
+    ),
   },
 ];
 
@@ -37,8 +45,16 @@ interface ShopownersListTableProps {
 }
 
 export function ShopownersListTable(props: ShopownersListTableProps) {
-  const { shopowners, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
-  const { state: { shopownerFilter: { pagination } }, dispatch } = useStore();
+  const {
+    shopowners,
+    count,
+    isLoading,
+    onCreateMany,
+    onDelete,
+    onMultiDelete,
+  } = props;
+  const { state: { shopownerFilter: { pagination } }, dispatch } =
+    useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({

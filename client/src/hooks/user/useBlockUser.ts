@@ -13,7 +13,8 @@ export function useBlockUser() {
   const { dispatch } = useStore();
 
   const mutation = useMutation({
-    mutationFn: (...args: Parameters<typeof apiService.block>) => apiService.block(...args), // createBlockUserFn,
+    mutationFn: (...args: Parameters<typeof apiService.block>) =>
+      apiService.block(...args), // createBlockUserFn,
     onSuccess() {
       queryClient.invalidateQueries({
         queryKey: [CacheResource.User],
@@ -30,18 +31,24 @@ export function useBlockUser() {
       dispatch({
         type: "OPEN_TOAST",
         payload: {
-          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
+          message: `failed: ${
+            err?.response?.data?.message || err?.message || "Unknown error"
+          }`,
           severity: "error",
         },
       });
     },
   });
 
-  const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(
-      AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message),
-    )
-    : Ok(mutation.data);
+  const try_data: Result<typeof mutation.data, AppError> =
+    !!mutation.error && mutation.isError
+      ? Err(
+        AppError.new(
+          (mutation.error as any).kind || AppErrorKind.ApiError,
+          mutation.error.message,
+        ),
+      )
+      : Ok(mutation.data);
 
   return {
     ...mutation,

@@ -1,4 +1,7 @@
-import { CreateCouponInput, UpdateCouponInput } from "@/components/content/coupons/forms";
+import {
+  CreateCouponInput,
+  UpdateCouponInput,
+} from "@/components/content/coupons/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { CouponWhereInput } from "@/context/coupon";
 import { BaseApiService } from "./baseApiService";
@@ -13,7 +16,9 @@ import {
 
 import { authApi } from "./authApi";
 
-export class CouponApiService extends BaseApiService<CouponWhereInput, Coupon> {
+export class CouponApiService
+  extends BaseApiService<CouponWhereInput, Coupon>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -66,7 +71,9 @@ export class CouponApiService extends BaseApiService<CouponWhereInput, Coupon> {
     return data;
   }
 
-  async create(payload: CreateCouponInput): Promise<GenericResponse<Coupon, "coupon">> {
+  async create(
+    payload: CreateCouponInput,
+  ): Promise<GenericResponse<Coupon, "coupon">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -78,7 +85,8 @@ export class CouponApiService extends BaseApiService<CouponWhereInput, Coupon> {
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `Coupons_${Date.now()}.xlsx`);
@@ -105,7 +113,9 @@ export class CouponApiService extends BaseApiService<CouponWhereInput, Coupon> {
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { couponIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { couponIds: ids },
+    });
     return data;
   }
 

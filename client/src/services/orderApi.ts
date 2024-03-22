@@ -1,4 +1,7 @@
-import { CreateOrderInput, UpdateOrderInput } from "@/components/content/orders/forms";
+import {
+  CreateOrderInput,
+  UpdateOrderInput,
+} from "@/components/content/orders/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { OrderWhereInput } from "@/context/order";
 import { authApi } from "./authApi";
@@ -12,7 +15,9 @@ import {
   QueryOptionArgs,
 } from "./types";
 
-export class OrderApiService extends BaseApiService<OrderWhereInput, Order> {
+export class OrderApiService
+  extends BaseApiService<OrderWhereInput, Order>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -64,7 +69,9 @@ export class OrderApiService extends BaseApiService<OrderWhereInput, Order> {
     return data;
   }
 
-  async create(payload: CreateOrderInput): Promise<GenericResponse<Order, "order">> {
+  async create(
+    payload: CreateOrderInput,
+  ): Promise<GenericResponse<Order, "order">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -76,7 +83,8 @@ export class OrderApiService extends BaseApiService<OrderWhereInput, Order> {
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `Orders_${Date.now()}.xlsx`);
@@ -103,7 +111,9 @@ export class OrderApiService extends BaseApiService<OrderWhereInput, Order> {
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { orderIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { orderIds: ids },
+    });
     return data;
   }
 

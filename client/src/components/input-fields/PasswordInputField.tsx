@@ -34,13 +34,17 @@ const TextFieldWrapper = styled(OutlinedInput)(({ theme }) => ({
   },
 }));
 
-export function PasswordInputField({ fieldName }: { fieldName: "password" | "passwordConfirm"; }) {
+export function PasswordInputField(
+  { fieldName }: { fieldName: "password" | "passwordConfirm"; },
+) {
   const [showPassword, setShowPassword] = useState(false);
   const { control, formState: { errors } } = useFormContext();
 
   const theme = useTheme();
 
-  const handleToogleShowPassword = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleToogleShowPassword = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     setShowPassword(prev => !prev);
   };
 

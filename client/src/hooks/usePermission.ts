@@ -24,5 +24,10 @@ export function usePermission({
   );
   if (isAllowed) return Ok(undefined);
 
-  return Err(AppError.new(AppErrorKind.AccessDeniedError, `Could not access this recouse`));
+  return Err(
+    AppError.new(
+      AppErrorKind.AccessDeniedError,
+      `Could not access this recouse`,
+    ),
+  );
 }

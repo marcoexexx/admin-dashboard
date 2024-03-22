@@ -1,7 +1,9 @@
 import { Exchange, Pagination, WhereInput } from "@/services/types";
 
 export type ExchangeWhereInput = {
-  where?: WhereInput<Exchange & { startDate?: Date | string; endDate?: Date | string; }>;
+  where?: WhereInput<
+    Exchange & { startDate?: Date | string; endDate?: Date | string; }
+  >;
   pagination?: Pagination;
   include?: {
     shopowner?: boolean;

@@ -8,7 +8,9 @@ import { object, z } from "zod";
 
 const filterPermissionsSchema = object({});
 
-export type FilterPermissionsInput = z.infer<typeof filterPermissionsSchema>;
+export type FilterPermissionsInput = z.infer<
+  typeof filterPermissionsSchema
+>;
 
 export function PermissionsFilterForm() {
   const { dispatch } = useStore();
@@ -44,7 +46,12 @@ export function PermissionsFilterForm() {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             {/* TODO: Form fileds */}
@@ -56,7 +63,13 @@ export function PermissionsFilterForm() {
         </Grid>
 
         <Grid item>
-          <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
+          <MuiButton
+            onClick={handleOnClickReset}
+            variant="outlined"
+            type="button"
+          >
+            Reset
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

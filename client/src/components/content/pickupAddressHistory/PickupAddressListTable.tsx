@@ -2,7 +2,13 @@ import { EnhancedTable, TypedColumn } from "@/components";
 import { RenderOrderLabel } from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
 import { PickupAddress, Resource } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 
 const columns: TypedColumn<PickupAddress>[] = [
   {
@@ -28,7 +34,11 @@ const columns: TypedColumn<PickupAddress>[] = [
     align: "left",
     name: "Orders",
     render: ({ value }) => (
-      <>{value.orders?.map(order => <RenderOrderLabel key={order.id} order={order} />)}</>
+      <>
+        {value.orders?.map(order => (
+          <RenderOrderLabel key={order.id} order={order} />
+        ))}
+      </>
     ),
   },
 ];
@@ -42,8 +52,17 @@ interface PickupAddressListTableProps {
   onCreateMany?: (buf: ArrayBuffer) => void;
 }
 
-export function PickupAddressListTable(props: PickupAddressListTableProps) {
-  const { pickupAddresses, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props;
+export function PickupAddressListTable(
+  props: PickupAddressListTableProps,
+) {
+  const {
+    pickupAddresses,
+    count,
+    isLoading,
+    onDelete,
+    onMultiDelete,
+    onCreateMany,
+  } = props;
 
   return (
     <Card>

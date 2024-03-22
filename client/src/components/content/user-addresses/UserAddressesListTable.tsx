@@ -3,7 +3,13 @@ import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Address, Resource } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { UserAddressesFilterForm } from ".";
 
 const columns: TypedColumn<Address>[] = [
@@ -35,7 +41,9 @@ const columns: TypedColumn<Address>[] = [
     id: "isDefault",
     align: "right",
     name: "Is default",
-    render: ({ value }) => <Typography>{value.isDefault ? "default" : null}</Typography>,
+    render: ({ value }) => (
+      <Typography>{value.isDefault ? "default" : null}</Typography>
+    ),
   },
 ];
 
@@ -48,9 +56,19 @@ interface UserAddressesListTableProps {
   onCreateMany?: (buf: ArrayBuffer) => void;
 }
 
-export function UserAddressesListTable(props: UserAddressesListTableProps) {
-  const { userAddresses, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props;
-  const { state: { userAddressFilter: { pagination } }, dispatch } = useStore();
+export function UserAddressesListTable(
+  props: UserAddressesListTableProps,
+) {
+  const {
+    userAddresses,
+    count,
+    isLoading,
+    onDelete,
+    onMultiDelete,
+    onCreateMany,
+  } = props;
+  const { state: { userAddressFilter: { pagination } }, dispatch } =
+    useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({

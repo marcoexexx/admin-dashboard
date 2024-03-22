@@ -14,7 +14,9 @@ export const createExchangeSchema = object({
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" }),
-    shopownerProviderId: string({ required_error: "shopownerProviderId is required." }),
+    shopownerProviderId: string({
+      required_error: "shopownerProviderId is required.",
+    }),
   }).refine(data => data.from !== data.to, {
     path: ["to"],
     message: "to and from must different",
@@ -29,7 +31,9 @@ export const updateExchangeSchema = object({
     rate: number({ required_error: "rate is required" })
       .min(0),
     date: string({ required_error: "Date field is required" }),
-    shopownerProviderId: string({ required_error: "shopownerProviderId is required." }),
+    shopownerProviderId: string({
+      required_error: "shopownerProviderId is required.",
+    }),
   }).refine(data => data.from !== data.to, {
     path: ["to"],
     message: "to and from must different",
@@ -45,7 +49,9 @@ export const createMultiExchangesSchema = object({
       .min(0),
     date: string({ required_error: "Date field is required" }),
 
-    "shopownerProvider.name": string({ required_error: "shopownerProvider is required" }),
+    "shopownerProvider.name": string({
+      required_error: "shopownerProvider is required",
+    }),
   }).refine(data => data.from !== data.to, {
     path: ["to"],
     message: "to and from must different",
@@ -62,8 +68,14 @@ export const deleteMultiExchangesSchema = object({
   }),
 });
 
-export type CreateExchangeInput = z.infer<typeof createExchangeSchema>["body"];
+export type CreateExchangeInput = z.infer<
+  typeof createExchangeSchema
+>["body"];
 export type UpdateExchangeInput = z.infer<typeof updateExchangeSchema>;
-export type CreateMultiExchangesInput = z.infer<typeof createMultiExchangesSchema>["body"];
-export type DeleteMultiExchangesInput = z.infer<typeof deleteMultiExchangesSchema>["body"];
+export type CreateMultiExchangesInput = z.infer<
+  typeof createMultiExchangesSchema
+>["body"];
+export type DeleteMultiExchangesInput = z.infer<
+  typeof deleteMultiExchangesSchema
+>["body"];
 export type GetExchangeInput = z.infer<typeof getExchangeSchema>;

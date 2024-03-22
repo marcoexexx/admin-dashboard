@@ -29,7 +29,10 @@ export class TownshipService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.Township, { action: OperationAction.Read, resourceIds: [] }, db.townshipFees);
+    super(Resource.Township, {
+      action: OperationAction.Read,
+      resourceIds: [],
+    }, db.townshipFees);
     this.name = "Township";
   }
 

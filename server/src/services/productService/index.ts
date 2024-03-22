@@ -2,7 +2,12 @@ import fs from "fs";
 import AppError from "../../utils/appError";
 import Result, { as_result_async, Ok } from "../../utils/result";
 
-import { OperationAction, ProductStatus, Resource, User } from "@prisma/client";
+import {
+  OperationAction,
+  ProductStatus,
+  Resource,
+  User,
+} from "@prisma/client";
 import { CreateMultiProductsInput } from "../../schemas/product.schema";
 import { convertPrismaErrorToAppError } from "../../utils/convertPrismaErrorToAppError";
 import { db } from "../../utils/db";
@@ -29,7 +34,10 @@ export class ProductService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.Product, { action: OperationAction.Read, resourceIds: [] }, db.product);
+    super(Resource.Product, {
+      action: OperationAction.Read,
+      resourceIds: [],
+    }, db.product);
     this.name = "Product";
   }
 
@@ -58,7 +66,10 @@ export class ProductService extends AppService<
           startDate: product["sales.startDate"] || new Date(),
           get endDate() {
             return product["sales.endDate"]
-              || new Date(new Date(this.startDate).getTime() + 1000 * 60 * 60 * 24 * 5);
+              || new Date(
+                new Date(this.startDate).getTime()
+                  + 1000 * 60 * 60 * 24 * 5,
+              );
           }, // default: 5 days
           discount: product["sales.discount"],
           isActive: product["sales.isActive"] || true,
@@ -71,7 +82,9 @@ export class ProductService extends AppService<
           itemCode: product.itemCode,
           status: ProductStatus.Draft,
           creator: {
-            shopownerProviderId: uploadBy.isSuperuser ? undefined : uploadBy.shopownerProviderId,
+            shopownerProviderId: uploadBy.isSuperuser
+              ? undefined
+              : uploadBy.shopownerProviderId,
           },
         },
         create: {
@@ -121,22 +134,24 @@ export class ProductService extends AppService<
           specification: product.specification
             ? {
               createMany: {
-                data: product.specification.split("\n").filter(Boolean).map(spec => ({
-                  name: spec.split(": ")[0],
-                  value: spec.split(": ")[1],
-                })),
+                data: product.specification.split("\n").filter(Boolean)
+                  .map(spec => ({
+                    name: spec.split(": ")[0],
+                    value: spec.split(": ")[1],
+                  })),
               },
             }
             : undefined,
           categories: {
-            create: (product.categories || "").split("\n").filter(Boolean).map(name => ({
-              category: {
-                connectOrCreate: {
-                  where: { name },
-                  create: { name },
+            create: (product.categories || "").split("\n").filter(Boolean)
+              .map(name => ({
+                category: {
+                  connectOrCreate: {
+                    where: { name },
+                    create: { name },
+                  },
                 },
-              },
-            })),
+              })),
           },
         },
         update: {

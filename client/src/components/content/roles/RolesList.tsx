@@ -1,7 +1,12 @@
 import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
-import { useCreateMultiRoles, useDeleteMultiRoles, useDeleteRole, useGetRoles } from "@/hooks/role";
+import {
+  useCreateMultiRoles,
+  useDeleteMultiRoles,
+  useDeleteRole,
+  useGetRoles,
+} from "@/hooks/role";
 import { Card } from "@mui/material";
 import { RolesListTable } from ".";
 

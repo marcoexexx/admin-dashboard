@@ -29,16 +29,25 @@ export async function resizeProductImages(
       req.body.images = [];
       await Promise.all(
         (files as Express.Multer.File[]).map((file, idx) => {
-          const filename = `product-${generateRandomUsername(8)}-${Date.now()}-${idx + 1}.jpeg`;
+          const filename = `product-${
+            generateRandomUsername(8)
+          }-${Date.now()}-${idx + 1}.jpeg`;
           const output = path.join(imageUploadPath, filename);
 
           if (getConfig("nodeEnv") === "development") {
             req.body.images.push(
-              `${req.protocol}://${req.hostname}:${getConfig("port")}/img/upload/${filename}`,
+              `${req.protocol}://${req.hostname}:${
+                getConfig("port")
+              }/img/upload/${filename}`,
             );
           }
-          if (getConfig("nodeEnv") === "production" || getConfig("nodeEnv") === "test") {
-            req.body.images.push(`${req.protocol}://${req.hostname}/img/upload/${filename}`);
+          if (
+            getConfig("nodeEnv") === "production"
+            || getConfig("nodeEnv") === "test"
+          ) {
+            req.body.images.push(
+              `${req.protocol}://${req.hostname}/img/upload/${filename}`,
+            );
           }
 
           return sharp(file.path)

@@ -18,7 +18,9 @@ export async function resizeProfileImage(
     const file = req.file;
     if (!file) return next();
 
-    const filename = `profile-${generateRandomUsername(8)}-${Date.now()}.jpeg`;
+    const filename = `profile-${
+      generateRandomUsername(8)
+    }-${Date.now()}.jpeg`;
     const output = path.join(imageUploadPath, filename);
 
     await sharp(file.path)
@@ -32,8 +34,12 @@ export async function resizeProfileImage(
         getConfig("port")
       }/img/upload/${filename}`;
     }
-    if (getConfig("nodeEnv") === "production" || getConfig("nodeEnv") === "test") {
-      req.body.image = `${req.protocol}://${req.hostname}/img/upload/${filename}`;
+    if (
+      getConfig("nodeEnv") === "production"
+      || getConfig("nodeEnv") === "test"
+    ) {
+      req.body.image =
+        `${req.protocol}://${req.hostname}/img/upload/${filename}`;
     }
 
     next();

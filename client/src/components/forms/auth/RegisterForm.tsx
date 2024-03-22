@@ -29,7 +29,9 @@ const registerUserSchema = object({
     )
     .min(8)
     .max(32),
-  passwordConfirm: string({ required_error: "Please confirm your password" }),
+  passwordConfirm: string({
+    required_error: "Please confirm your password",
+  }),
 }).refine(data => data.password === data.passwordConfirm, {
   path: ["passwordConfirm"],
   message: "Password do not match",
@@ -81,7 +83,8 @@ export function RegisterForm() {
     resolver: zodResolver(registerUserSchema),
   });
 
-  const { handleSubmit, register, setFocus, formState: { errors } } = methods;
+  const { handleSubmit, register, setFocus, formState: { errors } } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
@@ -92,7 +95,13 @@ export function RegisterForm() {
   };
 
   return (
-    <Stack px={3} gap={1} flexDirection="column" component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Stack
+      px={3}
+      gap={1}
+      flexDirection="column"
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <FormProvider {...methods}>
         <MuiTextFieldWrapper
           {...register("name")}

@@ -1,5 +1,14 @@
 import { useStore } from "@/hooks";
-import { alpha, Box, Divider, IconButton, lighten, Stack, styled, Tooltip } from "@mui/material";
+import {
+  alpha,
+  Box,
+  Divider,
+  IconButton,
+  lighten,
+  Stack,
+  styled,
+  Tooltip,
+} from "@mui/material";
 import { Carts } from "../cart";
 import { FormModal } from "../forms";
 
@@ -49,7 +58,9 @@ export default function Header() {
   const { state, dispatch } = useStore();
   const { slidebar, modalForm } = state;
 
-  const onClickToggleSlidebarHandler = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickToggleSlidebarHandler = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     dispatch({ type: "TOGGLE_SLIDEBAR" });
   };
 
@@ -69,9 +80,15 @@ export default function Header() {
         <ErrorBoundary>
           <HeaderUserBox />
         </ErrorBoundary>
-        <Box component="span" sx={{ ml: 2, display: { lg: "none", xs: "inline-block" } }}>
+        <Box
+          component="span"
+          sx={{ ml: 2, display: { lg: "none", xs: "inline-block" } }}
+        >
           <Tooltip arrow title="Toggle Menu">
-            <IconButton color="primary" onClick={onClickToggleSlidebarHandler}>
+            <IconButton
+              color="primary"
+              onClick={onClickToggleSlidebarHandler}
+            >
               {!slidebar
                 ? <MenuTwoToneIcon fontSize="small" />
                 : <CloseTwoToneIcon fontSize="small" />}

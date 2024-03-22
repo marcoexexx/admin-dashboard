@@ -1,4 +1,8 @@
-import { PriceUnit, ProductStatus, ProductStockStatus } from "@prisma/client";
+import {
+  PriceUnit,
+  ProductStatus,
+  ProductStockStatus,
+} from "@prisma/client";
 import { boolean, number, object, string, z } from "zod";
 
 const params = {
@@ -34,13 +38,17 @@ export const createProductSchema = object({
     title: string({ required_error: "Title is required" })
       .min(1).max(128),
     specification: object({
-      name: string({ required_error: "Specification name is required" }).min(1),
-      value: string({ required_error: "Specification value is required" }).min(1),
+      name: string({ required_error: "Specification name is required" })
+        .min(1),
+      value: string({ required_error: "Specification value is required" })
+        .min(1),
     }).array(),
     overview: string().max(5000).optional(),
     description: string().max(5000).optional(),
     categories: string().array().default([]),
-    instockStatus: z.nativeEnum(ProductStockStatus).default(ProductStockStatus.AskForStock),
+    instockStatus: z.nativeEnum(ProductStockStatus).default(
+      ProductStockStatus.AskForStock,
+    ),
     dealerPrice: number().min(0).optional(),
     marketPrice: number().min(0).optional(),
     priceUnit: z.nativeEnum(PriceUnit),
@@ -76,7 +84,9 @@ export const createMultiProductsSchema = object({
     overview: string().max(5000).optional(),
     description: string().max(5000).optional(),
     categories: string().optional(), // by splitting "\n"
-    instockStatus: z.nativeEnum(ProductStockStatus).default(ProductStockStatus.AskForStock),
+    instockStatus: z.nativeEnum(ProductStockStatus).default(
+      ProductStockStatus.AskForStock,
+    ),
     dealerPrice: number().min(0).optional(),
     marketPrice: number().min(0).optional(),
     images: string(),
@@ -114,14 +124,18 @@ export const updateProductSchema = object({
       .min(1).max(128),
     title: string({ required_error: "Title is required" }),
     specification: object({
-      name: string({ required_error: "Specification name is required" }).min(1),
-      value: string({ required_error: "Specification value is required" }).min(1),
+      name: string({ required_error: "Specification name is required" })
+        .min(1),
+      value: string({ required_error: "Specification value is required" })
+        .min(1),
     }).array().default([]),
     discount: number().max(100).default(0),
     overview: string().min(0).max(5000).optional(),
     description: string().min(0).max(5000).optional(),
     categories: string().array().default([]),
-    instockStatus: z.nativeEnum(ProductStockStatus).default(ProductStockStatus.AskForStock),
+    instockStatus: z.nativeEnum(ProductStockStatus).default(
+      ProductStockStatus.AskForStock,
+    ),
     dealerPrice: number().min(0).optional(),
     isDiscountItem: boolean().default(false),
     marketPrice: number().min(0).optional(),
@@ -135,10 +149,20 @@ export const updateProductSchema = object({
 });
 
 export type GetProductInput = z.infer<typeof getProductSchema>["params"];
-export type GetProductSaleCategoryInput = z.infer<typeof getProductSaleCategorySchema>;
-export type CreateProductInput = z.infer<typeof createProductSchema>["body"];
+export type GetProductSaleCategoryInput = z.infer<
+  typeof getProductSaleCategorySchema
+>;
+export type CreateProductInput = z.infer<
+  typeof createProductSchema
+>["body"];
 export type UpdateProductInput = z.infer<typeof updateProductSchema>;
-export type CreateMultiProductsInput = z.infer<typeof createMultiProductsSchema>["body"];
-export type DeleteMultiProductsInput = z.infer<typeof deleteMultiProductsSchema>["body"];
+export type CreateMultiProductsInput = z.infer<
+  typeof createMultiProductsSchema
+>["body"];
+export type DeleteMultiProductsInput = z.infer<
+  typeof deleteMultiProductsSchema
+>["body"];
 // export type UploadImagesProductInput = z.infer<typeof uploadImagesProductSchema>["body"]
-export type LikeProductByUserInput = z.infer<typeof likeProductByUserSchema>;
+export type LikeProductByUserInput = z.infer<
+  typeof likeProductByUserSchema
+>;

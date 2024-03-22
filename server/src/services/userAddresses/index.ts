@@ -22,7 +22,10 @@ export class UserAddressService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.UserAddress, { action: OperationAction.Read, resourceIds: [] }, db.userAddress);
+    super(Resource.UserAddress, {
+      action: OperationAction.Read,
+      resourceIds: [],
+    }, db.userAddress);
   }
 
   /**

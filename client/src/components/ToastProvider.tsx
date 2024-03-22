@@ -16,7 +16,11 @@ export function ToastProvider() {
       onClose={onCloseHandler}
       anchorOrigin={{ vertical: "top", horizontal: "left" }}
     >
-      <Alert onClose={onCloseHandler} severity={toast.severity} sx={{ width: "100%" }}>
+      <Alert
+        onClose={onCloseHandler}
+        severity={toast.severity}
+        sx={{ width: "100%" }}
+      >
         {toast.message}
       </Alert>
     </Snackbar>

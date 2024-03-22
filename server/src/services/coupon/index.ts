@@ -29,7 +29,10 @@ export class CouponService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.Coupon, { action: OperationAction.Read, resourceIds: [] }, db.coupon);
+    super(Resource.Coupon, {
+      action: OperationAction.Read,
+      resourceIds: [],
+    }, db.coupon);
     this.name = "Coupon";
   }
 

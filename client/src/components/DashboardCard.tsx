@@ -71,7 +71,9 @@ export function DashboardCard(props: DashboardCardProps) {
         <Box
           display="flex"
           flexDirection="row"
-          color={isDown ? theme.colors.error.light : theme.colors.primary.light}
+          color={isDown
+            ? theme.colors.error.light
+            : theme.colors.primary.light}
         >
           {isDown
             ? <ArrowDownwardIcon fontSize="small" />
@@ -80,7 +82,9 @@ export function DashboardCard(props: DashboardCardProps) {
           <Typography>{percent}</Typography>
         </Box>
 
-        <Typography color={theme.colors.alpha.black[70]}>{helperText}</Typography>
+        <Typography color={theme.colors.alpha.black[70]}>
+          {helperText}
+        </Typography>
 
         {actions}
       </HelperContentWrapper>

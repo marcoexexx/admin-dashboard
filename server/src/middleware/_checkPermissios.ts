@@ -20,16 +20,22 @@ export async function _checkPermission(
 
       if (sessionUser.isSuperuser) return next();
 
-      const perms: Permission[] | undefined = (await service.tryFindUnique({
-        where: { id: sessionUser.id },
-        include: { role: { include: { permissions: true } } },
-        // @ts-ignore
-      })).ok_or_throw()?.role?.permissions;
+      const perms: Permission[] | undefined =
+        (await service.tryFindUnique({
+          where: { id: sessionUser.id },
+          include: { role: { include: { permissions: true } } },
+          // @ts-ignore
+        })).ok_or_throw()?.role?.permissions;
 
-      const isAccess = perms?.some(perm => perm.action === action && perm.resource === resource);
+      const isAccess = perms?.some(perm =>
+        perm.action === action && perm.resource === resource
+      );
       if (!isAccess) {
         return next(
-          AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`),
+          AppError.new(
+            StatusCode.Forbidden,
+            `You do not have permission to access this resource.`,
+          ),
         );
       }
 

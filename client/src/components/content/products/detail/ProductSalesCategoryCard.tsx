@@ -1,8 +1,19 @@
 import { DashboardCard } from "@/components";
 import { MuiButton } from "@/components/ui";
 import { usePermission } from "@/hooks";
-import { OperationAction, ProductSalesCategoriesResponse, Resource } from "@/services/types";
-import { Box, Card, CardContent, Grid, Typography, useTheme } from "@mui/material";
+import {
+  OperationAction,
+  ProductSalesCategoriesResponse,
+  Resource,
+} from "@/services/types";
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
@@ -13,7 +24,9 @@ interface ProductSalesCategoryCardProps {
   onDelete: (id: string) => void;
 }
 
-export function ProductSalesCategoryCard(props: ProductSalesCategoryCardProps) {
+export function ProductSalesCategoryCard(
+  props: ProductSalesCategoryCardProps,
+) {
   const { productSales, onSelect, onDelete } = props;
 
   const theme = useTheme();
@@ -25,7 +38,9 @@ export function ProductSalesCategoryCard(props: ProductSalesCategoryCardProps) {
     resource: Resource.SalesCategory,
   }).is_ok();
 
-  const handleCreateNewSalesCategory = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCreateNewSalesCategory = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     navigate("/sales-categories/create");
   };
 
@@ -76,7 +91,8 @@ export function ProductSalesCategoryCard(props: ProductSalesCategoryCardProps) {
                         delete
                       </Typography>
                       <Typography
-                        onClick={() => onSelect(sale)}
+                        onClick={() =>
+                          onSelect(sale)}
                         sx={{
                           cursor: "pointer",
                           color: theme.colors.primary.light,

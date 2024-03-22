@@ -2,9 +2,17 @@ import { AuditLogWhereInput } from "@/context/auditLogs";
 import { CacheResource } from "@/context/cacheKey";
 import { authApi } from "./authApi";
 import { BaseApiService } from "./baseApiService";
-import { AuditLog, GenericResponse, HttpListResponse, Pagination, QueryOptionArgs } from "./types";
+import {
+  AuditLog,
+  GenericResponse,
+  HttpListResponse,
+  Pagination,
+  QueryOptionArgs,
+} from "./types";
 
-export class AuditLogApiService extends BaseApiService<AuditLogWhereInput, AuditLog> {
+export class AuditLogApiService
+  extends BaseApiService<AuditLogWhereInput, AuditLog>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -38,7 +46,9 @@ export class AuditLogApiService extends BaseApiService<AuditLogWhereInput, Audit
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<AuditLog, "auditLog">> {
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<AuditLog, "auditLog">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

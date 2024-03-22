@@ -1,9 +1,17 @@
-import { CreateCartOrderItemInput, UpdateCartOrderItemInput } from "@/components/cart/CartsTable";
+import {
+  CreateCartOrderItemInput,
+  UpdateCartOrderItemInput,
+} from "@/components/cart/CartsTable";
 import { CacheResource } from "@/context/cacheKey";
 import { CartWhereInput } from "@/context/cart";
 import { authApi } from "./authApi";
 import { BaseApiService } from "./baseApiService";
-import { Cart, GenericResponse, OrderItem, QueryOptionArgs } from "./types";
+import {
+  Cart,
+  GenericResponse,
+  OrderItem,
+  QueryOptionArgs,
+} from "./types";
 
 export class CartApiService extends BaseApiService<CartWhereInput, Cart> {
   constructor(public repo: CacheResource) {
@@ -48,7 +56,9 @@ export class CartApiService extends BaseApiService<CartWhereInput, Cart> {
     return data;
   }
 
-  async deleteSingleItem(itemId: string): Promise<GenericResponse<OrderItem, "orderItem">> {
+  async deleteSingleItem(
+    itemId: string,
+  ): Promise<GenericResponse<OrderItem, "orderItem">> {
     const url = `/${this.repo}/orderItems/detail/${itemId}`;
 
     const { data } = await authApi.delete(url);

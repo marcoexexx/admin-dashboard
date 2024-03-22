@@ -20,9 +20,13 @@ interface AddressInputFieldProps {
     | "billingAddressId";
 }
 
-export function AddressInputField({ updateField = false, fieldName }: AddressInputFieldProps) {
+export function AddressInputField(
+  { updateField = false, fieldName }: AddressInputFieldProps,
+) {
   const { control, setValue, getValues, resetField } = useFormContext();
-  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(
+    null,
+  );
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
   const { dispatch } = useStore();
@@ -39,8 +43,12 @@ export function AddressInputField({ updateField = false, fieldName }: AddressInp
   useEffect(() => {
     const prevsDeliveryId = getValues("deliveryAddressId");
     const prevsBillingId = getValues("billingAddressId");
-    if (fieldName === "billingAddressId") setValue("deliveryAddressId", prevsDeliveryId);
-    if (fieldName === "deliveryAddressId") setValue("billingAddressId", prevsBillingId);
+    if (fieldName === "billingAddressId") {
+      setValue("deliveryAddressId", prevsDeliveryId);
+    }
+    if (fieldName === "deliveryAddressId") {
+      setValue("billingAddressId", prevsBillingId);
+    }
   }, [fieldName]);
 
   const defaultAddressId = getValues(fieldName);
@@ -56,19 +64,26 @@ export function AddressInputField({ updateField = false, fieldName }: AddressInp
     }
   }, [defaultAddress]);
 
-  const handleChange = (_: React.SyntheticEvent, value: Address | null) => {
+  const handleChange = (
+    _: React.SyntheticEvent,
+    value: Address | null,
+  ) => {
     if (value) {
       setSelectedAddress(value);
       setValue(fieldName, value.id);
     }
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "create-addresse" });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -101,7 +116,8 @@ export function AddressInputField({ updateField = false, fieldName }: AddressInp
             onClose={handleOnCloseOptions}
             value={selectedAddress}
             options={addresses || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             getOptionLabel={option => option.fullAddress || ""}
             loading={isLoading}
             renderOption={(props, option) => (
@@ -126,13 +142,17 @@ export function AddressInputField({ updateField = false, fieldName }: AddressInp
               <TextField
                 {...params}
                 error={!!fieldState.error}
-                helperText={fieldState.error ? fieldState.error.message : ""}
+                helperText={fieldState.error
+                  ? fieldState.error.message
+                  : ""}
                 label={`Address (${fieldName})`}
                 InputProps={{
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

@@ -20,7 +20,11 @@ import {
 } from "@mui/material";
 import { useMemo, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
-import { BulkActions, EnhancedTableActions, LoadingTablePlaceholder } from ".";
+import {
+  BulkActions,
+  EnhancedTableActions,
+  LoadingTablePlaceholder,
+} from ".";
 import { FormModal } from "./forms";
 import { MuiButton } from "./ui";
 
@@ -104,14 +108,18 @@ export type TypedColumn<T extends object> = {
   id: keyof T;
   name: string;
   align: "right" | "left" | "center";
-  render: ({ value, me }: { value: T; me?: User; }) => React.ReactElement | null;
+  render: (
+    { value, me }: { value: T; me?: User; },
+  ) => React.ReactElement | null;
 };
 
 export type DynamicColumn<T extends object> = {
   id: string;
   name: string;
   align: "right" | "left" | "center";
-  render: ({ value, me }: { value: T; me?: User; }) => React.ReactElement | null;
+  render: (
+    { value, me }: { value: T; me?: User; },
+  ) => React.ReactElement | null;
 };
 
 const initState = {
@@ -128,18 +136,29 @@ type TableAction =
   | { type: "SET_DELETE_ROW"; payload: string; }
   | { type: "SET_UPLOAD_DATA"; payload: any; };
 
-const reducer = (state: typeof initState, action: TableAction): TableState => {
+const reducer = (
+  state: typeof initState,
+  action: TableAction,
+): TableState => {
   switch (action.type) {
     case "SET_SELECTED_ROWS": {
       return { ...state, selectedRows: action.payload };
     }
 
     case "SINGLE_SELECT": {
-      return { ...state, selectedRows: [...state.selectedRows, action.payload] };
+      return {
+        ...state,
+        selectedRows: [...state.selectedRows, action.payload],
+      };
     }
 
     case "SINGLE_UNSELECT": {
-      return { ...state, selectedRows: state.selectedRows.filter(prev => prev !== action.payload) };
+      return {
+        ...state,
+        selectedRows: state.selectedRows.filter(prev =>
+          prev !== action.payload
+        ),
+      };
     }
 
     case "SET_DELETE_ROW": {
@@ -153,7 +172,10 @@ const reducer = (state: typeof initState, action: TableAction): TableState => {
     default: {
       const _unreachable: never = action;
       console.error({ _unreachable });
-      throw AppError.new(AppErrorKind.InvalidInputError, "Unhandled action type");
+      throw AppError.new(
+        AppErrorKind.InvalidInputError,
+        "Unhandled action type",
+      );
     }
   }
 };
@@ -172,7 +194,9 @@ interface EnhancedTableProps<Row extends object> {
   onMultiCreate?: (buf: ArrayBuffer) => void;
 }
 
-export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableProps<Row>) {
+export function EnhancedTable<Row extends { id: string; }>(
+  props: EnhancedTableProps<Row>,
+) {
   const [state, tableStateDispatch] = useReducer(reducer, initState);
 
   const { state: { modalForm, user }, dispatch } = useStore();
@@ -226,33 +250,49 @@ export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableP
 
   const handleSelectAll = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = evt.target;
-    tableStateDispatch({ type: "SET_SELECTED_ROWS", payload: checked ? rows.map(i => i.id) : [] });
+    tableStateDispatch({
+      type: "SET_SELECTED_ROWS",
+      payload: checked ? rows.map(i => i.id) : [],
+    });
   };
 
-  const handleSelectOne = (id: string) => (_: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedRows.includes(id)) tableStateDispatch({ type: "SINGLE_SELECT", payload: id });
-    else tableStateDispatch({ type: "SINGLE_UNSELECT", payload: id });
-  };
+  const handleSelectOne =
+    (id: string) => (_: React.ChangeEvent<HTMLInputElement>) => {
+      if (!selectedRows.includes(id)) {
+        tableStateDispatch({ type: "SINGLE_SELECT", payload: id });
+      } else tableStateDispatch({ type: "SINGLE_UNSELECT", payload: id });
+    };
 
-  const handleClickDeleteAction = (id: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    tableStateDispatch({ type: "SET_DELETE_ROW", payload: id });
-    dispatch({ type: "OPEN_MODAL_FORM", payload: deleteSingleRowKeys[resource] });
-  };
+  const handleClickDeleteAction =
+    (id: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+      tableStateDispatch({ type: "SET_DELETE_ROW", payload: id });
+      dispatch({
+        type: "OPEN_MODAL_FORM",
+        payload: deleteSingleRowKeys[resource],
+      });
+    };
 
-  const handleClickUpdateAction = (id: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(`/${refreshKey[0]}/update/${id}`);
-  };
+  const handleClickUpdateAction =
+    (id: string) => (_: React.MouseEvent<HTMLButtonElement>) => {
+      navigate(`/${refreshKey[0]}/update/${id}`);
+    };
 
   const handleMultiDelete = (ids: string[]) => () => {
     if (!onMultiDelete) return unimplementedFeature();
     onMultiDelete(ids);
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: deleteMultiRowKeys[resource] });
+    dispatch({
+      type: "CLOSE_MODAL_FORM",
+      payload: deleteMultiRowKeys[resource],
+    });
   };
 
   const handleSingleDelete = (id: string) => () => {
     if (!onSingleDelete) return unimplementedFeature();
     onSingleDelete(id);
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: deleteSingleRowKeys[resource] });
+    dispatch({
+      type: "CLOSE_MODAL_FORM",
+      payload: deleteSingleRowKeys[resource],
+    });
   };
 
   const handleCloseModal = () => {
@@ -260,11 +300,17 @@ export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableP
   };
 
   const handleOnExport = () => {
-    exportToExcel(rows.filter(row => selectedRows.includes(row.id)), resource);
+    exportToExcel(
+      rows.filter(row => selectedRows.includes(row.id)),
+      resource,
+    );
   };
 
   const handleOnImportAction = (data: Row[]) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: excelUploadRowKeys[resource] });
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: excelUploadRowKeys[resource],
+    });
     tableStateDispatch({ type: "SET_UPLOAD_DATA", payload: data });
   };
 
@@ -272,7 +318,10 @@ export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableP
     if (!onMultiCreate) return unimplementedFeature();
 
     dispatch({ type: "OPEN_BACKDROP" });
-    dispatch({ type: "CLOSE_MODAL_FORM", payload: excelUploadRowKeys[resource] });
+    dispatch({
+      type: "CLOSE_MODAL_FORM",
+      payload: excelUploadRowKeys[resource],
+    });
 
     convertToExcel(uploadData, resource)
       .then(excelBuffer => onMultiCreate(excelBuffer))
@@ -336,7 +385,11 @@ export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableP
                     )}
 
                   {columns.map(col => {
-                    const render = <TableCell key={col.id} align={col.align}>{col.name}</TableCell>;
+                    const render = (
+                      <TableCell key={col.id} align={col.align}>
+                        {col.name}
+                      </TableCell>
+                    );
                     return col.id !== "actions"
                       ? render
                       : isAllowedUpdate || isAllowedDelete
@@ -385,13 +438,16 @@ export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableP
                                   <IconButton
                                     sx={{
                                       "&:hover": {
-                                        background: theme.colors.primary.lighter,
+                                        background:
+                                          theme.colors.primary.lighter,
                                       },
                                       color: theme.palette.primary.main,
                                     }}
                                     color="inherit"
                                     size="small"
-                                    onClick={handleClickUpdateAction(row.id)}
+                                    onClick={handleClickUpdateAction(
+                                      row.id,
+                                    )}
                                   >
                                     <EditTwoToneIcon fontSize="small" />
                                   </IconButton>
@@ -405,11 +461,14 @@ export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableP
                                   <IconButton
                                     sx={{
                                       "&:hover": {
-                                        background: theme.colors.error.lighter,
+                                        background:
+                                          theme.colors.error.lighter,
                                       },
                                       color: theme.palette.error.main,
                                     }}
-                                    onClick={handleClickDeleteAction(row.id)}
+                                    onClick={handleClickDeleteAction(
+                                      row.id,
+                                    )}
                                     color="inherit"
                                     size="small"
                                   >
@@ -447,7 +506,9 @@ export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableP
                 >
                   Delete
                 </MuiButton>
-                <MuiButton variant="outlined" onClick={handleCloseModal}>Cancel</MuiButton>
+                <MuiButton variant="outlined" onClick={handleCloseModal}>
+                  Cancel
+                </MuiButton>
               </Box>
             </Box>
           </FormModal>
@@ -460,15 +521,29 @@ export function EnhancedTable<Row extends { id: string; }>(props: EnhancedTableP
             field={excelUploadRowKeys[resource]}
             title="Excel upload"
           >
-            <Box display="flex" flexDirection="column" gap={2} alignItems="end">
+            <Box
+              display="flex"
+              flexDirection="column"
+              gap={2}
+              alignItems="end"
+            >
               <Box>
-                <Typography>Are you sure want to upload, This may update or create rows</Typography>
+                <Typography>
+                  Are you sure want to upload, This may update or create
+                  rows
+                </Typography>
               </Box>
               <Box display="flex" flexDirection="row" gap={1}>
-                <MuiButton variant="contained" color="error" onClick={handleOnImport}>
+                <MuiButton
+                  variant="contained"
+                  color="error"
+                  onClick={handleOnImport}
+                >
                   Upload
                 </MuiButton>
-                <MuiButton variant="outlined" onClick={handleCloseModal}>Cancel</MuiButton>
+                <MuiButton variant="outlined" onClick={handleCloseModal}>
+                  Cancel
+                </MuiButton>
               </Box>
             </Box>
           </FormModal>

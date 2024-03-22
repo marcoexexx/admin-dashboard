@@ -24,7 +24,9 @@ export function ShopownerInputField(
   const { control, setValue, getValues } = useFormContext<
     { shopownerProviderId: string | null; }
   >();
-  const [selectedShopowner, setSelectedShopowner] = useState<ShopownerProvider | null>(null);
+  const [selectedShopowner, setSelectedShopowner] = useState<
+    ShopownerProvider | null
+  >(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
   const { dispatch } = useStore();
@@ -49,21 +51,30 @@ export function ShopownerInputField(
     : undefined;
 
   useEffect(() => {
-    if (defaultShopowner && updateField) setSelectedShopowner(defaultShopowner);
+    if (defaultShopowner && updateField) {
+      setSelectedShopowner(defaultShopowner);
+    }
   }, [defaultShopowner]);
 
-  const handleShopownerChange = (_: React.SyntheticEvent, value: ShopownerProvider | null) => {
+  const handleShopownerChange = (
+    _: React.SyntheticEvent,
+    value: ShopownerProvider | null,
+  ) => {
     setSelectedShopowner(value);
     if (value !== null) setValue("shopownerProviderId", value.id);
     else setValue("shopownerProviderId", null);
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "create-shopowner" });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -97,7 +108,8 @@ export function ShopownerInputField(
             onClose={handleOnCloseOptions}
             value={selectedShopowner}
             options={shopowners || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             getOptionLabel={option => option.name || ""}
             loading={isLoading}
             renderOption={(props, option) => (
@@ -128,7 +140,9 @@ export function ShopownerInputField(
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

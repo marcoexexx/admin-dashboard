@@ -14,7 +14,10 @@ export function sudo(
 
     if (!user.isSuperuser) {
       return next(
-        AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`),
+        AppError.new(
+          StatusCode.Forbidden,
+          `You do not have permission to access this resource.`,
+        ),
       );
     }
 

@@ -29,7 +29,8 @@ export function CreateRegionForm() {
 
   useBeforeUnloadPage();
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods;
+  const { handleSubmit, register, formState: { errors }, setFocus } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
@@ -42,7 +43,12 @@ export function CreateRegionForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -57,7 +63,13 @@ export function CreateRegionForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" loading={isPending} type="submit">Create</MuiButton>
+            <MuiButton
+              variant="contained"
+              loading={isPending}
+              type="submit"
+            >
+              Create
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

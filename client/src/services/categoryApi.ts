@@ -1,4 +1,7 @@
-import { CreateCategoryInput, UpdateCategoryInput } from "@/components/content/categories/forms";
+import {
+  CreateCategoryInput,
+  UpdateCategoryInput,
+} from "@/components/content/categories/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { CategoryWhereInput } from "@/context/category";
 import { authApi } from "./authApi";
@@ -12,7 +15,9 @@ import {
   QueryOptionArgs,
 } from "./types";
 
-export class CategoryApiService extends BaseApiService<CategoryWhereInput, Category> {
+export class CategoryApiService
+  extends BaseApiService<CategoryWhereInput, Category>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -65,19 +70,24 @@ export class CategoryApiService extends BaseApiService<CategoryWhereInput, Categ
     return data;
   }
 
-  async create(payload: CreateCategoryInput): Promise<GenericResponse<Category, "category">> {
+  async create(
+    payload: CreateCategoryInput,
+  ): Promise<GenericResponse<Category, "category">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
     return data;
   }
 
-  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<Category>> {
+  async uploadExcel(
+    buf: ArrayBuffer,
+  ): Promise<HttpListResponse<Category>> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `Categories_${Date.now()}.xlsx`);
@@ -104,11 +114,15 @@ export class CategoryApiService extends BaseApiService<CategoryWhereInput, Categ
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { categoryIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { categoryIds: ids },
+    });
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<Category, "category">> {
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<Category, "category">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

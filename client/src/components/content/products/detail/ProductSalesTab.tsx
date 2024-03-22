@@ -5,7 +5,15 @@ import { useStore } from "@/hooks";
 import { useDeleteProductSalesCategory } from "@/hooks/salsCategory";
 import { useGetProductSalesCategories } from "@/hooks/salsCategory/useGetProductSalesCategories";
 import { ProductSalesCategoriesResponse } from "@/services/types";
-import { Box, Card, CardContent, CardHeader, Container, Grid, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Container,
+  Grid,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import {
   CreateProductSalesCategoryForm,
@@ -25,10 +33,15 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
   const [selectedProductSale, setSelectedProductSale] = useState<
     ProductSalesCategoriesResponse | undefined
   >(undefined);
-  const [toDeleteProductSale, setToDeleteProductSale] = useState<string | undefined>(undefined);
+  const [toDeleteProductSale, setToDeleteProductSale] = useState<
+    string | undefined
+  >(undefined);
 
-  const { try_data, isLoading } = useGetProductSalesCategories({ productId });
-  const { mutate: deleteProductSale, isPending } = useDeleteProductSalesCategory();
+  const { try_data, isLoading } = useGetProductSalesCategories({
+    productId,
+  });
+  const { mutate: deleteProductSale, isPending } =
+    useDeleteProductSalesCategory();
 
   const sales = try_data.ok_or_throw();
 
@@ -44,7 +57,9 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
     });
   };
 
-  const handleSetDefaultValues = (value: ProductSalesCategoriesResponse | undefined) => {
+  const handleSetDefaultValues = (
+    value: ProductSalesCategoriesResponse | undefined,
+  ) => {
     setSelectedProductSale(value);
   };
 
@@ -83,7 +98,8 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
         )
         : null}
 
-      {modalForm.field === "delete-product-sales-category" && toDeleteProductSale
+      {modalForm.field === "delete-product-sales-category"
+          && toDeleteProductSale
         ? (
           <FormModal
             field="delete-product-sales-category"
@@ -98,7 +114,10 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
                   variant="contained"
                   color="error"
                   onClick={() => {
-                    deleteProductSale({ productId, productSaleCategoryId: toDeleteProductSale });
+                    deleteProductSale({
+                      productId,
+                      productSaleCategoryId: toDeleteProductSale,
+                    });
                     dispatch({ type: "CLOSE_ALL_MODAL_FORM" });
                   }}
                   loading={isPending}
@@ -108,7 +127,8 @@ export default function ProductSalesTab(props: ProductSalesTabProps) {
 
                 <MuiButton
                   variant="outlined"
-                  onClick={() => dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}
+                  onClick={() =>
+                    dispatch({ type: "CLOSE_ALL_MODAL_FORM" })}
                 >
                   Cancel
                 </MuiButton>

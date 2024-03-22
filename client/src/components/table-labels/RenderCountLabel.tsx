@@ -1,6 +1,8 @@
 import { Box, Chip } from "@mui/material";
 
-export function RenderCountLabel<T extends object>({ _count }: { _count: T; }) {
+export function RenderCountLabel<T extends object>(
+  { _count }: { _count: T; },
+) {
   const fields = Object.keys(_count || {});
 
   return (
@@ -13,7 +15,10 @@ export function RenderCountLabel<T extends object>({ _count }: { _count: T; }) {
       }}
     >
       {fields.map((field, idx) => (
-        <Chip key={idx} label={`${_count?.[field as keyof typeof _count]} ${field}`} />
+        <Chip
+          key={idx}
+          label={`${_count?.[field as keyof typeof _count]} ${field}`}
+        />
       ))}
     </Box>
   );

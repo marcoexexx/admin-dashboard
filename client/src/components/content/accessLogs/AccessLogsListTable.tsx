@@ -23,7 +23,9 @@ const columns: TypedColumn<AccessLog>[] = [
     id: "date",
     align: "left",
     name: "Date",
-    render: ({ value }) => <Typography>{new Date(value.date).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.date).toUTCString()}</Typography>
+    ),
   },
 ];
 
@@ -37,8 +39,16 @@ interface AccessLogsListTableProps {
 }
 
 export function AccessLogsListTable(props: AccessLogsListTableProps) {
-  const { accessLogs, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props;
-  const { state: { accessLogFilter: { pagination } }, dispatch } = useStore();
+  const {
+    accessLogs,
+    count,
+    isLoading,
+    onDelete,
+    onMultiDelete,
+    onCreateMany,
+  } = props;
+  const { state: { accessLogFilter: { pagination } }, dispatch } =
+    useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({

@@ -68,13 +68,21 @@ export const deleteMultiSalesCategoriesSchema = object({
 });
 
 export type GetSalesCategoryInput = z.infer<typeof getSalesCategorySchema>;
-export type CreateSalesCategoryInput = z.infer<typeof createSalesCategorySchema>["body"];
+export type CreateSalesCategoryInput = z.infer<
+  typeof createSalesCategorySchema
+>["body"];
 export type CreateMultiSalesCategoriesInput = z.infer<
   typeof createMultiSalesCategoriesSchema
 >["body"];
-export type CreateProductSalesCategoryInput = z.infer<typeof createProductSalesCategorySchema>;
+export type CreateProductSalesCategoryInput = z.infer<
+  typeof createProductSalesCategorySchema
+>;
 export type DeleteMultiSalesCategoriesInput = z.infer<
   typeof deleteMultiSalesCategoriesSchema
 >["body"];
-export type UpdateSalesCategoryInput = z.infer<typeof updateSalesCategorySchema>;
-export type UpdateProductSaleCategoryInput = z.infer<typeof updateProductSaleCategorySchema>;
+export type UpdateSalesCategoryInput = z.infer<
+  typeof updateSalesCategorySchema
+>;
+export type UpdateProductSaleCategoryInput = z.infer<
+  typeof updateProductSaleCategorySchema
+>;

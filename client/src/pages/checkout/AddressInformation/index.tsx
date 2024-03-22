@@ -1,12 +1,30 @@
-import { CreateOrderInput, OrderAddressType } from "@/components/content/orders/forms";
-import { AddressInputField, PickupAddressInputField } from "@/components/input-fields";
-import { Box, Card, CardContent, Container, Radio, styled, Typography } from "@mui/material";
+import {
+  CreateOrderInput,
+  OrderAddressType,
+} from "@/components/content/orders/forms";
+import {
+  AddressInputField,
+  PickupAddressInputField,
+} from "@/components/input-fields";
+import {
+  Box,
+  Card,
+  CardContent,
+  Container,
+  Radio,
+  styled,
+  Typography,
+} from "@mui/material";
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
-const SelectionCardWrapper = styled(Box)<{ active: "true" | "false"; }>(({ theme, active }) => ({
+const SelectionCardWrapper = styled(Box)<{ active: "true" | "false"; }>((
+  { theme, active },
+) => ({
   cursor: "pointer",
-  border: active === "true" ? `2px solid ${theme.colors.primary.dark}` : undefined,
+  border: active === "true"
+    ? `2px solid ${theme.colors.primary.dark}`
+    : undefined,
   borderRadius: 10,
   height: 170,
   width: "100%",
@@ -20,7 +38,8 @@ const SelectionCardWrapper = styled(Box)<{ active: "true" | "false"; }>(({ theme
 export default function AddressInformationStep() {
   const { getValues, setValue } = useFormContext<CreateOrderInput>();
 
-  const addressType: CreateOrderInput["addressType"] = getValues("addressType")
+  const addressType: CreateOrderInput["addressType"] =
+    getValues("addressType")
     || OrderAddressType.Delivery;
 
   useEffect(() => {
@@ -28,9 +47,14 @@ export default function AddressInformationStep() {
   }, [addressType]);
 
   const handleChangeAddressType =
-    (addressType: OrderAddressType) => (_: React.MouseEvent<HTMLDivElement>) => {
-      if (addressType === OrderAddressType.Delivery) setValue("pickupAddressId", undefined);
-      if (addressType === OrderAddressType.Pickup) setValue("deliveryAddressId", undefined);
+    (addressType: OrderAddressType) =>
+    (_: React.MouseEvent<HTMLDivElement>) => {
+      if (addressType === OrderAddressType.Delivery) {
+        setValue("pickupAddressId", undefined);
+      }
+      if (addressType === OrderAddressType.Pickup) {
+        setValue("deliveryAddressId", undefined);
+      }
       setValue("addressType", addressType);
     };
 
@@ -41,7 +65,11 @@ export default function AddressInformationStep() {
 
         <Box display="flex" flexDirection="column" gap={1}>
           <Typography>Choose the option</Typography>
-          <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={1}>
+          <Box
+            display="flex"
+            flexDirection={{ xs: "column", md: "row" }}
+            gap={1}
+          >
             <SelectionCardWrapper
               active={addressType === "Delivery" ? "true" : "false"}
               onClick={handleChangeAddressType(OrderAddressType.Delivery)}
@@ -95,7 +123,12 @@ export default function AddressInformationStep() {
         <Card>
           <CardContent>
             {addressType === "Delivery"
-              ? <AddressInputField updateField fieldName="deliveryAddressId" />
+              ? (
+                <AddressInputField
+                  updateField
+                  fieldName="deliveryAddressId"
+                />
+              )
               : null}
             {addressType === "Pickup" ? <PickupAddressInputField /> : null}
           </CardContent>

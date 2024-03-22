@@ -1,4 +1,8 @@
-import { AddressType, OrderStatus, PaymentMethodProvider } from "@prisma/client";
+import {
+  AddressType,
+  OrderStatus,
+  PaymentMethodProvider,
+} from "@prisma/client";
 import { number, object, string, z } from "zod";
 
 const params = {
@@ -14,7 +18,9 @@ export const createOrderSchema = object({
     deliveryAddressId: string().optional(),
     totalPrice: number().min(0),
     pickupAddressId: string().optional(),
-    billingAddressId: string({ required_error: "billingAddressId is required" }),
+    billingAddressId: string({
+      required_error: "billingAddressId is required",
+    }),
     paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, {
       required_error: "paymentMethodProvider is required",
     }),
@@ -37,7 +43,9 @@ export const updateOrderSchema = object({
     deliveryAddressId: string().optional(),
     totalPrice: number().min(0),
     pickupAddressId: string().optional(),
-    billingAddressId: string({ required_error: "billingAddressId is required" }),
+    billingAddressId: string({
+      required_error: "billingAddressId is required",
+    }),
     paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, {
       required_error: "paymentMethodProvider is required",
     }),
@@ -54,5 +62,7 @@ export const deleteMultiOrdersSchema = object({
 
 export type GetOrderInput = z.infer<typeof getOrderSchema>;
 export type CreateOrderInput = z.infer<typeof createOrderSchema>["body"];
-export type DeleteMultiOrdersInput = z.infer<typeof deleteMultiOrdersSchema>["body"];
+export type DeleteMultiOrdersInput = z.infer<
+  typeof deleteMultiOrdersSchema
+>["body"];
 export type UpdateOrderInput = z.infer<typeof updateOrderSchema>;

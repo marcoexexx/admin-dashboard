@@ -26,7 +26,8 @@ export function PotentialOrdersList() {
 
   // Mutations
   const { mutate: deletePotentialOrder } = useDeletePotentialOrder();
-  const { mutate: deletePotentialOrders } = useDeleteMultiPotentialOrders();
+  const { mutate: deletePotentialOrders } =
+    useDeleteMultiPotentialOrders();
 
   // Extraction
   const potentialOrders = try_data.ok_or_throw();

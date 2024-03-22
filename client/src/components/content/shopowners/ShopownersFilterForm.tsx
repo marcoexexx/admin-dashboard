@@ -49,7 +49,12 @@ export function ShopownersFilterForm() {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             {/* TOOD: Filter filelds */}
@@ -61,7 +66,13 @@ export function ShopownersFilterForm() {
         </Grid>
 
         <Grid item>
-          <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
+          <MuiButton
+            onClick={handleOnClickReset}
+            variant="outlined"
+            type="button"
+          >
+            Reset
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

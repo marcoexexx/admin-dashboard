@@ -29,7 +29,10 @@ export class CategoryService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.Category, { action: OperationAction.Read, resourceIds: [] }, db.category);
+    super(Resource.Category, {
+      action: OperationAction.Read,
+      resourceIds: [],
+    }, db.category);
     this.name = "Category";
   }
 

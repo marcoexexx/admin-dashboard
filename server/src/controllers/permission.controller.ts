@@ -11,7 +11,11 @@ import { PermissionService } from "../services/permission";
 import { StatusCode } from "../utils/appError";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 const service = PermissionService.new();
 
@@ -29,7 +33,10 @@ export async function getPermissionsHandler(
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, permissions] = (await service.tryFindManyWithCount(
@@ -67,7 +74,10 @@ export async function getPermissionHandler(
     const { role } = convertStringToBoolean(query.include) ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const permission = (await service.tryFindUnique({
@@ -76,7 +86,9 @@ export async function getPermissionHandler(
     })).ok_or_throw();
 
     // Create audit log
-    if (permission && sessionUser) (await service.audit(sessionUser)).ok_or_throw();
+    if (permission && sessionUser) {
+      (await service.audit(sessionUser)).ok_or_throw();
+    }
 
     res.status(StatusCode.OK).json(HttpDataResponse({ permission }));
   } catch (err) {
@@ -95,10 +107,14 @@ export async function createMultiPermissionsHandler(
     if (!excelFile) return res.status(StatusCode.NoContent);
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
-    const permissions = (await service.tryExcelUpload(excelFile)).ok_or_throw();
+    const permissions = (await service.tryExcelUpload(excelFile))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);
@@ -119,7 +135,10 @@ export async function createPermissionHandler(
     const { action, resource } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const permission = (await service.tryCreate({
@@ -148,7 +167,10 @@ export async function deletePermissionHandler(
     const { permissionId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const permission = (await service.tryDelete({
@@ -176,7 +198,10 @@ export async function deleteMultiPermissionsHandler(
     const { permissionIds } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const tryDeleteMany = await service.tryDeleteMany({
@@ -192,14 +217,20 @@ export async function deleteMultiPermissionsHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
     next(err);
   }
 }
 
 export async function updatePermissionHandler(
-  req: Request<UpdatePermissionInput["params"], {}, UpdatePermissionInput["body"]>,
+  req: Request<
+    UpdatePermissionInput["params"],
+    {},
+    UpdatePermissionInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -208,7 +239,10 @@ export async function updatePermissionHandler(
     const { resource, action } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const permission = (await service.tryUpdate({

@@ -8,7 +8,9 @@ import { object, z } from "zod";
 
 const filterPotentialOrdersSchema = object({});
 
-export type FilterPotentialOrdersInput = z.infer<typeof filterPotentialOrdersSchema>;
+export type FilterPotentialOrdersInput = z.infer<
+  typeof filterPotentialOrdersSchema
+>;
 
 export function PotentialOrdersFilterForm() {
   const { dispatch } = useStore();
@@ -46,13 +48,24 @@ export function PotentialOrdersFilterForm() {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item>
           <MuiButton variant="contained" type="submit">Search</MuiButton>
         </Grid>
 
         <Grid item>
-          <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
+          <MuiButton
+            onClick={handleOnClickReset}
+            variant="outlined"
+            type="button"
+          >
+            Reset
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

@@ -1,10 +1,17 @@
 import { EnhancedTable, TypedColumn } from "@/components";
-import { RenderOrderItemLabel, RenderUsernameLabel } from "@/components/table-labels";
+import {
+  RenderOrderItemLabel,
+  RenderUsernameLabel,
+} from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { numberFormat } from "@/libs/numberFormat";
-import { PotentialOrder, PotentialOrderStatus, Resource } from "@/services/types";
+import {
+  PotentialOrder,
+  PotentialOrderStatus,
+  Resource,
+} from "@/services/types";
 import {
   Box,
   Card,
@@ -44,33 +51,45 @@ const columns: TypedColumn<PotentialOrder>[] = [
     align: "left",
     name: "Username",
     render: ({ value, me }) =>
-      value.user && me ? <RenderUsernameLabel user={value.user} me={me} /> : null,
+      value.user && me
+        ? <RenderUsernameLabel user={value.user} me={me} />
+        : null,
   },
   {
     id: "totalPrice",
     align: "left",
     name: "Amount",
-    render: ({ value }) => <Typography>{numberFormat(value.totalPrice)}</Typography>,
+    render: ({ value }) => (
+      <Typography>{numberFormat(value.totalPrice)}</Typography>
+    ),
   },
   {
     id: "orderItems",
     align: "left",
     name: "Order No",
     render: ({ value }) => (
-      <>{value.orderItems?.map(item => <RenderOrderItemLabel key={item.id} orderItem={item} />)}</>
+      <>
+        {value.orderItems?.map(item => (
+          <RenderOrderItemLabel key={item.id} orderItem={item} />
+        ))}
+      </>
     ),
   },
   {
     id: "createdAt",
     align: "left",
     name: "Created",
-    render: ({ value }) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
+    ),
   },
   {
     id: "updatedAt",
     align: "left",
     name: "Updated",
-    render: ({ value }) => <Typography>{new Date(value.updatedAt).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.updatedAt).toUTCString()}</Typography>
+    ),
   },
   {
     id: "remark",
@@ -89,16 +108,27 @@ interface PotentialOrdersListTableProps {
   onCreateMany?: (buf: ArrayBuffer) => void;
 }
 
-export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
-  const { potentialOrders, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props;
-  const { state: { potentialOrderFilter: { pagination } }, dispatch } = useStore();
+export function PotentialOrdersListTable(
+  props: PotentialOrdersListTableProps,
+) {
+  const {
+    potentialOrders,
+    count,
+    isLoading,
+    onDelete,
+    onMultiDelete,
+    onCreateMany,
+  } = props;
+  const { state: { potentialOrderFilter: { pagination } }, dispatch } =
+    useStore();
 
   const theme = useTheme();
 
-  const handleChangeOrderStatus = (order: PotentialOrder) => (evt: SelectChangeEvent) => {
-    const { value } = evt.target;
-    if (value) console.warn("Not supported yet!", order);
-  };
+  const handleChangeOrderStatus =
+    (order: PotentialOrder) => (evt: SelectChangeEvent) => {
+      const { value } = evt.target;
+      if (value) console.warn("Not supported yet!", order);
+    };
 
   const columnsWithEditableStatus = useMemo(() =>
     columns.concat([
@@ -119,7 +149,9 @@ export function PotentialOrdersListTable(props: PotentialOrdersListTableProps) {
                   key={status.label}
                   value={status.label}
                 >
-                  <Typography color={status.color(theme)}>{status.label}</Typography>
+                  <Typography color={status.color(theme)}>
+                    {status.label}
+                  </Typography>
                 </MenuItem>
               );
             })}

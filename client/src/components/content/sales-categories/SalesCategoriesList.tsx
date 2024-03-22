@@ -23,9 +23,11 @@ export function SalesCategoriesList() {
   });
 
   // Mutations
-  const { mutate: createSalesCategories } = useCreateMultiSalesCategories();
+  const { mutate: createSalesCategories } =
+    useCreateMultiSalesCategories();
   const { mutate: deleteSalesCategory } = useDeleteCategory();
-  const { mutate: deleteSalesCategories } = useDeleteMultiSalesCategories();
+  const { mutate: deleteSalesCategories } =
+    useDeleteMultiSalesCategories();
 
   // Extraction
   const sales = try_data.ok_or_throw();

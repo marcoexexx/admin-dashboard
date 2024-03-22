@@ -10,7 +10,9 @@ const MainContent = styled(Box)(() => ({
 export interface LoadingTablePlaceholderProps {
 }
 
-export function LoadingTablePlaceholder(props: LoadingTablePlaceholderProps) {
+export function LoadingTablePlaceholder(
+  props: LoadingTablePlaceholderProps,
+) {
   const {} = props;
   return (
     <MainContent>

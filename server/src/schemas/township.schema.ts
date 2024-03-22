@@ -41,7 +41,13 @@ export const deleteMultiTownshipsSchema = object({
 });
 
 export type GetTownshipInput = z.infer<typeof getTownshipSchema>;
-export type CreateTownshipInput = z.infer<typeof createTownshipSchema>["body"];
-export type CreateMultiTownshipsInput = z.infer<typeof createMultiTownshipsSchema>["body"];
-export type DeleteMultiTownshipsInput = z.infer<typeof deleteMultiTownshipsSchema>["body"];
+export type CreateTownshipInput = z.infer<
+  typeof createTownshipSchema
+>["body"];
+export type CreateMultiTownshipsInput = z.infer<
+  typeof createMultiTownshipsSchema
+>["body"];
+export type DeleteMultiTownshipsInput = z.infer<
+  typeof deleteMultiTownshipsSchema
+>["body"];
 export type UpdateTownshipInput = z.infer<typeof updateTownshipSchema>;

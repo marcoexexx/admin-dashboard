@@ -1,4 +1,10 @@
-import { AuditLog, OperationAction, Prisma, Resource, User } from "@prisma/client";
+import {
+  AuditLog,
+  OperationAction,
+  Prisma,
+  Resource,
+  User,
+} from "@prisma/client";
 import { PartialShallow } from "lodash";
 import { guestUserAccessResources, UserWithRole } from "../type";
 
@@ -11,7 +17,9 @@ import Result, { as_result_async, Err, Ok } from "../utils/result";
 export abstract class MetaAppService {
   constructor(
     public resource: Resource,
-    public log: { action: OperationAction; resourceIds: string[]; } | undefined,
+    public log:
+      | { action: OperationAction; resourceIds: string[]; }
+      | undefined,
   ) {}
 
   async audit(
@@ -39,7 +47,9 @@ export abstract class MetaAppService {
         ),
       );
     }
-    if (!Array.isArray(log.resourceIds) || !log.resourceIds.length) return Ok(undefined);
+    if (!Array.isArray(log.resourceIds) || !log.resourceIds.length) {
+      return Ok(undefined);
+    }
 
     const payload: Prisma.AuditLogUncheckedCreateInput = {
       userId: user.id,
@@ -49,7 +59,9 @@ export abstract class MetaAppService {
     };
 
     const auditlog = (await createAuditLog(payload))
-      .or_else(err => err.status === StatusCode.NotModified ? Ok(undefined) : Err(err));
+      .or_else(err =>
+        err.status === StatusCode.NotModified ? Ok(undefined) : Err(err)
+      );
     return auditlog;
   }
 
@@ -67,7 +79,10 @@ export abstract class MetaAppService {
       );
       if (!isAccess) {
         return Err(
-          AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`),
+          AppError.new(
+            StatusCode.Forbidden,
+            `You do not have permission to access this resource.`,
+          ),
         );
       }
       return Ok(isAccess);
@@ -80,7 +95,10 @@ export abstract class MetaAppService {
     );
     if (!isAccess) {
       return Err(
-        AppError.new(StatusCode.Forbidden, `You do not have permission to access this resource.`),
+        AppError.new(
+          StatusCode.Forbidden,
+          `You do not have permission to access this resource.`,
+        ),
       );
     }
 
@@ -117,7 +135,9 @@ export abstract class AppService<
 
   constructor(
     public resource: Resource,
-    public log: { action: OperationAction; resourceIds: string[]; } | undefined,
+    public log:
+      | { action: OperationAction; resourceIds: string[]; }
+      | undefined,
     public repository: Repository,
   ) {
     super(resource, log);
@@ -128,7 +148,9 @@ export abstract class AppService<
    *
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  async tryCount(...args: Parameters<typeof this.repository.count>): Promise<
+  async tryCount(
+    ...args: Parameters<typeof this.repository.count>
+  ): Promise<
     Result<Awaited<ReturnType<typeof this.repository.count>>, AppError>
   > {
     const [arg] = args;
@@ -148,7 +170,9 @@ export abstract class AppService<
    *
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  async tryCreate(...args: Parameters<typeof this.repository.create>): Promise<
+  async tryCreate(
+    ...args: Parameters<typeof this.repository.create>
+  ): Promise<
     Result<Awaited<ReturnType<typeof this.repository.create>>, AppError>
   > {
     const [arg] = args;
@@ -169,9 +193,15 @@ export abstract class AppService<
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
   async tryFindManyWithCount(
-    ...args: [{ pagination: Pagination; }, ...Parameters<typeof this.repository.findMany>]
+    ...args: [
+      { pagination: Pagination; },
+      ...Parameters<typeof this.repository.findMany>,
+    ]
   ): Promise<
-    Result<[number, Awaited<ReturnType<typeof this.repository.findMany>>], AppError>
+    Result<
+      [number, Awaited<ReturnType<typeof this.repository.findMany>>],
+      AppError
+    >
   > {
     const [{ pagination }, arg] = args;
     const { page = 1, pageSize = 10 } = pagination;
@@ -182,14 +212,17 @@ export abstract class AppService<
     const count = await this.tryCount({ where: arg?.where });
     if (count.is_err()) return Err(count.unwrap_err());
 
-    const result = (await opt({ ...arg, skip: offset, take: pageSize })).map_err(
-      convertPrismaErrorToAppError,
-    );
+    const result = (await opt({ ...arg, skip: offset, take: pageSize }))
+      .map_err(
+        convertPrismaErrorToAppError,
+      );
     if (result.is_err()) return Err(result.unwrap_err());
 
     this.log = {
       action: OperationAction.Read,
-      resourceIds: (result.ok_or_throw() as { id: string; }[]).map(x => x.id),
+      resourceIds: (result.ok_or_throw() as { id: string; }[]).map(x =>
+        x.id
+      ),
     };
     return Ok([count.ok_or_throw(), result.ok_or_throw()]);
   }
@@ -199,8 +232,13 @@ export abstract class AppService<
    *
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  async tryFindUnique(...args: Parameters<typeof this.repository.findUnique>): Promise<
-    Result<Awaited<ReturnType<typeof this.repository.findUnique>>, AppError>
+  async tryFindUnique(
+    ...args: Parameters<typeof this.repository.findUnique>
+  ): Promise<
+    Result<
+      Awaited<ReturnType<typeof this.repository.findUnique>>,
+      AppError
+    >
   > {
     const [arg] = args;
 
@@ -208,7 +246,11 @@ export abstract class AppService<
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError);
 
     const _res = result.ok();
-    if (!_res) return Err(AppError.new(StatusCode.NotFound, `${this.resource} not found.`));
+    if (!_res) {
+      return Err(
+        AppError.new(StatusCode.NotFound, `${this.resource} not found.`),
+      );
+    }
 
     if (_res) {
       this.log = {
@@ -224,7 +266,9 @@ export abstract class AppService<
    *
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  async tryFindFirst(...args: Parameters<typeof this.repository.findFirst>): Promise<
+  async tryFindFirst(
+    ...args: Parameters<typeof this.repository.findFirst>
+  ): Promise<
     Result<Awaited<ReturnType<typeof this.repository.findFirst>>, AppError>
   > {
     const [arg] = args;
@@ -233,7 +277,11 @@ export abstract class AppService<
     const result = (await opt(arg)).map_err(convertPrismaErrorToAppError);
 
     const _res = result.ok();
-    if (!_res) return Err(AppError.new(StatusCode.NotFound, `${this.resource} not found.`));
+    if (!_res) {
+      return Err(
+        AppError.new(StatusCode.NotFound, `${this.resource} not found.`),
+      );
+    }
 
     if (_res) {
       this.log = {
@@ -249,7 +297,9 @@ export abstract class AppService<
    *
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  async tryUpdate(...args: Parameters<typeof this.repository.update>): Promise<
+  async tryUpdate(
+    ...args: Parameters<typeof this.repository.update>
+  ): Promise<
     Result<Awaited<ReturnType<typeof this.repository.update>>, AppError>
   > {
     const [arg] = args;
@@ -269,7 +319,9 @@ export abstract class AppService<
    *
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  async tryDelete(...args: Parameters<typeof this.repository.delete>): Promise<
+  async tryDelete(
+    ...args: Parameters<typeof this.repository.delete>
+  ): Promise<
     Result<Awaited<ReturnType<typeof this.repository.delete>>, AppError>
   > {
     const [arg] = args;
@@ -289,8 +341,13 @@ export abstract class AppService<
    *
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  async tryDeleteMany(...args: Parameters<typeof this.repository.deleteMany>): Promise<
-    Result<Awaited<ReturnType<typeof this.repository.deleteMany>>, AppError>
+  async tryDeleteMany(
+    ...args: Parameters<typeof this.repository.deleteMany>
+  ): Promise<
+    Result<
+      Awaited<ReturnType<typeof this.repository.deleteMany>>,
+      AppError
+    >
   > {
     const [arg] = args;
 
@@ -307,7 +364,9 @@ export abstract class AppService<
     return result;
   }
 
-  async tryUpsert(...args: Parameters<typeof this.repository.upsert>): Promise<
+  async tryUpsert(
+    ...args: Parameters<typeof this.repository.upsert>
+  ): Promise<
     Result<Awaited<ReturnType<typeof this.repository.update>>, AppError>
   > {
     const [arg] = args;
@@ -329,11 +388,19 @@ export abstract class AppService<
    * @param uploadBy {User} - The arguments for the uploadBy user.
    * @returns A promise that resolves to a Result containing either the data or an AppError.
    */
-  async tryExcelUpload(file: Express.Multer.File, uploadBy?: User): Promise<Result<any, AppError>> {
+  async tryExcelUpload(
+    file: Express.Multer.File,
+    uploadBy?: User,
+  ): Promise<Result<any, AppError>> {
     logging.debug(
       `Calling unimplemented service: ${this.name}.tryExcelUpload(${file}, ${uploadBy})`,
     );
-    return Err(AppError.new(StatusCode.ServiceUnavailable, `This feature is not implemented yet.`));
+    return Err(
+      AppError.new(
+        StatusCode.ServiceUnavailable,
+        `This feature is not implemented yet.`,
+      ),
+    );
   }
 }
 

@@ -63,7 +63,11 @@ export const deleteMultiCouponsSchema = object({
 });
 
 export type CreateCouponInput = z.infer<typeof createCouponSchema>["body"];
-export type CreateMultiCouponsInput = z.infer<typeof createMultiCouponsSchema>["body"];
-export type DeleteMultiCouponsInput = z.infer<typeof deleteMultiCouponsSchema>["body"];
+export type CreateMultiCouponsInput = z.infer<
+  typeof createMultiCouponsSchema
+>["body"];
+export type DeleteMultiCouponsInput = z.infer<
+  typeof deleteMultiCouponsSchema
+>["body"];
 export type GetCouponInput = z.infer<typeof getCouponSchema>;
 export type UpdateCouponInput = z.infer<typeof updateCouponSchema>;

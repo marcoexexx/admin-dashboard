@@ -29,7 +29,10 @@ export class ExchangeService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.Exchange, { action: OperationAction.Read, resourceIds: [] }, db.exchange);
+    super(Resource.Exchange, {
+      action: OperationAction.Read,
+      resourceIds: [],
+    }, db.exchange);
     this.name = "Exchange";
   }
 

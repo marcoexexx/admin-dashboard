@@ -25,10 +25,14 @@ export async function getCartHandler(
 ) {
   try {
     const query = convertNumericStrings(req.query);
-    const { _count, orderItems } = convertStringToBoolean(query.include) ?? {};
+    const { _count, orderItems } = convertStringToBoolean(query.include)
+      ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await orderItemService.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const cart = (await userService.tryFindUnique({
@@ -45,7 +49,9 @@ export async function getCartHandler(
     })).ok_or_throw()?.cart;
 
     // Create audit log
-    if (cart && sessionUser) (await userService.audit(sessionUser)).ok_or_throw();
+    if (cart && sessionUser) {
+      (await userService.audit(sessionUser)).ok_or_throw();
+    }
 
     res.status(StatusCode.OK).json(HttpDataResponse({ cart }));
   } catch (err) {
@@ -64,7 +70,10 @@ export async function createCartOrderItemHandler(
     const { quantity, productId, price, totalPrice } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await orderItemService.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     // Create or update item if same product in cart
@@ -139,7 +148,11 @@ export async function createCartOrderItemHandler(
 }
 
 export async function updateCartOrderItemHandler(
-  req: Request<UpdateCartOrderItemInput["params"], {}, UpdateCartOrderItemInput["body"]>,
+  req: Request<
+    UpdateCartOrderItemInput["params"],
+    {},
+    UpdateCartOrderItemInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -148,7 +161,10 @@ export async function updateCartOrderItemHandler(
     const { quantity, price, totalPrice } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await orderItemService.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const orderItem = await orderItemService.tryUpdate({
@@ -183,10 +199,15 @@ export async function deleteCartHandler(
     const { cartId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await orderItemService.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
-    const cart = (await userService.tryCleanCart({ where: { id: cartId } })).ok_or_throw();
+    const cart =
+      (await userService.tryCleanCart({ where: { id: cartId } }))
+        .ok_or_throw();
 
     // Create audit log
     const _auditLog = await userService.audit(sessionUser);
@@ -207,10 +228,15 @@ export async function deleteCartOrderItemHandler(
     const { orderItemId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await orderItemService.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await orderItemService.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
-    const orderItem = (await userService.tryRemoveSingleOrderItem({ where: { id: orderItemId } }))
+    const orderItem = (await userService.tryRemoveSingleOrderItem({
+      where: { id: orderItemId },
+    }))
       .ok_or_throw();
 
     // Create audit log

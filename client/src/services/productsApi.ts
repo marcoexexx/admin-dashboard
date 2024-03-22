@@ -1,4 +1,7 @@
-import { CreateProductInput, UpdateProductInput } from "@/components/content/products/forms";
+import {
+  CreateProductInput,
+  UpdateProductInput,
+} from "@/components/content/products/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { ProductWhereInput } from "@/context/product";
 import { authApi } from "./authApi";
@@ -13,7 +16,9 @@ import {
   QueryOptionArgs,
 } from "./types";
 
-export class ProductApiService extends BaseApiService<ProductWhereInput, Product> {
+export class ProductApiService
+  extends BaseApiService<ProductWhereInput, Product>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -65,7 +70,9 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
     return data;
   }
 
-  async create(payload: CreateProductInput): Promise<GenericResponse<Product, "product">> {
+  async create(
+    payload: CreateProductInput,
+  ): Promise<GenericResponse<Product, "product">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -77,7 +84,8 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `Products_${Date.now()}.xlsx`);
@@ -104,7 +112,9 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { productIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { productIds: ids },
+    });
     return data;
   }
 
@@ -118,7 +128,9 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
   async findManySaleCategories(
     opt: QueryOptionArgs,
     { productId }: { productId: string | undefined; },
-  ): Promise<HttpListResponse<ProductSalesCategoriesResponse> | undefined> {
+  ): Promise<
+    HttpListResponse<ProductSalesCategoriesResponse> | undefined
+  > {
     const url = `/${this.repo}/detail/${productId}/sales`;
 
     if (!productId) return;
@@ -134,7 +146,9 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
       salesCategoryId: string;
       discount: number;
     },
-  ): Promise<GenericResponse<ProductSalesCategoriesResponse, "category"> | undefined> {
+  ): Promise<
+    GenericResponse<ProductSalesCategoriesResponse, "category"> | undefined
+  > {
     const url = `/${this.repo}/detail/${productId}/sales`;
 
     if (!productId && !salesCategoryId) return;
@@ -143,9 +157,13 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
   }
 
   async deleteSaleCategory(
-    { productId, productSaleCategoryId }: { productId: string; productSaleCategoryId: string; },
+    { productId, productSaleCategoryId }: {
+      productId: string;
+      productSaleCategoryId: string;
+    },
   ): Promise<HttpResponse | undefined> {
-    const url = `/${this.repo}/detail/${productId}/sales/detail/${productSaleCategoryId}`;
+    const url =
+      `/${this.repo}/detail/${productId}/sales/detail/${productSaleCategoryId}`;
 
     if (!productId) return;
     const res = await authApi.delete(url);
@@ -158,8 +176,15 @@ export class ProductApiService extends BaseApiService<ProductWhereInput, Product
       productSaleCategoryId: string;
       discount: number;
     },
-  ): Promise<GenericResponse<ProductSalesCategoriesResponse, "productSalesCategory"> | undefined> {
-    const url = `/${this.repo}/detail/${productId}/sales/detail/${productSaleCategoryId}`;
+  ): Promise<
+    | GenericResponse<
+      ProductSalesCategoriesResponse,
+      "productSalesCategory"
+    >
+    | undefined
+  > {
+    const url =
+      `/${this.repo}/detail/${productId}/sales/detail/${productSaleCategoryId}`;
 
     if (!productId && !productSaleCategoryId) return;
     const res = await authApi.patch(url, { discount });

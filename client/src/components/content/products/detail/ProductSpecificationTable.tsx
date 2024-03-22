@@ -32,7 +32,9 @@ interface ProductSpecificationTableProps {
   specs: ProductSpecification[];
 }
 
-export default function ProductSpecificationTable(props: ProductSpecificationTableProps) {
+export default function ProductSpecificationTable(
+  props: ProductSpecificationTableProps,
+) {
   const { specs } = props;
 
   return (
@@ -43,7 +45,11 @@ export default function ProductSpecificationTable(props: ProductSpecificationTab
           <TableHead>
             <TableRow>
               {columnHeader.map(col => {
-                return <TableCell key={col.id} align={col.align}>{col.name}</TableCell>;
+                return (
+                  <TableCell key={col.id} align={col.align}>
+                    {col.name}
+                  </TableCell>
+                );
               })}
             </TableRow>
           </TableHead>

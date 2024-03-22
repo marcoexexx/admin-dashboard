@@ -17,11 +17,16 @@ interface RegionInputFieldProps {
   updateField?: boolean;
 }
 
-export function RegionInputField({ updateField = false }: RegionInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<
-    { regionId: string; }
-  >();
-  const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
+export function RegionInputField(
+  { updateField = false }: RegionInputFieldProps,
+) {
+  const { control, setValue, getValues, formState: { errors } } =
+    useFormContext<
+      { regionId: string; }
+    >();
+  const [selectedRegion, setSelectedRegion] = useState<Region | null>(
+    null,
+  );
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
   const { dispatch } = useStore();
@@ -49,19 +54,26 @@ export function RegionInputField({ updateField = false }: RegionInputFieldProps)
     if (defaultRegion && updateField) setSelectedRegion(defaultRegion);
   }, [defaultRegion]);
 
-  const handleRegionChange = (_: React.SyntheticEvent, value: Region | null) => {
+  const handleRegionChange = (
+    _: React.SyntheticEvent,
+    value: Region | null,
+  ) => {
     if (value) {
       setSelectedRegion(value);
       setValue("regionId", value.id);
     }
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "create-region" });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -94,7 +106,8 @@ export function RegionInputField({ updateField = false }: RegionInputFieldProps)
             onClose={handleOnCloseOptions}
             value={selectedRegion}
             options={regions || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             getOptionLabel={option => option.name || ""}
             loading={isLoading}
             renderOption={(props, option) => (
@@ -125,7 +138,9 @@ export function RegionInputField({ updateField = false }: RegionInputFieldProps)
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

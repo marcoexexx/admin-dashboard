@@ -112,7 +112,9 @@ export default function HeaderUserBox() {
     return (
       <>
         <UserBoxButton color="error">
-          <UserBoxLabel>Failed: {try_user.value.message}: {try_user.value.kind}</UserBoxLabel>
+          <UserBoxLabel>
+            Failed: {try_user.value.message}: {try_user.value.kind}
+          </UserBoxLabel>
         </UserBoxButton>
       </>
     );
@@ -140,7 +142,11 @@ export default function HeaderUserBox() {
           }}
         >
           <UserBoxButton color="secondary" ref={ref} onClick={handleOpen}>
-            <Avatar variant="rounded" alt={try_user.value.name} src={try_user.value.image} />
+            <Avatar
+              variant="rounded"
+              alt={try_user.value.name}
+              src={try_user.value.image}
+            />
             <Hidden mdDown>
               <UserBoxText>
                 <UserBoxLabel>{try_user.value.name}</UserBoxLabel>
@@ -170,10 +176,18 @@ export default function HeaderUserBox() {
           }}
         >
           <MenuUserBox sx={{ minWidth: 210 }} display="flex">
-            <Avatar variant="rounded" alt={try_user.value.name} src={try_user.value.image} />
+            <Avatar
+              variant="rounded"
+              alt={try_user.value.name}
+              src={try_user.value.image}
+            />
             <UserBoxText>
-              <UserBoxLabel variant="body1">{try_user.value.name}</UserBoxLabel>
-              <UserBoxDescription variant="body2">{roleDisplay}</UserBoxDescription>
+              <UserBoxLabel variant="body1">
+                {try_user.value.name}
+              </UserBoxLabel>
+              <UserBoxDescription variant="body2">
+                {roleDisplay}
+              </UserBoxDescription>
             </UserBoxText>
           </MenuUserBox>
 
@@ -196,7 +210,9 @@ export default function HeaderUserBox() {
               <ListItemText primary="My Profile" />
             </ListItemButton>
 
-            <ListItemButton onClick={handleNavigate(`/${CacheResource.PickupAddress}`)}>
+            <ListItemButton
+              onClick={handleNavigate(`/${CacheResource.PickupAddress}`)}
+            >
               <ListItemIcon>
                 <MapIcon fontSize="small" />
               </ListItemIcon>
@@ -224,7 +240,9 @@ export default function HeaderUserBox() {
               <ListItemText primary="Wishlist" />
             </ListItemButton>
 
-            <ListItemButton onClick={handleNavigate(`/${CacheResource.AccessLog}`)}>
+            <ListItemButton
+              onClick={handleNavigate(`/${CacheResource.AccessLog}`)}
+            >
               <ListItemIcon>
                 <SecurityIcon fontSize="small" />
               </ListItemIcon>

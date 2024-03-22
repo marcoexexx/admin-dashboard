@@ -18,14 +18,17 @@ const uploadProfilePictureSchema = object({
   image: z.instanceof(FileList),
 });
 
-export type UploadProfilePictureInput = z.infer<typeof uploadProfilePictureSchema>;
+export type UploadProfilePictureInput = z.infer<
+  typeof uploadProfilePictureSchema
+>;
 
 export function UploadProfilePicture() {
   const { dispatch } = useStore();
 
   const { mutate: upload } = useMutation({
-    mutationFn: (...args: Parameters<typeof apiService.uploadProfilePicture>) =>
-      apiService.uploadProfilePicture(...args),
+    mutationFn: (
+      ...args: Parameters<typeof apiService.uploadProfilePicture>
+    ) => apiService.uploadProfilePicture(...args),
     onSuccess() {
       dispatch({
         type: "OPEN_TOAST",

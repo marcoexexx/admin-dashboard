@@ -17,11 +17,16 @@ interface SalesCategoriesInputFieldProps {
   updateField?: boolean;
 }
 
-export function SalesCategoriesInputField({ updateField = false }: SalesCategoriesInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors }, watch } = useFormContext<
-    { salesCategoryId: string; }
-  >();
-  const [selectedSaleCategory, setSelectedSaleCategory] = useState<SalesCategory | null>(null);
+export function SalesCategoriesInputField(
+  { updateField = false }: SalesCategoriesInputFieldProps,
+) {
+  const { control, setValue, getValues, formState: { errors }, watch } =
+    useFormContext<
+      { salesCategoryId: string; }
+    >();
+  const [selectedSaleCategory, setSelectedSaleCategory] = useState<
+    SalesCategory | null
+  >(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
   const { dispatch } = useStore();
@@ -46,22 +51,34 @@ export function SalesCategoriesInputField({ updateField = false }: SalesCategori
     : undefined;
 
   useEffect(() => {
-    if (defaultSalesCategory && updateField) setSelectedSaleCategory(defaultSalesCategory);
+    if (defaultSalesCategory && updateField) {
+      setSelectedSaleCategory(defaultSalesCategory);
+    }
   }, [defaultSalesCategory, watch("salesCategoryId")]);
 
-  const handleSaleCategoryChange = (_: React.SyntheticEvent, value: SalesCategory | null) => {
+  const handleSaleCategoryChange = (
+    _: React.SyntheticEvent,
+    value: SalesCategory | null,
+  ) => {
     if (value) {
       setSelectedSaleCategory(value);
       setValue("salesCategoryId", value.id);
     }
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "create-sales-category" });
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: "create-sales-category",
+    });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -94,7 +111,8 @@ export function SalesCategoriesInputField({ updateField = false }: SalesCategori
             onClose={handleOnCloseOptions}
             value={selectedSaleCategory}
             options={sales || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             getOptionLabel={option => option.name || ""}
             loading={isLoading}
             renderOption={(props, option) => (
@@ -126,7 +144,9 @@ export function SalesCategoriesInputField({ updateField = false }: SalesCategori
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

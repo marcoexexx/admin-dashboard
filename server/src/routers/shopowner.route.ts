@@ -42,7 +42,12 @@ router.route("/multi")
   );
 
 // Upload Routes
-router.post("/excel-upload", sudo, uploadExcel, createMultiShopownersHandler);
+router.post(
+  "/excel-upload",
+  sudo,
+  uploadExcel,
+  createMultiShopownersHandler,
+);
 
 router.route("/detail/:shopownerId")
   .get(

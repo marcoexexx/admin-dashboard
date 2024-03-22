@@ -14,11 +14,18 @@ import { UpdateProductSaleCategoryInput } from "../schemas/salesCategory.schema"
 import { checkUser } from "../services/checkUser";
 import { ProductSalesCategoryService } from "../services/productSalesCategory";
 import { ProductService } from "../services/productService";
-import { LifeCycleProductConcrate, LifeCycleState } from "../utils/auth/life-cycle-state";
+import {
+  LifeCycleProductConcrate,
+  LifeCycleState,
+} from "../utils/auth/life-cycle-state";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
 import { generateLabel } from "../utils/generateCouponLabel";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 const service = ProductService.new();
 const _saleService = ProductSalesCategoryService.new();
@@ -62,7 +69,10 @@ export async function getProductsHandler(
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, products] = (await service.tryFindManyWithCount(
@@ -135,7 +145,10 @@ export async function getProductHandler(
     } = convertStringToBoolean(query.include) ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const product = (await service.tryFindUnique({
@@ -158,11 +171,18 @@ export async function getProductHandler(
     })).ok_or_throw();
 
     if (!product) {
-      return next(AppError.new(StatusCode.NotFound, `Product '${productId}' not found`));
+      return next(
+        AppError.new(
+          StatusCode.NotFound,
+          `Product '${productId}' not found`,
+        ),
+      );
     }
 
     // Read event action audit log
-    if (product && sessionUser) (await service.audit(sessionUser)).ok_or_throw();
+    if (product && sessionUser) {
+      (await service.audit(sessionUser)).ok_or_throw();
+    }
 
     res.status(StatusCode.OK).json(HttpDataResponse({ product }));
   } catch (err) {
@@ -198,7 +218,10 @@ export async function createProductHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const product = (await service.tryCreate({
@@ -225,7 +248,9 @@ export async function createProductHandler(
           })),
         },
         salesCategory: {
-          create: (salesCategory || []).map(({ salesCategory: salesCategoryId, discount }) => ({
+          create: (salesCategory || []).map((
+            { salesCategory: salesCategoryId, discount },
+          ) => ({
             salesCategory: { connect: { id: salesCategoryId } },
             discount,
           })),
@@ -256,13 +281,17 @@ export async function createMultiProductsHandler(
   try {
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const excelFile = req.file;
     if (!excelFile) return res.status(StatusCode.NoContent);
 
-    const products = (await service.tryExcelUpload(excelFile, sessionUser)).ok_or_throw();
+    const products = (await service.tryExcelUpload(excelFile, sessionUser))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);
@@ -283,7 +312,10 @@ export async function deleteProductSaleCategoryHandler(
     const { productId, productSaleCategoryId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const _deleteProductSalesCategory = await _saleService.tryDelete({
@@ -302,7 +334,9 @@ export async function deleteProductSaleCategoryHandler(
     });
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success delete"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success delete"),
+    );
   } catch (err) {
     next(err);
   }
@@ -322,7 +356,10 @@ export async function updateProductSalesCategoryHandler(
     const { discount } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const productSalesCategory = (await _saleService.tryUpdate({
@@ -345,7 +382,9 @@ export async function updateProductSalesCategoryHandler(
     });
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ productSalesCategory }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ productSalesCategory }),
+    );
   } catch (err) {
     next(err);
   }
@@ -377,7 +416,10 @@ export async function deleteProductHandler(
     }
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const product = (await service.tryDelete({
@@ -411,7 +453,10 @@ export async function deleteMultiProductHandler(
     const { productIds } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const _deleteProducts = await service.tryDeleteMany({
@@ -433,14 +478,20 @@ export async function deleteMultiProductHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success delete"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success delete"),
+    );
   } catch (err) {
     next(err);
   }
 }
 
 export async function updateProductHandler(
-  req: Request<UpdateProductInput["params"], {}, UpdateProductInput["body"]>,
+  req: Request<
+    UpdateProductInput["params"],
+    {},
+    UpdateProductInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -480,22 +531,37 @@ export async function updateProductHandler(
       },
     })).ok_or_throw();
     if (!originalProductState) {
-      return next(AppError.new(StatusCode.NotFound, `Product ${productId} not found.`));
+      return next(
+        AppError.new(
+          StatusCode.NotFound,
+          `Product ${productId} not found.`,
+        ),
+      );
     }
 
-    const productLifeCycleState = new LifeCycleState<LifeCycleProductConcrate>({
+    const productLifeCycleState = new LifeCycleState<
+      LifeCycleProductConcrate
+    >({
       resource: "product",
       state: originalProductState.status,
     });
     const productState = productLifeCycleState.changeState(status);
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
-    if (!sessionUser.isSuperuser && productState === ProductStatus.Published) {
+    if (
+      !sessionUser.isSuperuser && productState === ProductStatus.Published
+    ) {
       return next(
-        AppError.new(StatusCode.BadRequest, `You do not have permission to access this resource.`),
+        AppError.new(
+          StatusCode.BadRequest,
+          `You do not have permission to access this resource.`,
+        ),
       );
     }
 
@@ -618,7 +684,11 @@ export async function updateProductHandler(
 
 // TODO: Remove
 export async function likeProductByUserHandler(
-  req: Request<LikeProductByUserInput["params"], {}, LikeProductByUserInput["body"]>,
+  req: Request<
+    LikeProductByUserInput["params"],
+    {},
+    LikeProductByUserInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -651,7 +721,11 @@ export async function likeProductByUserHandler(
 }
 
 export async function unLikeProductByUserHandler(
-  req: Request<LikeProductByUserInput["params"], {}, LikeProductByUserInput["body"]>,
+  req: Request<
+    LikeProductByUserInput["params"],
+    {},
+    LikeProductByUserInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -679,7 +753,9 @@ export async function unLikeProductByUserHandler(
       _auditLog.ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success Unlike"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success Unlike"),
+    );
   } catch (err) {
     next(err);
   }

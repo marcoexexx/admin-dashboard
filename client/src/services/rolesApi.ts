@@ -1,4 +1,7 @@
-import { CreateRoleInput, UpdateRoleInput } from "@/components/content/roles/forms";
+import {
+  CreateRoleInput,
+  UpdateRoleInput,
+} from "@/components/content/roles/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { RoleWhereInput } from "@/context/role";
 import { authApi } from "./authApi";
@@ -64,7 +67,9 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
     return data;
   }
 
-  async create(payload: CreateRoleInput): Promise<GenericResponse<Role, "role">> {
+  async create(
+    payload: CreateRoleInput,
+  ): Promise<GenericResponse<Role, "role">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -76,7 +81,8 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `Roles_${Date.now()}.xlsx`);

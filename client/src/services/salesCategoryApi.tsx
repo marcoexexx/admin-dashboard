@@ -78,12 +78,15 @@ export class SalesCategoryApiService
     return data;
   }
 
-  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<SalesCategory>> {
+  async uploadExcel(
+    buf: ArrayBuffer,
+  ): Promise<HttpListResponse<SalesCategory>> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `SalesCategories_${Date.now()}.xlsx`);
@@ -110,11 +113,15 @@ export class SalesCategoryApiService
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { salesCategoryIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { salesCategoryIds: ids },
+    });
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<SalesCategory, "salesCategory">> {
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<SalesCategory, "salesCategory">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

@@ -19,7 +19,11 @@ export function useGetSalesCategories({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.SalesCategory, { filter, pagination, include }] as CacheKey<
+    queryKey: [CacheResource.SalesCategory, {
+      filter,
+      pagination,
+      include,
+    }] as CacheKey<
       "sales-categories"
     >["list"],
     queryFn: args =>
@@ -31,9 +35,15 @@ export function useGetSalesCategories({
     select: data => data,
   });
 
-  const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
-    : Ok(query.data);
+  const try_data: Result<typeof query.data, AppError> =
+    !!query.error && query.isError
+      ? Err(
+        AppError.new(
+          (query.error as any).kind || AppErrorKind.ApiError,
+          query.error.message,
+        ),
+      )
+      : Ok(query.data);
 
   return {
     ...query,

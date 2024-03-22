@@ -29,7 +29,9 @@ export function RecentActivity({ user }: RecentActivityProps) {
   const theme = useTheme();
 
   const orderTotal = user._count.orders;
-  const orderCancelled = user.orders?.filter(order => order.status === "Cancelled").length;
+  const orderCancelled = user.orders?.filter(order =>
+    order.status === "Cancelled"
+  ).length;
 
   const favoriteProducts = user._count.favorites;
   const createdProducts = user._count.createdProducts;
@@ -58,7 +60,9 @@ export function RecentActivity({ user }: RecentActivityProps) {
               >
                 Total
               </Typography>
-              <Typography variant="h2" fontWeight={600}>{orderTotal}</Typography>
+              <Typography variant="h2" fontWeight={600}>
+                {orderTotal}
+              </Typography>
             </Box>
             <Box pr={8}>
               <Typography
@@ -69,7 +73,9 @@ export function RecentActivity({ user }: RecentActivityProps) {
                 Cancelled
               </Typography>
               {/* TODO: fetch total */}
-              <Typography variant="h2" fontWeight={600}>{orderCancelled}</Typography>
+              <Typography variant="h2" fontWeight={600}>
+                {orderCancelled}
+              </Typography>
             </Box>
           </Box>
         </Box>
@@ -93,7 +99,9 @@ export function RecentActivity({ user }: RecentActivityProps) {
               >
                 Products
               </Typography>
-              <Typography variant="h2" fontWeight={600}>{favoriteProducts}</Typography>
+              <Typography variant="h2" fontWeight={600}>
+                {favoriteProducts}
+              </Typography>
             </Box>
             <Box pr={8}>
               <Typography
@@ -103,7 +111,9 @@ export function RecentActivity({ user }: RecentActivityProps) {
               >
                 Created
               </Typography>
-              <Typography variant="h2" fontWeight={600}>{createdProducts}</Typography>
+              <Typography variant="h2" fontWeight={600}>
+                {createdProducts}
+              </Typography>
             </Box>
           </Box>
         </Box>
@@ -127,7 +137,9 @@ export function RecentActivity({ user }: RecentActivityProps) {
               >
                 Total
               </Typography>
-              <Typography variant="h2" fontWeight={600}>{reviewTotal}</Typography>
+              <Typography variant="h2" fontWeight={600}>
+                {reviewTotal}
+              </Typography>
             </Box>
           </Box>
         </Box>

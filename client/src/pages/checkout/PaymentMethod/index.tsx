@@ -38,7 +38,10 @@ const SelectionCardWrapper = styled(Box)<{
   justifyContent: "space-around",
 }));
 
-export const paymentMethodProviderImages: Record<PaymentMethodProvider, string> = {
+export const paymentMethodProviderImages: Record<
+  PaymentMethodProvider,
+  string
+> = {
   Cash: "cash.svg",
   AYAPay: "aya-pay.png",
   CBPay: "cb-pay.png",
@@ -50,12 +53,15 @@ export const paymentMethodProviderImages: Record<PaymentMethodProvider, string> 
 };
 
 export function PaymentMethodStep() {
-  const { setValue, getValues, formState: { errors } } = useFormContext<CreateOrderInput>();
+  const { setValue, getValues, formState: { errors } } = useFormContext<
+    CreateOrderInput
+  >();
 
   const selectedPayment = getValues("paymentMethodProvider");
 
   const handleChangeAddressType =
-    (payment: PaymentMethodProvider) => (_: React.MouseEvent<HTMLDivElement>) => {
+    (payment: PaymentMethodProvider) =>
+    (_: React.MouseEvent<HTMLDivElement>) => {
       setValue("paymentMethodProvider", payment);
     };
 
@@ -69,7 +75,10 @@ export function PaymentMethodStep() {
             <Box display="flex" flexDirection="column" gap={2}>
               {/* TODO: Form label */}
               <FormLabel>Choose the billing address</FormLabel>
-              <AddressInputField fieldName="billingAddressId" updateField />
+              <AddressInputField
+                fieldName="billingAddressId"
+                updateField
+              />
             </Box>
           </CardContent>
         </Card>
@@ -77,12 +86,16 @@ export function PaymentMethodStep() {
         <Box display="flex" flexDirection="column" gap={1}>
           <Typography>Select the payment method</Typography>
           <Grid container gap={1}>
-            {(Object.keys(PaymentMethodProvider) as PaymentMethodProvider[]).map(payment => {
+            {(Object.keys(
+              PaymentMethodProvider,
+            ) as PaymentMethodProvider[]).map(payment => {
               return (
                 <Grid key={payment} item xs={3.8}>
                   <SelectionCardWrapper
                     key={payment}
-                    error={!!errors.paymentMethodProvider ? "true" : "false"}
+                    error={!!errors.paymentMethodProvider
+                      ? "true"
+                      : "false"}
                     active={selectedPayment === payment ? "true" : "false"}
                     onClick={handleChangeAddressType(payment)}
                   >
@@ -99,7 +112,9 @@ export function PaymentMethodStep() {
                         height: 40,
                       }}
                       alt={`payment-${payment}`}
-                      src={`/static/${paymentMethodProviderImages[payment]}`}
+                      src={`/static/${
+                        paymentMethodProviderImages[payment]
+                      }`}
                     />
                   </SelectionCardWrapper>
                 </Grid>

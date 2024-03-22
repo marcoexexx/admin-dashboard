@@ -32,7 +32,8 @@ export function ExchangesFilterForm() {
     },
   });
 
-  const { handleSubmit, register, formState: { errors }, setValue } = methods;
+  const { handleSubmit, register, formState: { errors }, setValue } =
+    methods;
 
   const onSubmit: SubmitHandler<FilterExchangesInput> = (value) => {
     const { to, from, rate, startDate, endDate } = value;
@@ -82,13 +83,19 @@ export function ExchangesFilterForm() {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
               fullWidth
               {...register("rate", {
-                setValueAs: value => value === "" ? undefined : parseInt(value, 10),
+                setValueAs: value =>
+                  value === "" ? undefined : parseInt(value, 10),
               })}
               defaultValue={filterQuery.get("rate")}
               type="number"
@@ -149,7 +156,13 @@ export function ExchangesFilterForm() {
         </Grid>
 
         <Grid item>
-          <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
+          <MuiButton
+            onClick={handleOnClickReset}
+            variant="outlined"
+            type="button"
+          >
+            Reset
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

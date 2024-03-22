@@ -5,9 +5,18 @@ import {
 } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
 import { useBeforeUnloadPage } from "@/hooks";
-import { useGetUserAddress, useUpdateUserAddress } from "@/hooks/userAddress";
+import {
+  useGetUserAddress,
+  useUpdateUserAddress,
+} from "@/hooks/userAddress";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
+import {
+  Box,
+  FormControlLabel,
+  Grid,
+  Switch,
+  TextField,
+} from "@mui/material";
 import { useEffect } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
@@ -22,16 +31,22 @@ const updateUserAddressSchema = object({
   email: string().email().optional(),
   regionId: string({ required_error: "region is required" }),
   townshipFeesId: string({ required_error: "township is required" }),
-  fullAddress: string({ required_error: "fullAddress is required" }).max(128),
+  fullAddress: string({ required_error: "fullAddress is required" }).max(
+    128,
+  ),
   remark: string().optional(),
 });
 
-export type UpdateUserAddressInput = z.infer<typeof updateUserAddressSchema>;
+export type UpdateUserAddressInput = z.infer<
+  typeof updateUserAddressSchema
+>;
 
 export function UpdateUserAddressForm() {
   const { userAddressId } = useParams();
 
-  const { try_data, isSuccess, fetchStatus } = useGetUserAddress({ id: userAddressId });
+  const { try_data, isSuccess, fetchStatus } = useGetUserAddress({
+    id: userAddressId,
+  });
   const { mutate: updateUserAddress, isPending } = useUpdateUserAddress();
 
   const userAddress = try_data.ok_or_throw()?.userAddress;
@@ -51,7 +66,9 @@ export function UpdateUserAddressForm() {
       methods.setValue("remark", userAddress.remark);
       methods.setValue("isDefault", userAddress.isDefault);
 
-      if (userAddress.regionId) methods.setValue("regionId", userAddress.regionId);
+      if (userAddress.regionId) {
+        methods.setValue("regionId", userAddress.regionId);
+      }
       if (userAddress.townshipFeesId) {
         methods.setValue("townshipFeesId", userAddress.townshipFeesId);
       }
@@ -61,13 +78,20 @@ export function UpdateUserAddressForm() {
   const { handleSubmit, register, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<UpdateUserAddressInput> = (value) => {
-    if (userAddressId) updateUserAddress({ id: userAddressId, payload: value });
+    if (userAddressId) {
+      updateUserAddress({ id: userAddressId, payload: value });
+    }
   };
 
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item md={6} xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -76,7 +100,9 @@ export function UpdateUserAddressForm() {
                 focused
                 label="Username"
                 error={!!errors.username}
-                helperText={!!errors.username ? errors.username.message : ""}
+                helperText={!!errors.username
+                  ? errors.username.message
+                  : ""}
               />
               <RegionInputField updateField />
             </Box>
@@ -117,7 +143,9 @@ export function UpdateUserAddressForm() {
                 focused
                 label="Full address"
                 error={!!errors.fullAddress}
-                helperText={!!errors.fullAddress ? errors.fullAddress.message : ""}
+                helperText={!!errors.fullAddress
+                  ? errors.fullAddress.message
+                  : ""}
               />
             </Box>
           </Grid>
@@ -135,7 +163,13 @@ export function UpdateUserAddressForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={isPending}>Save</MuiButton>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={isPending}
+            >
+              Save
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

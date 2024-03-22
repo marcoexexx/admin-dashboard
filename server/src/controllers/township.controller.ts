@@ -11,7 +11,11 @@ import { TownshipService } from "../services/township";
 import { StatusCode } from "../utils/appError";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 const service = TownshipService.new();
 
@@ -25,11 +29,15 @@ export async function getTownshipsHandler(
 
     const { id, name, fees } = query.filter ?? {};
     const { page, pageSize } = query.pagination ?? {};
-    const { _count, userAddresses, region } = convertStringToBoolean(query.include) ?? {};
+    const { _count, userAddresses, region } =
+      convertStringToBoolean(query.include) ?? {};
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, townships] = (await service.tryFindManyWithCount(
@@ -58,10 +66,14 @@ export async function getTownshipHandler(
     const query = convertNumericStrings(req.query);
 
     const { townshipId } = req.params;
-    const { _count, userAddresses, region } = convertStringToBoolean(query.include) ?? {};
+    const { _count, userAddresses, region } =
+      convertStringToBoolean(query.include) ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const township = (await service.tryFindUnique({
@@ -97,10 +109,14 @@ export async function createMultiTownshipsHandler(
     if (!excelFile) return res.status(StatusCode.NoContent);
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
-    const townships = (await service.tryExcelUpload(excelFile)).ok_or_throw();
+    const townships = (await service.tryExcelUpload(excelFile))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);
@@ -121,7 +137,10 @@ export async function createTownshipHandler(
     const { name, fees } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const township = (await service.tryCreate({
@@ -147,7 +166,10 @@ export async function deleteTownshipHandler(
     const { townshipId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const township = (await service.tryDelete({
@@ -175,7 +197,10 @@ export async function deleteMultilTownshipsHandler(
     const { townshipIds } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const _deleteTownshipFees = await service.tryDeleteMany({
@@ -191,14 +216,20 @@ export async function deleteMultilTownshipsHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
     next(err);
   }
 }
 
 export async function updateTownshipHandler(
-  req: Request<UpdateTownshipInput["params"], {}, UpdateTownshipInput["body"]>,
+  req: Request<
+    UpdateTownshipInput["params"],
+    {},
+    UpdateTownshipInput["body"]
+  >,
   res: Response,
   next: NextFunction,
 ) {
@@ -207,7 +238,10 @@ export async function updateTownshipHandler(
     const { name, fees } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const township = (await service.tryUpdate({

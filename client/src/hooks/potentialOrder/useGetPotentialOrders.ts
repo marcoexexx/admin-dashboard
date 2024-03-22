@@ -19,7 +19,11 @@ export function useGetPotentialOrders({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.PotentialOrder, { filter, pagination, include }] as CacheKey<
+    queryKey: [CacheResource.PotentialOrder, {
+      filter,
+      pagination,
+      include,
+    }] as CacheKey<
       "potential-orders"
     >["list"],
     queryFn: args =>
@@ -31,9 +35,15 @@ export function useGetPotentialOrders({
     select: data => data,
   });
 
-  const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
-    : Ok(query.data);
+  const try_data: Result<typeof query.data, AppError> =
+    !!query.error && query.isError
+      ? Err(
+        AppError.new(
+          (query.error as any).kind || AppErrorKind.ApiError,
+          query.error.message,
+        ),
+      )
+      : Ok(query.data);
 
   return {
     ...query,

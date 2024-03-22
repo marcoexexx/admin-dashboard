@@ -36,14 +36,18 @@ export class LifeCycleState<T extends LifeCycleStateConcrate> {
   public changeState(state: T["state"]): T["state"] {
     switch (this.concrate.resource) {
       case "order": {
-        const toChangeState = this.changeStateOnOrder(state as OrderStatus) as (
+        const toChangeState = this.changeStateOnOrder(
+          state as OrderStatus,
+        ) as (
           state: T["state"],
         ) => T["state"];
         return toChangeState(this.concrate.state);
       }
 
       case "product": {
-        const toChangeState = this.changeStateOnProduct(state as ProductStatus) as (
+        const toChangeState = this.changeStateOnProduct(
+          state as ProductStatus,
+        ) as (
           state: T["state"],
         ) => T["state"];
         return toChangeState(this.concrate.state);
@@ -56,7 +60,9 @@ export class LifeCycleState<T extends LifeCycleStateConcrate> {
     }
   }
 
-  private changeStateOnOrder(state: OrderStatus): (state: OrderStatus) => OrderStatus {
+  private changeStateOnOrder(
+    state: OrderStatus,
+  ): (state: OrderStatus) => OrderStatus {
     const context = {
       [OrderStatus.Processing]: handleTryOnProcessOrderStatus()[state],
       [OrderStatus.Pending]: handleTryOnPendingOrderStatus()[state],
@@ -67,10 +73,13 @@ export class LifeCycleState<T extends LifeCycleStateConcrate> {
     return (toState: OrderStatus) => context[toState]();
   }
 
-  private changeStateOnProduct(state: ProductStatus): (state: ProductStatus) => ProductStatus {
+  private changeStateOnProduct(
+    state: ProductStatus,
+  ): (state: ProductStatus) => ProductStatus {
     const context = {
       [ProductStatus.Pending]: handleTryOnPendingProductStatus()[state],
-      [ProductStatus.Published]: handleTryOnPublishedProductStatus()[state],
+      [ProductStatus.Published]:
+        handleTryOnPublishedProductStatus()[state],
       [ProductStatus.Draft]: handleTryOnDraftProductStatus()[state],
     };
     return (toState: ProductStatus) => context[toState]();
@@ -81,7 +90,9 @@ export class LifeCycleState<T extends LifeCycleStateConcrate> {
  * Debug
  */
 if (require.main === module) {
-  const productLifeCycleState = new LifeCycleState<LifeCycleProductConcrate>({
+  const productLifeCycleState = new LifeCycleState<
+    LifeCycleProductConcrate
+  >({
     resource: "product",
     state: ProductStatus.Draft,
   });

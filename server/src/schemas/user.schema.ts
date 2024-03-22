@@ -16,7 +16,9 @@ export const createUserSchema = object({
     password: string({ required_error: "Password id required" })
       .min(8)
       .max(32),
-    passwordConfirm: string({ required_error: "Please confirm your password" }),
+    passwordConfirm: string({
+      required_error: "Please confirm your password",
+    }),
   }).refine(data => data.password === data.passwordConfirm, {
     path: ["passwordConfirm"],
     message: "Password do not match",
@@ -70,7 +72,9 @@ export const updateUserSchema = {
   }),
   removeBlockdUser: object({
     params: object({
-      blockedUserId: string({ required_error: "Blocked user id is required." }),
+      blockedUserId: string({
+        required_error: "Blocked user id is required.",
+      }),
     }),
   }),
   // deleteUser: object({})
@@ -88,7 +92,9 @@ export const updateSelfUserSchema = {
       password: string({ required_error: "Password id required" })
         .min(8)
         .max(32),
-      passwordConfirm: string({ required_error: "Please confirm your password" }),
+      passwordConfirm: string({
+        required_error: "Please confirm your password",
+      }),
     }).refine(data => data.password === data.passwordConfirm, {
       path: ["passwordConfirm"],
       message: "Password do not match",
@@ -96,7 +102,8 @@ export const updateSelfUserSchema = {
   }),
   changeUsername: object({
     body: object({
-      username: string({ required_error: "Username is required." }).min(3).max(12),
+      username: string({ required_error: "Username is required." }).min(3)
+        .max(12),
     }),
   }),
 };
@@ -111,15 +118,33 @@ export const resendEmailVerificationSchema = object({
 export type CreateUserInput = z.infer<typeof createUserSchema>["body"];
 export type LoginUserInput = z.infer<typeof loginUserSchema>["body"];
 export type GetUserInput = z.infer<typeof getUserSchema>["params"];
-export type GetUserByUsernameInput = z.infer<typeof getUserByUsernameSchema>["params"];
-export type UploadImageUserInput = z.infer<typeof uploadImageProfileSchema>["body"];
-export type VerificationEmailInput = z.infer<typeof veriffyEmailSchema>["params"];
-export type ResendEmailVerificationInput = z.infer<typeof resendEmailVerificationSchema>["body"];
+export type GetUserByUsernameInput = z.infer<
+  typeof getUserByUsernameSchema
+>["params"];
+export type UploadImageUserInput = z.infer<
+  typeof uploadImageProfileSchema
+>["body"];
+export type VerificationEmailInput = z.infer<
+  typeof veriffyEmailSchema
+>["params"];
+export type ResendEmailVerificationInput = z.infer<
+  typeof resendEmailVerificationSchema
+>["body"];
 
-export type CreateBlockUserInput = z.infer<typeof updateUserSchema["createBlockUser"]>;
-export type RemoveBlockedUserInput = z.infer<typeof updateUserSchema["removeBlockdUser"]>;
+export type CreateBlockUserInput = z.infer<
+  typeof updateUserSchema["createBlockUser"]
+>;
+export type RemoveBlockedUserInput = z.infer<
+  typeof updateUserSchema["removeBlockdUser"]
+>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema["update"]>;
 
-export type ChangeEmailInput = z.infer<typeof updateSelfUserSchema["changeEmail"]>;
-export type ChangePasswordInput = z.infer<typeof updateSelfUserSchema["changePassword"]>;
-export type ChangeUsernameInput = z.infer<typeof updateSelfUserSchema["changeUsername"]>;
+export type ChangeEmailInput = z.infer<
+  typeof updateSelfUserSchema["changeEmail"]
+>;
+export type ChangePasswordInput = z.infer<
+  typeof updateSelfUserSchema["changePassword"]
+>;
+export type ChangeUsernameInput = z.infer<
+  typeof updateSelfUserSchema["changeUsername"]
+>;

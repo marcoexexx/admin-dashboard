@@ -25,14 +25,25 @@ export function Carts() {
 
   return (
     <Container>
-      <Grid container justifyContent="space-between" alignItems="center" rowGap={3}>
+      <Grid
+        container
+        justifyContent="space-between"
+        alignItems="center"
+        rowGap={3}
+      >
         <Grid item xs={12}>
-          <Typography variant="h3" component="h3" gutterBottom>Shopping carts</Typography>
+          <Typography variant="h3" component="h3" gutterBottom>
+            Shopping carts
+          </Typography>
           <CartsTable />
         </Grid>
 
         <Grid item xs={6}>
-          <MuiButton onClick={handleNavigate} loading={isLoading} disabled={disableCheckout}>
+          <MuiButton
+            onClick={handleNavigate}
+            loading={isLoading}
+            disabled={disableCheckout}
+          >
             Checkout
           </MuiButton>
         </Grid>

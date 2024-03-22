@@ -17,10 +17,13 @@ interface BrandInputFieldProps {
   updateField?: boolean;
 }
 
-export function BrandInputField({ updateField = false }: BrandInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<
-    { brandId: string; }
-  >();
+export function BrandInputField(
+  { updateField = false }: BrandInputFieldProps,
+) {
+  const { control, setValue, getValues, formState: { errors } } =
+    useFormContext<
+      { brandId: string; }
+    >();
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
@@ -49,19 +52,26 @@ export function BrandInputField({ updateField = false }: BrandInputFieldProps) {
     if (defaultBrand && updateField) setSelectedBrand(defaultBrand);
   }, [defaultBrand]);
 
-  const handleBrandChange = (_: React.SyntheticEvent, value: Brand | null) => {
+  const handleBrandChange = (
+    _: React.SyntheticEvent,
+    value: Brand | null,
+  ) => {
     if (value) {
       setSelectedBrand(value);
       setValue("brandId", value.id);
     }
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "create-brand" });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -94,7 +104,8 @@ export function BrandInputField({ updateField = false }: BrandInputFieldProps) {
             onClose={handleOnCloseOptions}
             value={selectedBrand}
             options={brands || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             getOptionLabel={option => option.name || ""}
             loading={isLoading}
             renderOption={(props, option) => (
@@ -125,7 +136,9 @@ export function BrandInputField({ updateField = false }: BrandInputFieldProps) {
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

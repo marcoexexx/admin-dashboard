@@ -20,21 +20,28 @@ import ProductSpecificationTable from "./ProductSpecificationTable";
 
 dayjs.extend(isBetween);
 
-export const calculateProductDiscount = memoize((product: Product | undefined) => {
-  if (!product) return { saving: 0, productDiscountAmount: 0 };
+export const calculateProductDiscount = memoize(
+  (product: Product | undefined) => {
+    if (!product) return { saving: 0, productDiscountAmount: 0 };
 
-  const originalProductDiscount = product.discount;
-  const activeSaleDiscount = product.salesCategory?.find(sale =>
-    sale.salesCategory.isActive
-    && dayjs().isBetween(sale.salesCategory.startDate, sale.salesCategory.endDate)
-    && sale.salesCategory.isActive
-  )?.discount;
+    const originalProductDiscount = product.discount;
+    const activeSaleDiscount = product.salesCategory?.find(sale =>
+      sale.salesCategory.isActive
+      && dayjs().isBetween(
+        sale.salesCategory.startDate,
+        sale.salesCategory.endDate,
+      )
+      && sale.salesCategory.isActive
+    )?.discount;
 
-  const productDiscountPercent = activeSaleDiscount ?? originalProductDiscount; // saleDiscount may be 0 due to the active sale discount
-  const productDiscountAmount = product.price - (product.price * productDiscountPercent) / 100;
+    const productDiscountPercent = activeSaleDiscount
+      ?? originalProductDiscount; // saleDiscount may be 0 due to the active sale discount
+    const productDiscountAmount = product.price
+      - (product.price * productDiscountPercent) / 100;
 
-  return { productDiscountAmount, productDiscountPercent };
-});
+    return { productDiscountAmount, productDiscountPercent };
+  },
+);
 
 const ActionsWrapper = styled(Box)(({ theme }) => ({
   background: theme.colors.alpha.black[5],
@@ -53,8 +60,10 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
   const { try_data } = useGetCart();
 
   const { mutate: addToCart, isPending: cartIsPending } = useAddToCart();
-  const { mutate: likeProduct, isPending: likeIsPending } = useLikeProduct();
-  const { mutate: unLikeProduct, isPending: unLikeIsPending } = useUnLikeProduct();
+  const { mutate: likeProduct, isPending: likeIsPending } =
+    useLikeProduct();
+  const { mutate: unLikeProduct, isPending: unLikeIsPending } =
+    useUnLikeProduct();
 
   const itemsInCart = try_data.ok_or_throw()?.orderItems || [];
 
@@ -89,18 +98,23 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
   const isPending = likeIsPending || unLikeIsPending;
 
   const handleOnLikeProduct = () => {
-    if (state.user) likeProduct({ productId: product.id, userId: state.user.id });
+    if (state.user) {
+      likeProduct({ productId: product.id, userId: state.user.id });
+    }
   };
 
   const handleOnUnLikeProduct = () => {
-    if (state.user) unLikeProduct({ productId: product.id, userId: state.user.id });
+    if (state.user) {
+      unLikeProduct({ productId: product.id, userId: state.user.id });
+    }
   };
 
-  const isLiked =
-    (product as Product & { likedUsers: { productId: string; userId: string; }[]; }).likedUsers
-        .find(fav => fav.userId === state.user?.id)
-      ? true
-      : false;
+  const isLiked = (product as Product & {
+      likedUsers: { productId: string; userId: string; }[];
+    }).likedUsers
+      .find(fav => fav.userId === state.user?.id)
+    ? true
+    : false;
 
   return (
     <>
@@ -121,11 +135,17 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
           width="70%"
           gap={2}
         >
-          <Typography variant="h3" sx={{ py: 3 }}>{product.title}</Typography>
+          <Typography variant="h3" sx={{ py: 3 }}>
+            {product.title}
+          </Typography>
 
           <Box>
-            <Typography variant="h4" sx={{ py: 1 }}>Description</Typography>
-            <div dangerouslySetInnerHTML={{ __html: product.description }} />
+            <Typography variant="h4" sx={{ py: 1 }}>
+              Description
+            </Typography>
+            <div
+              dangerouslySetInnerHTML={{ __html: product.description }}
+            />
           </Box>
 
           <Box>
@@ -174,7 +194,12 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
           justifyContent: "space-between",
         }}
       >
-        <Box display="flex" flexDirection={{ xs: "column", sm: "row" }} alignItems="start" gap={1}>
+        <Box
+          display="flex"
+          flexDirection={{ xs: "column", sm: "row" }}
+          alignItems="start"
+          gap={1}
+        >
           <MuiButton
             fullWidth
             startIcon={isLiked

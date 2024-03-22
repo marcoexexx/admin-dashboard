@@ -3,7 +3,15 @@ import clsx from "clsx";
 import { MuiButton } from "@/components/ui";
 import { CacheResource } from "@/context/cacheKey";
 import { useStore } from "@/hooks";
-import { alpha, Box, Collapse, List, ListItem, ListSubheader, styled } from "@mui/material";
+import {
+  alpha,
+  Box,
+  Collapse,
+  List,
+  ListItem,
+  ListSubheader,
+  styled,
+} from "@mui/material";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -138,7 +146,10 @@ const SubMenuWrapper = styled(Box)(({ theme }) => ({
               content: "' '",
               background: theme.colors.alpha.trueWhite[100],
               opacity: 0,
-              transition: theme.transitions.create(["transform", "opacity"]),
+              transition: theme.transitions.create([
+                "transform",
+                "opacity",
+              ]),
               width: "6px",
               height: "6px",
               transform: "scale(0)",
@@ -191,12 +202,13 @@ export default function SlidebarMenu() {
     state: false,
   });
 
-  const handleOpenMenu = (menue: SlideMenue) => (_: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(menue);
-    dispatch({
-      type: "CLOSE_SLIDEBAR",
-    });
-  };
+  const handleOpenMenu =
+    (menue: SlideMenue) => (_: React.MouseEvent<HTMLButtonElement>) => {
+      navigate(menue);
+      dispatch({
+        type: "CLOSE_SLIDEBAR",
+      });
+    };
 
   const handleToggleExpandMenu =
     (id: ExpandMenu["id"]) => (_: React.MouseEvent<HTMLButtonElement>) => {
@@ -225,7 +237,9 @@ export default function SlidebarMenu() {
             <List component="div">
               <ListItem component="div">
                 <MuiButton
-                  className={clsx({ "active": currentMenu === "/overview" })}
+                  className={clsx({
+                    "active": currentMenu === "/overview",
+                  })}
                   onClick={handleOpenMenu("/overview")}
                   startIcon={<DesignServicesTwoToneIcon />}
                 >
@@ -248,7 +262,9 @@ export default function SlidebarMenu() {
             <List component="div">
               <ListItem component="div">
                 <MuiButton
-                  className={clsx({ "active": currentMenu === "/inventory" })}
+                  className={clsx({
+                    "active": currentMenu === "/inventory",
+                  })}
                   onClick={handleOpenMenu("/inventory")}
                   startIcon={<InventoryIcon />}
                 >
@@ -266,7 +282,9 @@ export default function SlidebarMenu() {
               </ListItem>
               <ListItem component="div">
                 <MuiButton
-                  className={clsx({ "active": currentMenu === "/settings" })}
+                  className={clsx({
+                    "active": currentMenu === "/settings",
+                  })}
                   onClick={handleOpenMenu("/settings")}
                   startIcon={<SettingsIcon />}
                 >
@@ -304,7 +322,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/products" })}
+                      className={clsx({
+                        "active": currentMenu === "/products",
+                      })}
                       onClick={handleOpenMenu("/products")}
                     >
                       <DotWrapper />
@@ -313,7 +333,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/products/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/products/create",
+                      })}
                       onClick={handleOpenMenu("/products/create")}
                     >
                       <DotWrapper />
@@ -340,7 +362,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/potential-orders" })}
+                      className={clsx({
+                        "active": currentMenu === "/potential-orders",
+                      })}
                       onClick={handleOpenMenu("/potential-orders")}
                     >
                       <DotWrapper />
@@ -349,7 +373,10 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/potential-orders/create" })}
+                      className={clsx({
+                        "active":
+                          currentMenu === "/potential-orders/create",
+                      })}
                       onClick={handleOpenMenu("/potential-orders/create")}
                     >
                       <DotWrapper />
@@ -376,7 +403,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/regions" })}
+                      className={clsx({
+                        "active": currentMenu === "/regions",
+                      })}
                       onClick={handleOpenMenu("/regions")}
                     >
                       <DotWrapper />
@@ -385,7 +414,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/regions/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/regions/create",
+                      })}
                       onClick={handleOpenMenu("/regions/create")}
                     >
                       <DotWrapper />
@@ -412,7 +443,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/townships" })}
+                      className={clsx({
+                        "active": currentMenu === "/townships",
+                      })}
                       onClick={handleOpenMenu("/townships")}
                     >
                       <DotWrapper />
@@ -421,7 +454,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/townships/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/townships/create",
+                      })}
                       onClick={handleOpenMenu("/townships/create")}
                     >
                       <DotWrapper />
@@ -448,7 +483,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/coupons" })}
+                      className={clsx({
+                        "active": currentMenu === "/coupons",
+                      })}
                       onClick={handleOpenMenu("/coupons")}
                     >
                       <DotWrapper />
@@ -457,7 +494,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/coupons/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/coupons/create",
+                      })}
                       onClick={handleOpenMenu("/coupons/create")}
                     >
                       <DotWrapper />
@@ -484,7 +523,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/exchanges" })}
+                      className={clsx({
+                        "active": currentMenu === "/exchanges",
+                      })}
                       onClick={handleOpenMenu("/exchanges")}
                     >
                       <DotWrapper />
@@ -493,7 +534,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/exchanges/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/exchanges/create",
+                      })}
                       onClick={handleOpenMenu("/exchanges/create")}
                     >
                       <DotWrapper />
@@ -520,7 +563,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/brands" })}
+                      className={clsx({
+                        "active": currentMenu === "/brands",
+                      })}
                       onClick={handleOpenMenu("/brands")}
                     >
                       <DotWrapper />
@@ -529,7 +574,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/brands/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/brands/create",
+                      })}
                       onClick={handleOpenMenu("/brands/create")}
                     >
                       <DotWrapper />
@@ -556,7 +603,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/categories" })}
+                      className={clsx({
+                        "active": currentMenu === "/categories",
+                      })}
                       onClick={handleOpenMenu("/categories")}
                     >
                       <DotWrapper />
@@ -565,7 +614,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/categories/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/categories/create",
+                      })}
                       onClick={handleOpenMenu("/categories/create")}
                     >
                       <DotWrapper />
@@ -592,7 +643,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/sales-categories" })}
+                      className={clsx({
+                        "active": currentMenu === "/sales-categories",
+                      })}
                       onClick={handleOpenMenu("/sales-categories")}
                     >
                       <DotWrapper />
@@ -601,7 +654,10 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/sales-categories/create" })}
+                      className={clsx({
+                        "active":
+                          currentMenu === "/sales-categories/create",
+                      })}
                       onClick={handleOpenMenu("/sales-categories/create")}
                     >
                       <DotWrapper />
@@ -628,7 +684,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/users" })}
+                      className={clsx({
+                        "active": currentMenu === "/users",
+                      })}
                       onClick={handleOpenMenu("/users")}
                     >
                       <DotWrapper />
@@ -655,7 +713,9 @@ export default function SlidebarMenu() {
                 <List component="div" disablePadding>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/roles" })}
+                      className={clsx({
+                        "active": currentMenu === "/roles",
+                      })}
                       onClick={handleOpenMenu("/roles")}
                     >
                       <DotWrapper />
@@ -664,7 +724,9 @@ export default function SlidebarMenu() {
                   </ListItem>
                   <ListItem component="div">
                     <MuiButton
-                      className={clsx({ "active": currentMenu === "/roles/create" })}
+                      className={clsx({
+                        "active": currentMenu === "/roles/create",
+                      })}
                       onClick={handleOpenMenu("/roles/create")}
                     >
                       <DotWrapper />
@@ -680,9 +742,13 @@ export default function SlidebarMenu() {
                     {/* Permisison Menues */}
                     <ListItem component="div">
                       <MuiButton
-                        onClick={handleToggleExpandMenu(CacheResource.Permission)}
+                        onClick={handleToggleExpandMenu(
+                          CacheResource.Permission,
+                        )}
                         startIcon={<RemoveCircleIcon />}
-                        endIcon={getStateCurrentExpandMenu(CacheResource.Permission)
+                        endIcon={getStateCurrentExpandMenu(
+                            CacheResource.Permission,
+                          )
                           ? <ExpandLessIcon />
                           : <ExpandMoreIcon />}
                       >
@@ -690,11 +756,17 @@ export default function SlidebarMenu() {
                       </MuiButton>
                     </ListItem>
 
-                    <Collapse in={getStateCurrentExpandMenu(CacheResource.Permission)}>
+                    <Collapse
+                      in={getStateCurrentExpandMenu(
+                        CacheResource.Permission,
+                      )}
+                    >
                       <List component="div" disablePadding>
                         <ListItem component="div">
                           <MuiButton
-                            className={clsx({ "active": currentMenu === "/permissions" })}
+                            className={clsx({
+                              "active": currentMenu === "/permissions",
+                            })}
                             onClick={handleOpenMenu("/permissions")}
                           >
                             <DotWrapper />
@@ -703,7 +775,10 @@ export default function SlidebarMenu() {
                         </ListItem>
                         <ListItem component="div">
                           <MuiButton
-                            className={clsx({ "active": currentMenu === "/permissions/create" })}
+                            className={clsx({
+                              "active":
+                                currentMenu === "/permissions/create",
+                            })}
                             onClick={handleOpenMenu("/permissions/create")}
                           >
                             <DotWrapper />
@@ -722,9 +797,13 @@ export default function SlidebarMenu() {
                     {/* Shopowner Menues */}
                     <ListItem component="div">
                       <MuiButton
-                        onClick={handleToggleExpandMenu(CacheResource.Shopowner)}
+                        onClick={handleToggleExpandMenu(
+                          CacheResource.Shopowner,
+                        )}
                         startIcon={<Groups3Icon />}
-                        endIcon={getStateCurrentExpandMenu(CacheResource.Shopowner)
+                        endIcon={getStateCurrentExpandMenu(
+                            CacheResource.Shopowner,
+                          )
                           ? <ExpandLessIcon />
                           : <ExpandMoreIcon />}
                       >
@@ -732,11 +811,17 @@ export default function SlidebarMenu() {
                       </MuiButton>
                     </ListItem>
 
-                    <Collapse in={getStateCurrentExpandMenu(CacheResource.Shopowner)}>
+                    <Collapse
+                      in={getStateCurrentExpandMenu(
+                        CacheResource.Shopowner,
+                      )}
+                    >
                       <List component="div" disablePadding>
                         <ListItem component="div">
                           <MuiButton
-                            className={clsx({ "active": currentMenu === "/shopowners" })}
+                            className={clsx({
+                              "active": currentMenu === "/shopowners",
+                            })}
                             onClick={handleOpenMenu("/shopowners")}
                           >
                             <DotWrapper />
@@ -745,7 +830,10 @@ export default function SlidebarMenu() {
                         </ListItem>
                         <ListItem component="div">
                           <MuiButton
-                            className={clsx({ "active": currentMenu === "/shopowners/create" })}
+                            className={clsx({
+                              "active":
+                                currentMenu === "/shopowners/create",
+                            })}
                             onClick={handleOpenMenu("/shopowners/create")}
                           >
                             <DotWrapper />

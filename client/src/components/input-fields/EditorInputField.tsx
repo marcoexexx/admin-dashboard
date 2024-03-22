@@ -1,4 +1,9 @@
-import { FormControl, FormHelperText, styled, useTheme } from "@mui/material";
+import {
+  FormControl,
+  FormHelperText,
+  styled,
+  useTheme,
+} from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -20,7 +25,12 @@ export function EditorInputField({ fieldName }: EditorInputFieldProps) {
         name={fieldName}
         control={control}
         render={({ field, fieldState }) => (
-          <FormControl required fullWidth error={!!fieldState.error} component="fieldset">
+          <FormControl
+            required
+            fullWidth
+            error={!!fieldState.error}
+            component="fieldset"
+          >
             <EditorWrapper
               {...field}
               value={field.value}

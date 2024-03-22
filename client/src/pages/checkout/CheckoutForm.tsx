@@ -1,6 +1,9 @@
 import cryptoRandomString from "crypto-random-string";
 
-import { CreateOrderInput, createOrderSchema } from "@/components/content/orders/forms";
+import {
+  CreateOrderInput,
+  createOrderSchema,
+} from "@/components/content/orders/forms";
 import { CreatePickupAddressForm } from "@/components/content/pickupAddressHistory/forms";
 import { CreatePotentialOrderInput } from "@/components/content/potential-orders/forms";
 import { CreateRegionForm } from "@/components/content/regions/forms";
@@ -11,7 +14,10 @@ import { MuiButton } from "@/components/ui";
 import { useBeforeUnloadPage, useLocalStorage, useStore } from "@/hooks";
 import { useDeleteCart, useGetCart } from "@/hooks/cart";
 import { useCreateOrder } from "@/hooks/order";
-import { useCreatePotentialOrder, useDeletePotentialOrder } from "@/hooks/potentialOrder";
+import {
+  useCreatePotentialOrder,
+  useDeletePotentialOrder,
+} from "@/hooks/potentialOrder";
 import { useGetUserAddress } from "@/hooks/userAddress";
 import { AddressType, PotentialOrderStatus } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,13 +68,17 @@ const QontoConnector = styled(StepConnector)(({ theme }) => ({
     },
   },
   [`& .${stepConnectorClasses.line}`]: {
-    borderColor: theme.palette.mode === "dark" ? theme.palette.grey[800] : "#eaeaf0",
+    borderColor: theme.palette.mode === "dark"
+      ? theme.palette.grey[800]
+      : "#eaeaf0",
     borderTopWidth: 3,
     borderRadius: 1,
   },
 }));
 
-const QontoStepIconRoot = styled("div")<{ ownerState: { active?: boolean; }; }>(
+const QontoStepIconRoot = styled("div")<
+  { ownerState: { active?: boolean; }; }
+>(
   ({ theme, ownerState }) => ({
     color: theme.colors.primary.lighter,
     display: "flex",
@@ -142,7 +152,13 @@ export function CheckoutForm() {
 
   useBeforeUnloadPage();
 
-  const { getValues, handleSubmit, setValue, watch, formState: { errors } } = methods;
+  const {
+    getValues,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = methods;
 
   // Queries
   const deliveryFeeQuery = useGetUserAddress({
@@ -159,7 +175,9 @@ export function CheckoutForm() {
   const createPotentialOrderMutation = useCreatePotentialOrder();
 
   // Extraction
-  const errorMessage = `Invalid input: ${Object.keys(errors)} errors found!`;
+  const errorMessage = `Invalid input: ${
+    Object.keys(errors)
+  } errors found!`;
   const deliveryFee = deliveryFeeQuery.try_data.ok_or_throw()?.userAddress;
 
   // After creating the order
@@ -168,7 +186,9 @@ export function CheckoutForm() {
       set("CHECKOUT_FORM_ACTIVE_STEP", activeStepIdx + 1);
       // Remove potential order
       const createdPotentialOrderId = getValues("createdPotentialOrderId");
-      if (createdPotentialOrderId) deletePotentialOrderMutation.mutate(createdPotentialOrderId);
+      if (createdPotentialOrderId) {
+        deletePotentialOrderMutation.mutate(createdPotentialOrderId);
+      }
       // Remove cart
       if (me?.cart?.id) deleteCartMutation.mutate(me.cart.id);
     }
@@ -176,10 +196,14 @@ export function CheckoutForm() {
 
   // After creating the potential order
   useEffect(() => {
-    const createdPotentialOrder = createPotentialOrderMutation.try_data.ok_or_throw();
+    const createdPotentialOrder = createPotentialOrderMutation.try_data
+      .ok_or_throw();
 
     if (createPotentialOrderMutation.isSuccess && createdPotentialOrder) {
-      setValue("createdPotentialOrderId", createdPotentialOrder.potentialOrder.id);
+      setValue(
+        "createdPotentialOrderId",
+        createdPotentialOrder.potentialOrder.id,
+      );
       setValue(
         "pickupAddressId",
         createdPotentialOrder.potentialOrder.pickupAddressId || undefined,
@@ -198,7 +222,8 @@ export function CheckoutForm() {
   // Initialize values from localStorage
   useEffect(() => {
     // Set form step
-    const activeStepIdxFromLocalStorage = get<number>("CHECKOUT_FORM_ACTIVE_STEP") || 0;
+    const activeStepIdxFromLocalStorage =
+      get<number>("CHECKOUT_FORM_ACTIVE_STEP") || 0;
     setActiveStepIdx(activeStepIdxFromLocalStorage);
 
     if (Array.isArray(cartItems) && cartItems.length) {
@@ -208,14 +233,23 @@ export function CheckoutForm() {
       );
     }
     if (values) {
-      if (values.pickupAddressId) setValue("pickupAddressId", values.pickupAddressId);
-      if (values.deliveryAddressId) setValue("deliveryAddressId", values.deliveryAddressId);
-      if (values.billingAddressId) setValue("billingAddressId", values.billingAddressId);
+      if (values.pickupAddressId) {
+        setValue("pickupAddressId", values.pickupAddressId);
+      }
+      if (values.deliveryAddressId) {
+        setValue("deliveryAddressId", values.deliveryAddressId);
+      }
+      if (values.billingAddressId) {
+        setValue("billingAddressId", values.billingAddressId);
+      }
       if (values.paymentMethodProvider) {
         setValue("paymentMethodProvider", values.paymentMethodProvider);
       }
       if (values.createdPotentialOrderId) {
-        setValue("createdPotentialOrderId", values.createdPotentialOrderId);
+        setValue(
+          "createdPotentialOrderId",
+          values.createdPotentialOrderId,
+        );
       }
     }
 
@@ -241,10 +275,17 @@ export function CheckoutForm() {
 
   // Go final step
   useEffect(() => {
-    if (isConfirmed && createOrderMutation.isSuccess && deletePotentialOrderMutation.isSuccess) {
+    if (
+      isConfirmed && createOrderMutation.isSuccess
+      && deletePotentialOrderMutation.isSuccess
+    ) {
       setActiveStepIdx(prev => prev += 1);
     }
-  }, [isConfirmed, createOrderMutation.isSuccess, deletePotentialOrderMutation.isSuccess]);
+  }, [
+    isConfirmed,
+    createOrderMutation.isSuccess,
+    deletePotentialOrderMutation.isSuccess,
+  ]);
 
   const onSubmit: SubmitHandler<CreateOrderInput> = (value) => {
     createOrderMutation.mutate(value);
@@ -260,8 +301,14 @@ export function CheckoutForm() {
     } = getValues();
 
     if (idx === 0) {
-      if (addressType === "Delivery" && !errors.deliveryAddressId && deliveryAddressId) return true;
-      if (addressType === "Pickup" && pickupAddressId && !errors.pickupAddressId) return true;
+      if (
+        addressType === "Delivery" && !errors.deliveryAddressId
+        && deliveryAddressId
+      ) return true;
+      if (
+        addressType === "Pickup" && pickupAddressId
+        && !errors.pickupAddressId
+      ) return true;
     }
 
     if (idx === 1) {
@@ -284,7 +331,8 @@ export function CheckoutForm() {
     if (activeStepIdx === 1) {
       // Check deliveryFee and create
       let payload: CreatePotentialOrderInput = {
-        id: value.createdPotentialOrderId || cryptoRandomString({ length: 24 }),
+        id: value.createdPotentialOrderId
+          || cryptoRandomString({ length: 24 }),
         orderItems: value.orderItems,
         billingAddressId: value.billingAddressId,
         paymentMethodProvider: value.paymentMethodProvider,
@@ -313,7 +361,9 @@ export function CheckoutForm() {
     }
   };
 
-  const handleConfirmOrder = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const handleConfirmOrder = (
+    evt: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const { target } = evt;
 
     setIsConfirmed(target.checked);
@@ -339,11 +389,17 @@ export function CheckoutForm() {
       {/* <button onClick={() => console.log(getValues())}>Print values</button> */}
 
       <Grid item xs={12}>
-        <Stepper alternativeLabel activeStep={activeStepIdx} connector={<QontoConnector />}>
+        <Stepper
+          alternativeLabel
+          activeStep={activeStepIdx}
+          connector={<QontoConnector />}
+        >
           {steps.map(label => {
             return (
               <Step key={label}>
-                <StepLabel StepIconComponent={QontoStepIcon}>{label}</StepLabel>
+                <StepLabel StepIconComponent={QontoStepIcon}>
+                  {label}
+                </StepLabel>
               </Step>
             );
           })}
@@ -353,7 +409,10 @@ export function CheckoutForm() {
       <Hidden lgUp>
         <Grid item xs={12}>
           <ErrorBoundary>
-            <OrderSummary deliveryFee={deliveryFee?.township?.fees} orderItems={cartItems} />
+            <OrderSummary
+              deliveryFee={deliveryFee?.township?.fees}
+              orderItems={cartItems}
+            />
           </ErrorBoundary>
         </Grid>
 
@@ -375,11 +434,18 @@ export function CheckoutForm() {
                     ? (
                       <FormGroup sx={{ p: 1 }}>
                         <FormControlLabel
-                          control={<Checkbox value={isConfirmed} onChange={handleConfirmOrder} />}
+                          control={
+                            <Checkbox
+                              value={isConfirmed}
+                              onChange={handleConfirmOrder}
+                            />
+                          }
                           label={
                             <Typography>
                               I have read and agreed to the website{" "}
-                              <Link component={LinkRouter} to="#temas">teams and conditions</Link>.
+                              <Link component={LinkRouter} to="#temas">
+                                teams and conditions
+                              </Link>.
                             </Typography>
                           }
                         />
@@ -439,7 +505,10 @@ export function CheckoutForm() {
       <Hidden lgDown>
         <Grid item lg={4.7}>
           <ErrorBoundary>
-            <OrderSummary deliveryFee={deliveryFee?.township?.fees} orderItems={cartItems} />
+            <OrderSummary
+              deliveryFee={deliveryFee?.township?.fees}
+              orderItems={cartItems}
+            />
           </ErrorBoundary>
         </Grid>
       </Hidden>
@@ -454,7 +523,10 @@ export function CheckoutForm() {
 
       {modalForm.field === "create-pickup-addresse"
         ? (
-          <FormModal field="create-pickup-addresse" title="Create new address">
+          <FormModal
+            field="create-pickup-addresse"
+            title="Create new address"
+          >
             <CreatePickupAddressForm />
           </FormModal>
         )

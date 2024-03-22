@@ -15,7 +15,8 @@ import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
 const appName = getConfig("appName");
 
 function ListWrapper() {
-  usePermission({ action: OperationAction.Read, resource: Resource.Role }).ok_or_throw();
+  usePermission({ action: OperationAction.Read, resource: Resource.Role })
+    .ok_or_throw();
 
   return <RolesList />;
 }
@@ -28,7 +29,9 @@ export default function ListPage() {
     resource: Resource.Role,
   }).is_ok();
 
-  const handleNavigateCreate = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleNavigateCreate = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     navigate("/roles/create");
   };
 
@@ -43,10 +46,12 @@ export default function ListPage() {
         {/* Page Header */}
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <Typography variant="h3" component="h3" gutterBottom>Roles List</Typography>
+            <Typography variant="h3" component="h3" gutterBottom>
+              Roles List
+            </Typography>
             <Typography variant="subtitle2" gutterBottom>
-              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
-              consectetur cupidatat.
+              Lorem ipsum dolor sit amet, qui minim labore adipisicing
+              minim sint cillum sint consectetur cupidatat.
             </Typography>
           </Grid>
 
@@ -68,7 +73,13 @@ export default function ListPage() {
       </PageTitle>
 
       <Container maxWidth="lg">
-        <Grid container direction="row" justifyContent="center" alignItems="stretch" spacing={3}>
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="stretch"
+          spacing={3}
+        >
           <Grid item xs={12}>
             <ErrorBoundary>
               <Suspense fallback={<SuspenseLoader />}>

@@ -41,7 +41,11 @@ export const deleteMultiRolesSchema = object({
 });
 
 export type CreateRoleInput = z.infer<typeof createRoleSchema>["body"];
-export type CreateMultiRolesInput = z.infer<typeof createMultiRolesSchema>["body"];
-export type DeleteMultiRolesInput = z.infer<typeof deleteMultiRolesSchema>["body"];
+export type CreateMultiRolesInput = z.infer<
+  typeof createMultiRolesSchema
+>["body"];
+export type DeleteMultiRolesInput = z.infer<
+  typeof deleteMultiRolesSchema
+>["body"];
 export type GetRoleInput = z.infer<typeof getRoleSchema>;
 export type UpdateRoleInput = z.infer<typeof updateRoleSchema>;

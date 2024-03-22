@@ -1,4 +1,7 @@
-import { DatePickerField, ProductInputField } from "@/components/input-fields";
+import {
+  DatePickerField,
+  ProductInputField,
+} from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
 import { useGetCoupon, useUpdateCoupon } from "@/hooks/coupon";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,12 +67,19 @@ export function UpdateCouponForm() {
   const { handleSubmit, register, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<UpdateCouponInput> = (value) => {
-    if (couponId) updateCouponMutation.mutate({ id: couponId, payload: value });
+    if (couponId) {
+      updateCouponMutation.mutate({ id: couponId, payload: value });
+    }
   };
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12} md={6}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
@@ -108,7 +118,11 @@ export function UpdateCouponForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit" loading={updateCouponMutation.isPending}>
+          <MuiButton
+            variant="contained"
+            type="submit"
+            loading={updateCouponMutation.isPending}
+          >
             Save
           </MuiButton>
         </Grid>

@@ -1,7 +1,10 @@
 import { SalesCategoriesInputField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
 import { useBeforeUnloadPage, useCombineQuerys, useStore } from "@/hooks";
-import { useCreateProductSalesCategory, useUpdateProductSalesCategory } from "@/hooks/salsCategory";
+import {
+  useCreateProductSalesCategory,
+  useUpdateProductSalesCategory,
+} from "@/hooks/salsCategory";
 import { ProductSalesCategoriesResponse } from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, TextField } from "@mui/material";
@@ -15,25 +18,37 @@ const createProductSalesCategorySchema = object({
   discount: number().max(100).default(0),
 });
 
-export type CreateProductSalesCategoryInput = z.infer<typeof createProductSalesCategorySchema>;
+export type CreateProductSalesCategoryInput = z.infer<
+  typeof createProductSalesCategorySchema
+>;
 
 interface CreateProductSalesCategoryFromProps {
   productId: string;
   defaultValues?: ProductSalesCategoriesResponse;
-  setDefaultValues: (value: ProductSalesCategoriesResponse | undefined) => void;
+  setDefaultValues: (
+    value: ProductSalesCategoriesResponse | undefined,
+  ) => void;
 }
 
-export function CreateProductSalesCategoryForm(props: CreateProductSalesCategoryFromProps) {
+export function CreateProductSalesCategoryForm(
+  props: CreateProductSalesCategoryFromProps,
+) {
   const { dispatch } = useStore();
   const { productId, defaultValues, setDefaultValues } = props;
 
-  const createProductSalesCategoryMutation = useCreateProductSalesCategory();
-  const updateProductSalesCategoryMutation = useUpdateProductSalesCategory();
+  const createProductSalesCategoryMutation =
+    useCreateProductSalesCategory();
+  const updateProductSalesCategoryMutation =
+    useUpdateProductSalesCategory();
 
-  const { mutate: createSalesCategory, isPending: isPendingCreateSalsCategory } =
-    createProductSalesCategoryMutation;
-  const { mutate: updateSalesCategory, isPending: isPendingCreateProductSalesCategory } =
-    updateProductSalesCategoryMutation;
+  const {
+    mutate: createSalesCategory,
+    isPending: isPendingCreateSalsCategory,
+  } = createProductSalesCategoryMutation;
+  const {
+    mutate: updateSalesCategory,
+    isPending: isPendingCreateProductSalesCategory,
+  } = updateProductSalesCategoryMutation;
 
   const { isSuccess } = useCombineQuerys(
     createProductSalesCategoryMutation,
@@ -46,7 +61,8 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
 
   useBeforeUnloadPage();
 
-  const { handleSubmit, register, formState: { errors }, setValue } = methods;
+  const { handleSubmit, register, formState: { errors }, setValue } =
+    methods;
 
   useEffect(() => {
     if (defaultValues) {
@@ -62,7 +78,9 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
     }
   }, [isSuccess]);
 
-  const onSubmit: SubmitHandler<CreateProductSalesCategoryInput> = (value) => {
+  const onSubmit: SubmitHandler<CreateProductSalesCategoryInput> = (
+    value,
+  ) => {
     if (!!defaultValues) {
       updateSalesCategory({
         productId,
@@ -84,7 +102,12 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
         component="form"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <input readOnly hidden value={productId} {...register("productId")} />
+        <input
+          readOnly
+          hidden
+          value={productId}
+          {...register("productId")}
+        />
         <SalesCategoriesInputField updateField={!!defaultValues} />
         <TextField
           fullWidth
@@ -103,7 +126,8 @@ export function CreateProductSalesCategoryForm(props: CreateProductSalesCategory
 
         <Box>
           <MuiButton
-            loading={isPendingCreateSalsCategory || isPendingCreateProductSalesCategory}
+            loading={isPendingCreateSalsCategory
+              || isPendingCreateProductSalesCategory}
             variant="contained"
             type="submit"
           >

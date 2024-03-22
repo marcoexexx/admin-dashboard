@@ -55,7 +55,9 @@ export class SalesCategoryService extends AppService<
 
     const opt = as_result_async(this.repository.upsert);
 
-    const opts = async (salesCategory: CreateMultiSalesCategoriesInput[number]) => {
+    const opts = async (
+      salesCategory: CreateMultiSalesCategoriesInput[number],
+    ) => {
       const result = (await opt({
         where: {
           name: salesCategory.name,

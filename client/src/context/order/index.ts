@@ -1,4 +1,9 @@
-import { Order, Pagination, PotentialOrder, WhereInput } from "@/services/types";
+import {
+  Order,
+  Pagination,
+  PotentialOrder,
+  WhereInput,
+} from "@/services/types";
 
 export type OrderWhereInput = {
   where?: WhereInput<Order>;

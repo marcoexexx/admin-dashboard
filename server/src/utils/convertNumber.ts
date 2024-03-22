@@ -1,6 +1,8 @@
 import _ from "lodash";
 
-export const convertNumericStrings = <T extends object>(obj: T): Record<keyof T, any> => {
+export const convertNumericStrings = <T extends object>(
+  obj: T,
+): Record<keyof T, any> => {
   return _.mapValues(obj, (value) => {
     if (_.isObject(value)) {
       return convertNumericStrings(value); // Recursively convert nested objects

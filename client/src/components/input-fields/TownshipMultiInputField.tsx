@@ -18,11 +18,16 @@ interface TownshipMultiInputFieldProps {
   updateField?: boolean;
 }
 
-export function TownshipMultiInputField({ updateField = false }: TownshipMultiInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<
-    { townships: string[]; }
-  >();
-  const [selectedTownships, setSelectedTownships] = useState<Pick<TownshipFees, "id" | "name">[]>(
+export function TownshipMultiInputField(
+  { updateField = false }: TownshipMultiInputFieldProps,
+) {
+  const { control, setValue, getValues, formState: { errors } } =
+    useFormContext<
+      { townships: string[]; }
+    >();
+  const [selectedTownships, setSelectedTownships] = useState<
+    Pick<TownshipFees, "id" | "name">[]
+  >(
     [],
   );
   const [isOpenOptions, setIsOpenOptions] = useState(false);
@@ -45,11 +50,16 @@ export function TownshipMultiInputField({ updateField = false }: TownshipMultiIn
 
   const defaultTownshipIds = getValues("townships");
   const defaultTownships = defaultTownshipIds
-    ? filter(townships, (township) => defaultTownshipIds.includes(township.id))
+    ? filter(
+      townships,
+      (township) => defaultTownshipIds.includes(township.id),
+    )
     : [];
 
   useEffect(() => {
-    if (defaultTownships.length && updateField) setSelectedTownships(defaultTownships);
+    if (defaultTownships.length && updateField) {
+      setSelectedTownships(defaultTownships);
+    }
   }, [defaultTownships.length]);
 
   const handleCategoryChange = (
@@ -62,12 +72,16 @@ export function TownshipMultiInputField({ updateField = false }: TownshipMultiIn
     }
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "create-township" });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -101,7 +115,8 @@ export function TownshipMultiInputField({ updateField = false }: TownshipMultiIn
             multiple
             value={selectedTownships}
             options={townships || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             getOptionLabel={option => option.name || ""}
             loading={isLoading}
             renderOption={(props, option) => (
@@ -132,7 +147,9 @@ export function TownshipMultiInputField({ updateField = false }: TownshipMultiIn
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

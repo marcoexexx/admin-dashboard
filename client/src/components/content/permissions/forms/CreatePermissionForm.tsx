@@ -9,8 +9,12 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { object, z } from "zod";
 
 const createPermissionSchema = object({
-  action: z.nativeEnum(OperationAction, { required_error: "actin is required." }),
-  resource: z.nativeEnum(Resource, { required_error: "resource is required." }),
+  action: z.nativeEnum(OperationAction, {
+    required_error: "actin is required.",
+  }),
+  resource: z.nativeEnum(Resource, {
+    required_error: "resource is required.",
+  }),
 });
 
 export type CreatePermissionInput = z.infer<typeof createPermissionSchema>;
@@ -24,7 +28,8 @@ export function CreatePermissionForm() {
 
   useBeforeUnloadPage();
 
-  const { handleSubmit, setFocus, register, formState: { errors } } = methods;
+  const { handleSubmit, setFocus, register, formState: { errors } } =
+    methods;
 
   useEffect(() => {
     setFocus("action");
@@ -37,7 +42,12 @@ export function CreatePermissionForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -64,17 +74,25 @@ export function CreatePermissionForm() {
                 helperText={errors.action?.message}
                 fullWidth
               >
-                {(Object.keys(OperationAction) as OperationAction[]).map(action => (
-                  <MenuItem key={action} value={action}>
-                    {action}
-                  </MenuItem>
-                ))}
+                {(Object.keys(OperationAction) as OperationAction[]).map(
+                  action => (
+                    <MenuItem key={action} value={action}>
+                      {action}
+                    </MenuItem>
+                  ),
+                )}
               </TextField>
             </Box>
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={isPending}>Create</MuiButton>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={isPending}
+            >
+              Create
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

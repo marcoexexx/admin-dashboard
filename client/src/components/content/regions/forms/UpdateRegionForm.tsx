@@ -24,7 +24,9 @@ export function UpdateRegionForm() {
 
   const { regionId } = useParams();
 
-  const { try_data, isSuccess, fetchStatus } = useGetRegion({ id: regionId });
+  const { try_data, isSuccess, fetchStatus } = useGetRegion({
+    id: regionId,
+  });
   const { mutate: updateRegion, isPending } = useUpdateRegion();
 
   const region = try_data.ok_or_throw();
@@ -47,7 +49,8 @@ export function UpdateRegionForm() {
     }
   }, [isSuccess, fetchStatus]);
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods;
+  const { handleSubmit, register, formState: { errors }, setFocus } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
@@ -60,7 +63,12 @@ export function UpdateRegionForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -76,7 +84,13 @@ export function UpdateRegionForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={isPending}>Save</MuiButton>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={isPending}
+            >
+              Save
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

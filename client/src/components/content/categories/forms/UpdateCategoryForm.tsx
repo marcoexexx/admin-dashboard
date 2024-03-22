@@ -37,25 +37,35 @@ export function UpdateCategoryForm() {
   useBeforeUnloadPage();
 
   useEffect(() => {
-    if (categoryQuery.isSuccess && category && categoryFetchStatus === "idle") {
+    if (
+      categoryQuery.isSuccess && category && categoryFetchStatus === "idle"
+    ) {
       methods.setValue("name", category.name);
     }
   }, [categoryQuery.isSuccess, categoryFetchStatus]);
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods;
+  const { handleSubmit, register, formState: { errors }, setFocus } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
   }, [setFocus]);
 
   const onSubmit: SubmitHandler<UpdateCategoryInput> = (value) => {
-    if (categoryId) updateCategoryMutation.mutate({ id: categoryId, payload: value });
+    if (categoryId) {
+      updateCategoryMutation.mutate({ id: categoryId, payload: value });
+    }
   };
 
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -69,7 +79,11 @@ export function UpdateCategoryForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={updateCategoryMutation.isPending}>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={updateCategoryMutation.isPending}
+            >
               Save
             </MuiButton>
           </Grid>

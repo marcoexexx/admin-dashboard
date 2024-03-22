@@ -14,7 +14,12 @@ export async function rateLimitMiddleware(
   next: NextFunction,
 ) {
   if (!req.ip) {
-    return next(AppError.new(StatusCode.BadRequest, `Unable to determine client IP address.`));
+    return next(
+      AppError.new(
+        StatusCode.BadRequest,
+        `Unable to determine client IP address.`,
+      ),
+    );
   }
 
   const key = req.ip;
@@ -32,7 +37,9 @@ export async function rateLimitMiddleware(
       resetTime = currentTimestamp + ALLOWED_EXPIRY_TIME;
     } else {
       if (
-        tryParseInt(requestCount, 10).expect("Failed to parse integer `requestcount`")
+        tryParseInt(requestCount, 10).expect(
+          "Failed to parse integer `requestcount`",
+        )
           > ALLOWED_REQUEST_COUNT
       ) {
         resetTime = (await redisClient.ttl(key)) + currentTimestamp;
@@ -42,7 +49,12 @@ export async function rateLimitMiddleware(
           "Retry-After": retryAfter,
         });
 
-        return next(new AppError(429, "Too many request: Rate limit exceeded. Try again later"));
+        return next(
+          new AppError(
+            429,
+            "Too many request: Rate limit exceeded. Try again later",
+          ),
+        );
       } else {
         await redisClient.incr(key);
         resetTime = currentTimestamp + ALLOWED_EXPIRY_TIME;
@@ -53,7 +65,9 @@ export async function rateLimitMiddleware(
       "X-Rate-Limit-Limit": ALLOWED_REQUEST_COUNT,
       "X-Rate-Limit-Remaining": requestCount !== null
         ? ALLOWED_REQUEST_COUNT
-          - tryParseInt(requestCount, 10).expect("Failed to parse integer `requestCount`")
+          - tryParseInt(requestCount, 10).expect(
+            "Failed to parse integer `requestCount`",
+          )
         : ALLOWED_REQUEST_COUNT - 0,
       "X-Rate-Limit-Reset": ttl,
     });

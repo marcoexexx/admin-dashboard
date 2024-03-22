@@ -30,7 +30,9 @@ interface OrderSummaryProps {
  * totalAmount is total price of in all order items     := orderItems.reduce((total, item) => total + item.totalPrice, 0)
  * totalPrice is total price of order                   := totalAmount + deliveryFee
  */
-export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps) {
+export function OrderSummary(
+  { orderItems, deliveryFee = 0 }: OrderSummaryProps,
+) {
   const { dispatch } = useStore();
 
   const itemCount = orderItems.length;
@@ -41,11 +43,14 @@ export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps)
       return total + item.totalPrice;
     }, 0), [JSON.stringify(orderItems)]);
 
-  const originalTotalPrice = useMemo(() =>
-    orderItems.reduce((total, item) => {
-      // console.log("re-calculate")
-      return total + item.originalTotalPrice;
-    }, 0), [JSON.stringify(orderItems)]);
+  const originalTotalPrice = useMemo(
+    () =>
+      orderItems.reduce((total, item) => {
+        // console.log("re-calculate")
+        return total + item.originalTotalPrice;
+      }, 0),
+    [JSON.stringify(orderItems)],
+  );
 
   const totalSaving = useMemo(() =>
     orderItems.reduce((total, item) => {
@@ -70,7 +75,9 @@ export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps)
             <Grid container alignItems="baseline" rowGap={1}>
               <Grid item xs={8}>
                 <Box>
-                  <Typography mb={2} variant="h4">Total {itemCount} items</Typography>
+                  <Typography mb={2} variant="h4">
+                    Total {itemCount} items
+                  </Typography>
                   <Box display="flex" flexDirection="row" gap={1}>
                     {orderItems.slice(0, 3).map((item, idx) => {
                       if (item.product) {
@@ -87,7 +94,8 @@ export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps)
                                 height: 54,
                               }}
                               alt={item.product.title}
-                              src={item.product.images[0] || "/static/box.svg"}
+                              src={item.product.images[0]
+                                || "/static/box.svg"}
                             />
                           </Badge>
                         );
@@ -99,7 +107,9 @@ export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps)
 
               <Grid item xs={4}>
                 <Box display="flex" justifyContent="end">
-                  <MuiButton size="large" onClick={handleViewItems}>View items</MuiButton>
+                  <MuiButton size="large" onClick={handleViewItems}>
+                    View items
+                  </MuiButton>
                 </Box>
               </Grid>
 
@@ -113,30 +123,48 @@ export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps)
                     <TableBody>
                       <TableRow>
                         <TableCell sx={{ verticalAlign: "top" }}>
-                          <Typography variant="h4">Subtotal ({itemCount} items)</Typography>
+                          <Typography variant="h4">
+                            Subtotal ({itemCount} items)
+                          </Typography>
                         </TableCell>
                         <TableCell align="right">
-                          <Typography variant="h4">{numberFormat(totalAmount)} Ks</Typography>
-                          <Typography variant="h5" sx={{ textDecoration: "line-through" }}>
+                          <Typography variant="h4">
+                            {numberFormat(totalAmount)} Ks
+                          </Typography>
+                          <Typography
+                            variant="h5"
+                            sx={{ textDecoration: "line-through" }}
+                          >
                             {numberFormat(originalTotalPrice)} Ks
                           </Typography>
-                          <Box display="flex" alignItems="center" gap={1} justifyContent="end">
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            gap={1}
+                            justifyContent="end"
+                          >
                             <Chip
                               label="saving"
                               style={{ borderRadius: 5 }}
                               color="primary"
                               size="small"
                             />
-                            <Typography variant="h5">{numberFormat(totalSaving)} Ks</Typography>
+                            <Typography variant="h5">
+                              {numberFormat(totalSaving)} Ks
+                            </Typography>
                           </Box>
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>
-                          <Typography variant="h4">Delivery fee</Typography>
+                          <Typography variant="h4">
+                            Delivery fee
+                          </Typography>
                         </TableCell>
                         <TableCell align="right">
-                          <Typography variant="h4">{numberFormat(deliveryFee)} Ks</Typography>
+                          <Typography variant="h4">
+                            {numberFormat(deliveryFee)} Ks
+                          </Typography>
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -156,7 +184,8 @@ export function OrderSummary({ orderItems, deliveryFee = 0 }: OrderSummaryProps)
 
               <Grid item xs={12}>
                 <Alert severity="info">
-                  Transportation charges may vary due to your shipping method or address.
+                  Transportation charges may vary due to your shipping
+                  method or address.
                 </Alert>
               </Grid>
             </Grid>

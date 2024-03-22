@@ -32,7 +32,11 @@ export class UserService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.User, { action: OperationAction.Read, resourceIds: [] }, db.user);
+    super(
+      Resource.User,
+      { action: OperationAction.Read, resourceIds: [] },
+      db.user,
+    );
   }
 
   /**
@@ -45,13 +49,17 @@ export class UserService extends AppService<
 
   async register(
     payload: { name: string; email: string; password: string; },
-  ): Promise<Result<Awaited<ReturnType<typeof this.repository.create>>, AppError>> {
+  ): Promise<
+    Result<Awaited<ReturnType<typeof this.repository.create>>, AppError>
+  > {
     const { name, email, password } = payload;
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // set Superuser if first time create user,
-    const isSuperuser = (await this.tryCount()).ok_or_throw() === 0 ? true : false;
+    const isSuperuser = (await this.tryCount()).ok_or_throw() === 0
+      ? true
+      : false;
 
     let data = {
       name,
@@ -83,12 +91,15 @@ export class UserService extends AppService<
     };
 
     // Email verification
-    const { hashedVerificationCode, verificationCode } = createVerificationCode();
+    const { hashedVerificationCode, verificationCode } =
+      createVerificationCode();
     data.verificationCode = hashedVerificationCode;
 
     // Crete new user
     const user = (await this.tryCreate({ data })).ok_or_throw();
-    const redirectUrl = `${getConfig("origin")}/verify-email/${verificationCode}`;
+    const redirectUrl = `${
+      getConfig("origin")
+    }/verify-email/${verificationCode}`;
 
     try {
       await new Email(user, redirectUrl).sendVerificationCode();
@@ -97,14 +108,21 @@ export class UserService extends AppService<
     } catch (err: any) {
       user.verificationCode = null;
 
-      return Err(AppError.new(err.status || StatusCode.InternalServerError, err?.message));
+      return Err(
+        AppError.new(
+          err.status || StatusCode.InternalServerError,
+          err?.message,
+        ),
+      );
     }
   }
 
   // TODO: remove
   async tryInializeCart(
     ...args: Parameters<typeof db.cart.upsert>
-  ): Promise<Result<Awaited<ReturnType<typeof db.cart.update>>, AppError>> {
+  ): Promise<
+    Result<Awaited<ReturnType<typeof db.cart.update>>, AppError>
+  > {
     const [arg] = args;
 
     const opt = as_result_async(db.cart.upsert);
@@ -115,7 +133,9 @@ export class UserService extends AppService<
 
   async tryCleanCart(
     ...args: Parameters<typeof db.cart.delete>
-  ): Promise<Result<Awaited<ReturnType<typeof db.cart.delete>>, AppError>> {
+  ): Promise<
+    Result<Awaited<ReturnType<typeof db.cart.delete>>, AppError>
+  > {
     const [arg] = args;
 
     const opt = as_result_async(db.cart.delete);
@@ -126,7 +146,9 @@ export class UserService extends AppService<
 
   async tryRemoveSingleOrderItem(
     ...args: Parameters<typeof db.orderItem.delete>
-  ): Promise<Result<Awaited<ReturnType<typeof db.orderItem.delete>>, AppError>> {
+  ): Promise<
+    Result<Awaited<ReturnType<typeof db.orderItem.delete>>, AppError>
+  > {
     const [arg] = args;
 
     const opt = as_result_async(db.orderItem.delete);

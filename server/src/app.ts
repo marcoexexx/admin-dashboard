@@ -106,17 +106,23 @@ app.use(safeDeserializeUser);
 app.use(isMaintenance);
 
 /* Routers */
-app.get("/ping", async (_req: Request, res: Response, _next: NextFunction) => {
-  res.status(200)
-    .json({ ping: "PONG" });
-});
+app.get(
+  "/ping",
+  async (_req: Request, res: Response, _next: NextFunction) => {
+    res.status(200)
+      .json({ ping: "PONG" });
+  },
+);
 
-app.get("/healthcheck", async (_: Request, res: Response, next: NextFunction) => {
-  let env = process.env.NODE_ENV;
-  await redisClient.get("try")
-    .then((message) => res.status(200).json({ message, env }))
-    .catch(next);
-});
+app.get(
+  "/healthcheck",
+  async (_: Request, res: Response, next: NextFunction) => {
+    let env = process.env.NODE_ENV;
+    await redisClient.get("try")
+      .then((message) => res.status(200).json({ message, env }))
+      .catch(next);
+  },
+);
 
 app.use("/api/v1/generate-pk", generatePkRouter);
 
@@ -144,7 +150,12 @@ app.use("/api/v1/cart", cartRouter);
 
 // Unhandled Route
 app.all("*", (req: Request, _: Response, next: NextFunction) => {
-  return next(AppError.new(StatusCode.NotFound, `Route ${req.originalUrl} not found`));
+  return next(
+    AppError.new(
+      StatusCode.NotFound,
+      `Route ${req.originalUrl} not found`,
+    ),
+  );
 });
 
 // Global error handler
@@ -175,12 +186,17 @@ if (require.main === module) {
   const server = (isHttps ? httpsServer : app)
     .listen(port, () => {
       logging.info(`a ${getConfig("nodeEnv")} deplyoment.`);
-      logging.log("🚀 Server is running on", `${isHttps ? "https" : "http"}://0.0.0.0:${port}`);
+      logging.log(
+        "🚀 Server is running on",
+        `${isHttps ? "https" : "http"}://0.0.0.0:${port}`,
+      );
     });
 
   process.on("SIGINT", () => {
     console.log("\n");
-    logging.info("Received SIGINT. Closing server and Redis connection...");
+    logging.info(
+      "Received SIGINT. Closing server and Redis connection...",
+    );
     server.close(async () => {
       await redisClient.quit();
       process.exit(0);

@@ -4,7 +4,10 @@ import fs from "fs";
 function getMemoryString(memory, ptr) {
   const uint8Memory = new Uint8Array(memory.buffer);
   const utf8decoder = new TextDecoder("utf-8");
-  const length = uint8Memory.findIndex((element, index) => index === ptr && element === 0) - ptr;
+  const length =
+    uint8Memory.findIndex((element, index) =>
+      index === ptr && element === 0
+    ) - ptr;
   const encodedString = uint8Memory.subarray(ptr, ptr + length);
   return utf8decoder.decode(encodedString);
 }

@@ -28,7 +28,9 @@ export function AuthProvider(props: AuthProviderProps) {
     if (isSuccess) dispatch({ type: "SET_USER", payload: me });
   }, [isSuccess]);
 
-  const isAllowedReactDashboard = Boolean(me?.isSuperuser || me?.shopownerProviderId);
+  const isAllowedReactDashboard = Boolean(
+    me?.isSuperuser || me?.shopownerProviderId,
+  );
 
   if (isLoading) return <SuspenseLoader />;
 

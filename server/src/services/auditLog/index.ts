@@ -22,7 +22,10 @@ export class AuditLogService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.AuditLog, { action: OperationAction.Read, resourceIds: [] }, db.auditLog);
+    super(Resource.AuditLog, {
+      action: OperationAction.Read,
+      resourceIds: [],
+    }, db.auditLog);
     this.name = "AuditLog";
   }
 

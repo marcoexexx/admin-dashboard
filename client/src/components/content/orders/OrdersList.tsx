@@ -1,7 +1,12 @@
 import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
-import { useDeleteMultiOrders, useDeleteOrder, useGetOrders, useUpdateOrder } from "@/hooks/order";
+import {
+  useDeleteMultiOrders,
+  useDeleteOrder,
+  useGetOrders,
+  useUpdateOrder,
+} from "@/hooks/order";
 import { Order, OrderStatus } from "@/services/types";
 import { Card } from "@mui/material";
 import { OrdersListTable } from ".";

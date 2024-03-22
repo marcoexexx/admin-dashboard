@@ -11,7 +11,11 @@ import { RegionService } from "../services/region";
 import { StatusCode } from "../utils/appError";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 const service = RegionService.new();
 
@@ -25,11 +29,15 @@ export async function getRegionsHandler(
 
     const { id, name } = query.filter ?? {};
     const { page, pageSize } = query.pagination ?? {};
-    const { _count, townships, userAddresses } = convertStringToBoolean(query.include) ?? {};
+    const { _count, townships, userAddresses } =
+      convertStringToBoolean(query.include) ?? {};
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, regions] = (await service.tryFindManyWithCount(
@@ -58,10 +66,14 @@ export async function getRegionHandler(
     const query = convertNumericStrings(req.query);
 
     const { regionId } = req.params;
-    const { _count, townships, userAddresses } = convertStringToBoolean(query.include) ?? {};
+    const { _count, townships, userAddresses } =
+      convertStringToBoolean(query.include) ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const region = (await service.tryFindUnique({
@@ -92,10 +104,14 @@ export async function createMultiRegionsHandler(
     if (!excelFile) return res.status(StatusCode.NoContent);
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
-    const regions = (await service.tryExcelUpload(excelFile)).ok_or_throw();
+    const regions = (await service.tryExcelUpload(excelFile))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);
@@ -116,7 +132,10 @@ export async function createRegionHandler(
     const { name, townships } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const region = (await service.tryCreate({
@@ -147,10 +166,14 @@ export async function deleteRegionHandler(
     const { regionId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
-    const region = (await service.tryDelete({ where: { id: regionId } })).ok_or_throw();
+    const region = (await service.tryDelete({ where: { id: regionId } }))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);
@@ -171,7 +194,10 @@ export async function deleteMultilRegionsHandler(
     const { regionIds } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const _deletedRegions = await service.tryDeleteMany({
@@ -187,7 +213,9 @@ export async function deleteMultilRegionsHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
     next(err);
   }
@@ -203,7 +231,10 @@ export async function updateRegionHandler(
     const { townships, name } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const region = (await service.tryUpdate({

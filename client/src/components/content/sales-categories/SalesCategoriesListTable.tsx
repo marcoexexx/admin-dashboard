@@ -4,7 +4,13 @@ import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Resource, SalesCategory } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { SalesCategorysFilterForm } from ".";
 
 const columns: TypedColumn<SalesCategory>[] = [
@@ -18,19 +24,25 @@ const columns: TypedColumn<SalesCategory>[] = [
     id: "startDate",
     align: "left",
     name: "Start date",
-    render: ({ value }) => <Typography>{new Date(value.startDate).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.startDate).toUTCString()}</Typography>
+    ),
   },
   {
     id: "endDate",
     align: "left",
     name: "End date",
-    render: ({ value }) => <Typography>{new Date(value.endDate).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.endDate).toUTCString()}</Typography>
+    ),
   },
   {
     id: "isActive",
     align: "left",
     name: "Sttus",
-    render: ({ value }) => <Typography>{value.isActive ? "Active" : "Out of date"}</Typography>,
+    render: ({ value }) => (
+      <Typography>{value.isActive ? "Active" : "Out of date"}</Typography>
+    ),
   },
   {
     id: "_count",
@@ -49,9 +61,19 @@ interface SalesCategoriesListTableProps {
   onCreateMany?: (buf: ArrayBuffer) => void;
 }
 
-export function SalesCategoriesListTable(props: SalesCategoriesListTableProps) {
-  const { salesCategoiries, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
-  const { state: { salesCategoryFilter: { pagination } }, dispatch } = useStore();
+export function SalesCategoriesListTable(
+  props: SalesCategoriesListTableProps,
+) {
+  const {
+    salesCategoiries,
+    count,
+    isLoading,
+    onCreateMany,
+    onDelete,
+    onMultiDelete,
+  } = props;
+  const { state: { salesCategoryFilter: { pagination } }, dispatch } =
+    useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({

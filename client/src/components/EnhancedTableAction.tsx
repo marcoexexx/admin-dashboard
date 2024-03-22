@@ -40,7 +40,8 @@ interface EnhancedTableActionsProps {
 }
 
 export function EnhancedTableActions(props: EnhancedTableActionsProps) {
-  const { onExport, onImport, resource, renderFilterForm, refreshKey } = props;
+  const { onExport, onImport, resource, renderFilterForm, refreshKey } =
+    props;
 
   const ref = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -67,7 +68,9 @@ export function EnhancedTableActions(props: EnhancedTableActionsProps) {
     inputRef.current?.click();
   };
 
-  const handleChangeImportExcel = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeImportExcel = (
+    evt: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     if (!onImport) return;
     const file = evt.target.files?.[0];
     if (!file) return;
@@ -97,7 +100,12 @@ export function EnhancedTableActions(props: EnhancedTableActionsProps) {
   };
 
   return (
-    <Box display="flex" justifyContent="space-between" alignItems="baseline" flexDirection="row">
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      alignItems="baseline"
+      flexDirection="row"
+    >
       <Accordion sx={{ width: "100%" }}>
         <Box
           display="flex"
@@ -114,12 +122,19 @@ export function EnhancedTableActions(props: EnhancedTableActionsProps) {
             <Typography fontSize={20}>Filter</Typography>
           </AccordionSummary>
 
-          <IconButton aria-label="more actions" ref={ref} onClick={handleOpen}>
+          <IconButton
+            aria-label="more actions"
+            ref={ref}
+            onClick={handleOpen}
+          >
             <MoreVertIcon />
           </IconButton>
 
           <Tooltip title="Refresh table" arrow>
-            <IconButton aria-label="refresh button" onClick={handleRefreshList}>
+            <IconButton
+              aria-label="refresh button"
+              onClick={handleRefreshList}
+            >
               <RefreshIcon />
             </IconButton>
           </Tooltip>

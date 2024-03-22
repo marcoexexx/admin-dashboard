@@ -17,14 +17,22 @@ export function useGetExchange({
 }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: [CacheResource.Exchange, { id, include }] as CacheKey<"exchanges">["detail"],
+    queryKey: [CacheResource.Exchange, { id, include }] as CacheKey<
+      "exchanges"
+    >["detail"],
     queryFn: args => apiService.find(args, { filter: { id }, include }),
     select: data => data?.exchange,
   });
 
-  const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
-    : Ok(query.data);
+  const try_data: Result<typeof query.data, AppError> =
+    !!query.error && query.isError
+      ? Err(
+        AppError.new(
+          (query.error as any).kind || AppErrorKind.ApiError,
+          query.error.message,
+        ),
+      )
+      : Ok(query.data);
 
   return {
     ...query,

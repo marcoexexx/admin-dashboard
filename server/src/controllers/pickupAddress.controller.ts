@@ -10,7 +10,11 @@ import { PickupAddressService } from "../services/pickupAddress";
 import { StatusCode } from "../utils/appError";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 const service = PickupAddressService.new();
 
@@ -24,14 +28,20 @@ export async function getPickupAddressesHandler(
 
     const { id, username, phone, email } = query.filter ?? {};
     const { page, pageSize } = query.pagination ?? {};
-    const { _count, user, orders, potentialOrders } = convertStringToBoolean(query.include) ?? {};
+    const { _count, user, orders, potentialOrders } =
+      convertStringToBoolean(query.include) ?? {};
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
-    if (!sessionUser) return res.status(StatusCode.OK).json(HttpListResponse([], 0));
+    if (!sessionUser) {
+      return res.status(StatusCode.OK).json(HttpListResponse([], 0));
+    }
 
     const [count, pickupAddresses] = (await service.tryFindManyWithCount(
       {
@@ -44,7 +54,9 @@ export async function getPickupAddressesHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(pickupAddresses, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(pickupAddresses, count),
+    );
   } catch (err) {
     next(err);
   }
@@ -59,10 +71,14 @@ export async function getPickupAddressHandler(
     const query = convertNumericStrings(req.query);
 
     const { pickupAddressId } = req.params;
-    const { _count, user, orders, potentialOrders } = convertStringToBoolean(query.include) ?? {};
+    const { _count, user, orders, potentialOrders } =
+      convertStringToBoolean(query.include) ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const pickupAddress = (await service.tryFindUnique({
@@ -71,7 +87,9 @@ export async function getPickupAddressHandler(
     })).ok_or_throw();
 
     // Create audit log
-    if (pickupAddress && sessionUser) (await service.audit(sessionUser)).ok_or_throw();
+    if (pickupAddress && sessionUser) {
+      (await service.audit(sessionUser)).ok_or_throw();
+    }
 
     res.status(StatusCode.OK).json(HttpDataResponse({ pickupAddress }));
   } catch (err) {
@@ -89,7 +107,10 @@ export async function createPickupAddressHandler(
 
     // @ts-ignore  for mocha testing
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const pickupAddress = (await service.tryCreate({
@@ -106,7 +127,9 @@ export async function createPickupAddressHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ pickupAddress }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ pickupAddress }),
+    );
   } catch (err) {
     next(err);
   }
@@ -121,11 +144,15 @@ export async function deletePickupAddressHandler(
     const { pickupAddressId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
-    const pickupAddress = (await service.tryDelete({ where: { id: pickupAddressId } }))
-      .ok_or_throw();
+    const pickupAddress =
+      (await service.tryDelete({ where: { id: pickupAddressId } }))
+        .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);
@@ -146,7 +173,10 @@ export async function deleteMultiPickupAddressesHandler(
     const { pickupAddressIds } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const _deletedPickedAddress = await service.tryDeleteMany({
@@ -162,7 +192,9 @@ export async function deleteMultiPickupAddressesHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
     next(err);
   }

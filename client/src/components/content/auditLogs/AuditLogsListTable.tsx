@@ -1,5 +1,8 @@
 import { DynamicColumn, EnhancedTable, TypedColumn } from "@/components";
-import { RenderResourceItemLabel, RenderUsernameLabel } from "@/components/table-labels";
+import {
+  RenderResourceItemLabel,
+  RenderUsernameLabel,
+} from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
@@ -12,7 +15,9 @@ const typedCols: TypedColumn<AuditLog>[] = [
     align: "left",
     name: "User",
     render: ({ value, me }) =>
-      value.user && me ? <RenderUsernameLabel user={value.user} me={me} /> : null,
+      value.user && me
+        ? <RenderUsernameLabel user={value.user} me={me} />
+        : null,
   },
   {
     id: "resource",
@@ -33,7 +38,11 @@ const typedCols: TypedColumn<AuditLog>[] = [
     render: ({ value }) => (
       <>
         {value.resourceIds.map(id => (
-          <RenderResourceItemLabel key={id} id={id} resource={value.resource} />
+          <RenderResourceItemLabel
+            key={id}
+            id={id}
+            resource={value.resource}
+          />
         ))}
       </>
     ),
@@ -44,7 +53,9 @@ const dynamicCols: DynamicColumn<AuditLog>[] = [
     id: "role",
     align: "left",
     name: "Role",
-    render: ({ value }) => <Typography>{value.user?.role?.name}</Typography>,
+    render: ({ value }) => (
+      <Typography>{value.user?.role?.name}</Typography>
+    ),
   },
 ];
 const columns = [...typedCols, ...dynamicCols];
@@ -59,8 +70,16 @@ interface AuditLogsListTableProps {
 }
 
 export function AuditLogsListTable(props: AuditLogsListTableProps) {
-  const { auditLogs, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props;
-  const { state: { auditLogFilter: { pagination } }, dispatch } = useStore();
+  const {
+    auditLogs,
+    count,
+    isLoading,
+    onDelete,
+    onMultiDelete,
+    onCreateMany,
+  } = props;
+  const { state: { auditLogFilter: { pagination } }, dispatch } =
+    useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({

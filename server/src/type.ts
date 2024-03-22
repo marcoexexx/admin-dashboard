@@ -1,4 +1,9 @@
-import { OperationAction, Permission, Prisma, Resource } from "@prisma/client";
+import {
+  OperationAction,
+  Permission,
+  Prisma,
+  Resource,
+} from "@prisma/client";
 import _ from "lodash";
 
 export type UserWithRole = Prisma.UserGetPayload<{
@@ -24,10 +29,22 @@ function createResourcesPermission(
         perms.push({ action, resource: key as Resource });
       }
     } else if (value === "*") {
-      perms.push({ action: OperationAction.Create, resource: key as Resource });
-      perms.push({ action: OperationAction.Read, resource: key as Resource });
-      perms.push({ action: OperationAction.Update, resource: key as Resource });
-      perms.push({ action: OperationAction.Delete, resource: key as Resource });
+      perms.push({
+        action: OperationAction.Create,
+        resource: key as Resource,
+      });
+      perms.push({
+        action: OperationAction.Read,
+        resource: key as Resource,
+      });
+      perms.push({
+        action: OperationAction.Update,
+        resource: key as Resource,
+      });
+      perms.push({
+        action: OperationAction.Delete,
+        resource: key as Resource,
+      });
     }
   });
 
@@ -50,7 +67,10 @@ export const guestUserAccessResources = createResourcesPermission({
   [Resource.UserAddress]: [OperationAction.Create, OperationAction.Read],
   [Resource.PickupAddress]: [OperationAction.Create, OperationAction.Read],
   [Resource.SalesCategory]: [OperationAction.Read],
-  [Resource.PotentialOrder]: [OperationAction.Create, OperationAction.Read],
+  [Resource.PotentialOrder]: [
+    OperationAction.Create,
+    OperationAction.Read,
+  ],
   [Resource.Permission]: "!",
   [Resource.Shopowner]: "!",
   [Resource.AccessLog]: "!",
@@ -73,7 +93,10 @@ export const customerUserAccessResources = createResourcesPermission({
   [Resource.UserAddress]: [OperationAction.Create, OperationAction.Read],
   [Resource.PickupAddress]: [OperationAction.Create, OperationAction.Read],
   [Resource.SalesCategory]: [OperationAction.Read],
-  [Resource.PotentialOrder]: [OperationAction.Create, OperationAction.Read],
+  [Resource.PotentialOrder]: [
+    OperationAction.Create,
+    OperationAction.Read,
+  ],
   [Resource.Permission]: "!",
   [Resource.Shopowner]: "!",
   [Resource.AccessLog]: [OperationAction.Create, OperationAction.Read],
@@ -82,7 +105,11 @@ export const customerUserAccessResources = createResourcesPermission({
 });
 
 export const shopownerAccessResources = createResourcesPermission({
-  [Resource.Product]: [OperationAction.Create, OperationAction.Read, OperationAction.Update],
+  [Resource.Product]: [
+    OperationAction.Create,
+    OperationAction.Read,
+    OperationAction.Update,
+  ],
   [Resource.Role]: [OperationAction.Read],
   [Resource.Brand]: [OperationAction.Read],
   [Resource.Order]: [OperationAction.Create, OperationAction.Read],
@@ -96,7 +123,10 @@ export const shopownerAccessResources = createResourcesPermission({
   [Resource.UserAddress]: [OperationAction.Create, OperationAction.Read],
   [Resource.PickupAddress]: [OperationAction.Create, OperationAction.Read],
   [Resource.SalesCategory]: [OperationAction.Read],
-  [Resource.PotentialOrder]: [OperationAction.Create, OperationAction.Read],
+  [Resource.PotentialOrder]: [
+    OperationAction.Create,
+    OperationAction.Read,
+  ],
   [Resource.Permission]: [OperationAction.Create, OperationAction.Read],
   [Resource.Shopowner]: [OperationAction.Read],
   [Resource.AccessLog]: [OperationAction.Create, OperationAction.Read],

@@ -29,7 +29,11 @@ export class RoleService extends AppService<
   typeof repository
 > {
   constructor() {
-    super(Resource.Role, { action: OperationAction.Read, resourceIds: [] }, db.role);
+    super(
+      Resource.Role,
+      { action: OperationAction.Read, resourceIds: [] },
+      db.role,
+    );
     this.name = "Role";
   }
 

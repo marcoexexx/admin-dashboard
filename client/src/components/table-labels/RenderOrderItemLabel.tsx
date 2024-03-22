@@ -2,7 +2,9 @@ import { OrderItem } from "@/services/types";
 import { useNavigate } from "react-router-dom";
 import { LinkLabel } from "..";
 
-export function RenderOrderItemLabel({ orderItem }: { orderItem: OrderItem; }) {
+export function RenderOrderItemLabel(
+  { orderItem }: { orderItem: OrderItem; },
+) {
   const navigate = useNavigate();
   // const to = "/brands/detail/" + brand.id
   const to = "#order-items";

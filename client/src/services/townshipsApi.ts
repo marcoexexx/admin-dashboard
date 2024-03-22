@@ -1,4 +1,7 @@
-import { CreateTownshipInput, UpdateTownshipInput } from "@/components/content/townships/forms";
+import {
+  CreateTownshipInput,
+  UpdateTownshipInput,
+} from "@/components/content/townships/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { TownshipWhereInput } from "@/context/township";
 import { BaseApiService } from "./baseApiService";
@@ -13,7 +16,9 @@ import {
 
 import { authApi } from "./authApi";
 
-export class TownshipApiService extends BaseApiService<TownshipWhereInput, TownshipFees> {
+export class TownshipApiService
+  extends BaseApiService<TownshipWhereInput, TownshipFees>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -65,19 +70,24 @@ export class TownshipApiService extends BaseApiService<TownshipWhereInput, Towns
     return data;
   }
 
-  async create(payload: CreateTownshipInput): Promise<GenericResponse<TownshipFees, "township">> {
+  async create(
+    payload: CreateTownshipInput,
+  ): Promise<GenericResponse<TownshipFees, "township">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
     return data;
   }
 
-  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<TownshipFees>> {
+  async uploadExcel(
+    buf: ArrayBuffer,
+  ): Promise<HttpListResponse<TownshipFees>> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `TownshipFees_${Date.now()}.xlsx`);
@@ -104,11 +114,15 @@ export class TownshipApiService extends BaseApiService<TownshipWhereInput, Towns
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { townshipIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { townshipIds: ids },
+    });
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<TownshipFees, "township">> {
+  async delete(
+    id: string,
+  ): Promise<GenericResponse<TownshipFees, "township">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

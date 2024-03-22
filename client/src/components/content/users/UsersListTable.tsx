@@ -8,7 +8,13 @@ import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Resource, User } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { UsersFilterForm } from ".";
 
 const columns: TypedColumn<User>[] = [
@@ -16,7 +22,8 @@ const columns: TypedColumn<User>[] = [
     id: "name",
     align: "left",
     name: "Name",
-    render: ({ value, me }) => me ? <RenderUsernameLabel user={value} me={me} /> : null,
+    render: ({ value, me }) =>
+      me ? <RenderUsernameLabel user={value} me={me} /> : null,
   },
   {
     id: "email",
@@ -35,13 +42,16 @@ const columns: TypedColumn<User>[] = [
     align: "right",
     name: "Shopowner",
     render: ({ value }) =>
-      value.shopownerProvider ? <RenderShopownerLabel shopowner={value.shopownerProvider} /> : null,
+      value.shopownerProvider
+        ? <RenderShopownerLabel shopowner={value.shopownerProvider} />
+        : null,
   },
   {
     id: "blockedUsers",
     align: "right",
     name: "Blocked",
-    render: ({ value, me }) => me ? <RenderToggleBlockUserButton user={value} me={me} /> : null,
+    render: ({ value, me }) =>
+      me ? <RenderToggleBlockUserButton user={value} me={me} /> : null,
   },
 ];
 
@@ -55,7 +65,14 @@ interface UsersListTableProps {
 }
 
 export function UsersListTable(props: UsersListTableProps) {
-  const { users, count, isLoading, onDelete, onMultiDelete, onCreateMany } = props;
+  const {
+    users,
+    count,
+    isLoading,
+    onDelete,
+    onMultiDelete,
+    onCreateMany,
+  } = props;
   const { state: { brandFilter: { pagination } }, dispatch } = useStore();
 
   const handleChangePagination = (_: any, page: number) => {

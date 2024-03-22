@@ -2,7 +2,9 @@ import { boolean, object, string, z } from "zod";
 
 const params = {
   params: object({
-    userAddressId: string({ required_error: "User Address id is required" }),
+    userAddressId: string({
+      required_error: "User Address id is required",
+    }),
   }),
 };
 
@@ -16,7 +18,9 @@ export const createUserAddressSchema = object({
     email: string({ required_error: "email is required" }).email(),
     regionId: string({ required_error: "region is required" }),
     townshipFeesId: string({ required_error: "township is required" }),
-    fullAddress: string({ required_error: "fullAddress is required" }).max(128),
+    fullAddress: string({ required_error: "fullAddress is required" }).max(
+      128,
+    ),
     remark: string().optional(),
   }),
 });
@@ -36,7 +40,9 @@ export const updateUserAddressSchema = object({
     email: string({ required_error: "email is required" }).email(),
     regionId: string({ required_error: "region is required" }),
     townshipFeesId: string({ required_error: "township is required" }),
-    fullAddress: string({ required_error: "fullAddress is required" }).max(128),
+    fullAddress: string({ required_error: "fullAddress is required" }).max(
+      128,
+    ),
     remark: string().optional(),
   }),
 });
@@ -47,7 +53,13 @@ export const deleteMultiUserAddressesSchema = object({
   }),
 });
 
-export type CreateUserAddressInput = z.infer<typeof createUserAddressSchema>["body"];
-export type DeleteMultiUserAddressesInput = z.infer<typeof deleteMultiUserAddressesSchema>["body"];
+export type CreateUserAddressInput = z.infer<
+  typeof createUserAddressSchema
+>["body"];
+export type DeleteMultiUserAddressesInput = z.infer<
+  typeof deleteMultiUserAddressesSchema
+>["body"];
 export type GetUserAddressInput = z.infer<typeof getUserAddressSchema>;
-export type UpdateUserAddressInput = z.infer<typeof updateUserAddressSchema>;
+export type UpdateUserAddressInput = z.infer<
+  typeof updateUserAddressSchema
+>;

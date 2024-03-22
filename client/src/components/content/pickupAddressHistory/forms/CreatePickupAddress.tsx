@@ -17,17 +17,22 @@ import { CreateTownshipForm } from "../../townships/forms";
 
 const createPickupAddressSchema = object({
   username: string({ required_error: "" }).min(3).max(1024),
-  phone: string().regex(/^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/),
+  phone: string().regex(
+    /^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
+  ),
   email: string().email(),
   date: z.any(),
 });
 
-export type CreatePickupAddressInput = z.infer<typeof createPickupAddressSchema>;
+export type CreatePickupAddressInput = z.infer<
+  typeof createPickupAddressSchema
+>;
 
 export function CreatePickupAddressForm() {
   const { state: { modalForm, user } } = useStore();
 
-  const { mutate: createPickupAddress, isPending } = useCreatePickupAddress();
+  const { mutate: createPickupAddress, isPending } =
+    useCreatePickupAddress();
 
   const methods = useForm<CreatePickupAddressInput>({
     resolver: zodResolver(createPickupAddressSchema),
@@ -51,7 +56,12 @@ export function CreatePickupAddressForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item md={6} xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -59,7 +69,9 @@ export function CreatePickupAddressForm() {
                 {...register("username")}
                 label="Name"
                 error={!!errors.username}
-                helperText={!!errors.username ? errors.username.message : ""}
+                helperText={!!errors.username
+                  ? errors.username.message
+                  : ""}
               />
               <RegionInputField />
             </Box>
@@ -97,7 +109,13 @@ export function CreatePickupAddressForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={isPending}>Create</MuiButton>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={isPending}
+            >
+              Create
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

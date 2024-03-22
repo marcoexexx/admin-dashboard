@@ -3,7 +3,13 @@ import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Permission, Resource } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { PermissionsFilterForm } from ".";
 
 const columns: TypedColumn<Permission>[] = [
@@ -31,8 +37,16 @@ interface PermissionsListTableProps {
 }
 
 export function PermissionsListTable(props: PermissionsListTableProps) {
-  const { permissions, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
-  const { state: { permissionFilter: { pagination } }, dispatch } = useStore();
+  const {
+    permissions,
+    count,
+    isLoading,
+    onCreateMany,
+    onDelete,
+    onMultiDelete,
+  } = props;
+  const { state: { permissionFilter: { pagination } }, dispatch } =
+    useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({

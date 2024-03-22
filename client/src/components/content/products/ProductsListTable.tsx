@@ -52,7 +52,10 @@ const columns: TypedColumn<Product>[] = [
     align: "left",
     name: "Image",
     render: ({ value }) => (
-      <RenderImageLabel src={value.images[0] || "/default.png"} alt={value.title} />
+      <RenderImageLabel
+        src={value.images[0] || "/default.png"}
+        alt={value.title}
+      />
     ),
   },
   {
@@ -67,10 +70,16 @@ const columns: TypedColumn<Product>[] = [
     name: "Price",
     render: ({ value }) => (
       <Box display="flex" flexDirection="column">
-        <Typography sx={{ textDecoration: value.isDiscountItem ? "line-through" : null }}>
+        <Typography
+          sx={{
+            textDecoration: value.isDiscountItem ? "line-through" : null,
+          }}
+        >
           {numberFormat(value.marketPrice)}
         </Typography>
-        {value.isDiscountItem ? <Typography>{numberFormat(value.price)}</Typography> : null}
+        {value.isDiscountItem
+          ? <Typography>{numberFormat(value.price)}</Typography>
+          : null}
       </Box>
     ),
   },
@@ -78,7 +87,8 @@ const columns: TypedColumn<Product>[] = [
     id: "brand",
     align: "right",
     name: "Brand",
-    render: ({ value }) => value.brand ? <RenderBrandLabel brand={value.brand} /> : null,
+    render: ({ value }) =>
+      value.brand ? <RenderBrandLabel brand={value.brand} /> : null,
   },
   {
     id: "categories",
@@ -99,7 +109,10 @@ const columns: TypedColumn<Product>[] = [
     render: ({ value }) => (
       <>
         {value.salesCategory?.map(({ salesCategory }, idx) => (
-          <RenderSalesCategoryLabel key={idx} salesCategory={salesCategory} />
+          <RenderSalesCategoryLabel
+            key={idx}
+            salesCategory={salesCategory}
+          />
         ))}
       </>
     ),
@@ -127,14 +140,18 @@ const columns: TypedColumn<Product>[] = [
     align: "right",
     name: "Is discount item",
     render: ({ value }) => (
-      <Typography>{value.isDiscountItem ? `Discounted: item` : "No"}</Typography>
+      <Typography>
+        {value.isDiscountItem ? `Discounted: item` : "No"}
+      </Typography>
     ),
   },
   {
     id: "creator",
     align: "right",
     name: "Shopowner group",
-    render: ({ value }) => <Typography>{value.creator?.shopownerProvider?.name}</Typography>,
+    render: ({ value }) => (
+      <Typography>{value.creator?.shopownerProvider?.name}</Typography>
+    ),
   },
 ];
 
@@ -149,16 +166,25 @@ interface ProductsListTableProps {
 }
 
 export function ProductsListTable(props: ProductsListTableProps) {
-  const { products, count, isLoading, onDelete, onMultiDelete, onCreateMany, onStatusChange } =
-    props;
-  const { state: { productFilter: { pagination } }, dispatch } = useStore();
+  const {
+    products,
+    count,
+    isLoading,
+    onDelete,
+    onMultiDelete,
+    onCreateMany,
+    onStatusChange,
+  } = props;
+  const { state: { productFilter: { pagination } }, dispatch } =
+    useStore();
 
   const theme = useTheme();
 
-  const handleChangeProductStatus = (product: Product) => (evt: SelectChangeEvent) => {
-    const { value } = evt.target;
-    onStatusChange(product, value as ProductStatus);
-  };
+  const handleChangeProductStatus =
+    (product: Product) => (evt: SelectChangeEvent) => {
+      const { value } = evt.target;
+      onStatusChange(product, value as ProductStatus);
+    };
 
   const columnsWithEditableStatus = useMemo(() =>
     columns.concat([
@@ -179,7 +205,9 @@ export function ProductsListTable(props: ProductsListTableProps) {
                   key={status.label}
                   value={status.label}
                 >
-                  <Typography color={status.color(theme)}>{status.label}</Typography>
+                  <Typography color={status.color(theme)}>
+                    {status.label}
+                  </Typography>
                 </MenuItem>
               );
             })}

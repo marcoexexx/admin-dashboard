@@ -17,11 +17,16 @@ interface PickupAddressInputFieldProps {
   updateField?: boolean;
 }
 
-export function PickupAddressInputField({ updateField = false }: PickupAddressInputFieldProps) {
-  const { control, setValue, getValues, formState: { errors } } = useFormContext<
-    { pickupAddressId: string; }
-  >();
-  const [selectedPickupAddress, setSelectedPickupAddress] = useState<PickupAddress | null>(null);
+export function PickupAddressInputField(
+  { updateField = false }: PickupAddressInputFieldProps,
+) {
+  const { control, setValue, getValues, formState: { errors } } =
+    useFormContext<
+      { pickupAddressId: string; }
+    >();
+  const [selectedPickupAddress, setSelectedPickupAddress] = useState<
+    PickupAddress | null
+  >(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
   const { dispatch } = useStore();
@@ -46,22 +51,34 @@ export function PickupAddressInputField({ updateField = false }: PickupAddressIn
     : undefined;
 
   useEffect(() => {
-    if (defaultPickupAddress && updateField) setSelectedPickupAddress(defaultPickupAddress);
+    if (defaultPickupAddress && updateField) {
+      setSelectedPickupAddress(defaultPickupAddress);
+    }
   }, [defaultPickupAddress]);
 
-  const handleBrandChange = (_: React.SyntheticEvent, value: PickupAddress | null) => {
+  const handleBrandChange = (
+    _: React.SyntheticEvent,
+    value: PickupAddress | null,
+  ) => {
     if (value) {
       setSelectedPickupAddress(value);
       setValue("pickupAddressId", value.id);
     }
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch({ type: "OPEN_MODAL_FORM", payload: "create-pickup-addresse" });
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    dispatch({
+      type: "OPEN_MODAL_FORM",
+      payload: "create-pickup-addresse",
+    });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -94,7 +111,8 @@ export function PickupAddressInputField({ updateField = false }: PickupAddressIn
             onClose={handleOnCloseOptions}
             value={selectedPickupAddress}
             options={addresses || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             getOptionLabel={option => option.username || ""}
             loading={isLoading}
             renderOption={(props, option) => (
@@ -125,7 +143,9 @@ export function PickupAddressInputField({ updateField = false }: PickupAddressIn
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

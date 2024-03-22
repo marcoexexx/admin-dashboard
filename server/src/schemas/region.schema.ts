@@ -40,6 +40,10 @@ export const deleteMultiRegionsSchema = object({
 
 export type GetRegionInput = z.infer<typeof getRegionSchema>;
 export type CreateRegionInput = z.infer<typeof createRegionSchema>["body"];
-export type CreateMultiRegionsInput = z.infer<typeof createMultiRegionsSchema>["body"];
-export type DeleteMultiRegionsInput = z.infer<typeof deleteMultiRegionsSchema>["body"];
+export type CreateMultiRegionsInput = z.infer<
+  typeof createMultiRegionsSchema
+>["body"];
+export type DeleteMultiRegionsInput = z.infer<
+  typeof deleteMultiRegionsSchema
+>["body"];
 export type UpdateRegionInput = z.infer<typeof updateRegionSchema>;

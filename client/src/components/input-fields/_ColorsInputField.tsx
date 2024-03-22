@@ -21,12 +21,17 @@ export interface ColorsInputFieldProps {
 export function ColorsInputField(props: ColorsInputFieldProps) {
   const {} = props;
 
-  const { control, setValue, formState: { errors } } = useFormContext<{ colors: string[]; }>();
+  const { control, setValue, formState: { errors } } = useFormContext<
+    { colors: string[]; }
+  >();
 
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
-  const handleSalesCateogyChange = (_: React.SyntheticEvent, value: string[] | null) => {
+  const handleSalesCateogyChange = (
+    _: React.SyntheticEvent,
+    value: string[] | null,
+  ) => {
     if (value) {
       setSelectedColors(value);
       setValue("colors", value.map(v => v));
@@ -34,7 +39,9 @@ export function ColorsInputField(props: ColorsInputFieldProps) {
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   return (
     <>

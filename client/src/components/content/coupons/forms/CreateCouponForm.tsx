@@ -1,4 +1,7 @@
-import { DatePickerField, ProductInputField } from "@/components/input-fields";
+import {
+  DatePickerField,
+  ProductInputField,
+} from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
 import { useBeforeUnloadPage } from "@/hooks";
 import { useCreateCoupon } from "@/hooks/coupon";
@@ -34,12 +37,20 @@ export function CreateCouponForm() {
   const { handleSubmit, register, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<CreateCouponInput> = (value) => {
-    createCouponMutation.mutate({ ...value, expiredDate: value.expiredDate?.toISOString() });
+    createCouponMutation.mutate({
+      ...value,
+      expiredDate: value.expiredDate?.toISOString(),
+    });
   };
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12} md={6}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
@@ -76,7 +87,11 @@ export function CreateCouponForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit" loading={createCouponMutation.isPending}>
+          <MuiButton
+            variant="contained"
+            type="submit"
+            loading={createCouponMutation.isPending}
+          >
             Create
           </MuiButton>
         </Grid>

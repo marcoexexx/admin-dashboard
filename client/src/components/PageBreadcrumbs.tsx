@@ -14,7 +14,8 @@ export function PageBreadcrumbs() {
           <Typography
             sx={{ cursor: "pointer" }}
             key={idx}
-            onClick={() => navigate(`/${pathnames.slice(0, idx + 1).join("/")}`)}
+            onClick={() =>
+              navigate(`/${pathnames.slice(0, idx + 1).join("/")}`)}
           >
             {name}
           </Typography>

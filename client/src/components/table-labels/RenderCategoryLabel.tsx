@@ -3,7 +3,9 @@ import { CacheResource } from "@/context/cacheKey";
 import { Category } from "@/services/types";
 import { useNavigate } from "react-router-dom";
 
-export function RenderCategoryLabel({ category }: { category: Category; }) {
+export function RenderCategoryLabel(
+  { category }: { category: Category; },
+) {
   const navigate = useNavigate();
   const to = `/${CacheResource.Category}/detail/${category.id}`;
 

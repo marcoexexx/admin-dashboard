@@ -16,7 +16,11 @@ async function getHashedPassword(password: string) {
 
 async function permissionsSeed() {
   const data = _.uniqWith(
-    [...guestUserAccessResources, ...customerUserAccessResources, ...shopownerAccessResources],
+    [
+      ...guestUserAccessResources,
+      ...customerUserAccessResources,
+      ...shopownerAccessResources,
+    ],
     _.isEqual,
   );
 
@@ -36,14 +40,18 @@ async function rolesSeed() {
       name: "Customer",
       remark: "Build-in role",
       permissions: {
-        connect: customerUserAccessResources.map(({ action, resource }) => ({
+        connect: customerUserAccessResources.map((
+          { action, resource },
+        ) => ({
           action_resource: { action, resource },
         })),
       },
     },
     update: {
       permissions: {
-        connect: customerUserAccessResources.map(({ action, resource }) => ({
+        connect: customerUserAccessResources.map((
+          { action, resource },
+        ) => ({
           action_resource: { action, resource },
         })),
       },

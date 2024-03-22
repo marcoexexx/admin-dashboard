@@ -17,8 +17,12 @@ interface RoleInputFieldProps {
   updateField?: boolean;
 }
 
-export function RoleInputField({ updateField = false }: RoleInputFieldProps) {
-  const { control, setValue, getValues } = useFormContext<{ roleId: string | null; }>();
+export function RoleInputField(
+  { updateField = false }: RoleInputFieldProps,
+) {
+  const { control, setValue, getValues } = useFormContext<
+    { roleId: string | null; }
+  >();
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
@@ -47,18 +51,25 @@ export function RoleInputField({ updateField = false }: RoleInputFieldProps) {
     if (defaultRole && updateField) setSelectedRole(defaultRole);
   }, [defaultRole]);
 
-  const handleRoleChange = (_: React.SyntheticEvent, value: Role | null) => {
+  const handleRoleChange = (
+    _: React.SyntheticEvent,
+    value: Role | null,
+  ) => {
     setSelectedRole(value);
     if (value !== null) setValue("roleId", value.id);
     else setValue("roleId", null);
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "create-role" });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -91,7 +102,8 @@ export function RoleInputField({ updateField = false }: RoleInputFieldProps) {
             onClose={handleOnCloseOptions}
             value={selectedRole}
             options={roles || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             getOptionLabel={option => option.name || ""}
             loading={isLoading}
             renderOption={(props, option) => (
@@ -122,7 +134,9 @@ export function RoleInputField({ updateField = false }: RoleInputFieldProps) {
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

@@ -1,5 +1,8 @@
 import { FormModal } from "@/components/forms";
-import { RoleInputField, ShopownerInputField } from "@/components/input-fields";
+import {
+  RoleInputField,
+  ShopownerInputField,
+} from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
 import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useGetUser, useUpdateUser } from "@/hooks/user";
@@ -63,7 +66,12 @@ export function UpdateUserForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <RoleInputField updateField />
@@ -77,7 +85,13 @@ export function UpdateUserForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={isPending}>Save</MuiButton>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={isPending}
+            >
+              Save
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

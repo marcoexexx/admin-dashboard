@@ -15,13 +15,17 @@ type ProductLifeCycleStatusHandler = () => ProductLifeCycleStateContext;
  *
  * @throws {AppError} Throws an error if the state change encounters an issue.
  */
-export const handleTryOnDraftProductStatus: ProductLifeCycleStatusHandler = () => ({
-  [ProductStatus.Pending]: () => ProductStatus.Pending,
-  [ProductStatus.Published]: () => {
-    throw AppError.new(StatusCode.BadRequest, "Can not publish `Draft` status.");
-  },
-  [ProductStatus.Draft]: () => ProductStatus.Draft,
-});
+export const handleTryOnDraftProductStatus: ProductLifeCycleStatusHandler =
+  () => ({
+    [ProductStatus.Pending]: () => ProductStatus.Pending,
+    [ProductStatus.Published]: () => {
+      throw AppError.new(
+        StatusCode.BadRequest,
+        "Can not publish `Draft` status.",
+      );
+    },
+    [ProductStatus.Draft]: () => ProductStatus.Draft,
+  });
 
 /**
  * Safely attempts to change the state.
@@ -29,11 +33,12 @@ export const handleTryOnDraftProductStatus: ProductLifeCycleStatusHandler = () =
  *
  * @throws {AppError} Throws an error if the state change encounters an issue.
  */
-export const handleTryOnPendingProductStatus: ProductLifeCycleStatusHandler = () => ({
-  [ProductStatus.Pending]: () => ProductStatus.Pending,
-  [ProductStatus.Published]: () => ProductStatus.Published,
-  [ProductStatus.Draft]: () => ProductStatus.Draft,
-});
+export const handleTryOnPendingProductStatus:
+  ProductLifeCycleStatusHandler = () => ({
+    [ProductStatus.Pending]: () => ProductStatus.Pending,
+    [ProductStatus.Published]: () => ProductStatus.Published,
+    [ProductStatus.Draft]: () => ProductStatus.Draft,
+  });
 
 /**
  * Safely attempts to change the state.
@@ -41,10 +46,14 @@ export const handleTryOnPendingProductStatus: ProductLifeCycleStatusHandler = ()
  *
  * @throws {AppError} Throws an error if the state change encounters an issue.
  */
-export const handleTryOnPublishedProductStatus: ProductLifeCycleStatusHandler = () => ({
-  [ProductStatus.Pending]: () => {
-    throw AppError.new(StatusCode.BadRequest, "Published product can not be Pending status.");
-  },
-  [ProductStatus.Published]: () => ProductStatus.Published,
-  [ProductStatus.Draft]: () => ProductStatus.Draft,
-});
+export const handleTryOnPublishedProductStatus:
+  ProductLifeCycleStatusHandler = () => ({
+    [ProductStatus.Pending]: () => {
+      throw AppError.new(
+        StatusCode.BadRequest,
+        "Published product can not be Pending status.",
+      );
+    },
+    [ProductStatus.Published]: () => ProductStatus.Published,
+    [ProductStatus.Draft]: () => ProductStatus.Draft,
+  });

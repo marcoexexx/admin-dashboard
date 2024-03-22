@@ -4,15 +4,18 @@ import { User } from "@/services/types";
 import { Typography } from "@mui/material";
 import { MuiButton } from "../ui";
 
-export function RenderToggleBlockUserButton({ user, me }: { user: User; me: User; }) {
+export function RenderToggleBlockUserButton(
+  { user, me }: { user: User; me: User; },
+) {
   const blocked = user.blockedUsers.find(u => u.blockedById === me.id);
 
   const blockUserMutation = useBlockUser();
   const unblockUserMutation = useUnblockUser();
 
   const handleToggleBlock = (_: React.MouseEvent<HTMLButtonElement>) => {
-    if (blocked) unblockUserMutation.mutate({ blockedUserId: blocked.userId });
-    else blockUserMutation.mutate({ userId: user.id });
+    if (blocked) {
+      unblockUserMutation.mutate({ blockedUserId: blocked.userId });
+    } else blockUserMutation.mutate({ userId: user.id });
   };
 
   if (user.id === me.id) return <Typography>Self</Typography>;

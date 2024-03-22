@@ -1,10 +1,19 @@
 import { EnhancedTable, TypedColumn } from "@/components";
-import { RenderCountLabel, RenderRoleLabel } from "@/components/table-labels";
+import {
+  RenderCountLabel,
+  RenderRoleLabel,
+} from "@/components/table-labels";
 import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Resource, Role } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { RolesFilterForm } from ".";
 
 const columns: TypedColumn<Role>[] = [
@@ -18,13 +27,16 @@ const columns: TypedColumn<Role>[] = [
     id: "permissions",
     align: "left",
     name: "Permissions",
-    render: ({ value }) => value._count ? <RenderCountLabel _count={value._count} /> : null,
+    render: ({ value }) =>
+      value._count ? <RenderCountLabel _count={value._count} /> : null,
   },
   {
     id: "createdAt",
     align: "left",
     name: "Created At",
-    render: ({ value }) => <Typography>{new Date(value.createdAt).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.createdAt).toUTCString()}</Typography>
+    ),
   },
 ];
 
@@ -38,7 +50,14 @@ interface RolesListTableProps {
 }
 
 export function RolesListTable(props: RolesListTableProps) {
-  const { roles, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
+  const {
+    roles,
+    count,
+    isLoading,
+    onCreateMany,
+    onDelete,
+    onMultiDelete,
+  } = props;
   const { state: { roleFilter: { pagination } }, dispatch } = useStore();
 
   const handleChangePagination = (_: any, page: number) => {

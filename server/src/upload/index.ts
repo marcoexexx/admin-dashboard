@@ -30,7 +30,11 @@ export const excelStorage = multer.diskStorage({
   },
 });
 
-function imageFilter(_: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) {
+function imageFilter(
+  _: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+) {
   if (!file.mimetype.startsWith("image/")) {
     return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"));
   }
@@ -38,8 +42,15 @@ function imageFilter(_: Request, file: Express.Multer.File, cb: multer.FileFilte
   cb(null, true);
 }
 
-function excelFilter(_: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) {
-  if (file.mimetype !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+function excelFilter(
+  _: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+) {
+  if (
+    file.mimetype
+      !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ) {
     return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"));
   }
 

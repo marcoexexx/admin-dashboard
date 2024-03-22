@@ -15,13 +15,20 @@ export function useGetProductSalesCategories({
   const query = useQuery({
     enabled: !!productId,
     queryKey: [CacheResource.ProductSalesCategory],
-    queryFn: args => apiService.findManySaleCategories(args, { productId }),
+    queryFn: args =>
+      apiService.findManySaleCategories(args, { productId }),
     select: data => data?.results,
   });
 
-  const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
-    : Ok(query.data);
+  const try_data: Result<typeof query.data, AppError> =
+    !!query.error && query.isError
+      ? Err(
+        AppError.new(
+          (query.error as any).kind || AppErrorKind.ApiError,
+          query.error.message,
+        ),
+      )
+      : Ok(query.data);
 
   return {
     ...query,

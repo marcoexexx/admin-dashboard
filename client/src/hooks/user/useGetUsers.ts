@@ -19,7 +19,11 @@ export function useGetUsers({
   pagination: Pagination;
 }) {
   const query = useQuery({
-    queryKey: [CacheResource.User, { filter, pagination, include }] as CacheKey<"users">["list"],
+    queryKey: [CacheResource.User, {
+      filter,
+      pagination,
+      include,
+    }] as CacheKey<"users">["list"],
     queryFn: args =>
       apiService.findMany(args, {
         filter,
@@ -29,9 +33,15 @@ export function useGetUsers({
     select: data => data,
   });
 
-  const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
-    : Ok(query.data);
+  const try_data: Result<typeof query.data, AppError> =
+    !!query.error && query.isError
+      ? Err(
+        AppError.new(
+          (query.error as any).kind || AppErrorKind.ApiError,
+          query.error.message,
+        ),
+      )
+      : Ok(query.data);
 
   return {
     ...query,

@@ -14,16 +14,21 @@ export function useUpdateOrder() {
   const { dispatch } = useStore();
 
   const mutation = useMutation({
-    mutationFn: (...args: Parameters<typeof apiService.update>) => apiService.update(...args),
+    mutationFn: (...args: Parameters<typeof apiService.update>) =>
+      apiService.update(...args),
     onError(err: any) {
       dispatch({
         type: "OPEN_TOAST",
         payload: {
-          message: `failed: ${err?.response?.data?.message || err?.message || "Unknown error"}`,
+          message: `failed: ${
+            err?.response?.data?.message || err?.message || "Unknown error"
+          }`,
           severity: err.response.data.status === 403 ? "warning" : "error",
         },
       });
-      playSoundEffect(err.response.data.status === 403 ? "denied" : "error");
+      playSoundEffect(
+        err.response.data.status === 403 ? "denied" : "error",
+      );
     },
     onSuccess() {
       dispatch({
@@ -41,11 +46,15 @@ export function useUpdateOrder() {
     },
   });
 
-  const try_data: Result<typeof mutation.data, AppError> = !!mutation.error && mutation.isError
-    ? Err(
-      AppError.new((mutation.error as any).kind || AppErrorKind.ApiError, mutation.error.message),
-    )
-    : Ok(mutation.data);
+  const try_data: Result<typeof mutation.data, AppError> =
+    !!mutation.error && mutation.isError
+      ? Err(
+        AppError.new(
+          (mutation.error as any).kind || AppErrorKind.ApiError,
+          mutation.error.message,
+        ),
+      )
+      : Ok(mutation.data);
 
   return {
     ...mutation,

@@ -9,7 +9,11 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { Controller, useFieldArray, useFormContext } from "react-hook-form";
+import {
+  Controller,
+  useFieldArray,
+  useFormContext,
+} from "react-hook-form";
 
 import { useStore } from "@/hooks";
 import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
@@ -43,28 +47,39 @@ export function SpecificationInputField() {
   const { state: { modalForm }, dispatch } = useStore();
 
   const [draggable, setDraggable] = useState(false);
-  const [draggedIdx, setDraggedIdx] = useState<number | undefined>(undefined);
-  const [deleteIdx, setDeleteIdx] = useState<number | undefined>(undefined);
+  const [draggedIdx, setDraggedIdx] = useState<number | undefined>(
+    undefined,
+  );
+  const [deleteIdx, setDeleteIdx] = useState<number | undefined>(
+    undefined,
+  );
 
-  const handleDragStart = (idx: number) => (_evt: React.DragEvent<HTMLDivElement>) => {
-    setDraggedIdx(idx);
-  };
+  const handleDragStart =
+    (idx: number) => (_evt: React.DragEvent<HTMLDivElement>) => {
+      setDraggedIdx(idx);
+    };
 
   const handleClickRemoveSpecificationAction =
     (idx: number) => (_evt: React.MouseEvent<HTMLButtonElement>) => {
       setDeleteIdx(idx);
-      dispatch({ type: "OPEN_MODAL_FORM", payload: "delete-specification" });
+      dispatch({
+        type: "OPEN_MODAL_FORM",
+        payload: "delete-specification",
+      });
     };
 
-  const handleRemoveSpecification = (_evt: React.MouseEvent<HTMLButtonElement>) => {
+  const handleRemoveSpecification = (
+    _evt: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     if (deleteIdx !== undefined) specificationRemove(deleteIdx);
     dispatch({ type: "CLOSE_ALL_MODAL_FORM" });
   };
 
-  const handleDragOver = (idx: number) => (evt: React.DragEvent<HTMLDivElement>) => {
-    evt.preventDefault();
-    if (draggedIdx) swap(draggedIdx, idx);
-  };
+  const handleDragOver =
+    (idx: number) => (evt: React.DragEvent<HTMLDivElement>) => {
+      evt.preventDefault();
+      if (draggedIdx) swap(draggedIdx, idx);
+    };
 
   const handleOnDrop = (evt: React.DragEvent<HTMLDivElement>) => {
     evt.preventDefault();
@@ -77,7 +92,12 @@ export function SpecificationInputField() {
   return (
     <>
       <Accordion defaultExpanded>
-        <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel-filter-content"
@@ -151,7 +171,8 @@ export function SpecificationInputField() {
         </AccordionDetails>
       </Accordion>
 
-      {modalForm.field === "delete-specification" && deleteIdx !== undefined
+      {modalForm.field === "delete-specification"
+          && deleteIdx !== undefined
         ? (
           <FormModal
             field={"delete-specification"}
@@ -162,10 +183,16 @@ export function SpecificationInputField() {
                 <Typography>Are you sure want to delete</Typography>
               </Box>
               <Box display="flex" flexDirection="row" gap={1}>
-                <MuiButton variant="contained" color="error" onClick={handleRemoveSpecification}>
+                <MuiButton
+                  variant="contained"
+                  color="error"
+                  onClick={handleRemoveSpecification}
+                >
                   Delete
                 </MuiButton>
-                <MuiButton variant="outlined" onClick={handleCloseModal}>Cancel</MuiButton>
+                <MuiButton variant="outlined" onClick={handleCloseModal}>
+                  Cancel
+                </MuiButton>
               </Box>
             </Box>
           </FormModal>

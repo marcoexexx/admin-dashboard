@@ -2,7 +2,13 @@ import { DatePickerField } from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
 import { useStore } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  TextField,
+} from "@mui/material";
 import dayjs from "dayjs";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
@@ -31,10 +37,12 @@ export function CouponsFilterForm() {
     },
   });
 
-  const { handleSubmit, register, formState: { errors }, setValue } = methods;
+  const { handleSubmit, register, formState: { errors }, setValue } =
+    methods;
 
   const onSubmit: SubmitHandler<FilterCouponsInput> = (value) => {
-    const { minPoint, maxPoint, minDolla, maxDolla, isUsed, expiredDate } = value;
+    const { minPoint, maxPoint, minDolla, maxDolla, isUsed, expiredDate } =
+      value;
 
     setFilterQuery(prev => ({ ...prev, ...value }));
 
@@ -83,13 +91,19 @@ export function CouponsFilterForm() {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12} md={6}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
               fullWidth
               {...register("minPoint", {
-                setValueAs: value => value === "" ? undefined : parseInt(value, 10),
+                setValueAs: value =>
+                  value === "" ? undefined : parseInt(value, 10),
               })}
               defaultValue={filterQuery.get("minPoint")}
               type="number"
@@ -102,7 +116,8 @@ export function CouponsFilterForm() {
             />
             <TextField
               {...register("minDolla", {
-                setValueAs: value => value === "" ? undefined : parseInt(value, 10),
+                setValueAs: value =>
+                  value === "" ? undefined : parseInt(value, 10),
               })}
               defaultValue={filterQuery.get("minDolla")}
               type="number"
@@ -118,7 +133,8 @@ export function CouponsFilterForm() {
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
               {...register("maxPoint", {
-                setValueAs: value => value === "" ? undefined : parseInt(value, 10),
+                setValueAs: value =>
+                  value === "" ? undefined : parseInt(value, 10),
               })}
               defaultValue={filterQuery.get("maxPoint")}
               type="number"
@@ -129,7 +145,8 @@ export function CouponsFilterForm() {
             />
             <TextField
               {...register("maxDolla", {
-                setValueAs: value => value === "" ? undefined : parseInt(value, 10),
+                setValueAs: value =>
+                  value === "" ? undefined : parseInt(value, 10),
               })}
               defaultValue={filterQuery.get("maxDolla")}
               type="number"
@@ -147,7 +164,11 @@ export function CouponsFilterForm() {
             <FormControlLabel
               {...register("isUsed")}
               label="Used"
-              control={<Checkbox defaultChecked={filterQuery.get("isUsed") === "true"} />}
+              control={
+                <Checkbox
+                  defaultChecked={filterQuery.get("isUsed") === "true"}
+                />
+              }
             />
           </Box>
         </Grid>
@@ -157,7 +178,13 @@ export function CouponsFilterForm() {
         </Grid>
 
         <Grid item>
-          <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
+          <MuiButton
+            onClick={handleOnClickReset}
+            variant="outlined"
+            type="button"
+          >
+            Reset
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

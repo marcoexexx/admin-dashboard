@@ -1,4 +1,7 @@
-import { CreateBrandInput, UpdateBrandInput } from "@/components/content/brands/forms";
+import {
+  CreateBrandInput,
+  UpdateBrandInput,
+} from "@/components/content/brands/forms";
 import { BrandWhereInput } from "@/context/brand";
 import { CacheResource } from "@/context/cacheKey";
 import { authApi } from "./authApi";
@@ -12,7 +15,9 @@ import {
   QueryOptionArgs,
 } from "./types";
 
-export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
+export class BrandApiService
+  extends BaseApiService<BrandWhereInput, Brand>
+{
   constructor(public repo: CacheResource) {
     super();
   }
@@ -64,7 +69,9 @@ export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
     return data;
   }
 
-  async create(payload: CreateBrandInput): Promise<GenericResponse<Brand, "brand">> {
+  async create(
+    payload: CreateBrandInput,
+  ): Promise<GenericResponse<Brand, "brand">> {
     const url = `/${this.repo}`;
 
     const { data } = await authApi.post(url, payload);
@@ -76,7 +83,8 @@ export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
 
     const formData = new FormData();
     const blob = new Blob([buf], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     formData.append("excel", blob, `Brands_${Date.now()}.xlsx`);
@@ -103,7 +111,9 @@ export class BrandApiService extends BaseApiService<BrandWhereInput, Brand> {
   async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
-    const { data } = await authApi.delete(url, { data: { brandIds: ids } });
+    const { data } = await authApi.delete(url, {
+      data: { brandIds: ids },
+    });
     return data;
   }
 

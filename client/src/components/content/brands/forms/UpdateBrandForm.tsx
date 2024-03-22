@@ -42,20 +42,28 @@ export function UpdateBrandForm() {
     }
   }, [brandQuery.isSuccess, brandFetchStatus]);
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods;
+  const { handleSubmit, register, formState: { errors }, setFocus } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
   }, [setFocus]);
 
   const onSubmit: SubmitHandler<UpdateBrandInput> = (value) => {
-    if (brandId) updateBrandMutation.mutate({ id: brandId, payload: value });
+    if (brandId) {
+      updateBrandMutation.mutate({ id: brandId, payload: value });
+    }
   };
 
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -69,7 +77,11 @@ export function UpdateBrandForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={updateBrandMutation.isPending}>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={updateBrandMutation.isPending}
+            >
               Save
             </MuiButton>
           </Grid>

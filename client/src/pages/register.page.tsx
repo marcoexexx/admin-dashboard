@@ -1,5 +1,12 @@
 import { OAuthForm, RegisterForm } from "@/components/forms/auth";
-import { Box, Container, Grid, Link, styled, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Grid,
+  Link,
+  styled,
+  Typography,
+} from "@mui/material";
 import { Link as BrowserLink } from "react-router-dom";
 
 const GridWrapper = styled(Grid)(({ theme }) => ({
@@ -65,15 +72,25 @@ export default function Register() {
                 <TypographyPrimary variant="h1" sx={{ my: 2 }}>
                   Welcome to Rangoon! 👋
                 </TypographyPrimary>
-                <TypographySecondary variant="h4" fontWeight="normal" sx={{ mb: 4 }}>
+                <TypographySecondary
+                  variant="h4"
+                  fontWeight="normal"
+                  sx={{ mb: 4 }}
+                >
                   Please sign-up to your account and start the adventure
                 </TypographySecondary>
 
                 <RegisterForm />
 
-                <TypographySecondary variant="h4" fontWeight="normal" sx={{ my: 2 }}>
+                <TypographySecondary
+                  variant="h4"
+                  fontWeight="normal"
+                  sx={{ my: 2 }}
+                >
                   Already have an account?{" "}
-                  <Link component={BrowserLink} to="/auth/login">Login</Link>
+                  <Link component={BrowserLink} to="/auth/login">
+                    Login
+                  </Link>
                 </TypographySecondary>
 
                 <OAuthForm />

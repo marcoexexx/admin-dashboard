@@ -19,9 +19,10 @@ export async function safeDeserializeUser(
 
     const authorizationHeader = req.header("authorization");
 
-    let accessToken = authorizationHeader && authorizationHeader.startsWith("Bearer")
-      ? authorizationHeader.split(" ")[1]
-      : req.cookies.access_token as string;
+    let accessToken =
+      authorizationHeader && authorizationHeader.startsWith("Bearer")
+        ? authorizationHeader.split(" ")[1]
+        : req.cookies.access_token as string;
 
     if (!accessToken) return next();
 
@@ -34,7 +35,9 @@ export async function safeDeserializeUser(
 
     const user = (await service.tryFindUnique({
       where: {
-        id: tryJSONParse(session).expect(`Failed json parse for session id`).id,
+        id:
+          tryJSONParse(session).expect(`Failed json parse for session id`)
+            .id,
       },
       include: {
         shopownerProvider: true,
@@ -64,26 +67,43 @@ export async function deserializeUser(
   try {
     const authorizationHeader = req.header("authorization");
 
-    let accessToken = authorizationHeader && authorizationHeader.startsWith("Bearer")
-      ? authorizationHeader.split(" ")[1]
-      : req.cookies.access_token as string;
+    let accessToken =
+      authorizationHeader && authorizationHeader.startsWith("Bearer")
+        ? authorizationHeader.split(" ")[1]
+        : req.cookies.access_token as string;
 
-    if (!accessToken) return next(AppError.new(StatusCode.Unauthorized, `You are not logged in`));
+    if (!accessToken) {
+      return next(
+        AppError.new(StatusCode.Unauthorized, `You are not logged in`),
+      );
+    }
 
     const decoded = verifyJwt(accessToken, "accessTokenPublicKey"); //  decoded.sub == user.id
     if (!decoded) {
-      return next(AppError.new(StatusCode.Unauthorized, `Invalid token or user doesn't exist`));
+      return next(
+        AppError.new(
+          StatusCode.Unauthorized,
+          `Invalid token or user doesn't exist`,
+        ),
+      );
     }
 
     const session = await redisClient.get(decoded.sub);
 
     if (!session) {
-      return next(AppError.new(StatusCode.Unauthorized, `Invalid token or session has expired`));
+      return next(
+        AppError.new(
+          StatusCode.Unauthorized,
+          `Invalid token or session has expired`,
+        ),
+      );
     }
 
     const user = (await service.tryFindUnique({
       where: {
-        id: tryJSONParse(session).expect(`Failed json parse for session id`).id,
+        id:
+          tryJSONParse(session).expect(`Failed json parse for session id`)
+            .id,
       },
       include: {
         cart: true,

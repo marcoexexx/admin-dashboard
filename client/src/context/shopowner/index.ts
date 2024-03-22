@@ -1,4 +1,8 @@
-import { Pagination, ShopownerProvider, WhereInput } from "@/services/types";
+import {
+  Pagination,
+  ShopownerProvider,
+  WhereInput,
+} from "@/services/types";
 
 export type ShopownerProviderWhereInput = {
   where?: WhereInput<ShopownerProvider>;

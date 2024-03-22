@@ -31,14 +31,18 @@ export function CheckoutOrderConfirmation() {
   );
 
   // Extraction
-  const deliveryAddress = deliveryAddressQuery.try_data.ok_or_throw()?.userAddress;
-  const billingAddress = billingAddressQuery.try_data.ok_or_throw()?.userAddress;
+  const deliveryAddress = deliveryAddressQuery.try_data.ok_or_throw()
+    ?.userAddress;
+  const billingAddress = billingAddressQuery.try_data.ok_or_throw()
+    ?.userAddress;
 
   // If deliveryAddress does not exist in database, must remove from localStorage
   useEffect(() => {
     if (!deliveryAddress && isSuccess) {
       const values = get<CreateOrderInput>("PICKUP_FORM");
-      if (values) set("PICKUP_FORM", { ...values, deliveryAddressId: undefined });
+      if (values) {
+        set("PICKUP_FORM", { ...values, deliveryAddressId: undefined });
+      }
       resetField("deliveryAddressId");
     }
   }, [deliveryAddress]);
@@ -47,7 +51,9 @@ export function CheckoutOrderConfirmation() {
   useEffect(() => {
     if (!billingAddress && isSuccess) {
       const values = get<CreateOrderInput>("PICKUP_FORM");
-      if (values) set("PICKUP_FORM", { ...values, billingAddressId: undefined });
+      if (values) {
+        set("PICKUP_FORM", { ...values, billingAddressId: undefined });
+      }
       resetField("billingAddressId");
     }
   }, [deliveryAddress]);
@@ -61,7 +67,9 @@ export function CheckoutOrderConfirmation() {
           ? (
             <Box display="flex" flexDirection="column" gap={1}>
               <Typography variant="h3">Delivery address</Typography>
-              <DeliveryAddressDetailCard deliveryAddress={deliveryAddress} />
+              <DeliveryAddressDetailCard
+                deliveryAddress={deliveryAddress}
+              />
             </Box>
           )
           : null}

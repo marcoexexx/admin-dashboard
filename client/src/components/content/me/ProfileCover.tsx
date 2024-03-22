@@ -1,4 +1,7 @@
-import { UploadCoverPhoto, UploadProfilePicture } from "@/components/image-uploader";
+import {
+  UploadCoverPhoto,
+  UploadProfilePicture,
+} from "@/components/image-uploader";
 import { MuiButton } from "@/components/ui";
 import { User } from "@/services/types";
 import {
@@ -82,7 +85,11 @@ export function ProfileCover({ user }: ProfileCoverProps) {
     <>
       <Box display="flex" mb={3}>
         <Tooltip arrow placement="top" title="Go back">
-          <IconButton color="primary" sx={{ p: 2, mr: 2 }} onClick={() => navigate(-1)}>
+          <IconButton
+            color="primary"
+            sx={{ p: 2, mr: 2 }}
+            onClick={() => navigate(-1)}
+          >
             <ArrowBackTwoToneIcon />
           </IconButton>
         </Tooltip>
@@ -92,8 +99,8 @@ export function ProfileCover({ user }: ProfileCoverProps) {
             Profile for {user.name}
           </Typography>
           <Typography variant="subtitle2">
-            Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
-            consectetur cupidatat.
+            Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
+            sint cillum sint consectetur cupidatat.
           </Typography>
         </Box>
       </Box>
@@ -117,17 +124,24 @@ export function ProfileCover({ user }: ProfileCoverProps) {
           {user.name}
         </Typography>
         <Typography variant="subtitle2">
-          Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa
-          sint ad nisi Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat
-          excepteur officia. Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate
-          voluptate dolor minim nulla est proident. Nostrud officia pariatur ut officia. Sit irure
-          elit esse ea nulla sunt ex occaecat reprehenderit commodo officia dolor Lorem duis laboris
-          cupidatat officia voluptate. Culpa proident adipisicing id nulla nisi laboris ex in Lorem
-          sunt duis officia eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit
-          enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa
-          duis.
+          Lorem ipsum dolor sit amet, officia excepteur ex fugiat
+          reprehenderit enim labore culpa sint ad nisi Lorem pariatur
+          mollit ex esse exercitation amet. Nisi anim cupidatat excepteur
+          officia. Reprehenderit nostrud nostrud ipsum Lorem est aliquip
+          amet voluptate voluptate dolor minim nulla est proident. Nostrud
+          officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex
+          occaecat reprehenderit commodo officia dolor Lorem duis laboris
+          cupidatat officia voluptate. Culpa proident adipisicing id nulla
+          nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua
+          reprehenderit commodo ex non excepteur duis sunt velit enim.
+          Voluptate laboris sint cupidatat ullamco ut ea consectetur et est
+          culpa et culpa duis.
         </Typography>
-        <Typography sx={{ py: 2 }} variant="subtitle2" color="text.primary">
+        <Typography
+          sx={{ py: 2 }}
+          variant="subtitle2"
+          color="text.primary"
+        >
           {/* {user.jobtitle} | {user.location} | {user.followers} followers */}
           title location followers
         </Typography>
@@ -140,7 +154,12 @@ export function ProfileCover({ user }: ProfileCoverProps) {
             <MuiButton size="small" variant="contained">
               Edit
             </MuiButton>
-            <MuiButton size="small" sx={{ mx: 1 }} variant="outlined" onClick={handleViewAs}>
+            <MuiButton
+              size="small"
+              sx={{ mx: 1 }}
+              variant="outlined"
+              onClick={handleViewAs}
+            >
               View as
             </MuiButton>
             {/* <IconButton color="primary" sx={{ p: 0.5 }}> */}

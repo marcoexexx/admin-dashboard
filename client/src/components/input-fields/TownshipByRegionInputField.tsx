@@ -20,10 +20,13 @@ interface TownshipByRegionInputFieldProps {
 export function TownshipByRegionInputField(
   { updateField = false }: TownshipByRegionInputFieldProps,
 ) {
-  const { control, setValue, getValues, formState: { errors }, watch } = useFormContext<
-    { regionId: string; townshipFeesId: string; }
-  >();
-  const [selectedTownship, setSelectedTownship] = useState<TownshipFees | null>(null);
+  const { control, setValue, getValues, formState: { errors }, watch } =
+    useFormContext<
+      { regionId: string; townshipFeesId: string; }
+    >();
+  const [selectedTownship, setSelectedTownship] = useState<
+    TownshipFees | null
+  >(null);
   const [isOpenOptions, setIsOpenOptions] = useState(false);
 
   const regionId = watch("regionId");
@@ -57,22 +60,31 @@ export function TownshipByRegionInputField(
     : undefined;
 
   useEffect(() => {
-    if (defaultTownship && updateField) setSelectedTownship(defaultTownship);
+    if (defaultTownship && updateField) {
+      setSelectedTownship(defaultTownship);
+    }
   }, [defaultTownship]);
 
-  const handleTownshipChange = (_: React.SyntheticEvent, value: TownshipFees | null) => {
+  const handleTownshipChange = (
+    _: React.SyntheticEvent,
+    value: TownshipFees | null,
+  ) => {
     if (value) {
       setSelectedTownship(value);
       setValue("townshipFeesId", value.id);
     }
   };
 
-  const handleOnClickCreateNew = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickCreateNew = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     dispatch({ type: "OPEN_MODAL_FORM", payload: "create-township" });
   };
 
   const handleOnCloseOptions = (_: React.SyntheticEvent) =>
-    new Promise(resolve => setTimeout(() => resolve(setIsOpenOptions(false)), 200));
+    new Promise(resolve =>
+      setTimeout(() => resolve(setIsOpenOptions(false)), 200)
+    );
 
   if (isError) {
     return (
@@ -106,7 +118,8 @@ export function TownshipByRegionInputField(
             onClose={handleOnCloseOptions}
             value={selectedTownship}
             options={townships || []}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) =>
+              option.id === value.id}
             getOptionLabel={option => option.name || ""}
             loading={isLoading}
             renderOption={(props, option) => (
@@ -137,7 +150,9 @@ export function TownshipByRegionInputField(
                   ...params.InputProps,
                   endAdornment: (
                     <>
-                      {isLoading && <CircularProgress color="primary" size={20} />}
+                      {isLoading && (
+                        <CircularProgress color="primary" size={20} />
+                      )}
                       {params.InputProps.endAdornment}
                     </>
                   ),

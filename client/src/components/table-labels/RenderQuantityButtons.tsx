@@ -19,15 +19,21 @@ export function RenderQuantityButtons({
   onDecrement: (item: OrderItem) => void;
   onRemove: (item: OrderItem) => void;
 }) {
-  const handleOnClickIncrementAction = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickIncrementAction = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     onIncrement(item);
   };
 
-  const handleOnClickDecrementAction = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickDecrementAction = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     onDecrement(item);
   };
 
-  const handleOnClickRemoveAction = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClickRemoveAction = (
+    _: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     onRemove(item);
   };
 

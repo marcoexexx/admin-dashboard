@@ -1,7 +1,13 @@
 import { MuiButton } from "@/components/ui";
 import { useStore } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  TextField,
+} from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { boolean, number, object, string, z } from "zod";
@@ -44,7 +50,9 @@ export function ProductdsFilterForm() {
 
   const [filterQuery, setFilterQuery] = useSearchParams();
 
-  const { handleSubmit, register, formState: { errors } } = useForm<FilterProductsInput>({
+  const { handleSubmit, register, formState: { errors } } = useForm<
+    FilterProductsInput
+  >({
     resolver: zodResolver(filterProductsSchema),
   });
 
@@ -88,7 +96,12 @@ export function ProductdsFilterForm() {
   };
 
   return (
-    <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Grid
+      container
+      spacing={1}
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <Grid item xs={12} md={6}>
         <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
           <TextField
@@ -105,7 +118,9 @@ export function ProductdsFilterForm() {
             {...register("description")}
             label="Description"
             error={!!errors.description}
-            helperText={!!errors.description ? errors.description.message : ""}
+            helperText={!!errors.description
+              ? errors.description.message
+              : ""}
           />
         </Box>
       </Grid>
@@ -117,7 +132,8 @@ export function ProductdsFilterForm() {
             defaultValue={filterQuery.get("minPrice")}
             type="number"
             {...register("minPrice", {
-              setValueAs: value => value === "" ? undefined : parseInt(value, 10),
+              setValueAs: value =>
+                value === "" ? undefined : parseInt(value, 10),
             })}
             label="Minimum price"
             error={!!errors.minPrice}
@@ -133,7 +149,8 @@ export function ProductdsFilterForm() {
             type="number"
             defaultValue={filterQuery.get("maxPrice")}
             {...register("maxPrice", {
-              setValueAs: value => value === "" ? undefined : parseInt(value, 10),
+              setValueAs: value =>
+                value === "" ? undefined : parseInt(value, 10),
             })}
             label="Maximum price"
             error={!!errors.maxPrice}
@@ -147,7 +164,11 @@ export function ProductdsFilterForm() {
           <FormControlLabel
             {...register("insensitive")}
             label="Insensitive"
-            control={<Checkbox defaultChecked={filterQuery.get("insensitive") === "true"} />}
+            control={
+              <Checkbox
+                defaultChecked={filterQuery.get("insensitive") === "true"}
+              />
+            }
           />
         </Box>
       </Grid>
@@ -157,7 +178,13 @@ export function ProductdsFilterForm() {
       </Grid>
 
       <Grid item>
-        <MuiButton onClick={handleOnClickReset} variant="outlined" type="button">Reset</MuiButton>
+        <MuiButton
+          onClick={handleOnClickReset}
+          variant="outlined"
+          type="button"
+        >
+          Reset
+        </MuiButton>
       </Grid>
     </Grid>
   );

@@ -13,7 +13,11 @@ import { CacheResource } from "@/context/cacheKey";
 import { useBeforeUnloadPage, useStore } from "@/hooks";
 import { useGetExchangeByLatestUnit } from "@/hooks/exchange";
 import { useGetProduct, useUpdateProduct } from "@/hooks/product";
-import { PriceUnit, ProductStatus, ProductStockStatus } from "@/services/types";
+import {
+  PriceUnit,
+  ProductStatus,
+  ProductStockStatus,
+} from "@/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Alert,
@@ -48,7 +52,9 @@ const updateProductSchema = object({
   categories: string().array().default([]),
   discount: number().max(100).default(0),
   isDiscountItem: boolean().default(false),
-  instockStatus: z.nativeEnum(ProductStockStatus).default(ProductStockStatus.AskForStock),
+  instockStatus: z.nativeEnum(ProductStockStatus).default(
+    ProductStockStatus.AskForStock,
+  ),
   dealerPrice: number().min(0).optional(),
   marketPrice: number().min(0).optional(),
   priceUnit: z.nativeEnum(PriceUnit).default(PriceUnit.MMK),
@@ -110,7 +116,9 @@ export function UpdateProductForm() {
       _count: true,
     },
   });
-  const exchangesQuery = useGetExchangeByLatestUnit(methods.getValues("priceUnit"));
+  const exchangesQuery = useGetExchangeByLatestUnit(
+    methods.getValues("priceUnit"),
+  );
 
   // Mutations
   const updateProductMutation = useUpdateProduct();
@@ -122,12 +130,18 @@ export function UpdateProductForm() {
 
   useEffect(() => {
     queryClient.invalidateQueries({
-      queryKey: [CacheResource.Exchange, "latest", methods.getValues("priceUnit")],
+      queryKey: [
+        CacheResource.Exchange,
+        "latest",
+        methods.getValues("priceUnit"),
+      ],
     });
   }, [methods.watch("priceUnit")]);
 
   useEffect(() => {
-    if (productQuery.isSuccess && product && productFetchStatus === "idle") {
+    if (
+      productQuery.isSuccess && product && productFetchStatus === "idle"
+    ) {
       toUpdateFields.forEach(key => {
         const value = key === "isPending"
           ? product.status === "Pending"
@@ -171,7 +185,12 @@ export function UpdateProductForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item md={6} xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -199,7 +218,11 @@ export function UpdateProductForm() {
                 }}
                 endAdornment={
                   <InputAdornment position="end">
-                    <MuiButton onClick={handleOnCalculate} variant="outlined" size="small">
+                    <MuiButton
+                      onClick={handleOnCalculate}
+                      variant="outlined"
+                      size="small"
+                    >
                       Calculate
                     </MuiButton>
                   </InputAdornment>
@@ -217,7 +240,9 @@ export function UpdateProductForm() {
                 label="Price unit"
                 select
                 error={!!errors.priceUnit}
-                helperText={!!errors.priceUnit ? errors.priceUnit.message : ""}
+                helperText={!!errors.priceUnit
+                  ? errors.priceUnit.message
+                  : ""}
                 fullWidth
               >
                 {(Object.keys(PriceUnit) as PriceUnit[]).map(t => (
@@ -232,7 +257,9 @@ export function UpdateProductForm() {
                 type="number"
                 label="Dealer Price"
                 error={!!errors.dealerPrice}
-                helperText={!!errors.dealerPrice ? errors.dealerPrice.message : ""}
+                helperText={!!errors.dealerPrice
+                  ? errors.dealerPrice.message
+                  : ""}
               />
             </Box>
           </Grid>
@@ -245,7 +272,9 @@ export function UpdateProductForm() {
                 type="number"
                 label="MarketPrice"
                 error={!!errors.marketPrice}
-                helperText={!!errors.marketPrice ? errors.marketPrice.message : ""}
+                helperText={!!errors.marketPrice
+                  ? errors.marketPrice.message
+                  : ""}
               />
             </Box>
           </Grid>
@@ -283,13 +312,16 @@ export function UpdateProductForm() {
                 select
                 label="Instock Status"
                 error={!!errors.instockStatus}
-                helperText={!!errors.instockStatus ? errors.instockStatus.message : ""}
+                helperText={!!errors.instockStatus
+                  ? errors.instockStatus.message
+                  : ""}
               >
-                {(Object.keys(ProductStockStatus) as ProductStockStatus[]).map(status => (
-                  <MenuItem key={status} value={status}>
-                    {productStockStatusLabel[status]}
-                  </MenuItem>
-                ))}
+                {(Object.keys(ProductStockStatus) as ProductStockStatus[])
+                  .map(status => (
+                    <MenuItem key={status} value={status}>
+                      {productStockStatusLabel[status]}
+                    </MenuItem>
+                  ))}
               </TextField>
               <BrandInputField updateField />
             </Box>
@@ -303,7 +335,9 @@ export function UpdateProductForm() {
                 {...register("quantity", { valueAsNumber: true })}
                 label="Quantity"
                 error={!!errors.quantity}
-                helperText={!!errors.quantity ? errors.quantity.message : ""}
+                helperText={!!errors.quantity
+                  ? errors.quantity.message
+                  : ""}
               />
               <TextField
                 fullWidth
@@ -314,7 +348,9 @@ export function UpdateProductForm() {
                 }}
                 label="Discount"
                 error={!!errors.discount}
-                helperText={!!errors.discount ? errors.discount.message : ""}
+                helperText={!!errors.discount
+                  ? errors.discount.message
+                  : ""}
               />
             </Box>
           </Grid>

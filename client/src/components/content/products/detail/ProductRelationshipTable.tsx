@@ -1,4 +1,7 @@
-import { RenderBrandLabel, RenderSalesCategoryLabel } from "@/components/table-labels";
+import {
+  RenderBrandLabel,
+  RenderSalesCategoryLabel,
+} from "@/components/table-labels";
 import { RenderCategoryLabel } from "@/components/table-labels/RenderCategoryLabel";
 import { Brand, Product } from "@/services/types";
 import {
@@ -38,10 +41,17 @@ interface ProductRelationshipTableProps {
   salesCategories: Product["salesCategory"];
 }
 
-export default function ProductRelationshipTable(props: ProductRelationshipTableProps) {
+export default function ProductRelationshipTable(
+  props: ProductRelationshipTableProps,
+) {
   const { brand, categories, salesCategories } = props;
 
-  if (!brand) throw AppError.new(AppErrorKind.InvalidInputError, "Product should have brand");
+  if (!brand) {
+    throw AppError.new(
+      AppErrorKind.InvalidInputError,
+      "Product should have brand",
+    );
+  }
 
   const rows = [
     {
@@ -65,20 +75,29 @@ export default function ProductRelationshipTable(props: ProductRelationshipTable
       relative: "sales categories",
       render: () =>
         salesCategories?.map(sale => (
-          <RenderSalesCategoryLabel key={sale.salesCategoryId} salesCategory={sale.salesCategory} />
+          <RenderSalesCategoryLabel
+            key={sale.salesCategoryId}
+            salesCategory={sale.salesCategory}
+          />
         )),
     },
   ];
 
   return (
     <Box display="flex" flexDirection="column" gap={3} mt={3}>
-      <Typography variant="h3" fontWeight={600}>Relative information</Typography>
+      <Typography variant="h3" fontWeight={600}>
+        Relative information
+      </Typography>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="product specification">
           <TableHead>
             <TableRow>
               {columnHeader.map(col => {
-                return <TableCell key={col.id} align={col.align}>{col.name}</TableCell>;
+                return (
+                  <TableCell key={col.id} align={col.align}>
+                    {col.name}
+                  </TableCell>
+                );
               })}
             </TableRow>
           </TableHead>

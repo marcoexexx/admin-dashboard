@@ -5,7 +5,8 @@ export const OrderAddressType = {
   Delivery: "Delivery",
   Pickup: "Pickup",
 } as const;
-export type OrderAddressType = typeof OrderAddressType[keyof typeof OrderAddressType];
+export type OrderAddressType =
+  typeof OrderAddressType[keyof typeof OrderAddressType];
 
 export const createOrderSchema = object({
   orderItems: string().array(),
@@ -13,14 +14,18 @@ export const createOrderSchema = object({
   deliveryAddressId: string().optional(),
   totalPrice: number().min(0),
   pickupAddressId: string().optional(),
-  billingAddressId: string({ required_error: "billingAddressId is required" }),
+  billingAddressId: string({
+    required_error: "billingAddressId is required",
+  }),
   paymentMethodProvider: z.nativeEnum(PaymentMethodProvider, {
     required_error: "paymentMethodProvider is required",
   }),
   remark: string().optional(),
 
   createdPotentialOrderId: string().optional(),
-  addressType: z.nativeEnum(OrderAddressType, { required_error: "Order address type is required" }),
+  addressType: z.nativeEnum(OrderAddressType, {
+    required_error: "Order address type is required",
+  }),
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;

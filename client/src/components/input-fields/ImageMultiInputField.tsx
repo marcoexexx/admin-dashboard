@@ -12,7 +12,9 @@ interface ImageMultiInputFieldProps {}
 
 export function ImageMultiInputField(props: ImageMultiInputFieldProps) {
   const {} = props;
-  const { control, setValue, getValues } = useFormContext<{ images: string[]; }>();
+  const { control, setValue, getValues } = useFormContext<
+    { images: string[]; }
+  >();
 
   const [images, setImages] = useState<string[]>([]);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);

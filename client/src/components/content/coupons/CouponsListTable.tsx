@@ -4,7 +4,13 @@ import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Coupon, Resource } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { CouponsFilterForm } from ".";
 
 const columns: TypedColumn<Coupon>[] = [
@@ -30,13 +36,18 @@ const columns: TypedColumn<Coupon>[] = [
     id: "product",
     align: "left",
     name: "Product",
-    render: ({ value }) => value.product ? <RenderProductLabel product={value.product} /> : null,
+    render: ({ value }) =>
+      value.product
+        ? <RenderProductLabel product={value.product} />
+        : null,
   },
   {
     id: "isUsed",
     align: "right",
     name: "Used",
-    render: ({ value }) => <Typography>{value.isUsed ? "Used" : "Unused"}</Typography>,
+    render: ({ value }) => (
+      <Typography>{value.isUsed ? "Used" : "Unused"}</Typography>
+    ),
   },
 ];
 
@@ -50,7 +61,14 @@ interface CouponsListTableProps {
 }
 
 export function CouponsListTable(props: CouponsListTableProps) {
-  const { coupons, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
+  const {
+    coupons,
+    count,
+    isLoading,
+    onCreateMany,
+    onDelete,
+    onMultiDelete,
+  } = props;
   const { state: { couponFilter: { pagination } }, dispatch } = useStore();
 
   const handleChangePagination = (_: any, page: number) => {

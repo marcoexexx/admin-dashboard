@@ -17,7 +17,9 @@ interface ErrorBoundaryState {
   error?: Error | AppError;
 }
 
-export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export default class ErrorBoundary
+  extends Component<ErrorBoundaryProps, ErrorBoundaryState>
+{
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {
@@ -36,7 +38,9 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
       if (this.state.error instanceof AppError) {
         switch (this.state.error.kind) {
           case AppErrorKind.NetworkError:
-            return <h1>NetworkError: Please check your internet connection</h1>;
+            return (
+              <h1>NetworkError: Please check your internet connection</h1>
+            );
           case AppErrorKind.ApiError:
             return <ErrorPage error={this.state.error} />;
           case AppErrorKind.InvalidInputError:
@@ -48,7 +52,9 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
           case AppErrorKind.AccessDeniedError:
             return <MiniAccessDenied />;
           case AppErrorKind.UnderTheMaintenance:
-            return <UnderTheMaintenance message={this.state.error.message} />;
+            return (
+              <UnderTheMaintenance message={this.state.error.message} />
+            );
           case AppErrorKind.InvalidAuthSession:
             return <InvalidAuthSessionPage />;
           case AppErrorKind.BlockedUserError:

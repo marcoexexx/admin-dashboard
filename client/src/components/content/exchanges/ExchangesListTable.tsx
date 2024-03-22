@@ -4,7 +4,13 @@ import { CacheResource } from "@/context/cacheKey";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { Exchange, Resource } from "@/services/types";
-import { Box, Card, Divider, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  TablePagination,
+  Typography,
+} from "@mui/material";
 import { ExchangesFilterForm } from ".";
 
 const columns: TypedColumn<Exchange>[] = [
@@ -30,14 +36,18 @@ const columns: TypedColumn<Exchange>[] = [
     id: "date",
     align: "right",
     name: "Date",
-    render: ({ value }) => <Typography>{new Date(value.date).toUTCString()}</Typography>,
+    render: ({ value }) => (
+      <Typography>{new Date(value.date).toUTCString()}</Typography>
+    ),
   },
   {
     id: "shopowner",
     align: "right",
     name: "Shopowner",
     render: ({ value }) =>
-      value.shopowner ? <RenderShopownerLabel shopowner={value.shopowner} /> : null,
+      value.shopowner
+        ? <RenderShopownerLabel shopowner={value.shopowner} />
+        : null,
   },
 ];
 
@@ -51,8 +61,16 @@ interface ExchangesListTableProps {
 }
 
 export function ExchangesListTable(props: ExchangesListTableProps) {
-  const { exchanges, count, isLoading, onCreateMany, onDelete, onMultiDelete } = props;
-  const { state: { exchangeFilter: { pagination } }, dispatch } = useStore();
+  const {
+    exchanges,
+    count,
+    isLoading,
+    onCreateMany,
+    onDelete,
+    onMultiDelete,
+  } = props;
+  const { state: { exchangeFilter: { pagination } }, dispatch } =
+    useStore();
 
   const handleChangePagination = (_: any, page: number) => {
     dispatch({

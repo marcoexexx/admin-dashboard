@@ -5,7 +5,9 @@ import {
 import logging from "../middleware/logging/logging";
 import AppError, { StatusCode } from "./appError";
 
-export function convertPrismaErrorToAppError<E extends Error>(err: E): AppError {
+export function convertPrismaErrorToAppError<E extends Error>(
+  err: E,
+): AppError {
   logging.error(err);
 
   if (err instanceof PrismaClientKnownRequestError) {
@@ -16,7 +18,8 @@ export function convertPrismaErrorToAppError<E extends Error>(err: E): AppError 
         return AppError.new(StatusCode.BadRequest, `Already exists`);
 
       case "P2014": {
-        const { relation_name, model_a_name, model_b_name } = err.meta as any;
+        const { relation_name, model_a_name, model_b_name } = err
+          .meta as any;
         return AppError.new(
           StatusCode.BadRequest,
           `Cannot delete the ${relation_name} because it is associated with one or more ${model_a_name}s. Please remove the association with ${model_a_name}s before deleting the ${model_b_name}.`,
@@ -24,14 +27,20 @@ export function convertPrismaErrorToAppError<E extends Error>(err: E): AppError 
       }
 
       case "P2018": {
-        return AppError.new(StatusCode.BadRequest, `The required connected records were not found`);
+        return AppError.new(
+          StatusCode.BadRequest,
+          `The required connected records were not found`,
+        );
       }
 
       case "P2025":
         return AppError.new(StatusCode.BadRequest, `Not found`);
 
       default: {
-        return AppError.new(StatusCode.BadRequest, `Unknown resource error`);
+        return AppError.new(
+          StatusCode.BadRequest,
+          `Unknown resource error`,
+        );
       }
     }
   }

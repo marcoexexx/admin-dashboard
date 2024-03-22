@@ -19,7 +19,9 @@ export type UpdateTownshipInput = z.infer<typeof updateTownshipSchema>;
 export function UpdateTownshipForm() {
   const { townshipId } = useParams();
 
-  const { try_data, isSuccess, fetchStatus } = useGetTownship({ id: townshipId });
+  const { try_data, isSuccess, fetchStatus } = useGetTownship({
+    id: townshipId,
+  });
   const { mutate: updateTownship, isPending } = useUpdateTownship();
 
   const township = try_data.ok_or_throw();
@@ -37,7 +39,8 @@ export function UpdateTownshipForm() {
     }
   }, [isSuccess, fetchStatus]);
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods;
+  const { handleSubmit, register, formState: { errors }, setFocus } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
@@ -50,7 +53,12 @@ export function UpdateTownshipForm() {
   return (
     <>
       <FormProvider {...methods}>
-        <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Grid
+          container
+          spacing={1}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid item xs={12}>
             <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
               <TextField
@@ -77,7 +85,13 @@ export function UpdateTownshipForm() {
           </Grid>
 
           <Grid item xs={12}>
-            <MuiButton variant="contained" type="submit" loading={isPending}>Save</MuiButton>
+            <MuiButton
+              variant="contained"
+              type="submit"
+              loading={isPending}
+            >
+              Save
+            </MuiButton>
           </Grid>
         </Grid>
       </FormProvider>

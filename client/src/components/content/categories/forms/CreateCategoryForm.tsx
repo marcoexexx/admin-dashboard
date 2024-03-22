@@ -26,7 +26,8 @@ export function CreateCategoryForm() {
 
   useBeforeUnloadPage();
 
-  const { handleSubmit, register, formState: { errors }, setFocus } = methods;
+  const { handleSubmit, register, formState: { errors }, setFocus } =
+    methods;
 
   useEffect(() => {
     setFocus("name");
@@ -39,7 +40,12 @@ export function CreateCategoryForm() {
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
@@ -53,7 +59,11 @@ export function CreateCategoryForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit" loading={createCategoryMutation.isPending}>
+          <MuiButton
+            variant="contained"
+            type="submit"
+            loading={createCategoryMutation.isPending}
+          >
             Create
           </MuiButton>
         </Grid>

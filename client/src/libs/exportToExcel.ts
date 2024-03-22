@@ -10,7 +10,10 @@ export function exportToExcel<T>(rows: T[], title: string) {
   XLSX.writeFile(wb, name + ".xlsx");
 }
 
-export async function convertToExcel<T>(rows: T[], title: string): Promise<ArrayBuffer> {
+export async function convertToExcel<T>(
+  rows: T[],
+  title: string,
+): Promise<ArrayBuffer> {
   const ws = XLSX.utils.json_to_sheet(rows);
   const wb = XLSX.utils.book_new();
 

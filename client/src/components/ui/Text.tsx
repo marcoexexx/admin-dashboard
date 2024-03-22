@@ -59,14 +59,29 @@ interface TextProps {
   children?: React.ReactNode;
 }
 
-export const Text = forwardRef<HTMLButtonElement, TextProps>((props, ref) => {
-  const { className, color = "secondary", flex, tx, txOption, text, children, ...reset } = props;
+export const Text = forwardRef<HTMLButtonElement, TextProps>(
+  (props, ref) => {
+    const {
+      className,
+      color = "secondary",
+      flex,
+      tx,
+      txOption,
+      text,
+      children,
+      ...reset
+    } = props;
 
-  const content = tx ? i18n.t(tx, txOption) : text;
+    const content = tx ? i18n.t(tx, txOption) : text;
 
-  return (
-    <TextWrapper className={clsx("MuiText-" + color, { flexItem: flex })} {...reset} ref={ref}>
-      {children || content}
-    </TextWrapper>
-  );
-});
+    return (
+      <TextWrapper
+        className={clsx("MuiText-" + color, { flexItem: flex })}
+        {...reset}
+        ref={ref}
+      >
+        {children || content}
+      </TextWrapper>
+    );
+  },
+);

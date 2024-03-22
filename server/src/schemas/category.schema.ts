@@ -38,6 +38,12 @@ export const deleteMultiCategoriesSchema = object({
 
 export type GetCategoryInput = z.infer<typeof getCategorySchema>;
 export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>;
-export type CreateCategoryInput = z.infer<typeof createCategorySchema>["body"];
-export type CreateMultiCategoriesInput = z.infer<typeof createMultiCategoriesSchema>["body"];
-export type DeleteMultiCategoriesInput = z.infer<typeof deleteMultiCategoriesSchema>["body"];
+export type CreateCategoryInput = z.infer<
+  typeof createCategorySchema
+>["body"];
+export type CreateMultiCategoriesInput = z.infer<
+  typeof createMultiCategoriesSchema
+>["body"];
+export type DeleteMultiCategoriesInput = z.infer<
+  typeof deleteMultiCategoriesSchema
+>["body"];

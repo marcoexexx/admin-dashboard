@@ -24,7 +24,10 @@ export async function getAuditLogsHandler(
     const { user } = convertStringToBoolean(query.include) ?? {};
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, logs] = (await service.tryFindManyWithCount(
@@ -63,7 +66,10 @@ export async function deleteAuditLogsHandler(
     const { auditLogId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const auditLog = (await service.tryDelete({

@@ -11,7 +11,11 @@ import { RoleService } from "../services/role";
 import { StatusCode } from "../utils/appError";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
-import { HttpDataResponse, HttpListResponse, HttpResponse } from "../utils/helper";
+import {
+  HttpDataResponse,
+  HttpListResponse,
+  HttpResponse,
+} from "../utils/helper";
 
 const service = RoleService.new();
 
@@ -25,11 +29,15 @@ export async function getRolesHandler(
 
     const { id, name } = query.filter ?? {};
     const { page, pageSize } = query.pagination ?? {};
-    const { _count, permissions } = convertStringToBoolean(query.include) ?? {};
+    const { _count, permissions } = convertStringToBoolean(query.include)
+      ?? {};
     const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const [count, roles] = (await service.tryFindManyWithCount(
@@ -64,10 +72,14 @@ export async function getRoleHandler(
     const query = convertNumericStrings(req.query);
 
     const { roleId } = req.params;
-    const { _count, permissions } = convertStringToBoolean(query.include) ?? {};
+    const { _count, permissions } = convertStringToBoolean(query.include)
+      ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Read);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Read,
+    );
     _isAccess.ok_or_throw();
 
     const role = (await service.tryFindUnique({
@@ -76,7 +88,9 @@ export async function getRoleHandler(
     })).ok_or_throw();
 
     // Create audit log
-    if (role && sessionUser) (await service.audit(sessionUser)).ok_or_throw();
+    if (role && sessionUser) {
+      (await service.audit(sessionUser)).ok_or_throw();
+    }
 
     res.status(StatusCode.OK).json(HttpDataResponse({ role }));
   } catch (err) {
@@ -95,7 +109,10 @@ export async function createMultiRolesHandler(
     if (!excelFile) return res.status(StatusCode.NoContent);
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const roles = (await service.tryExcelUpload(excelFile)).ok_or_throw();
@@ -119,7 +136,10 @@ export async function createRoleHandler(
     const { name, permissions } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Create);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Create,
+    );
     _isAccess.ok_or_throw();
 
     const role = (await service.tryCreate({
@@ -150,10 +170,14 @@ export async function deleteRoleHandler(
     const { roleId } = req.params;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
-    const role = (await service.tryDelete({ where: { id: roleId } })).ok_or_throw();
+    const role = (await service.tryDelete({ where: { id: roleId } }))
+      .ok_or_throw();
 
     // Create audit log
     const _auditLog = await service.audit(sessionUser);
@@ -174,7 +198,10 @@ export async function deleteMultiRolesHandler(
     const { roleIds } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Delete);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Delete,
+    );
     _isAccess.ok_or_throw();
 
     const tryDeleteMany = await service.tryDeleteMany({
@@ -190,7 +217,9 @@ export async function deleteMultiRolesHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpResponse(StatusCode.OK, "Success deleted"));
+    res.status(StatusCode.OK).json(
+      HttpResponse(StatusCode.OK, "Success deleted"),
+    );
   } catch (err) {
     next(err);
   }
@@ -206,7 +235,10 @@ export async function updateRoleHandler(
     const { name, permissions } = req.body;
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
-    const _isAccess = await service.checkPermissions(sessionUser, OperationAction.Update);
+    const _isAccess = await service.checkPermissions(
+      sessionUser,
+      OperationAction.Update,
+    );
     _isAccess.ok_or_throw();
 
     const role = (await service.tryUpdate({

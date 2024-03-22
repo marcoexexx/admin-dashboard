@@ -17,14 +17,22 @@ export function useGetCoupon({
 }) {
   const query = useQuery({
     enabled: !!id,
-    queryKey: [CacheResource.Coupon, { id, include }] as CacheKey<"coupons">["detail"],
+    queryKey: [CacheResource.Coupon, { id, include }] as CacheKey<
+      "coupons"
+    >["detail"],
     queryFn: args => apiService.find(args, { filter: { id }, include }),
     select: data => data?.coupon,
   });
 
-  const try_data: Result<typeof query.data, AppError> = !!query.error && query.isError
-    ? Err(AppError.new((query.error as any).kind || AppErrorKind.ApiError, query.error.message))
-    : Ok(query.data);
+  const try_data: Result<typeof query.data, AppError> =
+    !!query.error && query.isError
+      ? Err(
+        AppError.new(
+          (query.error as any).kind || AppErrorKind.ApiError,
+          query.error.message,
+        ),
+      )
+      : Ok(query.data);
 
   return {
     ...query,

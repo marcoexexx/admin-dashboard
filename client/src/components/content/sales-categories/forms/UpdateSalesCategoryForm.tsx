@@ -1,9 +1,15 @@
 import dayjs from "dayjs";
 
-import { DatePickerField, EditorInputField } from "@/components/input-fields";
+import {
+  DatePickerField,
+  EditorInputField,
+} from "@/components/input-fields";
 import { MuiButton } from "@/components/ui";
 import { useBeforeUnloadPage } from "@/hooks";
-import { useGetSalesCategory, useUpdateSalesCategory } from "@/hooks/salsCategory";
+import {
+  useGetSalesCategory,
+  useUpdateSalesCategory,
+} from "@/hooks/salsCategory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Grid, TextField } from "@mui/material";
 import { useEffect } from "react";
@@ -20,7 +26,9 @@ const updateSalesCategorySchema = object({
   description: string().optional(),
 });
 
-export type UpdateSalesCategoryInput = z.infer<typeof updateSalesCategorySchema>;
+export type UpdateSalesCategoryInput = z.infer<
+  typeof updateSalesCategorySchema
+>;
 
 const toUpdateFields: (keyof UpdateSalesCategoryInput)[] = [
   "name",
@@ -32,8 +40,11 @@ const toUpdateFields: (keyof UpdateSalesCategoryInput)[] = [
 export function UpdateSalesCategoryForm() {
   const { salesCategoryId } = useParams();
 
-  const { try_data, isSuccess, fetchStatus } = useGetSalesCategory({ id: salesCategoryId });
-  const { mutate: updateSalesCategory, isPending } = useUpdateSalesCategory();
+  const { try_data, isSuccess, fetchStatus } = useGetSalesCategory({
+    id: salesCategoryId,
+  });
+  const { mutate: updateSalesCategory, isPending } =
+    useUpdateSalesCategory();
 
   const salesCategory = try_data.ok_or_throw();
 
@@ -58,12 +69,19 @@ export function UpdateSalesCategoryForm() {
   const { handleSubmit, register, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<UpdateSalesCategoryInput> = (value) => {
-    if (salesCategoryId) updateSalesCategory({ id: salesCategoryId, payload: value });
+    if (salesCategoryId) {
+      updateSalesCategory({ id: salesCategoryId, payload: value });
+    }
   };
 
   return (
     <FormProvider {...methods}>
-      <Grid container spacing={1} component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Grid
+        container
+        spacing={1}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid item xs={12}>
           <Box sx={{ "& .MuiTextField-root": { my: 1, width: "100%" } }}>
             <TextField
@@ -95,7 +113,9 @@ export function UpdateSalesCategoryForm() {
         </Grid>
 
         <Grid item xs={12}>
-          <MuiButton variant="contained" type="submit" loading={isPending}>Save</MuiButton>
+          <MuiButton variant="contained" type="submit" loading={isPending}>
+            Save
+          </MuiButton>
         </Grid>
       </Grid>
     </FormProvider>

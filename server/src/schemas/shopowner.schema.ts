@@ -44,8 +44,14 @@ export const deleteMultiShopownersSchema = object({
   }),
 });
 
-export type CreateShopownerInput = z.infer<typeof createShopownerSchema>["body"];
-export type CreateMultiShopownersInput = z.infer<typeof createMultiShopownersSchema>["body"];
-export type DeleteMultiShopownersInput = z.infer<typeof deleteMultiShopownersSchema>["body"];
+export type CreateShopownerInput = z.infer<
+  typeof createShopownerSchema
+>["body"];
+export type CreateMultiShopownersInput = z.infer<
+  typeof createMultiShopownersSchema
+>["body"];
+export type DeleteMultiShopownersInput = z.infer<
+  typeof deleteMultiShopownersSchema
+>["body"];
 export type GetShopownerInput = z.infer<typeof getShopownerSchema>;
 export type UpdateShopownerInput = z.infer<typeof updateShopownerSchema>;
