@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { useGetAuditLogs } from "@/hooks/auditLogs";
@@ -24,15 +23,12 @@ export function AuditLogsList() {
   // Extraction
   const data = auditLogsQuery.try_data.ok_or_throw();
 
-  // TODO: Skeleton table loader
-  if (!data || auditLogsQuery.isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <AuditLogsListTable
         isLoading={auditLogsQuery.isLoading}
-        auditLogs={data.results}
-        count={data.count}
+        auditLogs={data?.results ?? []}
+        count={data?.count ?? 0}
       />
     </Card>
   );

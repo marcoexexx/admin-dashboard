@@ -47,7 +47,7 @@ export default function ManagementUserProfilePage() {
 
   const user = userQuery.try_data.ok_or_throw();
 
-  if (!user || userQuery.isLoading) {
+  if (!user || userQuery.isLoading || true) {
     return <PlaceholderManagementUserProfile />;
   }
 

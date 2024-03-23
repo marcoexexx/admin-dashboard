@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import {
@@ -42,14 +41,12 @@ export function TownshipsList() {
     deleteTownships(ids);
   }
 
-  if (!townships || isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <TownshipsListTable
         isLoading={isLoading}
-        townships={townships.results}
-        count={townships.count}
+        townships={townships?.results ?? []}
+        count={townships?.count ?? 0}
         onCreateMany={handleCreateManyTownships}
         onDelete={handleDeleteTownship}
         onMultiDelete={handleDeleteMultiTownships}

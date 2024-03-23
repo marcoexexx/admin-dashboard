@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import {
@@ -42,14 +41,12 @@ export function RegionsList() {
     deleteRegions(ids);
   }
 
-  if (!regions || isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <RegionsListTable
         isLoading={isLoading}
-        regions={regions.results}
-        count={regions.count}
+        regions={regions?.results ?? []}
+        count={regions?.count ?? 0}
         onCreateMany={handleCreateManyRegions}
         onDelete={handleDeleteRegion}
         onMultiDelete={handleDeleteMultiRegions}

@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { useGetUsers } from "@/hooks/user";
@@ -18,13 +17,11 @@ export function UsersList() {
 
   const users = usersQuery.try_data.ok_or_throw();
 
-  if ((!users) || usersQuery.isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <UsersListTable
-        users={users.results}
-        count={users.count}
+        users={users?.results ?? []}
+        count={users?.count ?? 0}
       />
     </Card>
   );

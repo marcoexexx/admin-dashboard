@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import {
@@ -52,8 +51,6 @@ export function OrdersList() {
     });
   }
 
-  if (!data || ordersQuery.isLoading) return <SuspenseLoader />;
-
   function handleDeleteOrder(id: string) {
     deleteOrderMutation.mutate(id);
   }
@@ -67,8 +64,8 @@ export function OrdersList() {
       <OrdersListTable
         onStatusChange={handleChangeStatusOrder}
         isLoading={ordersQuery.isLoading}
-        orders={data.results}
-        count={data.count}
+        orders={data?.results ?? []}
+        count={data?.count ?? 0}
         onDelete={handleDeleteOrder}
         onMultiDelete={handleDeleteMultiOrders}
       />

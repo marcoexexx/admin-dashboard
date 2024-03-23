@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { Card } from "@mui/material";
 import { PermissionsListTable } from ".";
 
@@ -40,14 +39,12 @@ export function PermissionsList() {
     deletePermissions(ids);
   }
 
-  if (!data || isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <PermissionsListTable
         isLoading={isLoading}
-        permissions={data.results}
-        count={data.count}
+        permissions={data?.results ?? []}
+        count={data?.count ?? 0}
         onCreateMany={handleCreateManyPermissions}
         onDelete={handleDeletePermission}
         onMultiDelete={handleDeleteMultiPermissions}
