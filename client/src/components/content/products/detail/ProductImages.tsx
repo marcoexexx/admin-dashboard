@@ -28,12 +28,20 @@ export function ProductImages(props: ProductImagesProps) {
         flexDirection="column"
       >
         <Box
-          component="img"
-          height={400}
-          px={2}
-          src={selectedImg}
-          alt="Primary image"
-        />
+          maxWidth={500}
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Box
+            component="img"
+            height={{ xs: 300, md: 400 }}
+            px={2}
+            src={selectedImg}
+            alt="Primary image"
+          />
+        </Box>
 
         <Box>
           <Carousel height={100} autoPlay={false} animation="slide">
@@ -41,33 +49,43 @@ export function ProductImages(props: ProductImagesProps) {
               return (
                 <Box
                   key={idx}
+                  mt={2}
                   display="flex"
                   flexDirection="row"
                   alignItems="center"
-                  justifyContent="space-between"
+                  justifyContent="center"
                 >
-                  {range(TOTAL_DISPLAY).map(key => {
-                    if (src[key]) {
-                      return (
-                        <Box
-                          sx={{
-                            cursor: "pointer",
-                          }}
-                          onClick={handleSelectImage(src[key])}
-                          component="img"
-                          p={2}
-                          border={(theme) =>
-                            `solid 1px ${theme.colors.alpha.black[10]}`}
-                          borderRadius={(theme) =>
-                            `${theme.shape.borderRadius}px`}
-                          key={key}
-                          height={100}
-                          src={src[key]}
-                          alt="product img"
-                        />
-                      );
-                    }
-                  })}
+                  <Box
+                    // bgcolor="red"
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent="center"
+                    gap={3}
+                  >
+                    {range(TOTAL_DISPLAY).map(key => {
+                      if (src[key]) {
+                        return (
+                          <Box
+                            sx={{
+                              cursor: "pointer",
+                            }}
+                            onClick={handleSelectImage(src[key])}
+                            component="img"
+                            p={2}
+                            border={(theme) =>
+                              `solid 1px ${theme.colors.alpha.black[10]}`}
+                            borderRadius={(theme) =>
+                              `${theme.shape.borderRadius}px`}
+                            key={key}
+                            height={100}
+                            src={src[key]}
+                            alt="product img"
+                          />
+                        );
+                      }
+                    })}
+                  </Box>
                 </Box>
               );
             })}

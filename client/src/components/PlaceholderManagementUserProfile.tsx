@@ -46,8 +46,8 @@ export function PlaceholderManagementUserProfile() {
             <Divider />
 
             {[...Array(3).keys()].map(key => (
-              <>
-                <Box key={key}>
+              <span key={key}>
+                <Box>
                   <Box
                     px={2}
                     py={4}
@@ -75,7 +75,7 @@ export function PlaceholderManagementUserProfile() {
                 </Box>
 
                 <Divider />
-              </>
+              </span>
             ))}
           </Box>
         </Grid>
