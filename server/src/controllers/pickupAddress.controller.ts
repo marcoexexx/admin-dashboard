@@ -55,7 +55,14 @@ export async function getPickupAddressesHandler(
     )).ok_or_throw();
 
     res.status(StatusCode.OK).json(
-      HttpListResponse(pickupAddresses, count),
+      HttpListResponse(pickupAddresses, count, {
+        meta: {
+          filter: { id, username, phone, email, userId: sessionUser.id },
+          include: { _count, user, orders, potentialOrders },
+          page,
+          pageSize,
+        },
+      }),
     );
   } catch (err) {
     next(err);
@@ -84,14 +91,21 @@ export async function getPickupAddressHandler(
     const pickupAddress = (await service.tryFindUnique({
       where: { id: pickupAddressId },
       include: { _count, user, orders, potentialOrders },
-    })).ok_or_throw();
+    })).ok_or_throw()!;
 
     // Create audit log
     if (pickupAddress && sessionUser) {
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ pickupAddress }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ pickupAddress }, {
+        meta: {
+          id: pickupAddress.id,
+          include: { _count, user, orders, potentialOrders },
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -128,7 +142,9 @@ export async function createPickupAddressHandler(
     _auditLog.ok_or_throw();
 
     res.status(StatusCode.Created).json(
-      HttpDataResponse({ pickupAddress }),
+      HttpDataResponse({ pickupAddress }, {
+        meta: { id: pickupAddress.id },
+      }),
     );
   } catch (err) {
     next(err);
@@ -158,7 +174,11 @@ export async function deletePickupAddressHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ pickupAddress }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ pickupAddress }, {
+        meta: { id: pickupAddress.id },
+      }),
+    );
   } catch (err) {
     next(err);
   }

@@ -26,14 +26,24 @@ export function ProductImages(props: ProductImagesProps) {
         py={2}
         display="flex"
         flexDirection="column"
+        border={(theme) => `solid 1px ${theme.colors.alpha.black[10]}`}
+        borderRadius={(theme) => `${theme.shape.borderRadius}px`}
       >
         <Box
-          component="img"
-          height={400}
-          px={2}
-          src={selectedImg}
-          alt="Primary image"
-        />
+          width={400}
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="start"
+        >
+          <Box
+            component="img"
+            width="100%"
+            px={2}
+            src={selectedImg}
+            alt="Primary image"
+          />
+        </Box>
 
         <Box>
           <Carousel height={100} autoPlay={false} animation="slide">
@@ -41,33 +51,43 @@ export function ProductImages(props: ProductImagesProps) {
               return (
                 <Box
                   key={idx}
+                  mt={2}
                   display="flex"
                   flexDirection="row"
                   alignItems="center"
-                  justifyContent="space-between"
+                  justifyContent="center"
                 >
-                  {range(TOTAL_DISPLAY).map(key => {
-                    if (src[key]) {
-                      return (
-                        <Box
-                          sx={{
-                            cursor: "pointer",
-                          }}
-                          onClick={handleSelectImage(src[key])}
-                          component="img"
-                          p={2}
-                          border={(theme) =>
-                            `solid 1px ${theme.colors.alpha.black[10]}`}
-                          borderRadius={(theme) =>
-                            `${theme.shape.borderRadius}px`}
-                          key={key}
-                          height={100}
-                          src={src[key]}
-                          alt="product img"
-                        />
-                      );
-                    }
-                  })}
+                  <Box
+                    // bgcolor="red"
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent="center"
+                    gap={3}
+                  >
+                    {range(TOTAL_DISPLAY).map(key => {
+                      if (src[key]) {
+                        return (
+                          <Box
+                            sx={{
+                              cursor: "pointer",
+                            }}
+                            onClick={handleSelectImage(src[key])}
+                            component="img"
+                            p={2}
+                            border={(theme) =>
+                              `solid 1px ${theme.colors.alpha.black[10]}`}
+                            borderRadius={(theme) =>
+                              `${theme.shape.borderRadius}px`}
+                            key={key}
+                            height={100}
+                            src={src[key]}
+                            alt="product img"
+                          />
+                        );
+                      }
+                    })}
+                  </Box>
                 </Box>
               );
             })}

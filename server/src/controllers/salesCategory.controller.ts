@@ -13,6 +13,7 @@ import { SalesCategoryService } from "../services/saleCategory";
 import { StatusCode } from "../utils/appError";
 import { convertNumericStrings } from "../utils/convertNumber";
 import { convertStringToBoolean } from "../utils/convertStringToBoolean";
+import getConfig from "../utils/getConfig";
 import {
   HttpDataResponse,
   HttpListResponse,
@@ -55,7 +56,16 @@ export async function getSalesCategoriesHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(categories, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(categories, count, {
+        meta: {
+          filter: { id, name },
+          include: { _count, products },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -79,7 +89,10 @@ export async function getSalesCategoriesInProductHandler(
     const [count, salesCategories] =
       (await _salesService.tryFindManyWithCount(
         {
-          pagination: { page: 1, pageSize: 10 },
+          pagination: {
+            page: getConfig("page"),
+            pageSize: getConfig("pageSize"),
+          },
         },
         {
           where: { productId },
@@ -117,9 +130,16 @@ export async function getSalesCategoryHandler(
     const salesCategory = (await service.tryFindUnique({
       where: { id: salesCategoryId },
       include: { _count, products },
-    })).ok_or_throw();
+    })).ok_or_throw()!;
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ salesCategory }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ salesCategory }, {
+        meta: {
+          id: salesCategory.id,
+          include: { _count, products },
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -153,7 +173,9 @@ export async function createSalesCategoryHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ category }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ category }, { meta: { id: category.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -190,7 +212,11 @@ export async function createSaleCategoryForProductHandler(
       },
     })).ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ category }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ category }, {
+        meta: { id: category.id, include: { salesCategory: true } },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -249,7 +275,9 @@ export async function deleteSalesCategoryHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ category }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ category }, { meta: { id: category.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -326,7 +354,9 @@ export async function updateSalesCategoryHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ category }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ category }, { meta: { id: category.id } }),
+    );
   } catch (err) {
     next(err);
   }

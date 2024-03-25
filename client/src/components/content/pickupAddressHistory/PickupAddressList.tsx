@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import {
@@ -22,8 +21,6 @@ export function PickupAddressList() {
   function handleDeletePickupAddress(id: string) {
     deletePickupAddress(id);
   }
-
-  if (isLoading) return <SuspenseLoader />;
 
   return (
     <Card>

@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import {
@@ -42,14 +41,12 @@ export function RolesList() {
     deleteRolesMutation.mutate(ids);
   }
 
-  if (!data || rolesQuery.isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <RolesListTable
         isLoading={rolesQuery.isLoading}
-        roles={data.results}
-        count={data.count}
+        roles={data?.results ?? []}
+        count={data?.count ?? 0}
         onCreateMany={handleCreateManyRoles}
         onDelete={handleDeleteRole}
         onMultiDelete={handleDeleteMultiRoles}

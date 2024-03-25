@@ -1,3 +1,4 @@
+import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import {
   useCreateMultiProducts,
@@ -6,9 +7,6 @@ import {
   useGetProducts,
   useUpdateProduct,
 } from "@/hooks/product";
-
-import { SuspenseLoader } from "@/components";
-import { INITIAL_PAGINATION } from "@/context/store";
 import { Product, ProductStatus } from "@/services/types";
 import { Card } from "@mui/material";
 import { ProductsListTable } from ".";
@@ -90,16 +88,13 @@ export function ProductsList() {
     });
   }
 
-  // TODO: Skeleton table loader
-  if (!data) return <SuspenseLoader />;
-
   return (
     <Card>
       <ProductsListTable
         isLoading={productsQuery.isLoading}
         onStatusChange={handleChangeStatusProduct}
-        products={data.results}
-        count={data.count}
+        products={data?.results ?? []}
+        count={data?.count ?? 0}
         onCreateMany={handleCreateManyProducts}
         onDelete={handleDeleteProduct}
         onMultiDelete={handleDeleteMultiProducts}

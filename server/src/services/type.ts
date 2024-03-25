@@ -12,7 +12,18 @@ import logging from "../middleware/logging/logging";
 import AppError, { StatusCode } from "../utils/appError";
 import { createAuditLog } from "../utils/auditLog";
 import { convertPrismaErrorToAppError } from "../utils/convertPrismaErrorToAppError";
+import getConfig from "../utils/getConfig";
 import Result, { as_result_async, Err, Ok } from "../utils/result";
+
+export type Pagination = {
+  page: number;
+  pageSize: number;
+};
+
+const defaultPagination: Pagination = {
+  page: getConfig("page"),
+  pageSize: getConfig("pageSize"),
+};
 
 export abstract class MetaAppService {
   constructor(
@@ -204,7 +215,10 @@ export abstract class AppService<
     >
   > {
     const [{ pagination }, arg] = args;
-    const { page = 1, pageSize = 10 } = pagination;
+    const {
+      page = defaultPagination.page,
+      pageSize = defaultPagination.pageSize,
+    } = pagination;
     const offset = (page - 1) * pageSize;
 
     const opt = as_result_async(this.repository.findMany);
@@ -403,8 +417,3 @@ export abstract class AppService<
     );
   }
 }
-
-export type Pagination = {
-  page: number;
-  pageSize: number;
-};

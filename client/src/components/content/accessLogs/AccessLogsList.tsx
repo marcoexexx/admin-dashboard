@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { useStore } from "@/hooks";
 import { useGetAccessLogs } from "@/hooks/accessLog";
 import { Card } from "@mui/material";
@@ -18,15 +17,12 @@ export function AccessLogsList() {
   // Extraction
   const data = accessLogsQuery.try_data.ok_or_throw();
 
-  // TODO: Skeleton table loader
-  if (!data || accessLogsQuery.isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <AccessLogsListTable
         isLoading={accessLogsQuery.isLoading}
-        accessLogs={data.results}
-        count={data.count}
+        accessLogs={data?.results ?? []}
+        count={data?.count ?? 0}
       />
     </Card>
   );

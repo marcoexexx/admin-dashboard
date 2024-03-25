@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { useDeletePotentialOrder } from "@/hooks/potentialOrder";
@@ -11,7 +10,7 @@ export function PotentialOrdersList() {
   const { state: { potentialOrderFilter } } = useStore();
 
   // Quries
-  const { try_data, isError, isLoading, error } = useGetPotentialOrders({
+  const { try_data, isLoading } = useGetPotentialOrders({
     filter: potentialOrderFilter.where,
     pagination: potentialOrderFilter.pagination || INITIAL_PAGINATION,
     include: {
@@ -40,16 +39,12 @@ export function PotentialOrdersList() {
     deletePotentialOrders(ids);
   }
 
-  if (isError && error) return <h1>ERROR: {error.message}</h1>;
-
-  if (!potentialOrders || isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <PotentialOrdersListTable
         isLoading={isLoading}
-        potentialOrders={potentialOrders.results}
-        count={potentialOrders.count}
+        potentialOrders={potentialOrders?.results ?? []}
+        count={potentialOrders?.count ?? 0}
         onDelete={handleDeletePotentialOrder}
         onMultiDelete={handleDeleteMultiPotentialOrders}
       />

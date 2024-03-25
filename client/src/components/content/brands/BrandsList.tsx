@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { BrandsListTable } from "@/components/content/brands";
 import { Card } from "@mui/material";
 
@@ -40,14 +39,12 @@ export function BrandsList() {
     deleteBrandsMutation.mutate(ids);
   }
 
-  if (!data || brandsQuery.isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <BrandsListTable
         isLoading={brandsQuery.isLoading}
-        brands={data.results}
-        count={data.count}
+        brands={data?.results ?? []}
+        count={data?.count ?? 0}
         onCreateMany={handleCreateManyBrands}
         onDelete={handleDeleteBrand}
         onMultiDelete={handleDeleteMultiBrands}

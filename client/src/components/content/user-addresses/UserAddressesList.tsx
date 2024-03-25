@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import {
@@ -25,8 +24,6 @@ export function UserAddressesList() {
   // Extraction
   const userAddresses = try_data.ok_or_throw();
 
-  if (!userAddresses || isLoading) return <SuspenseLoader />;
-
   function handleDeleteUserAddress(id: string) {
     deleteUserAddress(id);
   }
@@ -39,8 +36,8 @@ export function UserAddressesList() {
     <Card>
       <UserAddressesListTable
         isLoading={isLoading}
-        userAddresses={userAddresses.results}
-        count={userAddresses.count}
+        userAddresses={userAddresses?.results ?? []}
+        count={userAddresses?.count ?? 0}
         onDelete={handleDeleteUserAddress}
         onMultiDelete={handleDeleteMultiUserAddresses}
       />

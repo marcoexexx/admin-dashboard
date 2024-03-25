@@ -58,7 +58,16 @@ export async function getBrandsHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(brands, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(brands, count, {
+        meta: {
+          filter: { id, name },
+          include: { _count, products },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -86,14 +95,18 @@ export async function getBrandHandler(
     const brand = (await service.tryFindUnique({
       where: { id: brandId },
       include: { _count, products },
-    })).ok_or_throw();
+    })).ok_or_throw()!;
 
     // Create audit log
     if (brand && sessionUser) {
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ brand }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ brand }, {
+        meta: { id: brandId, include: { _count, products } },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -122,7 +135,9 @@ export async function createMultiBrandsHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpListResponse(brands));
+    res.status(StatusCode.Created).json(
+      HttpListResponse(brands),
+    );
   } catch (err) {
     next(err);
   }
@@ -150,7 +165,9 @@ export async function createBrandHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ brand }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ brand }, { meta: { id: brand.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -178,7 +195,9 @@ export async function deleteBrandHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ brand }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ brand }, { meta: { id: brand.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -244,7 +263,9 @@ export async function updateBrandHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ brand }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ brand }, { meta: { id: brandId } }),
+    );
   } catch (err) {
     next(err);
   }

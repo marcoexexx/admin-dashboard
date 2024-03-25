@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import {
@@ -42,14 +41,11 @@ export function CouponsList() {
     deleteCouponsMutation.mutate(ids);
   }
 
-  // TODO: Skeleton table loader
-  if (!data || couponsQuery.isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <CouponsListTable
-        coupons={data.results}
-        count={data.count}
+        coupons={data?.results ?? []}
+        count={data?.count ?? 0}
         isLoading={couponsQuery.isLoading}
         onCreateMany={handleCreateManyCoupons}
         onDelete={handleDeleteCoupon}

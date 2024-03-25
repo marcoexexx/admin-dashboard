@@ -56,7 +56,16 @@ export async function getPermissionsHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(permissions, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(permissions, count, {
+        meta: {
+          filter: { id, action, resource },
+          include: { role },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -83,14 +92,16 @@ export async function getPermissionHandler(
     const permission = (await service.tryFindUnique({
       where: { id: permissionId },
       include: { role },
-    })).ok_or_throw();
+    })).ok_or_throw()!;
 
     // Create audit log
     if (permission && sessionUser) {
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ permission }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ permission }, { meta: { id: permission.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -152,7 +163,9 @@ export async function createPermissionHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ permission }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ permission }, { meta: { id: permission.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -183,7 +196,9 @@ export async function deletePermissionHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ permission }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ permission }, { meta: { id: permission.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -259,7 +274,9 @@ export async function updatePermissionHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ permission }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ permission }, { meta: { id: permission.id } }),
+    );
   } catch (err) {
     next(err);
   }

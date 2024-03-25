@@ -1,4 +1,30 @@
 import { StatusCode } from "../utils/appError";
+import getConfig from "./getConfig";
+
+type ListMetaResponse = {
+  status?: StatusCode;
+  filter?: object;
+  include?: object;
+  orderBy?: object;
+  page: number;
+  pageSize: number;
+};
+
+type DetailMetaResponse = {
+  status?: StatusCode;
+  id: string | undefined;
+  include?: object;
+};
+
+type GenericMetaResponse = {
+  status: StatusCode;
+  message: string;
+};
+
+type MetaResponse =
+  | ListMetaResponse
+  | GenericMetaResponse
+  | DetailMetaResponse;
 
 /**
  * Error Test
@@ -14,16 +40,42 @@ export function HttpResponse<E extends unknown>(
   message: string,
   error?: E,
 ) {
-  return { status, message, error };
+  const meta: MetaResponse = {
+    status,
+    message,
+  };
+  return { error, meta };
 }
 
 export function HttpListResponse<T>(
   results: Array<T>,
   count = results.length,
+  metadata?: { meta: ListMetaResponse; },
 ) {
-  return { status: StatusCode.OK, results, count, error: undefined };
+  const meta: ListMetaResponse = {
+    status: StatusCode.OK,
+    page: getConfig("page"),
+    pageSize: getConfig("pageSize"),
+    ...(metadata?.meta || {}),
+  };
+  return {
+    results,
+    count,
+    meta,
+    error: undefined,
+  };
 }
 
-export function HttpDataResponse<T>(result: T) {
-  return { status: StatusCode.OK, error: undefined, ...result };
+export function HttpDataResponse<
+  T extends { [p: string]: { id: string; } | string; },
+>(
+  result: T,
+  metadata?: { meta: DetailMetaResponse; },
+) {
+  const meta: DetailMetaResponse = {
+    id: undefined,
+    status: StatusCode.OK,
+    ...(metadata?.meta || {}),
+  };
+  return { error: undefined, ...result, meta };
 }

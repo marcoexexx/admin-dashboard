@@ -31,7 +31,6 @@ export async function getCategoriesHandler(
     const { page, pageSize } = query.pagination ?? {};
     const { _count, products } = convertStringToBoolean(query.include)
       ?? {};
-    const orderBy = query.orderBy ?? {};
 
     const sessionUser = checkUser(req?.user).ok();
     const _isAccess = await service.checkPermissions(
@@ -47,11 +46,22 @@ export async function getCategoriesHandler(
       {
         where: { id, name },
         include: { _count, products },
-        orderBy,
+        orderBy: {
+          updatedAt: "desc",
+        },
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(categories, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(categories, count, {
+        meta: {
+          filter: { id, name },
+          include: { _count, products },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -79,15 +89,18 @@ export async function getCategoryHandler(
     const category = (await service.tryFindUnique({
       where: { id: categoryId },
       include: { _count, products },
-    }))
-      .ok_or_throw();
+    })).ok_or_throw()!;
 
     // Create audit log
     if (category && sessionUser) {
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ category }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ category }, {
+        meta: { id: categoryId, include: { _count, products } },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -115,7 +128,9 @@ export async function createCategoryHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ category }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ category }, { meta: { id: category.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -174,7 +189,9 @@ export async function deleteCategoryHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ category }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ category }, { meta: { id: categoryId } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -249,7 +266,9 @@ export async function updateCategoryHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ category }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ category }, { meta: { id: category.id } }),
+    );
   } catch (err) {
     next(err);
   }
