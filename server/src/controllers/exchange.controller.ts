@@ -65,7 +65,16 @@ export async function getExchangesHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(exchanges, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(exchanges, count, {
+        meta: {
+          filter: { id, from, to, startDate, endDate, rate },
+          include: { shopowner },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -92,14 +101,18 @@ export async function getExchangeHandler(
     const exchange = (await service.tryFindUnique({
       where: { id: exchangeId },
       include: { shopowner },
-    })).ok_or_throw();
+    })).ok_or_throw()!;
 
     // Create event action audit log
     if (exchange && sessionUser) {
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ exchange }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ exchange }, {
+        meta: { id: exchange.id, include: { shopowner } },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -148,7 +161,9 @@ export async function updateExchangeHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ exchange }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ exchange }, { meta: { id: exchange.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -193,7 +208,9 @@ export async function createExchangeHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ exchange }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ exchange }, { meta: { id: exchange.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -261,7 +278,9 @@ export async function deleteExchangeHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ exchange }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ exchange }, { meta: { id: exchange.id } }),
+    );
   } catch (err) {
     next(err);
   }

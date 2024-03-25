@@ -61,7 +61,14 @@ export async function getCouponsHandler(
     )).ok_or_throw();
 
     return res.status(StatusCode.OK).json(
-      HttpListResponse(coupons, count),
+      HttpListResponse(coupons, count, {
+        meta: {
+          filter: { id, points, dolla, productId, isUsed, expiredDate },
+          include: { reward, product },
+          page,
+          pageSize,
+        },
+      }),
     );
   } catch (err) {
     next(err);
@@ -90,15 +97,21 @@ export async function getCouponHandler(
     const coupon = (await service.tryFindUnique({
       where: { id: couponId },
       include: { reward, product },
-    }))
-      .ok_or_throw();
+    })).ok_or_throw()!;
 
     // Create audit log
     if (coupon && sessionUser) {
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ coupon }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ coupon }, {
+        meta: {
+          id: coupon.id,
+          include: { reward, product },
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -134,7 +147,9 @@ export async function createCouponHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ coupon }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ coupon }, { meta: { id: coupon.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -192,7 +207,9 @@ export async function deleteCouponHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ coupon }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ coupon }, { meta: { id: coupon.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -269,7 +286,9 @@ export async function updateCouponHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ coupon }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ coupon }, { meta: { id: coupon.id } }),
+    );
   } catch (err) {
     next(err);
   }

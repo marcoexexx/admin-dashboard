@@ -60,7 +60,16 @@ export async function getShopownersHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(shopowners, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(shopowners, count, {
+        meta: {
+          filter: { id, name, remark },
+          include: { _count, users, exchanges },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -88,14 +97,21 @@ export async function getShopownerHandler(
     const shopowner = (await service.tryFindUnique({
       where: { id: shopownerId },
       include: { _count, users, exchanges },
-    })).ok_or_throw();
+    })).ok_or_throw()!;
 
     // Create audit log
     if (shopowner && sessionUser) {
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ shopowner }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ shopowner }, {
+        meta: {
+          id: shopowner.id,
+          include: { _count, users, exchanges },
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -157,7 +173,9 @@ export async function createShopownerHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ shopowner }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ shopowner }, { meta: { id: shopowner.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -186,7 +204,9 @@ export async function deleteShopownerHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ shopowner }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ shopowner }, { meta: { id: shopowner.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -261,7 +281,9 @@ export async function updateShopownerHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ shopowner }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ shopowner }, { meta: { id: shopowner.id } }),
+    );
   } catch (err) {
     next(err);
   }

@@ -11,4 +11,7 @@ export default {
   redisCacheExpiresIn: 60 * 60 * 24 * 7, //  in seconds
 
   dbProvider: "mongodb" as "mongodb" | "postgresql",
+
+  page: 1,
+  pageSize: 10,
 };

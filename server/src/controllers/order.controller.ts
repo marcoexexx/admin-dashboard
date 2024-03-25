@@ -80,7 +80,23 @@ export async function getOrdersHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(orders, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(orders, count, {
+        meta: {
+          filter: { id, startDate, endDate, status, totalPrice, remark },
+          include: {
+            _count,
+            user,
+            orderItems,
+            pickupAddress,
+            billingAddress,
+            deliveryAddress,
+          },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -121,14 +137,28 @@ export async function getOrderHandler(
         billingAddress,
         deliveryAddress,
       },
-    })).ok_or_throw();
+    })).ok_or_throw()!;
 
     // Create audit log
     if (order && sessionUser) {
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ order }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ order }, {
+        meta: {
+          id: order.id,
+          include: {
+            _count,
+            user,
+            orderItems,
+            pickupAddress,
+            billingAddress,
+            deliveryAddress,
+          },
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -208,7 +238,9 @@ export async function createOrderHandler(
     // Create audit log
     if (sessionUser) (await service.audit(sessionUser)).ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ order }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ order }, { meta: { id: order.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -239,7 +271,9 @@ export async function deleteOrderHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ order }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ order }, { meta: { id: order.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -338,7 +372,9 @@ export async function updateOrderHandler(
       _auditLog.ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ order }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ order }, { meta: { id: order.id } }),
+    );
   } catch (err: any) {
     next(err);
   }

@@ -115,7 +115,40 @@ export async function getProductsHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(products, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(products, count, {
+        meta: {
+          filter: {
+            id,
+            title,
+            price,
+            overview,
+            instockStatus,
+            description,
+            discount,
+            dealerPrice,
+            marketPrice,
+            status,
+            priceUnit,
+          },
+          include: {
+            _count,
+            likedUsers,
+            salesCategory,
+            brand,
+            coupons,
+            creator,
+            reviews,
+            orderItem,
+            availableSets,
+            categories,
+            specification,
+          },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -184,7 +217,26 @@ export async function getProductHandler(
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ product }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ product }, {
+        meta: {
+          id: product.id,
+          include: {
+            _count,
+            likedUsers,
+            salesCategory,
+            brand,
+            coupons,
+            creator,
+            reviews,
+            orderItem,
+            categories,
+            availableSets,
+            specification,
+          },
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -267,7 +319,9 @@ export async function createProductHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ product }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ product }, { meta: { id: product.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -383,7 +437,9 @@ export async function updateProductSalesCategoryHandler(
     _auditLog.ok_or_throw();
 
     res.status(StatusCode.OK).json(
-      HttpDataResponse({ productSalesCategory }),
+      HttpDataResponse({ productSalesCategory }, {
+        meta: { id: productSalesCategory.id },
+      }),
     );
   } catch (err) {
     next(err);
@@ -438,7 +494,9 @@ export async function deleteProductHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ product }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ product }, { meta: { id: product.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -641,7 +699,9 @@ export async function updateProductHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ product }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ product }, { meta: { id: product.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -714,7 +774,9 @@ export async function likeProductByUserHandler(
       _auditLog.ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ product }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ product }, { meta: { id: product.id } }),
+    );
   } catch (err) {
     next(err);
   }

@@ -51,7 +51,16 @@ export async function getRegionsHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(regions, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(regions, count, {
+        meta: {
+          filter: { id, name },
+          include: { _count, townships, userAddresses },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -79,15 +88,21 @@ export async function getRegionHandler(
     const region = (await service.tryFindUnique({
       where: { id: regionId },
       include: { _count, townships, userAddresses },
-    }))
-      .ok_or_throw();
+    })).ok_or_throw()!;
 
     if (region && sessionUser) {
       const _auditLog = await service.audit(sessionUser);
       _auditLog.ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ region }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ region }, {
+        meta: {
+          id: region.id,
+          include: { _count, townships, userAddresses },
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -151,7 +166,9 @@ export async function createRegionHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ region }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ region }, { meta: { id: region.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -179,7 +196,9 @@ export async function deleteRegionHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ region }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ region }, { meta: { id: region.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -251,7 +270,9 @@ export async function updateRegionHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ region }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ region }, { meta: { id: region.id } }),
+    );
   } catch (err) {
     next(err);
   }
