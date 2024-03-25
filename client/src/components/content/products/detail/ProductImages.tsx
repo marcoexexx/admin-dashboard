@@ -26,17 +26,19 @@ export function ProductImages(props: ProductImagesProps) {
         py={2}
         display="flex"
         flexDirection="column"
+        border={(theme) => `solid 1px ${theme.colors.alpha.black[10]}`}
+        borderRadius={(theme) => `${theme.shape.borderRadius}px`}
       >
         <Box
-          maxWidth={500}
+          width={400}
           display="flex"
           flexDirection="row"
           alignItems="center"
-          justifyContent="center"
+          justifyContent="start"
         >
           <Box
             component="img"
-            height={{ xs: 300, md: 400 }}
+            width="100%"
             px={2}
             src={selectedImg}
             alt="Primary image"

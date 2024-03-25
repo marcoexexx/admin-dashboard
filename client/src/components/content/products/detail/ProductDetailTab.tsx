@@ -119,9 +119,10 @@ export default function ProductDetailTab(props: ProductDetailTabProps) {
   return (
     <>
       <Box
+        p={3}
         display="flex"
         flexDirection={{ xs: "column", md: "row" }}
-        alignItems={{ xs: "center", md: "start" }}
+        alignItems="start"
         justifyContent="space-between"
         gap={10}
       >
