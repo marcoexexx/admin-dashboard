@@ -1,8 +1,8 @@
 import { Box } from "@mui/material";
 
+import HeaderFullScreen from "./HeaderFullScreen";
 import HeaderNotifications from "./HeaderNotifications";
 import HeaderSearch from "./HeaderSearch";
-import HeaderFullScreen from "./HeaderFullScreen";
 
 export default function HeaderButtons() {
   return (

@@ -1,5 +1,5 @@
 {
-	"dependencies": {
-		"react-full-screen": "^1.1.1"
-	}
+  "dependencies": {
+    "react-full-screen": "^1.1.1"
+  }
 }
