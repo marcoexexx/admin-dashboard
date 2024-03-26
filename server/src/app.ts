@@ -93,9 +93,6 @@ app.use(rateLimitMiddleware);
 // Logger
 if (process.env.NODE_ENV === "development") app.use(loggingMiddleware);
 
-// Cookie parser
-app.use(cookieParser());
-
 // Useragent
 app.use(useragent.express());
 
