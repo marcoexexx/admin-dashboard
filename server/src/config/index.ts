@@ -12,6 +12,8 @@ export default {
 
   dbProvider: "mongodb" as "mongodb" | "postgresql",
 
+  urlPrefix: "/api/v1",
+
   page: 1,
   pageSize: 10,
 };
