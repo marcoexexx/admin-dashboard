@@ -1,5 +1,3 @@
-import cryptoRandomString from "crypto-random-string";
-
 import {
   CreateOrderInput,
   createOrderSchema,
@@ -332,7 +330,7 @@ export function CheckoutForm() {
       // Check deliveryFee and create
       let payload: CreatePotentialOrderInput = {
         id: value.createdPotentialOrderId
-          || cryptoRandomString({ length: 24 }),
+          || generateUuid(24),
         orderItems: value.orderItems,
         billingAddressId: value.billingAddressId,
         paymentMethodProvider: value.paymentMethodProvider,
