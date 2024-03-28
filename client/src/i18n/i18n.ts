@@ -4,6 +4,7 @@ import { getStore, setStore } from "@/libs/storage";
 import { strTemplate } from "@/libs/strTemplate";
 import _get from "lodash/get";
 import jp from "./jp";
+import mm from "./mm";
 
 const LANGUAGE_PREFIX: "language" = "language";
 
@@ -18,7 +19,7 @@ export const localString: Record<Local, string> = {
   [Local.US]: "English",
   [Local.JP]: "Japan",
   [Local.MM]: "Myanmar",
-}
+};
 
 export type I18nOptions = {
   [K: string]: string | undefined;
@@ -35,7 +36,7 @@ export const i18n: I18n = {
   translations: {
     [Local.US]: en,
     [Local.JP]: jp,
-    [Local.MM]: en,
+    [Local.MM]: mm,
   },
   local: getStore<Local>(LANGUAGE_PREFIX) || Local.US,
 
