@@ -14,7 +14,7 @@ const mm: Translations = {
 
   page: {
     home: {
-      welcome: "ကြိုဆိုပါတယ်။ {{name}}",
+      welcome: "ကြိုဆိုပါတယ် {{name}}",
     },
   },
 
