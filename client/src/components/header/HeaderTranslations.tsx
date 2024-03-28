@@ -32,6 +32,7 @@ export default function HeaderTranslations() {
       </IconButton>
 
       <Menu
+        onClose={() => setAnchorEl(null)}
         id="translations"
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
