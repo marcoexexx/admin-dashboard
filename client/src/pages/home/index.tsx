@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 
+import { MuiTypography } from "@/components/ui";
 import getConfig from "@/libs/getConfig";
 
 const appName = getConfig("appName");
@@ -46,9 +47,13 @@ export default function HomePage() {
           </Grid>
 
           <Grid item>
-            <Typography variant="h3" component="h3" gutterBottom>
-              Welcome, {user?.name}
-            </Typography>
+            <MuiTypography
+              variant="h3"
+              component="h3"
+              gutterBottom
+              tx="page.home.welcome"
+              txOption={{ name: user?.name }}
+            />
 
             <Typography variant="subtitle2">
               Lorem ipsum dolor sit amet, qui minim labore adipisicing

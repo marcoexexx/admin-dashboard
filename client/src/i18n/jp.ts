@@ -1,4 +1,6 @@
-const en = {
+import { Translations } from "./en";
+
+const jp: Translations = {
   common: {
     ok: "Ok",
     cancel: "Cancel",
@@ -12,7 +14,7 @@ const en = {
 
   page: {
     home: {
-      welcome: "Welcome {{name}}",
+      welcome: "いらっしゃいませ {{name}}",
     },
   },
 
@@ -31,6 +33,4 @@ const en = {
   language: "Language",
 };
 
-export default en;
-
-export type Translations = typeof en;
+export default jp;

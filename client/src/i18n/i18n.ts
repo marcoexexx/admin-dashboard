@@ -3,32 +3,41 @@ import en, { Translations } from "./en";
 import { getStore, setStore } from "@/libs/storage";
 import { strTemplate } from "@/libs/strTemplate";
 import _get from "lodash/get";
+import jp from "./jp";
 
 const LANGUAGE_PREFIX: "language" = "language";
 
-export const countries = {
-  en: "English",
-  my: "Myanmar",
-};
+export const Local = {
+  US: "US",
+  JP: "JP",
+  MM: "MM",
+} as const;
+export type Local = keyof typeof Local;
 
-export type Local = keyof typeof countries;
+export const localString: Record<Local, string> = {
+  [Local.US]: "English",
+  [Local.JP]: "Japan",
+  [Local.MM]: "Myanmar",
+}
 
 export type I18nOptions = {
-  [K: string]: string;
+  [K: string]: string | undefined;
 };
 
 export type I18n = {
-  translations: {
-    [K: string]: Translations;
-  };
-  local: Local; // keyof I18n["translations"],
+  translations: Record<Local, Translations>;
+  local: Local;
   t: (key: TxPath, options?: I18nOptions) => string;
   load: (lang: Local) => void;
 };
 
 export const i18n: I18n = {
-  translations: { en },
-  local: getStore<keyof typeof countries>(LANGUAGE_PREFIX) || "en",
+  translations: {
+    [Local.US]: en,
+    [Local.JP]: jp,
+    [Local.MM]: en,
+  },
+  local: getStore<Local>(LANGUAGE_PREFIX) || Local.US,
 
   t(key, options) {
     const localPrefix =
