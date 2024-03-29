@@ -44,9 +44,6 @@ export class TownshipApiService
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;

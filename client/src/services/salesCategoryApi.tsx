@@ -43,9 +43,6 @@ export class SalesCategoryApiService
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;

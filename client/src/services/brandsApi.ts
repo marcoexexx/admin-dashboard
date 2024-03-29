@@ -43,9 +43,6 @@ export class BrandApiService
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;

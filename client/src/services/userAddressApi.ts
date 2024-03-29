@@ -46,9 +46,6 @@ export class UserAddressApiService
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;
