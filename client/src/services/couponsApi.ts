@@ -33,7 +33,6 @@ export class CouponApiService
       filter?: CouponWhereInput["where"];
       pagination: Pagination;
       include?: CouponWhereInput["include"];
-      orderBy?: Record<keyof Coupon, any>;
     },
   ): Promise<HttpListResponse<Coupon>> {
     const url = `/${this.repo}`;
@@ -45,9 +44,6 @@ export class CouponApiService
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;

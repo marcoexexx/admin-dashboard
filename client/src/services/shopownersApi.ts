@@ -43,9 +43,6 @@ export class ShopownerApiService
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;
