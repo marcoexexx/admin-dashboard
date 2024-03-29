@@ -3,6 +3,7 @@ import { Pagination, User } from "@/services/types";
 import { createContext, useReducer } from "react";
 
 import AppError, { AppErrorKind } from "@/libs/exceptions";
+import { SnackbarOrigin } from "@mui/material";
 import {
   AccessLogFilterActions,
   AccessLogWhereInput,
@@ -156,6 +157,7 @@ export type Store = {
   toast: {
     status: boolean;
     message?: string;
+    anchorOrigin?: SnackbarOrigin;
     severity:
       | "success"
       | "error"
@@ -275,6 +277,7 @@ const initialState: Store = {
   user: undefined,
   theme: localStorage.getItem("theme") as Store["theme"] || "light",
   toast: {
+    anchorOrigin: { vertical: "top", horizontal: "left" },
     status: false,
     severity: "info",
   },

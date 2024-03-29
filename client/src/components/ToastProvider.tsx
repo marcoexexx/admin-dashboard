@@ -14,7 +14,7 @@ export function ToastProvider() {
       open={toast.status}
       autoHideDuration={1000 * 5}
       onClose={onCloseHandler}
-      anchorOrigin={{ vertical: "top", horizontal: "left" }}
+      anchorOrigin={toast.anchorOrigin}
     >
       <Alert
         onClose={onCloseHandler}
