@@ -6,6 +6,8 @@ Admin Dashboard is a full-stack application utilizing the SERN stack (SQL, Expre
 ![Screenshot](./doc/screenshot/main/list.png)
 ![Screenshot](./doc/screenshot/main/detail.png)
 
+[Documentation](https://marcoexexx.github.io/admin-dashboard/)
+
 ## Features
 - **Database:** PostgreSQL with Prisma for efficient data management.
 - **Server:** Express in TypeScript for a robust backend.
