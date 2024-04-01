@@ -12,6 +12,13 @@ const mm: Translations = {
     save: "Save",
   },
 
+  resource: {
+    products: "ထုတ်ကုန်များ",
+    brands: "ဘရန်း",
+    categories: "အမျိုးအစားများ",
+    salesCategories: "အရောင်းအမျိုးအစားများ",
+  },
+
   page: {
     home: {
       welcome: "ကြိုဆိုပါတယ် {{name}}",

@@ -16,7 +16,7 @@ export abstract class BaseApiService<
     return Promise.reject(
       AppError.new(
         AppErrorKind.ServiceUnavailable,
-        `Unimplemented feature`,
+        `Unimplemented feature call ${this.repo}::findMany`,
       ),
     );
   }
@@ -31,7 +31,7 @@ export abstract class BaseApiService<
     return Promise.reject(
       AppError.new(
         AppErrorKind.ServiceUnavailable,
-        `Unimplemented feature`,
+        `Unimplemented feature call ${this.repo}::find`,
       ),
     );
   }
@@ -40,7 +40,7 @@ export abstract class BaseApiService<
     return Promise.reject(
       AppError.new(
         AppErrorKind.ServiceUnavailable,
-        `Unimplemented feature`,
+        `Unimplemented feature call ${this.repo}::uploadExcel`,
       ),
     );
   }
@@ -52,7 +52,7 @@ export abstract class BaseApiService<
     return Promise.reject(
       AppError.new(
         AppErrorKind.ServiceUnavailable,
-        `Unimplemented feature`,
+        `Unimplemented feature call ${this.repo}::create`,
       ),
     );
   }
@@ -61,7 +61,7 @@ export abstract class BaseApiService<
     return Promise.reject(
       AppError.new(
         AppErrorKind.ServiceUnavailable,
-        `Unimplemented feature`,
+        `Unimplemented feature call ${this.repo}::update`,
       ),
     );
   }
@@ -70,7 +70,7 @@ export abstract class BaseApiService<
     return Promise.reject(
       AppError.new(
         AppErrorKind.ServiceUnavailable,
-        `Unimplemented feature`,
+        `Unimplemented feature call ${this.repo}::deleteMany`,
       ),
     );
   }
@@ -82,7 +82,7 @@ export abstract class BaseApiService<
     return Promise.reject(
       AppError.new(
         AppErrorKind.ServiceUnavailable,
-        `Unimplemented feature`,
+        `Unimplemented feature call ${this.repo}::delete`,
       ),
     );
   }
