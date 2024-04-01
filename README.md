@@ -3,8 +3,7 @@
 ## Overview
 Admin Dashboard is a full-stack application utilizing the SERN stack (SQL, Express, React, Node) with TypeScript for a robust and type-safe development experience.
 
-![Screenshot](./doc/screenshot/main/list.png)
-![Screenshot](./doc/screenshot/main/detail.png)
+![Screenshot](./doc/screenshot/checkout_step2.png)
 
 ## Features
 - **Database:** PostgreSQL with Prisma for efficient data management.
@@ -841,15 +840,16 @@ Admin Dashboard is a full-stack application utilizing the SERN stack (SQL, Expre
 ```sh
 cd server/
 make start
-pnpm dlx prisma migrate dev --name init
-pnpm run start
+pnpm run start:dev  # for development
+pnpm run start:prod  # for productionn
 ```
 
 ### Client
 ```sh
 cd client
-pnpm run dev
+pnpm run start:dev  # for development
+pnpm run start:prod  # for productionn
 ```
 
 ## Repository
-Find the project on [GitHub](https://github.com/alk-neq-me/rangoon-admin-dashboard) for further details and contributions.
+Find the project on [GitHub](https://github.com/marcoexexx/admin-dashboard) for further details and contributions.
