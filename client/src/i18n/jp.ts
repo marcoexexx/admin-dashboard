@@ -12,6 +12,13 @@ const jp: Translations = {
     save: "Save",
   },
 
+  resource: {
+    products: "製品",
+    brands: "ブランド",
+    categories: "カテゴリ",
+    salesCategories: "販売カテゴリ",
+  },
+
   page: {
     home: {
       welcome: "いらっしゃいませ {{name}}",

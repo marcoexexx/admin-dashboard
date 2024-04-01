@@ -1,3 +1,4 @@
+import { i18n } from "@/i18n";
 import { Box, List, ListItem, ListItemText, styled } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -61,7 +62,7 @@ export default function HeaderMenu() {
           >
             <ListItemText
               primaryTypographyProps={{ noWrap: true }}
-              primary="Products"
+              primary={i18n.t("resource.products")}
             />
           </ListItem>
 
@@ -71,7 +72,7 @@ export default function HeaderMenu() {
           >
             <ListItemText
               primaryTypographyProps={{ noWrap: true }}
-              primary="Brands"
+              primary={i18n.t("resource.brands")}
             />
           </ListItem>
 
@@ -81,7 +82,7 @@ export default function HeaderMenu() {
           >
             <ListItemText
               primaryTypographyProps={{ noWrap: true }}
-              primary="Categories"
+              primary={i18n.t("resource.categories")}
             />
           </ListItem>
 
@@ -91,7 +92,7 @@ export default function HeaderMenu() {
           >
             <ListItemText
               primaryTypographyProps={{ noWrap: true }}
-              primary="Sales Categories"
+              primary={i18n.t("resource.salesCategories")}
             />
           </ListItem>
         </List>

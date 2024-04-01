@@ -10,6 +10,13 @@ const en = {
     save: "Save",
   },
 
+  resource: {
+    products: "Product",
+    brands: "Brands",
+    categories: "Categories",
+    salesCategories: "Sales Categories",
+  },
+
   page: {
     home: {
       welcome: "Welcome {{name}}",
