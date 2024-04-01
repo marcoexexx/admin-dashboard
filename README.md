@@ -3,7 +3,8 @@
 ## Overview
 Admin Dashboard is a full-stack application utilizing the SERN stack (SQL, Express, React, Node) with TypeScript for a robust and type-safe development experience.
 
-![Screenshot](./doc/screenshot/checkout_step2.png)
+![Screenshot](./doc/screenshot/main/list.png)
+![Screenshot](./doc/screenshot/main/detail.png)
 
 ## Features
 - **Database:** PostgreSQL with Prisma for efficient data management.
