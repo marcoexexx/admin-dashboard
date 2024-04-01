@@ -57,7 +57,14 @@ export async function getRolesHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(roles, count));
+    res.status(StatusCode.OK).json(HttpListResponse(roles, count, {
+      meta: {
+        filter: { id, name },
+        include: { _count, permissions },
+        page,
+        pageSize,
+      },
+    }));
   } catch (err) {
     next(err);
   }
@@ -85,14 +92,21 @@ export async function getRoleHandler(
     const role = (await service.tryFindUnique({
       where: { id: roleId },
       include: { _count, permissions },
-    })).ok_or_throw();
+    })).ok_or_throw()!;
 
     // Create audit log
     if (role && sessionUser) {
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ role }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ role }, {
+        meta: {
+          id: role.id,
+          include: { _count, permissions },
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -155,7 +169,13 @@ export async function createRoleHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ role }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ role }, {
+        meta: {
+          id: role.id,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -183,7 +203,9 @@ export async function deleteRoleHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ role }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ role }, { meta: { id: role.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -257,7 +279,9 @@ export async function updateRoleHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ role }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ role }, { meta: { id: role.id } }),
+    );
   } catch (err) {
     next(err);
   }

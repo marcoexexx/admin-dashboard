@@ -41,9 +41,6 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;

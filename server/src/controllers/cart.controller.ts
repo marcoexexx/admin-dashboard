@@ -53,7 +53,9 @@ export async function getCartHandler(
       (await userService.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ cart }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ cart }, { meta: { id: cart.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -141,7 +143,9 @@ export async function createCartOrderItemHandler(
     const _auditLog = await orderItemService.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ orderItem }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ orderItem }, { meta: { id: orderItem.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -167,7 +171,7 @@ export async function updateCartOrderItemHandler(
     );
     _isAccess.ok_or_throw();
 
-    const orderItem = await orderItemService.tryUpdate({
+    const orderItem = (await orderItemService.tryUpdate({
       where: {
         id: orderItemId,
       },
@@ -178,13 +182,15 @@ export async function updateCartOrderItemHandler(
         originalTotalPrice: quantity * price,
         saving: (quantity * price) - totalPrice,
       },
-    });
+    })).ok_or_throw();
 
     // Create audit log
     const _auditLog = await userService.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ orderItem }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ orderItem }, { meta: { id: orderItem.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -213,7 +219,9 @@ export async function deleteCartHandler(
     const _auditLog = await userService.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ cart }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ cart }, { meta: { id: cart.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -243,7 +251,9 @@ export async function deleteCartOrderItemHandler(
     const _auditLog = await userService.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ orderItem }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ orderItem }, { meta: { id: orderItem.id } }),
+    );
   } catch (err) {
     next(err);
   }

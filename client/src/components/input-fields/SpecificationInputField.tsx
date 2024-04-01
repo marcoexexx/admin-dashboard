@@ -53,6 +53,7 @@ export function SpecificationInputField() {
   const [deleteIdx, setDeleteIdx] = useState<number | undefined>(
     undefined,
   );
+  const [expanded, setExpanded] = useState(false);
 
   const handleDragStart =
     (idx: number) => (_evt: React.DragEvent<HTMLDivElement>) => {
@@ -89,9 +90,23 @@ export function SpecificationInputField() {
     dispatch({ type: "CLOSE_ALL_MODAL_FORM" });
   };
 
+  const handleAddMoreSpecification = (
+    _evt: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    specificationAppend({ name: "", value: "" });
+    setExpanded(true);
+  };
+
+  const handleOnEnpanded = (
+    _evt: React.SyntheticEvent,
+    isExpanded: boolean,
+  ) => {
+    setExpanded(isExpanded);
+  };
+
   return (
     <>
-      <Accordion defaultExpanded>
+      <Accordion expanded={expanded} onChange={handleOnEnpanded}>
         <Box
           display="flex"
           flexDirection="row"
@@ -110,7 +125,7 @@ export function SpecificationInputField() {
           <Tooltip title="Add more specifications" arrow>
             <IconButton
               aria-label="add more specifications"
-              onClick={() => specificationAppend({ name: "", value: "" })}
+              onClick={handleAddMoreSpecification}
             >
               <AddTwoToneIcon />
             </IconButton>

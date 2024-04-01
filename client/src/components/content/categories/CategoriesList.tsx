@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { CategoriesListTable } from "@/components/content/categories";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
@@ -27,8 +26,6 @@ export function CategoriesList() {
   // Extraction
   const data = categoriesQuery.try_data.ok_or_throw();
 
-  if (!data || categoriesQuery.isLoading) return <SuspenseLoader />;
-
   function handleCreateManyCategories(buf: ArrayBuffer) {
     createCategoriesMutation.mutate(buf);
   }
@@ -44,8 +41,8 @@ export function CategoriesList() {
   return (
     <Card>
       <CategoriesListTable
-        categories={data.results}
-        count={data.count}
+        categories={data?.results ?? []}
+        count={data?.count ?? 0}
         isLoading={categoriesQuery.isLoading}
         onCreateMany={handleCreateManyCategories}
         onDelete={handleDeleteCategory}

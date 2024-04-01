@@ -54,7 +54,16 @@ export async function getAccessLogsHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(logs, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(logs, count, {
+        meta: {
+          filter: { id, browser, ip, platform, date },
+          include: { user },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -82,7 +91,9 @@ export async function deleteAccessLogsHandler(
       },
     })).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ accessLog }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ accessLog }, { meta: { id: accessLogId } }),
+    );
   } catch (err) {
     next(err);
   }

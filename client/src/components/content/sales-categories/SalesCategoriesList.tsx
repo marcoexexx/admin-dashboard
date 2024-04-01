@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import { useDeleteCategory } from "@/hooks/category";
@@ -32,8 +31,6 @@ export function SalesCategoriesList() {
   // Extraction
   const sales = try_data.ok_or_throw();
 
-  if (!sales || isLoading) return <SuspenseLoader />;
-
   function handleCreateManySalesCategories(buf: ArrayBuffer) {
     createSalesCategories(buf);
   }
@@ -49,8 +46,8 @@ export function SalesCategoriesList() {
   return (
     <Card>
       <SalesCategoriesListTable
-        salesCategoiries={sales.results}
-        count={sales.count}
+        salesCategoiries={sales?.results ?? []}
+        count={sales?.count ?? 0}
         isLoading={isLoading}
         onCreateMany={handleCreateManySalesCategories}
         onDelete={handleDeleteBrand}

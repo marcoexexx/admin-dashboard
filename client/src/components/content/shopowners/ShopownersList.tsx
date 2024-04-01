@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { ShopownersListTable } from "@/components/content/shopowners";
 import { Card } from "@mui/material";
 
@@ -40,14 +39,12 @@ export function ShopownersList() {
     deleteShopownersMutation.mutate(ids);
   }
 
-  if (!data || shopownersQuery.isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <ShopownersListTable
         isLoading={shopownersQuery.isLoading}
-        shopowners={data.results}
-        count={data.count}
+        shopowners={data?.results ?? []}
+        count={data?.count ?? 0}
         onCreateMany={handleCreateManyShopowners}
         onDelete={handleDeleteShopowner}
         onMultiDelete={handleDeleteMultiShopowners}

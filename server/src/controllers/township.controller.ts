@@ -51,7 +51,16 @@ export async function getTownshipsHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(townships, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(townships, count, {
+        meta: {
+          filter: { id, name, fees },
+          include: { _count, userAddresses, region },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -85,14 +94,21 @@ export async function getTownshipHandler(
         userAddresses,
         region,
       },
-    })).ok_or_throw();
+    })).ok_or_throw()!;
 
     if (township && sessionUser) {
       const _auditLog = await service.audit(sessionUser);
       _auditLog.ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ township }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ township }, {
+        meta: {
+          id: township.id,
+          include: { _count, userAddresses, region },
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -151,7 +167,9 @@ export async function createTownshipHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ township }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ township }, { meta: { id: township.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -182,7 +200,9 @@ export async function deleteTownshipHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ township }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ township }, { meta: { id: township.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -253,7 +273,9 @@ export async function updateTownshipHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ township }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ township }, { meta: { id: township.id } }),
+    );
   } catch (err) {
     next(err);
   }

@@ -57,36 +57,46 @@ export async function getUserAddressesHandler(
     );
     _isAccess.ok_or_throw();
 
+    const where = {
+      id,
+      username,
+      userId: sessionUser.id,
+      isDefault,
+      phone,
+      email,
+      fullAddress,
+      remark,
+    };
+    const include = {
+      _count,
+      region,
+      user,
+      township,
+      deliveryOrders,
+      deveryPotentialOrders,
+      billingOrders,
+      billingPotentialOrders,
+    };
+
     const [count, userAddresses] = (await service.tryFindManyWithCount(
       {
         pagination: { page, pageSize },
       },
       {
-        where: {
-          id,
-          username,
-          userId: sessionUser.id,
-          isDefault,
-          phone,
-          email,
-          fullAddress,
-          remark,
-        },
-        include: {
-          _count,
-          region,
-          user,
-          township,
-          deliveryOrders,
-          deveryPotentialOrders,
-          billingOrders,
-          billingPotentialOrders,
-        },
+        where,
+        include,
         orderBy,
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(userAddresses, count));
+    res.status(StatusCode.OK).json(HttpListResponse(userAddresses, count, {
+      meta: {
+        filter: where,
+        include,
+        page,
+        pageSize,
+      },
+    }));
   } catch (err) {
     next(err);
   }
@@ -120,28 +130,37 @@ export async function getUserAddressHandler(
     );
     _isAccess.ok_or_throw();
 
+    const include = {
+      _count,
+      region,
+      user,
+      township,
+      deliveryOrders,
+      deveryPotentialOrders,
+      billingOrders,
+      billingPotentialOrders,
+    };
+
     const userAddress = (await service.tryFindUnique({
       where: {
         id: userAddressId,
       },
-      include: {
-        _count,
-        region,
-        user,
-        township,
-        deliveryOrders,
-        deveryPotentialOrders,
-        billingOrders,
-        billingPotentialOrders,
-      },
-    })).ok_or_throw();
+      include,
+    })).ok_or_throw()!;
 
     if (userAddress) {
       const _auditLog = await service.audit(sessionUser);
       _auditLog.ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ userAddress }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ userAddress }, {
+        meta: {
+          id: userAddress.id,
+          include,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -190,7 +209,9 @@ export async function createUserAddressHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.Created).json(HttpDataResponse({ userAddress }));
+    res.status(StatusCode.Created).json(
+      HttpDataResponse({ userAddress }, { meta: { id: userAddress.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -222,7 +243,9 @@ export async function deleteUserAddressHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ userAddress }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ userAddress }, { meta: { id: userAddress.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -297,7 +320,9 @@ export async function updateUserAddressHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ userAddress }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ userAddress }, { meta: { id: userAddress.id } }),
+    );
   } catch (err) {
     next(err);
   }

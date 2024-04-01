@@ -76,7 +76,21 @@ export async function getPotentialOrdersHandler(
     )).ok_or_throw();
 
     res.status(StatusCode.OK).json(
-      HttpListResponse(potentialOrders, count),
+      HttpListResponse(potentialOrders, count, {
+        meta: {
+          filter: { id, startDate, endDate, status, totalPrice, remark },
+          include: {
+            _count,
+            user,
+            deliveryAddress,
+            billingAddress,
+            pickupAddress,
+            orderItems,
+          },
+          page,
+          pageSize,
+        },
+      }),
     );
   } catch (err) {
     next(err);
@@ -120,14 +134,28 @@ export async function getPotentialOrderHandler(
         pickupAddress,
         orderItems,
       },
-    })).ok_or_throw();
+    })).ok_or_throw()!;
 
     // Create audit log
     if (potentialOrder && sessionUser) {
       (await service.audit(sessionUser)).ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ potentialOrder }, {
+        meta: {
+          id: potentialOrder.id,
+          include: {
+            _count,
+            user,
+            deliveryAddress,
+            billingAddress,
+            pickupAddress,
+            orderItems,
+          },
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -193,7 +221,9 @@ export async function createPotentialOrderHandler(
     if (sessionUser) (await service.audit(sessionUser)).ok_or_throw();
 
     res.status(StatusCode.Created).json(
-      HttpDataResponse({ potentialOrder }),
+      HttpDataResponse({ potentialOrder }, {
+        meta: { id: potentialOrder.id },
+      }),
     );
   } catch (err) {
     console.log("Err:", err);
@@ -226,7 +256,11 @@ export async function deletePotentialOrderHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ potentialOrder }, {
+        meta: { id: potentialOrder.id },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -291,7 +325,7 @@ export async function updatePotentialOrderHandler(
     );
     _isAccess.ok_or_throw();
 
-    const potentialOrder = await service.tryUpdate({
+    const potentialOrder = (await service.tryUpdate({
       where: {
         id: potentialOrderId,
       },
@@ -305,7 +339,7 @@ export async function updatePotentialOrderHandler(
         paymentMethodProvider: data.paymentMethodProvider,
         remark: data.remark,
       },
-    });
+    })).ok_or_throw();
 
     // Create audit log
     if (sessionUser) {
@@ -313,7 +347,11 @@ export async function updatePotentialOrderHandler(
       _auditLog.ok_or_throw();
     }
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ potentialOrder }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ potentialOrder }, {
+        meta: { id: potentialOrder.id },
+      }),
+    );
   } catch (err) {
     next(err);
   }

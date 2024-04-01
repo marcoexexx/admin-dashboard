@@ -1,4 +1,3 @@
-import { SuspenseLoader } from "@/components";
 import { INITIAL_PAGINATION } from "@/context/store";
 import { useStore } from "@/hooks";
 import {
@@ -42,14 +41,11 @@ export function ExchangesList() {
     deleteExchangesMutation.mutate(ids);
   }
 
-  // TODO: Sekelton table loader
-  if (!data || exchangesQuery.isLoading) return <SuspenseLoader />;
-
   return (
     <Card>
       <ExchangesListTable
-        exchanges={data.results}
-        count={data.count}
+        exchanges={data?.results ?? []}
+        count={data?.count ?? 0}
         isLoading={exchangesQuery.isLoading}
         onCreateMany={handleCreateManyExchanges}
         onDelete={handleDeleteExchange}

@@ -39,9 +39,6 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;

@@ -46,9 +46,6 @@ export class PotentialOrderApiService
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;

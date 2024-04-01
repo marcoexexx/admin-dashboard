@@ -51,7 +51,16 @@ export async function getAuditLogsHandler(
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(logs, count));
+    res.status(StatusCode.OK).json(
+      HttpListResponse(logs, count, {
+        meta: {
+          filter: { id, resource, action },
+          include: { user },
+          page,
+          pageSize,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }
@@ -82,7 +91,9 @@ export async function deleteAuditLogsHandler(
       },
     })).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ auditLog }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ auditLog }, { meta: { id: auditLogId } }),
+    );
   } catch (err) {
     next(err);
   }

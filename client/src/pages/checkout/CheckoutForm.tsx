@@ -1,5 +1,3 @@
-import cryptoRandomString from "crypto-random-string";
-
 import {
   CreateOrderInput,
   createOrderSchema,
@@ -48,6 +46,7 @@ import { OrderSummary } from "./OrderSummary";
 import { PaymentMethodStep } from "./PaymentMethod";
 
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { generateRandomHex } from "@/libs/generateUuid";
 import Check from "@mui/icons-material/Check";
 import AddressInformationStep from "./AddressInformation";
 
@@ -332,7 +331,7 @@ export function CheckoutForm() {
       // Check deliveryFee and create
       let payload: CreatePotentialOrderInput = {
         id: value.createdPotentialOrderId
-          || cryptoRandomString({ length: 24 }),
+          || generateRandomHex(24),
         orderItems: value.orderItems,
         billingAddressId: value.billingAddressId,
         paymentMethodProvider: value.paymentMethodProvider,

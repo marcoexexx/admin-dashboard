@@ -43,33 +43,40 @@ export async function getMeHandler(
 
     const sessionUser = checkUser(req?.user).ok_or_throw();
 
+    const include = {
+      _count,
+      cart,
+      reviews,
+      potentialOrders,
+      orders,
+      reward,
+      addresses,
+      favorites,
+      accessLogs,
+      auditLogs,
+      createdProducts,
+      pickupAddresses,
+      role: {
+        include: {
+          permissions: true,
+        },
+      },
+      shopownerProvider: true,
+    };
+
     const user = (await service.tryFindUnique({
       where: {
         id: sessionUser.id,
       },
-      include: {
-        _count,
-        cart,
-        reviews,
-        potentialOrders,
-        orders,
-        reward,
-        addresses,
-        favorites,
-        accessLogs,
-        auditLogs,
-        createdProducts,
-        pickupAddresses,
-        role: {
-          include: {
-            permissions: true,
-          },
-        },
-        shopownerProvider: true,
-      },
-    })).ok_or_throw();
+      include,
+    })).ok_or_throw()!;
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ user }));
+    res.status(StatusCode.OK).json(HttpDataResponse({ user }, {
+      meta: {
+        id: user.id,
+        include,
+      },
+    }));
   } catch (err) {
     next(err);
   }
@@ -90,21 +97,25 @@ export async function getUserHandler(
     );
     _isAccess.ok_or_throw();
 
+    const include = {
+      role: {
+        include: {
+          permissions: true,
+        },
+      },
+      shopownerProvider: true,
+    };
+
     const user = (await service.tryFindUnique({
       where: {
         id: userId,
       },
-      include: {
-        role: {
-          include: {
-            permissions: true,
-          },
-        },
-        shopownerProvider: true,
-      },
-    })).ok_or_throw();
+      include,
+    })).ok_or_throw()!;
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ user }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ user }, { meta: { id: user.id, include } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -125,21 +136,25 @@ export async function getUserByUsernameHandler(
     );
     _isAccess.ok_or_throw();
 
+    const include = {
+      role: {
+        include: {
+          permissions: true,
+        },
+      },
+      shopownerProvider: true,
+    };
+
     const user = (await service.tryFindUnique({
       where: {
         username,
       },
-      include: {
-        role: {
-          include: {
-            permissions: true,
-          },
-        },
-        shopownerProvider: true,
-      },
-    })).ok_or_throw();
+      include,
+    })).ok_or_throw()!;
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ user }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ user }, { meta: { id: user.id, include } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -180,6 +195,29 @@ export async function getUsersHandler(
     );
     _isAccess.ok_or_throw();
 
+    const include = {
+      _count,
+      cart,
+      reviews,
+      potentialOrders,
+      orders,
+      reward,
+      addresses,
+      favorites,
+      accessLogs,
+      auditLogs,
+      createdProducts,
+      pickupAddresses,
+      blockedUsers,
+      blockedByUsers,
+      role: {
+        include: {
+          permissions: true,
+        },
+      },
+      shopownerProvider: true,
+    };
+
     const [count, users] = (await service.tryFindManyWithCount(
       {
         pagination: { page, pageSize },
@@ -205,33 +243,19 @@ export async function getUsersHandler(
               ],
             },
         },
-        include: {
-          _count,
-          cart,
-          reviews,
-          potentialOrders,
-          orders,
-          reward,
-          addresses,
-          favorites,
-          accessLogs,
-          auditLogs,
-          createdProducts,
-          pickupAddresses,
-          blockedUsers,
-          blockedByUsers,
-          role: {
-            include: {
-              permissions: true,
-            },
-          },
-          shopownerProvider: true,
-        },
+        include,
         orderBy,
       },
     )).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpListResponse(users, count));
+    res.status(StatusCode.OK).json(HttpListResponse(users, count, {
+      meta: {
+        filter: { id, name, email, username },
+        include,
+        page,
+        pageSize,
+      },
+    }));
   } catch (err) {
     next(err);
   }
@@ -261,7 +285,7 @@ export async function createBlockUserHandler(
       );
     }
 
-    const user = await service.tryUpdate({
+    const user = (await service.tryUpdate({
       where: { id: sessionUser.id },
       data: {
         blockedByUsers: {
@@ -271,9 +295,11 @@ export async function createBlockUserHandler(
           },
         },
       },
-    });
+    })).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ user }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ user }, { meta: { id: user.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -303,7 +329,7 @@ export async function removeBlockedUserHandler(
       );
     }
 
-    const user = await service.tryUpdate({
+    const user = (await service.tryUpdate({
       where: { id: sessionUser.id },
       data: {
         blockedByUsers: {
@@ -315,9 +341,11 @@ export async function removeBlockedUserHandler(
           },
         },
       },
-    });
+    })).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ user }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ user }, { meta: { id: user.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -343,7 +371,9 @@ export async function uploadImageCoverHandler(
       },
     })).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ user }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ user }, { meta: { id: user.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -369,7 +399,9 @@ export async function uploadImageProfileHandler(
       },
     })).ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ user }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ user }, { meta: { id: user.id } }),
+    );
   } catch (err) {
     next(err);
   }
@@ -419,7 +451,9 @@ export async function updateRoleUserBySuperuserHandler(
     const _auditLog = await service.audit(sessionUser);
     _auditLog.ok_or_throw();
 
-    res.status(StatusCode.OK).json(HttpDataResponse({ user }));
+    res.status(StatusCode.OK).json(
+      HttpDataResponse({ user }, { meta: { id: user.id } }),
+    );
   } catch (err) {
     next(err);
   }

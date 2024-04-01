@@ -308,14 +308,13 @@ export default function SlidebarMenu() {
               {/* Products Menues */}
               <ListItem component="div">
                 <MuiButton
+                  tx="resource.products"
                   onClick={handleToggleExpandMenu("products")}
                   startIcon={<ShoppingCartIcon />}
                   endIcon={getStateCurrentExpandMenu("products")
                     ? <ExpandLessIcon />
                     : <ExpandMoreIcon />}
-                >
-                  Products
-                </MuiButton>
+                />
               </ListItem>
 
               <Collapse in={getStateCurrentExpandMenu("products")}>
@@ -549,14 +548,13 @@ export default function SlidebarMenu() {
               {/* Brand Menues */}
               <ListItem component="div">
                 <MuiButton
+                  tx="resource.brands"
                   onClick={handleToggleExpandMenu("brands")}
                   startIcon={<SellIcon />}
                   endIcon={getStateCurrentExpandMenu("brands")
                     ? <ExpandLessIcon />
                     : <ExpandMoreIcon />}
-                >
-                  Brands
-                </MuiButton>
+                />
               </ListItem>
 
               <Collapse in={getStateCurrentExpandMenu("brands")}>
@@ -589,14 +587,13 @@ export default function SlidebarMenu() {
               {/* Categories Menues */}
               <ListItem component="div">
                 <MuiButton
+                  tx="resource.categories"
                   onClick={handleToggleExpandMenu("categories")}
                   startIcon={<CategoryIcon />}
                   endIcon={getStateCurrentExpandMenu("categories")
                     ? <ExpandLessIcon />
                     : <ExpandMoreIcon />}
-                >
-                  Categories
-                </MuiButton>
+                />
               </ListItem>
 
               <Collapse in={getStateCurrentExpandMenu("categories")}>
@@ -629,14 +626,13 @@ export default function SlidebarMenu() {
               {/* Sales categories Menues */}
               <ListItem component="div">
                 <MuiButton
+                  tx="resource.salesCategories"
                   onClick={handleToggleExpandMenu("sales-categories")}
                   startIcon={<LoyaltyIcon />}
                   endIcon={getStateCurrentExpandMenu("sales-categories")
                     ? <ExpandLessIcon />
                     : <ExpandMoreIcon />}
-                >
-                  Sales categories
-                </MuiButton>
+                />
               </ListItem>
 
               <Collapse in={getStateCurrentExpandMenu("sales-categories")}>

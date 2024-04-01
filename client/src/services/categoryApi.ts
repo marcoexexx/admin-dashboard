@@ -32,7 +32,6 @@ export class CategoryApiService
       filter?: CategoryWhereInput["where"];
       pagination: Pagination;
       include?: CategoryWhereInput["include"];
-      orderBy?: Record<keyof Category, any>;
     },
   ): Promise<HttpListResponse<Category>> {
     const url = `/${this.repo}`;
@@ -44,9 +43,6 @@ export class CategoryApiService
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;

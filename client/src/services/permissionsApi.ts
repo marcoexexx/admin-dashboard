@@ -43,9 +43,6 @@ export class PermisssionApiService
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;

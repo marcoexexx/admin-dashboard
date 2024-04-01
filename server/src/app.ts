@@ -39,8 +39,6 @@ import cartRouter from "./routers/cart.route";
 import permissionRouter from "./routers/permission.route";
 import roleRouter from "./routers/role.router";
 
-import generatePkRouter from "./routers/generatePk.route";
-
 import orderRouter from "./routers/order.route";
 import potentialOrderRouter from "./routers/potentialOrder.route";
 
@@ -61,6 +59,8 @@ validateEnv();
 if (!getConfig("hideBanner")) show_bannar();
 
 export const app = express();
+
+const URL_PREFIX = getConfig("urlPrefix");
 
 // Set Pub Template
 app.set("view engine", "pug");
@@ -93,9 +93,6 @@ app.use(rateLimitMiddleware);
 // Logger
 if (process.env.NODE_ENV === "development") app.use(loggingMiddleware);
 
-// Cookie parser
-app.use(cookieParser());
-
 // Useragent
 app.use(useragent.express());
 
@@ -124,29 +121,27 @@ app.get(
   },
 );
 
-app.use("/api/v1/generate-pk", generatePkRouter);
-
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/shopowners", shopownerRouter);
-app.use("/api/v1/orders", orderRouter);
-app.use("/api/v1/potential-orders", potentialOrderRouter);
-app.use("/api/v1/me", meRouter);
-app.use("/api/v1/exchanges", exchangeRouter);
-app.use("/api/v1/coupons", couponRouter);
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/access-logs", accessLogRouter);
-app.use("/api/v1/audit-logs", auditLogRouter);
-app.use("/api/v1/products", productRouter);
-app.use("/api/v1/brands", brandRouter);
-app.use("/api/v1/categories", categoryRouter);
-app.use("/api/v1/sales-categories", salesCategoryRouter);
-app.use("/api/v1/regions", regionRouter);
-app.use("/api/v1/townships", townshipRouter);
-app.use("/api/v1/addresses", userAddressRouter);
-app.use("/api/v1/pickup-addresses", pickupAddressRouter);
-app.use("/api/v1/roles", roleRouter);
-app.use("/api/v1/permissions", permissionRouter);
-app.use("/api/v1/cart", cartRouter);
+app.use(`${URL_PREFIX}/auth`, authRouter);
+app.use(`${URL_PREFIX}/shopowners`, shopownerRouter);
+app.use(`${URL_PREFIX}/orders`, orderRouter);
+app.use(`${URL_PREFIX}/potential-orders`, potentialOrderRouter);
+app.use(`${URL_PREFIX}/me`, meRouter);
+app.use(`${URL_PREFIX}/exchanges`, exchangeRouter);
+app.use(`${URL_PREFIX}/coupons`, couponRouter);
+app.use(`${URL_PREFIX}/users`, userRouter);
+app.use(`${URL_PREFIX}/access-logs`, accessLogRouter);
+app.use(`${URL_PREFIX}/audit-logs`, auditLogRouter);
+app.use(`${URL_PREFIX}/products`, productRouter);
+app.use(`${URL_PREFIX}/brands`, brandRouter);
+app.use(`${URL_PREFIX}/categories`, categoryRouter);
+app.use(`${URL_PREFIX}/sales-categories`, salesCategoryRouter);
+app.use(`${URL_PREFIX}/regions`, regionRouter);
+app.use(`${URL_PREFIX}/townships`, townshipRouter);
+app.use(`${URL_PREFIX}/addresses`, userAddressRouter);
+app.use(`${URL_PREFIX}/pickup-addresses`, pickupAddressRouter);
+app.use(`${URL_PREFIX}/roles`, roleRouter);
+app.use(`${URL_PREFIX}/permissions`, permissionRouter);
+app.use(`${URL_PREFIX}/cart`, cartRouter);
 
 // Unhandled Route
 app.all("*", (req: Request, _: Response, next: NextFunction) => {

@@ -33,7 +33,6 @@ export class ExchangeApiService
       filter?: ExchangeWhereInput["where"];
       pagination: Pagination;
       include?: ExchangeWhereInput["include"];
-      orderBy?: Record<keyof Exchange, any>;
     },
   ): Promise<HttpListResponse<Exchange>> {
     const url = `/${this.repo}`;
@@ -45,9 +44,6 @@ export class ExchangeApiService
         filter,
         pagination,
         include,
-        orderBy: {
-          updatedAt: "desc",
-        },
       },
     });
     return data;

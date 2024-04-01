@@ -1,5 +1,4 @@
 import { useMe, useStore } from "@/hooks";
-import { useGetCart } from "@/hooks/cart";
 import { useUserLogout } from "@/hooks/user";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,6 @@ import { MuiButton } from "@/components/ui";
 import { CacheResource } from "@/context/cacheKey";
 import {
   Avatar,
-  Badge,
   Box,
   Button,
   Divider,
@@ -34,7 +32,6 @@ import HistoryIcon from "@mui/icons-material/History";
 import LockOpenTwoToneIcon from "@mui/icons-material/LockOpenTwoTone";
 import MapIcon from "@mui/icons-material/Map";
 import SecurityIcon from "@mui/icons-material/Security";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 const UserBoxButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(1),
@@ -66,9 +63,6 @@ export default function HeaderUserBox() {
 
   const navigate = useNavigate();
 
-  const { try_data } = useGetCart();
-  const cartItemsCount = try_data.ok()?.orderItems?.length;
-
   const userQuery = useMe({});
   const userLogoutMutation = useUserLogout();
 
@@ -89,14 +83,6 @@ export default function HeaderUserBox() {
   const handleNavigate = (to: string) => () => {
     setIsOpen(false);
     navigate(to);
-  };
-
-  const handleOpenCart = () => {
-    setIsOpen(false);
-    dispatch({
-      type: "OPEN_MODAL_FORM",
-      payload: "cart",
-    });
   };
 
   const shopOwner = try_user.ok()?.shopownerProvider;
@@ -133,34 +119,25 @@ export default function HeaderUserBox() {
   if (try_user.is_ok()) {
     return (
       <>
-        <Badge
-          badgeContent={cartItemsCount}
-          color="primary"
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-        >
-          <UserBoxButton color="secondary" ref={ref} onClick={handleOpen}>
-            <Avatar
-              variant="rounded"
-              alt={try_user.value.name}
-              src={try_user.value.image}
-            />
-            <Hidden mdDown>
-              <UserBoxText>
-                <UserBoxLabel>{try_user.value.name}</UserBoxLabel>
-                <UserBoxDescription variant="body2">
-                  {roleDisplay}
-                </UserBoxDescription>
-              </UserBoxText>
-            </Hidden>
+        <UserBoxButton color="secondary" ref={ref} onClick={handleOpen}>
+          <Avatar
+            variant="rounded"
+            alt={try_user.value.name}
+            src={try_user.value.image}
+          />
+          <Hidden mdDown>
+            <UserBoxText>
+              <UserBoxLabel>{try_user.value.name}</UserBoxLabel>
+              <UserBoxDescription variant="body2">
+                {roleDisplay}
+              </UserBoxDescription>
+            </UserBoxText>
+          </Hidden>
 
-            <Hidden smDown>
-              <ExpandMoreTwoToneIcon sx={{ ml: 1 }} />
-            </Hidden>
-          </UserBoxButton>
-        </Badge>
+          <Hidden smDown>
+            <ExpandMoreTwoToneIcon sx={{ ml: 1 }} />
+          </Hidden>
+        </UserBoxButton>
 
         <Popover
           anchorEl={ref.current}
@@ -194,15 +171,6 @@ export default function HeaderUserBox() {
           <Divider sx={{ mb: 0 }} />
 
           <List sx={{ p: 1 }} component="nav">
-            <ListItemButton onClick={handleOpenCart}>
-              <ListItemIcon>
-                <Badge badgeContent={cartItemsCount} color="primary">
-                  <ShoppingCartIcon fontSize="small" />
-                </Badge>
-              </ListItemIcon>
-              <ListItemText primary="Cart" />
-            </ListItemButton>
-
             <ListItemButton onClick={handleNavigate("/me")}>
               <ListItemIcon>
                 <AccountBoxTwoToneIcon fontSize="small" />
