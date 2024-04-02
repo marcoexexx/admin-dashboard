@@ -22,7 +22,7 @@ export class CartApiService extends BaseApiService<CartWhereInput, Cart> {
     return new CartApiService(CacheResource.Cart);
   }
 
-  async find(
+  override async find(
     opt: QueryOptionArgs,
     where: {
       filter: { id: string | undefined; };
@@ -40,6 +40,25 @@ export class CartApiService extends BaseApiService<CartWhereInput, Cart> {
     return data;
   }
 
+  override async delete(
+    id: string,
+  ): Promise<GenericResponse<Cart, "cart">> {
+    const url = `/${this.repo}/detail/${id}`;
+
+    const { data } = await authApi.delete(url);
+    return data;
+  }
+
+  override async update(
+    arg: { id: string; payload: UpdateCartOrderItemInput; },
+  ): Promise<GenericResponse<OrderItem, "orderItem">> {
+    const { id, payload } = arg;
+    const url = `/${this.repo}/orderItems/detail/${id}`;
+
+    const { data } = await authApi.patch(url, payload);
+    return data;
+  }
+
   async createCartOrderItem(
     payload: CreateCartOrderItemInput,
   ): Promise<GenericResponse<OrderItem, "orderItem">> {
@@ -49,29 +68,12 @@ export class CartApiService extends BaseApiService<CartWhereInput, Cart> {
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<Cart, "cart">> {
-    const url = `/${this.repo}/detail/${id}`;
-
-    const { data } = await authApi.delete(url);
-    return data;
-  }
-
   async deleteSingleItem(
     itemId: string,
   ): Promise<GenericResponse<OrderItem, "orderItem">> {
     const url = `/${this.repo}/orderItems/detail/${itemId}`;
 
     const { data } = await authApi.delete(url);
-    return data;
-  }
-
-  async update(
-    arg: { id: string; payload: UpdateCartOrderItemInput; },
-  ): Promise<GenericResponse<OrderItem, "orderItem">> {
-    const { id, payload } = arg;
-    const url = `/${this.repo}/orderItems/detail/${id}`;
-
-    const { data } = await authApi.patch(url, payload);
     return data;
   }
 }

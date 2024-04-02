@@ -22,7 +22,7 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
     return new UserApiService(CacheResource.User);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: UserWhereInput["where"];
@@ -44,7 +44,7 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
     return data;
   }
 
-  async find(
+  override async find(
     opt: QueryOptionArgs,
     where: {
       filter: { id: string | undefined; };
@@ -59,6 +59,16 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
       ...opt,
       params: { include },
     });
+    return data;
+  }
+
+  override async update(
+    arg: { id: string; payload: UpdateUserInput; },
+  ): Promise<GenericResponse<User, "user">> {
+    const { id, payload } = arg;
+    const url = `/${this.repo}/detail/${id}`;
+
+    const { data } = await authApi.patch(url, payload);
     return data;
   }
 
@@ -127,15 +137,5 @@ export class UserApiService extends BaseApiService<UserWhereInput, User> {
       },
     });
     return res.data;
-  }
-
-  async update(
-    arg: { id: string; payload: UpdateUserInput; },
-  ): Promise<GenericResponse<User, "user">> {
-    const { id, payload } = arg;
-    const url = `/${this.repo}/detail/${id}`;
-
-    const { data } = await authApi.patch(url, payload);
-    return data;
   }
 }

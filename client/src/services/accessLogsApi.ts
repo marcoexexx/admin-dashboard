@@ -21,7 +21,7 @@ export class AccessLogApiService
     return new AccessLogApiService(CacheResource.AccessLog);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: AccessLogWhereInput["where"];
@@ -43,7 +43,7 @@ export class AccessLogApiService
     return data;
   }
 
-  async delete(
+  override async delete(
     id: string,
   ): Promise<GenericResponse<AccessLog, "accessLog">> {
     const url = `/${this.repo}/detail/${id}`;

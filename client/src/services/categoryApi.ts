@@ -26,7 +26,7 @@ export class CategoryApiService
     return new CategoryApiService(CacheResource.Category);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: CategoryWhereInput["where"];
@@ -48,7 +48,7 @@ export class CategoryApiService
     return data;
   }
 
-  async find(
+  override async find(
     opt: QueryOptionArgs,
     where: {
       filter: { id: string | undefined; };
@@ -66,7 +66,7 @@ export class CategoryApiService
     return data;
   }
 
-  async create(
+  override async create(
     payload: CreateCategoryInput,
   ): Promise<GenericResponse<Category, "category">> {
     const url = `/${this.repo}`;
@@ -75,7 +75,7 @@ export class CategoryApiService
     return data;
   }
 
-  async uploadExcel(
+  override async uploadExcel(
     buf: ArrayBuffer,
   ): Promise<HttpListResponse<Category>> {
     const url = `/${this.repo}/excel-upload`;
@@ -97,7 +97,7 @@ export class CategoryApiService
     return data;
   }
 
-  async update(
+  override async update(
     arg: { id: string; payload: UpdateCategoryInput; },
   ): Promise<GenericResponse<Category, "category">> {
     const { id, payload } = arg;
@@ -107,7 +107,7 @@ export class CategoryApiService
     return data;
   }
 
-  async deleteMany(ids: string[]): Promise<HttpResponse> {
+  override async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
     const { data } = await authApi.delete(url, {
@@ -116,7 +116,7 @@ export class CategoryApiService
     return data;
   }
 
-  async delete(
+  override async delete(
     id: string,
   ): Promise<GenericResponse<Category, "category">> {
     const url = `/${this.repo}/detail/${id}`;

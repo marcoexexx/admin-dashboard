@@ -26,7 +26,7 @@ export class OrderApiService
     return new OrderApiService(CacheResource.Order);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: OrderWhereInput["where"];
@@ -48,7 +48,7 @@ export class OrderApiService
     return data;
   }
 
-  async find(
+  override async find(
     opt: QueryOptionArgs,
     where: {
       filter: { id: string | undefined; };
@@ -66,7 +66,7 @@ export class OrderApiService
     return data;
   }
 
-  async create(
+  override async create(
     payload: CreateOrderInput,
   ): Promise<GenericResponse<Order, "order">> {
     const url = `/${this.repo}`;
@@ -75,7 +75,9 @@ export class OrderApiService
     return data;
   }
 
-  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<Order>> {
+  override async uploadExcel(
+    buf: ArrayBuffer,
+  ): Promise<HttpListResponse<Order>> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
@@ -95,7 +97,7 @@ export class OrderApiService
     return data;
   }
 
-  async update(
+  override async update(
     arg: { id: string; payload: UpdateOrderInput; },
   ): Promise<GenericResponse<Order, "order">> {
     const { id, payload } = arg;
@@ -105,7 +107,7 @@ export class OrderApiService
     return data;
   }
 
-  async deleteMany(ids: string[]): Promise<HttpResponse> {
+  override async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
     const { data } = await authApi.delete(url, {
@@ -114,7 +116,9 @@ export class OrderApiService
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<Order, "order">> {
+  override async delete(
+    id: string,
+  ): Promise<GenericResponse<Order, "order">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

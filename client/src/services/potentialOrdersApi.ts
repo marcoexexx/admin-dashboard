@@ -1,5 +1,3 @@
-import AppError, { AppErrorKind } from "@/libs/exceptions";
-
 import {
   CreatePotentialOrderInput,
   UpdatePotentialOrderInput,
@@ -29,7 +27,7 @@ export class PotentialOrderApiService
     return new PotentialOrderApiService(CacheResource.PotentialOrder);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: PotentialOrderWhereInput["where"];
@@ -51,7 +49,7 @@ export class PotentialOrderApiService
     return data;
   }
 
-  async find(
+  override async find(
     opt: QueryOptionArgs,
     where: {
       filter: { id: string | undefined; };
@@ -71,7 +69,7 @@ export class PotentialOrderApiService
     return data;
   }
 
-  async create(
+  override async create(
     payload: CreatePotentialOrderInput,
   ): Promise<GenericResponse<PotentialOrder, "potentialOrder">> {
     const url = `/${this.repo}`;
@@ -80,18 +78,7 @@ export class PotentialOrderApiService
     return data;
   }
 
-  /**
-   * Not Support yet!
-   */
-  async uploadExcel(
-    _buf: ArrayBuffer,
-  ): Promise<HttpListResponse<PotentialOrder>> {
-    return Promise.reject(
-      AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`),
-    );
-  }
-
-  async update(
+  override async update(
     arg: { id: string; payload: UpdatePotentialOrderInput; },
   ): Promise<GenericResponse<PotentialOrder, "potentialOrder">> {
     const { id, payload } = arg;
@@ -101,7 +88,7 @@ export class PotentialOrderApiService
     return data;
   }
 
-  async deleteMany(ids: string[]): Promise<HttpResponse> {
+  override async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
     const { data } = await authApi.delete(url, {
@@ -110,7 +97,7 @@ export class PotentialOrderApiService
     return data;
   }
 
-  async delete(
+  override async delete(
     id: string,
   ): Promise<GenericResponse<PotentialOrder, "potentialOrder">> {
     const url = `/${this.repo}/detail/${id}`;

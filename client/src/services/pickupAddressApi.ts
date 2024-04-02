@@ -1,5 +1,3 @@
-import AppError, { AppErrorKind } from "@/libs/exceptions";
-
 import { CreatePickupAddressInput } from "@/components/content/pickupAddressHistory/forms";
 import { CacheResource } from "@/context/cacheKey";
 import { PickupAddressWhereInput } from "@/context/pickupAddress";
@@ -26,7 +24,7 @@ export class PickupAddressApiService
     return new PickupAddressApiService(CacheResource.PickupAddress);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: PickupAddressWhereInput["where"];
@@ -48,7 +46,7 @@ export class PickupAddressApiService
     return data;
   }
 
-  async find(
+  override async find(
     opt: QueryOptionArgs,
     where: {
       filter: { id: string | undefined; };
@@ -66,7 +64,7 @@ export class PickupAddressApiService
     return data;
   }
 
-  async create(
+  override async create(
     payload: CreatePickupAddressInput,
   ): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
     const url = `/${this.repo}`;
@@ -75,29 +73,7 @@ export class PickupAddressApiService
     return data;
   }
 
-  /**
-   * Not Support yet!
-   */
-  async uploadExcel(
-    _buf: ArrayBuffer,
-  ): Promise<HttpListResponse<PickupAddress>> {
-    return Promise.reject(
-      AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`),
-    );
-  }
-
-  /**
-   * Not Support yet!
-   */
-  async update(
-    _arg: { id: string; payload: any; },
-  ): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
-    return Promise.reject(
-      AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`),
-    );
-  }
-
-  async deleteMany(ids: string[]): Promise<HttpResponse> {
+  override async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
     const { data } = await authApi.delete(url, {
@@ -106,7 +82,7 @@ export class PickupAddressApiService
     return data;
   }
 
-  async delete(
+  override async delete(
     id: string,
   ): Promise<GenericResponse<PickupAddress, "pickupAddress">> {
     const url = `/${this.repo}/detail/${id}`;

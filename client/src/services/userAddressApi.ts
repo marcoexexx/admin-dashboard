@@ -1,5 +1,3 @@
-import AppError, { AppErrorKind } from "@/libs/exceptions";
-
 import {
   CreateUserAddressInput,
   UpdateUserAddressInput,
@@ -29,7 +27,7 @@ export class UserAddressApiService
     return new UserAddressApiService(CacheResource.UserAddress);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: UserAddressWhereInput["where"];
@@ -51,7 +49,7 @@ export class UserAddressApiService
     return data;
   }
 
-  async find(
+  override async find(
     opt: QueryOptionArgs,
     where: {
       filter: { id: string | undefined; };
@@ -69,7 +67,7 @@ export class UserAddressApiService
     return data;
   }
 
-  async create(
+  override async create(
     payload: CreateUserAddressInput,
   ): Promise<GenericResponse<Address, "userAddress">> {
     const url = `/${this.repo}`;
@@ -78,18 +76,7 @@ export class UserAddressApiService
     return data;
   }
 
-  /**
-   * Not Support yet!
-   */
-  async uploadExcel(
-    _buf: ArrayBuffer,
-  ): Promise<HttpListResponse<Address>> {
-    return Promise.reject(
-      AppError.new(AppErrorKind.ServiceUnavailable, `Not support yet!`),
-    );
-  }
-
-  async update(
+  override async update(
     arg: { id: string; payload: UpdateUserAddressInput; },
   ): Promise<GenericResponse<Address, "userAddress">> {
     const { id, payload } = arg;
@@ -99,7 +86,7 @@ export class UserAddressApiService
     return data;
   }
 
-  async deleteMany(ids: string[]): Promise<HttpResponse> {
+  override async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
     const { data } = await authApi.delete(url, {
@@ -108,7 +95,7 @@ export class UserAddressApiService
     return data;
   }
 
-  async delete(
+  override async delete(
     id: string,
   ): Promise<GenericResponse<Address, "userAddress">> {
     const url = `/${this.repo}/detail/${id}`;

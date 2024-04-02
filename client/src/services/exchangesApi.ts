@@ -27,7 +27,7 @@ export class ExchangeApiService
     return new ExchangeApiService(CacheResource.Exchange);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: ExchangeWhereInput["where"];
@@ -49,7 +49,7 @@ export class ExchangeApiService
     return data;
   }
 
-  async find(
+  override async find(
     opt: QueryOptionArgs,
     where: {
       filter: { id: string | undefined; };
@@ -67,7 +67,7 @@ export class ExchangeApiService
     return data;
   }
 
-  async create(
+  override async create(
     payload: CreateExchangeInput,
   ): Promise<GenericResponse<Exchange, "brand">> {
     const url = `/${this.repo}`;
@@ -76,7 +76,7 @@ export class ExchangeApiService
     return data;
   }
 
-  async uploadExcel(
+  override async uploadExcel(
     buf: ArrayBuffer,
   ): Promise<HttpListResponse<Exchange>> {
     const url = `/${this.repo}/excel-upload`;
@@ -98,7 +98,7 @@ export class ExchangeApiService
     return data;
   }
 
-  async update(
+  override async update(
     arg: { id: string; payload: UpdateExchangeInput; },
   ): Promise<GenericResponse<Exchange, "exchange">> {
     const { id, payload } = arg;
@@ -108,7 +108,7 @@ export class ExchangeApiService
     return data;
   }
 
-  async deleteMany(ids: string[]): Promise<HttpResponse> {
+  override async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
     const { data } = await authApi.delete(url, {
@@ -117,7 +117,7 @@ export class ExchangeApiService
     return data;
   }
 
-  async delete(
+  override async delete(
     id: string,
   ): Promise<GenericResponse<Exchange, "exchange">> {
     const url = `/${this.repo}/detail/${id}`;

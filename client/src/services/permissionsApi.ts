@@ -26,7 +26,7 @@ export class PermisssionApiService
     return new PermisssionApiService(CacheResource.Permission);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: PermissionWhereInput["where"];
@@ -48,7 +48,7 @@ export class PermisssionApiService
     return data;
   }
 
-  async find(
+  override async find(
     opt: QueryOptionArgs,
     where: {
       filter: { id: string | undefined; };
@@ -66,7 +66,7 @@ export class PermisssionApiService
     return data;
   }
 
-  async create(
+  override async create(
     payload: CreatePermissionInput,
   ): Promise<GenericResponse<Permission, "permission">> {
     const url = `/${this.repo}`;
@@ -75,7 +75,7 @@ export class PermisssionApiService
     return data;
   }
 
-  async update(
+  override async update(
     arg: { id: string; payload: UpdatePermissionInput; },
   ): Promise<GenericResponse<Permission, "permission">> {
     const { id, payload } = arg;
@@ -85,7 +85,7 @@ export class PermisssionApiService
     return data;
   }
 
-  async deleteMany(ids: string[]): Promise<HttpResponse> {
+  override async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
     const { data } = await authApi.delete(url, {
@@ -94,7 +94,7 @@ export class PermisssionApiService
     return data;
   }
 
-  async delete(
+  override async delete(
     id: string,
   ): Promise<GenericResponse<Permission, "permission">> {
     const url = `/${this.repo}/detail/${id}`;

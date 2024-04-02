@@ -24,7 +24,7 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
     return new RoleApiService(CacheResource.Role);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: RoleWhereInput["where"];
@@ -46,7 +46,7 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
     return data;
   }
 
-  async find(
+  override async find(
     opt: QueryOptionArgs,
     where: {
       filter: { id: string | undefined; };
@@ -64,7 +64,7 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
     return data;
   }
 
-  async create(
+  override async create(
     payload: CreateRoleInput,
   ): Promise<GenericResponse<Role, "role">> {
     const url = `/${this.repo}`;
@@ -73,7 +73,9 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
     return data;
   }
 
-  async uploadExcel(buf: ArrayBuffer): Promise<HttpListResponse<Role>> {
+  override async uploadExcel(
+    buf: ArrayBuffer,
+  ): Promise<HttpListResponse<Role>> {
     const url = `/${this.repo}/excel-upload`;
 
     const formData = new FormData();
@@ -93,7 +95,7 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
     return data;
   }
 
-  async update(
+  override async update(
     arg: { id: string; payload: UpdateRoleInput; },
   ): Promise<GenericResponse<Role, "role">> {
     const { id, payload } = arg;
@@ -103,14 +105,16 @@ export class RoleApiService extends BaseApiService<RoleWhereInput, Role> {
     return data;
   }
 
-  async deleteMany(ids: string[]): Promise<HttpResponse> {
+  override async deleteMany(ids: string[]): Promise<HttpResponse> {
     const url = `/${this.repo}/multi`;
 
     const { data } = await authApi.delete(url, { data: { roleIds: ids } });
     return data;
   }
 
-  async delete(id: string): Promise<GenericResponse<Role, "role">> {
+  override async delete(
+    id: string,
+  ): Promise<GenericResponse<Role, "role">> {
     const url = `/${this.repo}/detail/${id}`;
 
     const { data } = await authApi.delete(url);

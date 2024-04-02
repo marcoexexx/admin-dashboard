@@ -21,7 +21,7 @@ export class AuditLogApiService
     return new AuditLogApiService(CacheResource.AuditLog);
   }
 
-  async findMany(
+  override async findMany(
     opt: QueryOptionArgs,
     where: {
       filter?: AuditLogWhereInput["where"];
@@ -46,7 +46,7 @@ export class AuditLogApiService
     return data;
   }
 
-  async delete(
+  override async delete(
     id: string,
   ): Promise<GenericResponse<AuditLog, "auditLog">> {
     const url = `/${this.repo}/detail/${id}`;
