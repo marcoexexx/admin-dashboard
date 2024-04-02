@@ -8,6 +8,7 @@ Admin Dashboard is a full-stack application utilizing the SERN stack (SQL, Expre
 
 [Documentation](https://marcoexexx.github.io/admin-dashboard/)
 
+[Tools (migration, etc,..)](https://github.com/marcoexexx/admin-dashboard-tools)
 [NextJs frontend Github repo](https://github.com/marcoexexx/ecommerce-frontend)
 
 ## Generate Certificate for HTTPS
