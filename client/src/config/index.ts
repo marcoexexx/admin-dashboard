@@ -1,8 +1,8 @@
 export * from "./custom-env";
 
 export default {
-  appName: "Rangoon",
+  appName: "Dashboard",
   appLogo:
-    "https://rangoondiscount.com/static/media/rangoon-discount.9e1863bad8f2d5678e8a.png",
+    "https://i.pinimg.com/736x/0d/5c/fb/0d5cfb72a2eda8474ea7a7cdc47ac099.jpg",
   showBanner: false,
 };
