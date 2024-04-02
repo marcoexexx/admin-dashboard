@@ -46,7 +46,7 @@ export class CouponService extends AppService<
 
   // Data create by uploading excel
   // Update not affected
-  async tryExcelUpload(file: Express.Multer.File): Promise<
+  override async tryExcelUpload(file: Express.Multer.File): Promise<
     Result<Awaited<ReturnType<typeof this.repository.upsert>>[], AppError>
   > {
     const buf = fs.readFileSync(file.path);
