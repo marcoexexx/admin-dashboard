@@ -96,7 +96,7 @@ if (process.env.NODE_ENV === "development") app.use(loggingMiddleware);
 // Useragent
 app.use(useragent.express());
 
-// Is under the maintenance
+// Check user, if not return undefined
 app.use(safeDeserializeUser);
 
 // Is under the maintenance
