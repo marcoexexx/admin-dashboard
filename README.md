@@ -8,6 +8,27 @@ Admin Dashboard is a full-stack application utilizing the SERN stack (SQL, Expre
 
 [Documentation](https://marcoexexx.github.io/admin-dashboard/)
 
+[NextJs frontend Github repo](https://github.com/marcoexexx/ecommerce-frontend)
+
+## Generate Certificate for HTTPS
+[mkcert install](https://github.com/FiloSottile/mkcert)
+
+### For Server
+```sh
+cd server
+mkdir certificate
+cd certificate
+
+mkcert -key-file key.pem -cert-file cert.pem 192.168.100.253 localhost 127.0.0.1
+```
+
+### For Client
+```sh
+cd client
+
+mkcert -key-file key.pem -cert-file cert.pem 192.168.100.253 localhost 127.0.0.1
+```
+
 ## Features
 - **Database:** PostgreSQL with Prisma for efficient data management.
 - **Server:** Express in TypeScript for a robust backend.
