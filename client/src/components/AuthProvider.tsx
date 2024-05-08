@@ -28,15 +28,15 @@ export function AuthProvider(props: AuthProviderProps) {
     if (isSuccess) dispatch({ type: "SET_USER", payload: me });
   }, [isSuccess]);
 
-  const isAllowedReactDashboard = Boolean(
+  const isAllowedReadDashboard = Boolean(
     me?.isSuperuser || me?.shopownerProviderId,
   );
 
-  if (isLoading) return <SuspenseLoader />;
-
-  if (cookies.logged_in && !isAllowedReactDashboard) {
+  if (cookies.logged_in && !isAllowedReadDashboard) {
     throw AppError.new(AppErrorKind.PermissionError);
   }
+
+  if (isLoading) return <SuspenseLoader />;
 
   return children;
 }

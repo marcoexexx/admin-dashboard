@@ -14,6 +14,7 @@ export const AppErrorKind = {
   UnderTheMaintenance: "UnderTheMaintenance",
   BlockedUserError: "BlockedUserError",
   ServiceUnavailable: "ServiceUnavailable",
+  // NoUserLoginError: "NoUserLoginError",
 } as const;
 
 /**

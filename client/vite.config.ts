@@ -17,11 +17,10 @@ export default defineConfig({
       "@result": path.resolve(__dirname, "./src/libs/result"),
     },
   },
-
-  server: {
-    https: {
-      key: "./key.pem",
-      cert: "./cert.pem",
-    },
-  },
+  // server: {
+  //   https: {
+  //     key: "./key.pem",
+  //     cert: "./cert.pem",
+  //   },
+  // },
 });

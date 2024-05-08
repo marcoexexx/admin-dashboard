@@ -11,15 +11,16 @@ services:
   #   env_file:
   #     - ./.production.env
 
-  # postgres:
-  #   image: postgres:latest
-  #   container_name: rangoon-postgres
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - rangoonPostgresDB:/var/lib/postgresql/data
-  #   env_file:
-  #     - ./.env
+  mongo:
+    image: mongo:latest
+    container_name: rangoon-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db:/data/db
+      - ./configdb:/data/configdb
+    env_file:
+      - ./.env
 
 
   redis:

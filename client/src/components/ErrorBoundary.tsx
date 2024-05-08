@@ -42,23 +42,27 @@ export default class ErrorBoundary
               <h1>NetworkError: Please check your internet connection</h1>
             );
           case AppErrorKind.ApiError:
-            return <ErrorPage error={this.state.error} />;
           case AppErrorKind.InvalidInputError:
-            return <ErrorPage error={this.state.error} />;
-          case AppErrorKind.PermissionError:
-            return <Unauthorized />;
           case AppErrorKind.NoDataError:
             return <ErrorPage error={this.state.error} />;
+
+          case AppErrorKind.PermissionError:
+            return <Unauthorized />;
+
           case AppErrorKind.AccessDeniedError:
             return <MiniAccessDenied />;
+
           case AppErrorKind.UnderTheMaintenance:
             return (
               <UnderTheMaintenance message={this.state.error.message} />
             );
+
           case AppErrorKind.InvalidAuthSession:
             return <InvalidAuthSessionPage />;
+
           case AppErrorKind.BlockedUserError:
             return <BlockedUserErrorPage />;
+
           case AppErrorKind.ServiceUnavailable:
             return <h1>Service not available right now</h1>;
 
